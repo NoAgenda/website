@@ -1,0 +1,38 @@
+@import "~bootstrap/scss/bootstrap";
+
+.navbar {
+  z-index: 1000;
+}
+
+.site-player {
+  color: $white;
+  background: $gray-700;
+
+  img {
+    height: 330px - ($grid-gutter-width / 2);
+    width: 330px - ($grid-gutter-width / 2);
+    margin: ($grid-gutter-width / 2) 0;
+  }
+
+  .player-toolbar {
+    > div {
+      line-height: 3em;
+    }
+
+    svg {
+      line-height: 3em;
+    }
+  }
+}
+
+.site-chat {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  max-height: 100vh;
+  top: 0;
+
+  .site-chat-box {
+    overflow-y: scroll;
+  }
+}
