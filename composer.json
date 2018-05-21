@@ -24,7 +24,8 @@
         "symfony/validator": "^4.1",
         "symfony/web-link": "^4.1",
         "symfony/webpack-encore-pack": "*",
-        "symfony/yaml": "^4.1"
+        "symfony/yaml": "^4.1",
+        "zendframework/zend-feed": "^2.9"
     },
     "require-dev": {
         "symfony/browser-kit": "^4.1",
