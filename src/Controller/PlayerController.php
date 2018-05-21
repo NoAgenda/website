@@ -3,17 +3,23 @@
 namespace App\Controller;
 
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 class PlayerController extends Controller
 {
-    /**
-     * @Route("/player", name="player")
-     */
-    public function index()
+    private $showRepository;
+
+    public function __construct(ShowRepository $showRepository)
     {
-        return $this->render('player/index.html.twig', [
-            'controller_name' => 'PlayerController',
-        ]);
+        $this->showRepository = $showRepository;
+    }
+
+    /**
+     * @Route("/listen", name="player_latest")
+     */
+    public function latestAction()
+    {
+        $show = $this->showRepository->findLatest();
+
+        return $this->playerAction($show);
     }
 }

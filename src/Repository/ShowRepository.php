@@ -18,4 +18,9 @@ class ShowRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Show::class);
     }
+
+    public function findLatest(): Show
+    {
+        return $this->findOneBy([], ['publishedAt' => 'desc']);
+    }
 }

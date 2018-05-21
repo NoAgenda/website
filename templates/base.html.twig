@@ -4,7 +4,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>{% block title %}No Agenda Player{% endblock %}</title>
+    <!--
+    {% block title %}{% endblock %}
+    No Agenda Player
+    -->
+
+    {% set page_title = block('title') == '' ? 'No Agenda Player' : block('title') ~ ' - No Agenda Player' %}
+
+    <title>{{ page_title }}</title>
 
     {% block stylesheets %}
     <link rel="stylesheet" href="{{ asset('/assets/app.css') }}">

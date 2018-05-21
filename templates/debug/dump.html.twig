@@ -1,0 +1,9 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="p-5">
+  {% for output in outputs %}
+  {{ dump(output) }}
+  {% endfor %}
+</div>
+{% endblock %}
