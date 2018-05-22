@@ -13,7 +13,7 @@
         <div class="btn-toolbar pt-2">
           <div class="btn btn-sm btn-outline-light disabled mr-2">
             <span class="fas fa-clock mr-1"></span>
-            2h 53m
+            Not Available
           </div>
           <div class="btn btn-sm btn-outline-light disabled">
             <span class="fas fa-calendar mr-1"></span>
@@ -58,7 +58,7 @@
     <div>
       <div class="py-3">
         <div><span data-player-data="timer">0:00</span> / <span data-player-data="duration">0:00</span></div>
-        <div class="bg-white mt-2 mb-2" style="height: 5px;">
+        <div class="bg-white cursor-pointer mt-2 mb-2" data-player-action="progress" style="height: 5px;">
           <div class="bg-primary h-100" data-player-data="progress" style="width: 0;"></div>
         </div>
       </div>
@@ -69,7 +69,7 @@
 <div class="container-fluid vh-100">
   <div class="row">
     <div class="col-xl-8">
-      <div class="vh-100 pt-3">
+      <div class="pt-3">
         <div>
           <ul class="nav nav-tabs">
             <li class="nav-item">
@@ -96,20 +96,25 @@
                 aria-selected="false"
               >
                 Transcript
+                <span class="badge badge-secondary">BETA</span>
               </a>
             </li>
           </ul>
         </div>
         <div class="p-3">
           <div class="tab-content">
-            <div class="tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info-tab">Info</div>
-            <div class="tab-pane fade" id="transcript" role="tabpanel" aria-labelledby="transcript-tab">Transcript</div>
+            <div class="tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info-tab">
+              {% include 'player/blocks/information.html.twig' %}
+            </div>
+            <div class="tab-pane fade" id="transcript" role="tabpanel" aria-labelledby="transcript-tab">
+              {% include 'player/blocks/transcript.html.twig' %}
+            </div>
           </div>
         </div>
       </div>
     </div>
     <div class="col-xl-4">
-      <div class="d-flex flex-column vh-100 mvh-100 position-sticky top-0 pt-3">
+      <div class="d-flex flex-column vh-100 mvh-100 position-sticky top-0 pt-3" style="top: 0;">
         <div class="flex-shrink-0">
           <ul class="nav nav-tabs">
             <li class="nav-item">

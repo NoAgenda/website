@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Show;
 use App\Repository\ShowRepository;
+use App\Repository\TranscriptLineRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Routing\Annotation\Route;
@@ -11,10 +12,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class PlayerController extends Controller
 {
     private $showRepository;
+    private $transcriptLineRepository;
 
-    public function __construct(ShowRepository $showRepository)
+    public function __construct(ShowRepository $showRepository, TranscriptLineRepository $transcriptLineRepository)
     {
         $this->showRepository = $showRepository;
+        $this->transcriptLineRepository = $transcriptLineRepository;
     }
 
     /**
@@ -33,8 +36,11 @@ class PlayerController extends Controller
      */
     public function playerAction(Show $show)
     {
+        $lines = $this->transcriptLineRepository->findByShow($show);
+
         return $this->render('player/show.html.twig', [
             'show' => $show,
+            'transcriptLines' => $lines,
         ]);
     }
 }
