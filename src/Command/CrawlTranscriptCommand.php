@@ -47,7 +47,7 @@ class CrawlTranscriptCommand extends Command
     protected function configure()
     {
         $this
-            ->setDescription('Add a short description for your command')
+            ->setDescription('Crawls a transcript file for a single show')
             ->addArgument('show', InputArgument::REQUIRED, 'The show code')
             ->addArgument('uri', InputArgument::REQUIRED, 'URI to the transcript file')
             ->addOption('save', null, InputOption::VALUE_NONE, 'Save crawling results in the database')
