@@ -92,7 +92,7 @@ class CrawlTranscriptCommand extends Command
             $io->success(sprintf('Saved %s new transcript lines.', $result));
         }
         else {
-            $io->note('The crawling results have not been saved. Pass the <info>--save</info> option to save the results in the database.');
+            $io->note('The crawling results have not been saved. Pass the <fg=green>--save</fg=green> option to save the results in the database.');
         }
     }
 

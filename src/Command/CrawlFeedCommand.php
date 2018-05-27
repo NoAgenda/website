@@ -80,7 +80,7 @@ class CrawlFeedCommand extends Command
             $io->success(sprintf('Found %s existing shows, saved %s new and %s updated shows.', $results[self::ENTRY_EXISTS], $results[self::ENTRY_NEW], $results[self::ENTRY_UPDATED]));
         }
         else {
-            $io->note('The crawling results have not been saved. Pass the <info>--save</info> option to save the results in the database.');
+            $io->note('The crawling results have not been saved. Pass the <fg=green>--save</fg=green> option to save the results in the database.');
         }
     }
 

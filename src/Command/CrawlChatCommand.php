@@ -24,6 +24,11 @@ class CrawlChatCommand extends Command
     private $messageRepository;
 
     /**
+     * @var \DateTimeImmutable
+     */
+    private $connectedAt;
+
+    /**
      * @var boolean
      */
     private $joined;
@@ -52,6 +57,7 @@ class CrawlChatCommand extends Command
     {
         $this->joined = false;
         $this->increment = 0;
+        $this->connectedAt = new \DateTimeImmutable;
 
         $config = [
             'server' => 'irc.zeronode.net',
@@ -70,7 +76,15 @@ class CrawlChatCommand extends Command
             while (!feof($server['socket'])) {
                 $this->readServer($output, $server);
                 flush();
-                usleep(200);
+                usleep(100000);
+
+                $difference = $this->connectedAt->diff(new \DateTimeImmutable);
+
+                if ($difference->h > 5) {
+                    $output->writeln('<bg=green;fg=white>Done crawling chat</bg=green;fg=white>');
+
+                    exit(0);
+                }
             }
         }
     }
@@ -107,13 +121,15 @@ class CrawlChatCommand extends Command
         }
 
         // Join channel
-        if (strpos($server['buffer'], 'message of the day') !== false && !$this->joined) {
-            $this->sendCommand($output, $server, "JOIN #NoAgenda\n\r");
-        }
-        if (strpos($server['buffer'], 'JOIN :#NoAgenda') !== false) {
-            $this->joined = true;
+        if (!$this->joined) {
+            if (strpos($server['buffer'], 'message of the day') !== false) {
+                $this->sendCommand($output, $server, "JOIN #NoAgenda\n\r");
+            }
+            if (strpos($server['buffer'], 'JOIN :#NoAgenda') !== false) {
+                $this->joined = true;
 
-            $output->writeln('<bg=green;fg=white>Starting crawling process</bg=green;fg=white>');
+                $output->writeln('<bg=green;fg=white>Starting crawling process</bg=green;fg=white>');
+            }
         }
     }
 
