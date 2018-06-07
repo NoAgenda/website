@@ -1,6 +1,21 @@
 {% extends 'layout.html.twig' %}
 
-{% block title %}{{ show.code }}: {{ show.name }}{% endblock %}
+{% set title = show.code ~ ': ' ~ show.name %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% set tabs = [
+  {
+    key: 'info',
+    name: title,
+    contents: 'player/blocks/information.html.twig',
+  },
+  {
+    key: 'transcript',
+    name: 'Transcript <span class="badge badge-secondary text-uppercase">Beta</span>',
+    contents: 'player/blocks/transcript.html.twig',
+  },
+] %}
 
 {% block content %}
 <div class="site-player" data-player="{{ show.audioUri }}">
@@ -8,7 +23,7 @@
     <div class="d-md-flex">
       <img src="{{ show.imageUri }}" class="shadow-sm">
       <div class="flex-grow-1 m-md-3 mx-lg-5 mt-lg-5">
-        <h1>{{ show.code }}: {{ show.name }}</h1>
+        <h1>{{ title }}</h1>
         <h4>{{ show.author }}</h4>
         <div class="btn-toolbar pt-2">
           <div class="btn btn-sm btn-outline-light disabled mr-2">
@@ -69,52 +84,39 @@
 <div class="container-fluid vh-100">
   <div class="row">
     <div class="col-xl-8">
-      <div class="pt-3">
-        <div>
+      <div>
+        <div class="bg-white position-sticky top-0 pt-3">
           <ul class="nav nav-tabs">
+            {% for tab in tabs %}
             <li class="nav-item">
               <a
-                id="info-tab"
-                class="nav-link active"
-                href="#info"
+                id="{{ tab.key }}-tab"
+                class="nav-link {{ loop.first ? 'active' : '' }}"
+                href="#{{ tab.key }}"
                 role="tab"
                 data-toggle="tab"
-                aria-controls="info"
-                aria-selected="true"
+                aria-controls="{{ tab.key }}"
+                aria-selected="{{ loop.first ? 'true' : 'false' }}"
               >
-                Information
+                {{ tab.name|raw }}
               </a>
             </li>
-            <li class="nav-item">
-              <a
-                id="transcript-tab"
-                class="nav-link"
-                href="#transcript"
-                role="tab"
-                data-toggle="tab"
-                aria-controls="transcript"
-                aria-selected="false"
-              >
-                Transcript
-                <span class="badge badge-secondary">BETA</span>
-              </a>
-            </li>
+            {% endfor %}
           </ul>
         </div>
         <div class="p-3">
           <div class="tab-content">
-            <div class="tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info-tab">
-              {% include 'player/blocks/information.html.twig' %}
+            {% for tab in tabs %}
+            <div class="tab-pane fade {{ loop.first ? 'show active' : '' }}" id="{{ tab.key }}" role="tabpanel" aria-labelledby="{{ tab.key }}-tab">
+              {% include tab.contents %}
             </div>
-            <div class="tab-pane fade" id="transcript" role="tabpanel" aria-labelledby="transcript-tab">
-              {% include 'player/blocks/transcript.html.twig' %}
-            </div>
+            {% endfor %}
           </div>
         </div>
       </div>
     </div>
     <div class="col-xl-4">
-      <div class="d-flex flex-column vh-100 mvh-100 position-sticky top-0 pt-3" style="top: 0;">
+      <div class="d-flex flex-column vh-100 mvh-100 position-sticky top-0 pt-3">
         <div class="flex-shrink-0">
           <ul class="nav nav-tabs">
             <li class="nav-item">

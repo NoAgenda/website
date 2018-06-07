@@ -7,6 +7,7 @@ use App\Repository\ShowRepository;
 use App\Repository\TranscriptLineRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class PlayerController extends Controller
@@ -27,7 +28,7 @@ class PlayerController extends Controller
     {
         $show = $this->showRepository->findLatest();
 
-        return $this->playerAction($show);
+        return $this->redirectToRoute('player', ['show' => $show->getCode()], Response::HTTP_TEMPORARY_REDIRECT);
     }
 
     /**

@@ -1,5 +1,26 @@
 {% extends 'base.html.twig' %}
 
+{% set navigationLinks = [
+  {
+    href: path('player_latest'),
+    title: 'Latest show',
+    active: false,
+    external: false,
+  },
+  {
+    href: path('archive'),
+    title: 'Archive',
+    active: 'archive' in app.request.attributes.get('_route') or 'player' in app.request.attributes.get('_route'),
+    external: false,
+  },
+  {
+    href: 'http://dvorak.org/na',
+    title: 'Donate',
+    active: false,
+    external: true,
+  },
+] %}
+
 {% block body %}
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <div class="container">
@@ -9,16 +30,24 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav mr-auto">
-        <li class="nav-item active">
-          <a class="nav-link" href="#">Latest Show <span class="sr-only">(current)</span></a>
+        {% for link in navigationLinks %}
+        {% set classes = link.active ? 'nav-item active' : 'nav-item' %}
+        <li class="{{ classes }}">
+          <a
+            class="nav-link"
+            href="{{ link.href }}"
+            {% if link.external %}target="_blank"{% endif %}
+          >
+            {{ link.title|raw }}
+            {% if link.external %}<span class="far fa-sm fa-external-link-square-alt"></span>{% endif %}
+            {% if link.active %}<span class="sr-only">(current)</span>{% endif %}
+          </a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Shows</a>
-        </li>
+        {% endfor %}
       </ul>
       <ul class="navbar-nav">
         <li class="nav-item">
-          <a class="nav-link" href="#">Donate</a>
+          <a class="nav-link" href="#">Register</a>
         </li>
       </ul>
     </div>

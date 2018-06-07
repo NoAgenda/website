@@ -1,0 +1,53 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}Archive{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h1>Archive</h1>
+
+  <div class="btn-toolbar mb-3" role="toolbar" aria-label="Toolbar with button groups">
+    <div class="btn-group mr-2">
+      <button type="button" class="btn btn-outline-dark dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        All Shows
+      </button>
+      <div class="dropdown-menu">
+        <a class="dropdown-item" href="#">Regulars</a>
+        <a class="dropdown-item" href="#">Specials</a>
+      </div>
+    </div>
+    <div class="btn-group mr-2">
+      <button type="button" class="btn btn-outline-dark dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        All Years
+      </button>
+      <div class="dropdown-menu">
+        <a class="dropdown-item" href="#">2018</a>
+      </div>
+    </div>
+    <div class="flex-grow-1"></div>
+    <div class="btn-group" role="group" aria-label="Third group">
+      <button type="button" class="btn btn-dark"><span class="far fa-th"></span></button>
+      <button type="button" class="btn btn-outline-dark"><span class="far fa-list-alt"></span></button>
+    </div>
+  </div>
+
+  <div class="row">
+    {% for show in shows %}
+    <div class="col-sm-3">
+      <a href="{{ path('player', {show: show.code}) }}">
+      <div class="card text-body mb-3">
+        <img class="card-img-top" src="{{ show.imageUri }}" alt="Art for show {{ show.code }}">
+        <div class="card-body p-3">
+          <h6 class="card-subtitle">{{ show.code }}</h6>
+          <h4 class="card-title m-0">{{ show.name }}</h4>
+          <span class="card-text">
+            {{ show.publishedAt|date('F jS, Y') }}
+          </span>
+        </div>
+      </div>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
