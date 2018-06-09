@@ -3,9 +3,9 @@
 namespace App\Controller;
 
 use App\Repository\ShowRepository;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 class ArchiveController extends Controller
 {

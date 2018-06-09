@@ -1,0 +1,19 @@
+easy_admin:
+  site_name: 'No Agenda Player Administration Panel'
+  entities:
+    Show:
+      class: App\Entity\Show
+      form:
+        fields:
+          - { property: 'code', type: 'text' }
+          - { property: 'name', type: 'text' }
+          - { property: 'author', type: 'text' }
+    User:
+      class: App\Entity\User
+      form:
+        fields:
+          - { property: 'username', type: 'text' }
+          - { property: 'plainPassword', type: 'text', label: 'New password' }
+          - { property: 'email', type: 'email' }
+          - { property: 'hidden', type: 'checkbox', label: 'Account is disabled by user' }
+          - 'roles'

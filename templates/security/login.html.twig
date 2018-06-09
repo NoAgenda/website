@@ -1,0 +1,78 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}Sign in{% endblock %}
+
+{% block content %}
+<div class="container mt-md-5">
+  <div class="row flex-md-row-reverse">
+    <div class="col-md-6">
+      <form class="mx-2 mx-lg-5" action="{{ path('security_login') }}" method="post">
+        <div class="text-center my-5">
+          <h1 class="h3 mb-3 font-weight-normal">Sign in</h1>
+          <p style="height: 50px;">Welcome back producer.</p>
+        </div>
+
+        {% if authenticationError %}
+        {% include 'blocks/alerts.html.twig' with {alerts: {danger: [authenticationError.message]}} %}
+        {% endif %}
+
+        <div class="form-group">
+          <label for="inputUsername" class="sr-only">Username</label>
+          <input type="text" id="inputUsername" name="_username" class="form-control form-control-lg" placeholder="Username" {% if lastUsername %}value="{{ lastUsername }}"{% endif %} required autofocus>
+        </div>
+
+        <div class="form-group">
+          <label for="inputPassword" class="sr-only">Password</label>
+          <input type="password" id="inputPassword" name="_password" class="form-control form-control-lg" placeholder="Password" required>
+        </div>
+
+        <div class="checkbox m-2">
+          <label>
+            <input type="checkbox" name="_remember_me" checked> Keep me logged in
+          </label>
+        </div>
+
+        <div class="btn-toolbar justify-content-center mb-5">
+          <button class="btn btn-lg btn-primary" type="submit">Sign in</button>
+        </div>
+      </form>
+    </div>
+    <div class="col-md-6 border-right">
+      <form class="mx-2 mx-lg-5" action="{{ path('security_register') }}" method="post">
+        <div class="text-center my-5">
+          <h1 class="h3 mb-3 font-weight-normal">Sign up</h1>
+          <h1 class="h3 mb-3 font-weight-normal"><span class="badge badge-danger">Not implemented yet</span></h1>
+          <p class="mx-2" style="height: 50px;">Create an account to troll in the chat room, improve the topics selection or saving your preferences.</p>
+        </div>
+
+        <div class="form-group">
+          <label for="inputSignupUsername" class="sr-only">Username</label>
+          <input type="text" id="inputSignupUsername" name="_username" class="form-control form-control-lg" placeholder="Username" required>
+        </div>
+
+        <div class="form-group">
+          <label for="inputSignupPassword" class="sr-only">Password</label>
+          <input type="password" id="inputSignupPassword" name="_password" class="form-control form-control-lg" placeholder="Password" required>
+        </div>
+
+        <div class="form-group">
+          <label for="inputSignupRepeatPassword" class="sr-only">Repeat password</label>
+          <input type="password" id="inputSignupRepeatPassword" name="_password_repeat" class="form-control form-control-lg" placeholder="Repeat password" required>
+        </div>
+
+        <div class="form-group">
+          <label for="inputSignupEmail" class="sr-only">E-mail address</label>
+          <small class="form-text text-muted m-1">
+            Optionally, add your e-mail address to retrieve your account when you lost your password.
+          </small>
+          <input type="password" id="inputSignupEmail" name="_email" class="form-control form-control-lg" placeholder="E-mail address">
+        </div>
+
+        <div class="btn-toolbar justify-content-center mb-5">
+          <button class="btn btn-lg btn-primary" type="submit">Sign up</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -4,8 +4,8 @@ namespace App\Controller;
 
 use App\FeedParser;
 use App\TranscriptParser;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Routing\Annotation\Route;
 
 class DebugController extends Controller
 {

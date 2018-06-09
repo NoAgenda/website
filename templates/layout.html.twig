@@ -21,6 +21,30 @@
   },
 ] %}
 
+{% set authenticationLinks = [] %}
+
+{% if app.user %}
+  {% set authenticationLinks = authenticationLinks|merge([{
+    path: 'security_account',
+    title: app.user.username,
+    active: app.request.attributes.get('_route') starts with 'security_',
+  }]) %}
+
+  {% if is_granted('ROLE_ADMIN') %}
+    {% set authenticationLinks = authenticationLinks|merge([{
+      path: 'admin',
+      title: 'Administration Panel',
+      active: false,
+    }]) %}
+  {% endif %}
+{% else %}
+  {% set authenticationLinks = authenticationLinks|merge([{
+    path: 'security_login',
+    title: 'Sign in',
+    active: app.request.attributes.get('_route') == 'security_login',
+  }]) %}
+{% endif %}
+
 {% block body %}
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <div class="container">
@@ -46,9 +70,15 @@
         {% endfor %}
       </ul>
       <ul class="navbar-nav">
-        <li class="nav-item">
-          <a class="nav-link" href="#">Register</a>
+        {% for link in authenticationLinks|reverse %}
+        {% set classes = link.active ? 'nav-item active' : 'nav-item' %}
+        <li class="{{ classes }}">
+          <a class="nav-link" href="{{ path(link.path) }}">
+            {{ link.title|raw }}
+            {% if link.active %}<span class="sr-only">(current)</span>{% endif %}
+          </a>
         </li>
+        {% endfor %}
       </ul>
     </div>
   </div>
