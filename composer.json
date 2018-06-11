@@ -26,7 +26,7 @@
         "symfony/web-link": "^4.1",
         "symfony/webpack-encore-pack": "*",
         "symfony/yaml": "^4.1",
-        "zendframework/zend-feed": "^2.9"
+        "zendframework/zend-feed": "^2.10"
     },
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^3.0",

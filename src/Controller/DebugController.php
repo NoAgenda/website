@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\BatSignalReceiver;
 use App\FeedParser;
 use App\TranscriptParser;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -9,6 +10,18 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class DebugController extends Controller
 {
+    /**
+     * @Route("/debug/bat_signal")
+     */
+    public function batSignal()
+    {
+        $output = (new BatSignalReceiver())->receive();
+
+        return $this->render('debug/dump.html.twig', [
+            'outputs' => [$output],
+        ]);
+    }
+
     /**
      * @Route("/debug/feed")
      */
