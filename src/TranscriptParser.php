@@ -4,6 +4,28 @@ namespace App;
 
 class TranscriptParser
 {
+    public function crawl()
+    {
+        $pageUri = 'https://natranscript.online/tr/page/{key}/';
+
+        $page = 1;
+
+        do {
+            $data = file_get_contents(str_replace('{key}', $page, $pageUri));
+
+            $pageExists = in_array('HTTP/1.1 200 OK', $http_response_header);
+
+            if (!$pageExists) {
+                break;
+            }
+
+            $matches = $this->matchHtmlTags($data, 'article');
+
+            return [$matches];
+        }
+        while ($pageExists);
+    }
+
     public function parse($uri)
     {
         $data = file_get_contents($uri);
@@ -62,4 +84,14 @@ class TranscriptParser
 
         return $timestamp;
     }
+
+    function matchHtmlTags($page, $tagname)
+    {
+        $pattern = "#<\s*?$tagname\b[^>]*>(.*?)</$tagname\b[^>]*>#s";
+        preg_match_all($pattern, $page, $matches);
+
+        return $matches;
+    }
+
+
 }

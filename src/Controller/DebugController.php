@@ -10,11 +10,23 @@ use Symfony\Component\Routing\Annotation\Route;
 class DebugController extends Controller
 {
     /**
-     * @Route("/debug/parser")
+     * @Route("/debug/feed")
      */
-    public function parser()
+    public function feed()
     {
         $output = (new FeedParser())->parse();
+
+        return $this->render('debug/dump.html.twig', [
+            'outputs' => [$output],
+        ]);
+    }
+
+    /**
+     * @Route("/debug/transcript")
+     */
+    public function transcript()
+    {
+        $output = (new TranscriptParser())->parse('https://natranscript.online/tr/wp-content/uploads/2018/05/1035-transcript.opml');
 
         return $this->render('debug/dump.html.twig', [
             'outputs' => [$output],
@@ -26,7 +38,7 @@ class DebugController extends Controller
      */
     public function transcripts()
     {
-        $output = (new TranscriptParser())->parse('https://natranscript.online/tr/wp-content/uploads/2018/05/1035-transcript.opml');
+        $output = (new TranscriptParser())->crawl();
 
         return $this->render('debug/dump.html.twig', [
             'outputs' => [$output],
