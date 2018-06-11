@@ -4,8 +4,10 @@ namespace App\Command;
 
 use App\Repository\ShowRepository;
 use App\Repository\TranscriptLineRepository;
+use App\TranscriptParser;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -43,6 +45,7 @@ class CrawlTranscriptsCommand extends Command
     {
         $this
             ->setDescription('Crawls the transcripts site for all transcript entries')
+            ->addOption('history', null, InputOption::VALUE_NONE, 'Go far back in history to retrieve transcripts')
             ->addOption('save', null, InputOption::VALUE_NONE, 'Save crawling results in the database')
         ;
     }
@@ -51,7 +54,30 @@ class CrawlTranscriptsCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
+        $history = $input->getOption('history');
         $save = $input->getOption('save');
+
+        $io->text('Crawling site for transcript files ...');
+
+        $data = (new TranscriptParser())->crawl($history);
+        $result = 0;
+
+        foreach ($data as $code => $uri) {
+            $command = $this->getApplication()->find('app:crawl-transcript');
+
+            $input = new ArrayInput([
+                'command' => 'app:crawl-transcript',
+                'show' => $code,
+                'uri' => $uri,
+                '--save' => $save,
+            ]);
+
+            $returnCode = $command->run($input, $output);
+
+            if ($returnCode === 0) {
+                ++$result;
+            }
+        }
 
         if ($save) {
             $this->entityManager->flush();
@@ -59,7 +85,7 @@ class CrawlTranscriptsCommand extends Command
             $io->success(sprintf('Saved %s new transcript entries.', $result));
         }
         else {
-            $io->note('The crawling results have not been saved. Pass the <fg=green>--save</fg=green> option to save the results in the database.');
+            $io->note('The crawling results have not been saved. Pass the `--save` option to save the results in the database.');
         }
     }
 }

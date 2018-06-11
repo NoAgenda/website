@@ -38,6 +38,8 @@ class DebugController extends Controller
      */
     public function transcripts()
     {
+        set_time_limit(0);
+
         $output = (new TranscriptParser())->crawl();
 
         return $this->render('debug/dump.html.twig', [

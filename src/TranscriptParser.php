@@ -4,10 +4,11 @@ namespace App;
 
 class TranscriptParser
 {
-    public function crawl()
+    public function crawl(bool $allPages = false): array
     {
-        $pageUri = 'https://natranscript.online/tr/page/{key}/';
+        $output = [];
 
+        $pageUri = 'https://natranscript.online/tr/page/{key}/';
         $page = 1;
 
         do {
@@ -19,14 +20,39 @@ class TranscriptParser
                 break;
             }
 
-            $matches = $this->matchHtmlTags($data, 'article');
+            $articleDefinitions = $this->matchHtmlTags($data, 'article');
 
-            return [$matches];
+            foreach ($articleDefinitions as $definition) {
+                $articleUri = $this->matchShowUri($definition);
+
+                if (!$articleUri) {
+                    continue;
+                }
+
+                $articleData = file_get_contents($articleUri);
+
+                $uri = $this->matchTranscriptUri($articleData);
+
+                if (!$uri) {
+                    continue;
+                }
+
+                // Match the show code in the filename
+                preg_match("#\/(\d+?)-transcript#", $uri, $matches);
+
+                if (!$matches[1]) {
+                    continue;
+                }
+
+                $output[$matches[1]] = $uri;
+            }
         }
-        while ($pageExists);
+        while ($pageExists && $allPages);
+
+        return $output;
     }
 
-    public function parse($uri)
+    public function parse($uri): array
     {
         $data = file_get_contents($uri);
         $root = new \SimpleXMLElement($data);
@@ -85,13 +111,39 @@ class TranscriptParser
         return $timestamp;
     }
 
-    function matchHtmlTags($page, $tagname)
+    function matchHtmlTags(string $page, string $tagname)
     {
         $pattern = "#<\s*?$tagname\b[^>]*>(.*?)</$tagname\b[^>]*>#s";
         preg_match_all($pattern, $page, $matches);
 
-        return $matches;
+        return $matches[0];
     }
 
+    private function matchShowUri(string $definition): ?string
+    {
+        preg_match_all('#\bhttps?://[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/))#', $definition, $matches);
 
+        $validMatches = array_filter($matches[0], function($uri) {
+            preg_match("/no-agenda-episode-(\d+)-/", $uri, $matches);
+
+            // Only return if the link describes an episode
+            return count($matches);
+        });
+
+        return count($validMatches) ? array_values($validMatches)[0] : null;
+    }
+
+    private function matchTranscriptUri(string $data): ?string
+    {
+        preg_match_all('#\bhttps?://[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/))#', $data, $matches);
+
+        $validMatches = array_filter($matches[0], function($uri) {
+            preg_match("/\.opml$/", $uri, $matches);
+
+            // Only return if the link describes an opml-file
+            return count($matches);
+        });
+
+        return count($validMatches) ? array_values($validMatches)[0] : null;
+    }
 }

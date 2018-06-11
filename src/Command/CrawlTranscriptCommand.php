@@ -60,11 +60,11 @@ class CrawlTranscriptCommand extends Command
 
         $save = $input->getOption('save');
 
-        $showCode = $input->getArgument('show');
-        $show = $this->showRepository->findOneBy(['code' => $showCode]);
+        $code = $input->getArgument('show');
+        $show = $this->showRepository->findOneBy(['code' => $code]);
 
         if ($show === null) {
-            $io->error(sprintf('Unknown show "%s".', $showCode));
+            $io->error(sprintf('Unknown show "%s".', $code));
 
             return;
         }
@@ -75,14 +75,14 @@ class CrawlTranscriptCommand extends Command
             return;
         }
 
-        $io->text('Crawling transcript file...');
+        $io->text(sprintf('Crawling transcript file for show %s ...', $code));
 
-        $output = (new TranscriptParser())->parse($input->getArgument('uri'));
-        $result = count($output['lines']);
+        $data = (new TranscriptParser())->parse($input->getArgument('uri'));
+        $result = count($data['lines']);
 
         $io->text(sprintf('Found %s transcript lines.', $result));
 
-        foreach ($output['lines'] as $line) {
+        foreach ($data['lines'] as $line) {
             $this->handleEntry($io, $line, $show, $save);
         }
 
@@ -92,7 +92,7 @@ class CrawlTranscriptCommand extends Command
             $io->success(sprintf('Saved %s new transcript lines.', $result));
         }
         else {
-            $io->note('The crawling results have not been saved. Pass the <fg=green>--save</fg=green> option to save the results in the database.');
+            $io->note('The crawling results have not been saved. Pass the `--save` option to save the results in the database.');
         }
     }
 
