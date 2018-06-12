@@ -1,11 +1,14 @@
 parameters:
   locale: 'en'
+  storage_path: '%kernel.project_dir%/%env(APP_STORAGE_PATH)%'
 
 services:
   _defaults:
     autowire: true
     autoconfigure: true
     public: false
+    bind:
+      $storagePath: '%storage_path%'
 
   App\:
     resource: '../src/*'

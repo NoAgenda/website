@@ -8,9 +8,21 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Process;
 
-class CrawlAudioCommand extends Command
+class RecordLivestreamCommand extends Command
 {
     protected static $defaultName = 'app:crawl-audio';
+
+    /**
+     * @var string
+     */
+    private $storagePath;
+
+    public function __construct(?string $name = null, string $storagePath)
+    {
+        parent::__construct($name);
+
+        $this->storagePath = $storagePath;
+    }
 
     protected function configure()
     {
@@ -24,10 +36,11 @@ class CrawlAudioCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         $time = (new \DateTimeImmutable())->format('YmdHis');
+        $path = sprintf('%s/show_chunks/short/%s', $this->storagePath, $time);
 
-        $process = new Process(sprintf('bin/recorder %s', $time));
+        $process = new Process(sprintf('bin/recorder.bash "%s"', $path));
         $process->run();
 
-        $io->success(sprintf('Created recording: %s', $time));
+        $io->success(sprintf('Created recording: %s', $path));
     }
 }
