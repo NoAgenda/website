@@ -79,7 +79,7 @@ class TranscriptParser
                 $matches = [null, null, $lastTimestamp + 1, htmlspecialchars($line), ''];
             }
 
-            list(, $showCode, $rawTimestamp, $firstText, $lastText) = $matches;
+            list(, $code, $rawTimestamp, $firstText, $lastText) = $matches;
 
             $timestamp = $this->parseTimestamp($rawTimestamp);
 

@@ -23,7 +23,7 @@ class TranscriptLineRepository extends ServiceEntityRepository
     /**
      * @return TranscriptLine[]
      */
-    public function findByShow(Show $show)
+    public function findByShow(Show $show): array
     {
         return $this->findBy(['show' => $show], ['timestamp' => 'ASC']);
     }

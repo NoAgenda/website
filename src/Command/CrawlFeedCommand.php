@@ -108,8 +108,8 @@ class CrawlFeedCommand extends Command
             $show->setName($entry['name']);
             $show->setAuthor($entry['author']);
             $show->setPublishedAt($entry['publishedAt']);
-            $show->setImageUri($entry['image']);
-            $show->setAudioUri($entry['enclosure']->url);
+            $show->setCoverUri($entry['coverUri']);
+            $show->setRecordingUri($entry['recordingUri']);
             $show->setCrawlerOutput($entry);
 
             if ($save) {
@@ -146,15 +146,15 @@ class CrawlFeedCommand extends Command
         ]);
 
         if (!file_exists($audioPath)) {
-            $io->text(sprintf('Downloading audio file for show %s ...', $show->getCode()));
+            $io->text(sprintf('Downloading recording file for show %s ...', $show->getCode()));
 
-            file_put_contents($audioPath, fopen($show->getAudioUri(), 'r'));
+            file_put_contents($audioPath, fopen($show->getCoverUri(), 'r'));
         }
 
         if (!file_exists($imagePath)) {
-            $io->text(sprintf('Downloading image file for show %s ...', $show->getCode()));
+            $io->text(sprintf('Downloading cover file for show %s ...', $show->getCode()));
 
-            file_put_contents($imagePath, fopen($show->getImageUri(), 'r'));
+            file_put_contents($imagePath, fopen($show->getRecordingUri(), 'r'));
         }
     }
 }
