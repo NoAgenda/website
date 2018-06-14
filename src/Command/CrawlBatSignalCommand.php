@@ -65,7 +65,7 @@ class CrawlBatSignalCommand extends Command
 
         $this->entityManager->persist($signal);
 
-        $io->text(sprintf('Found a new bat signal for show %s that was deployed at %s.', $signal->getCode(), $signal->getDeployedAt()->format('Y-m-d H:i:s')));
+        $io->text(sprintf('Found a new bat signal for episode %s that was deployed at %s.', $signal->getCode(), $signal->getDeployedAt()->format('Y-m-d H:i:s')));
 
         if ($save) {
             $this->entityManager->flush();

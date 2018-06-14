@@ -23,7 +23,7 @@ class TranscriptParser
             $articleDefinitions = $this->matchHtmlTags($data, 'article');
 
             foreach ($articleDefinitions as $definition) {
-                $articleUri = $this->matchShowUri($definition);
+                $articleUri = $this->matchArticleUri($definition);
 
                 if (!$articleUri) {
                     continue;
@@ -37,7 +37,7 @@ class TranscriptParser
                     continue;
                 }
 
-                // Match the show code in the filename
+                // Match the episode code in the filename
                 preg_match("#\/(\d+?)-transcript#", $uri, $matches);
 
                 if (!$matches[1]) {
@@ -45,6 +45,8 @@ class TranscriptParser
                 }
 
                 $output[$matches[1]] = $uri;
+
+                ++$page;
             }
         }
         while ($pageExists && $allPages);
@@ -119,7 +121,7 @@ class TranscriptParser
         return $matches[0];
     }
 
-    private function matchShowUri(string $definition): ?string
+    private function matchArticleUri(string $definition): ?string
     {
         preg_match_all('#\bhttps?://[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/))#', $definition, $matches);
 

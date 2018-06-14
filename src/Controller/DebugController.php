@@ -6,6 +6,7 @@ use App\BatSignalReceiver;
 use App\FeedParser;
 use App\TranscriptParser;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class DebugController extends Controller
@@ -13,7 +14,7 @@ class DebugController extends Controller
     /**
      * @Route("/debug/bat_signal")
      */
-    public function batSignal()
+    public function batSignal(): Response
     {
         $output = (new BatSignalReceiver())->receive();
 
@@ -25,7 +26,7 @@ class DebugController extends Controller
     /**
      * @Route("/debug/feed")
      */
-    public function feed()
+    public function feed(): Response
     {
         $output = (new FeedParser())->parse();
 
@@ -37,7 +38,7 @@ class DebugController extends Controller
     /**
      * @Route("/debug/transcript")
      */
-    public function transcript()
+    public function transcript(): Response
     {
         $output = (new TranscriptParser())->parse('https://natranscript.online/tr/wp-content/uploads/2018/05/1035-transcript.opml');
 
@@ -49,7 +50,7 @@ class DebugController extends Controller
     /**
      * @Route("/debug/transcripts")
      */
-    public function transcripts()
+    public function transcripts(): Response
     {
         set_time_limit(0);
 

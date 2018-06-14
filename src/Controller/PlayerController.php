@@ -2,8 +2,8 @@
 
 namespace App\Controller;
 
-use App\Entity\Show;
-use App\Repository\ShowRepository;
+use App\Entity\Episode;
+use App\Repository\EpisodeRepository;
 use App\Repository\TranscriptLineRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -12,35 +12,35 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class PlayerController extends Controller
 {
-    private $showRepository;
+    private $episodeRepository;
     private $transcriptLineRepository;
 
-    public function __construct(ShowRepository $showRepository, TranscriptLineRepository $transcriptLineRepository)
+    public function __construct(EpisodeRepository $episodeRepository, TranscriptLineRepository $transcriptLineRepository)
     {
-        $this->showRepository = $showRepository;
+        $this->episodeRepository = $episodeRepository;
         $this->transcriptLineRepository = $transcriptLineRepository;
     }
 
     /**
      * @Route("/listen", name="player_latest")
      */
-    public function latestAction()
+    public function latestAction(): Response
     {
-        $show = $this->showRepository->findLatest();
+        $episode = $this->episodeRepository->findLatest();
 
-        return $this->redirectToRoute('player', ['show' => $show->getCode()], Response::HTTP_TEMPORARY_REDIRECT);
+        return $this->redirectToRoute('player', ['episode' => $episode->getCode()], Response::HTTP_TEMPORARY_REDIRECT);
     }
 
     /**
-     * @Route("/listen/{show}", name="player")
-     * @ParamConverter("show", class="App\Entity\Show", options={"mapping": {"show": "code"}})
+     * @Route("/listen/{episode}", name="player")
+     * @ParamConverter("episode", class="Episode", options={"mapping": {"episode": "code"}})
      */
-    public function playerAction(Show $show)
+    public function playerAction(Episode $episode): Response
     {
-        $lines = $this->transcriptLineRepository->findByShow($show);
+        $lines = $this->transcriptLineRepository->findByEpisode($episode);
 
-        return $this->render('player/show.html.twig', [
-            'show' => $show,
+        return $this->render('player/episode.html.twig', [
+            'episode' => $episode,
             'transcriptLines' => $lines,
         ]);
     }

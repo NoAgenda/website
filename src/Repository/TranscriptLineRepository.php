@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-use App\Entity\Show;
+use App\Entity\Episode;
 use App\Entity\TranscriptLine;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
@@ -23,8 +23,8 @@ class TranscriptLineRepository extends ServiceEntityRepository
     /**
      * @return TranscriptLine[]
      */
-    public function findByShow(Show $show): array
+    public function findByEpisode(Episode $episode): array
     {
-        return $this->findBy(['show' => $show], ['timestamp' => 'ASC']);
+        return $this->findBy(['episode' => $episode], ['timestamp' => 'ASC']);
     }
 }

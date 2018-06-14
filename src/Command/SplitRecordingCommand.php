@@ -28,8 +28,8 @@ class SplitRecordingCommand extends Command
     protected function configure()
     {
         $this
-            ->setDescription('Splits a show into smaller chunks to match timestamps')
-            ->addArgument('show', InputArgument::REQUIRED, 'The show code')
+            ->setDescription('Splits a recording into smaller chunks to match timestamps')
+            ->addArgument('episode', InputArgument::REQUIRED, 'The episode code')
         ;
     }
 
@@ -37,10 +37,10 @@ class SplitRecordingCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $code = $input->getArgument('show');
+        $code = $input->getArgument('episode');
 
         $sourcePath = sprintf('%s/recordings/%s.mp3', $this->storagePath, $code);
-        $targetPath = sprintf('%s/recording_chunks/long/%s_', $this->storagePath, $code);
+        $targetPath = sprintf('%s/audio_chunks/long/%s_', $this->storagePath, $code);
 
         $process = new Process(sprintf('bin/splitter.bash "%s" "%s"', $sourcePath, $targetPath));
         $process->run();

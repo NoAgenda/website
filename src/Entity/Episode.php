@@ -5,10 +5,10 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="App\Repository\ShowRepository")
- * @ORM\Table(name="show_table")
+ * @ORM\Entity(repositoryClass="App\Repository\EpisodeRepository")
+ * @ORM\Table(name="na_episodes")
  */
-class Show
+class Episode
 {
     /**
      * @var integer
