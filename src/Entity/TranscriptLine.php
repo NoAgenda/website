@@ -19,12 +19,12 @@ class TranscriptLine
     private $id;
 
     /**
-     * @var Show
+     * @var Episode
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Show")
+     * @ORM\ManyToOne(targetEntity="Episode.php")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $show;
+    private $episode;
 
     /**
      * @var integer
@@ -64,14 +64,14 @@ class TranscriptLine
         return $this->id;
     }
 
-    public function getShow(): Show
+    public function getEpisode(): Episode
     {
-        return $this->show;
+        return $this->episode;
     }
 
-    public function setShow(Show $show): self
+    public function setEpisode(Episode $episode): self
     {
-        $this->show = $show;
+        $this->episode = $episode;
 
         return $this;
     }

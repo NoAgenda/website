@@ -36,7 +36,7 @@ class RecordLivestreamCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         $time = (new \DateTimeImmutable())->format('YmdHis');
-        $path = sprintf('%s/show_chunks/short/%s', $this->storagePath, $time);
+        $path = sprintf('%s/audio_chunks/short/%s', $this->storagePath, $time);
 
         $process = new Process(sprintf('bin/recorder.bash "%s"', $path));
         $process->run();

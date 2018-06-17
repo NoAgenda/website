@@ -2,10 +2,7 @@
 
 namespace App\Command;
 
-use App\Repository\ShowRepository;
-use App\Repository\TranscriptLineRepository;
 use App\TranscriptParser;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
@@ -16,30 +13,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class CrawlTranscriptsCommand extends Command
 {
     protected static $defaultName = 'app:crawl-transcripts';
-
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
-
-    /**
-     * @var ShowRepository
-     */
-    private $showRepository;
-
-    /**
-     * @var TranscriptLineRepository
-     */
-    private $transcriptLineRepository;
-
-    public function __construct(?string $name = null, EntityManagerInterface $entityManager, ShowRepository $showRepository, TranscriptLineRepository $transcriptLineRepository)
-    {
-        parent::__construct($name);
-
-        $this->entityManager = $entityManager;
-        $this->showRepository = $showRepository;
-        $this->transcriptLineRepository = $transcriptLineRepository;
-    }
 
     protected function configure()
     {
@@ -67,7 +40,7 @@ class CrawlTranscriptsCommand extends Command
 
             $input = new ArrayInput([
                 'command' => 'app:crawl-transcript',
-                'show' => $code,
+                'episode' => $code,
                 'uri' => $uri,
                 '--save' => $save,
             ]);
@@ -80,8 +53,6 @@ class CrawlTranscriptsCommand extends Command
         }
 
         if ($save) {
-            $this->entityManager->flush();
-
             $io->success(sprintf('Saved %s new transcript entries.', $result));
         }
         else {

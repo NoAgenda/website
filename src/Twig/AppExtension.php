@@ -11,7 +11,7 @@ class AppExtension extends AbstractExtension
     public function getFilters(): array
     {
         return [
-            new TwigFilter('prettyTimestamp', [$this, 'prettyTimestamp'], ['is_safe' => ['html']]),
+            new TwigFilter('prettyTimestamp', [$this, 'prettyTimestamp']),
         ];
     }
 

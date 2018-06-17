@@ -1,6 +1,6 @@
 {% extends 'layout.html.twig' %}
 
-{% set title = show.code ~ ': ' ~ show.name %}
+{% set title = episode.code ~ ': ' ~ episode.name %}
 
 {% block title %}{{ title }}{% endblock %}
 
@@ -18,13 +18,13 @@
 ] %}
 
 {% block content %}
-<div class="site-player" data-player="{{ show.audioUri }}">
+<div class="site-player" data-player="{{ episode.recordingUri }}">
   <div class="container">
     <div class="d-md-flex">
-      <img src="{{ show.imageUri }}" class="shadow-sm">
+      <img src="{{ episode.coverUri }}" class="shadow-sm">
       <div class="flex-grow-1 m-md-3 mx-lg-5 mt-lg-5">
         <h1>{{ title }}</h1>
-        <h4>{{ show.author }}</h4>
+        <h4>{{ episode.author }}</h4>
         <div class="btn-toolbar pt-2">
           <div class="btn btn-sm btn-outline-light disabled mr-2">
             <span class="fas fa-clock mr-1"></span>
@@ -32,7 +32,7 @@
           </div>
           <div class="btn btn-sm btn-outline-light disabled">
             <span class="fas fa-calendar mr-1"></span>
-            {{ show.publishedAt|date('F jS, Y') }}
+            {{ episode.publishedAt|date('F jS, Y') }}
           </div>
         </div>
         <div class="btn-toolbar d-none d-lg-flex align-items-center justify-content-center pt-5">
@@ -107,7 +107,7 @@
         <div class="p-3">
           <div class="tab-content">
             {% for tab in tabs %}
-            <div class="tab-pane fade {{ loop.first ? 'show active' : '' }}" id="{{ tab.key }}" role="tabpanel" aria-labelledby="{{ tab.key }}-tab">
+            <div class="tab-pane fade {{ loop.first ? 'episode active' : '' }}" id="{{ tab.key }}" role="tabpanel" aria-labelledby="{{ tab.key }}-tab">
               {% include tab.contents %}
             </div>
             {% endfor %}

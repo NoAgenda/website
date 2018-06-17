@@ -5,10 +5,10 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="App\Repository\ShowRepository")
- * @ORM\Table(name="show_table")
+ * @ORM\Entity(repositoryClass="App\Repository\EpisodeRepository")
+ * @ORM\Table(name="na_episodes")
  */
-class Show
+class Episode
 {
     /**
      * @var integer
@@ -59,14 +59,14 @@ class Show
      *
      * @ORM\Column(type="text")
      */
-    private $imageUri;
+    private $coverUri;
 
     /**
      * @var string
      *
      * @ORM\Column(type="text")
      */
-    private $audioUri;
+    private $recordingUri;
 
     /**
      * @var array
@@ -145,26 +145,26 @@ class Show
         return $this;
     }
 
-    public function getImageUri(): string
+    public function getCoverUri(): string
     {
-        return $this->imageUri;
+        return $this->coverUri;
     }
 
-    public function setImageUri(string $imageUri): self
+    public function setCoverUri(string $coverUri): self
     {
-        $this->imageUri = $imageUri;
+        $this->coverUri = $coverUri;
 
         return $this;
     }
 
-    public function getAudioUri(): string
+    public function getRecordingUri(): string
     {
-        return $this->audioUri;
+        return $this->recordingUri;
     }
 
-    public function setAudioUri(string $audioUri): self
+    public function setRecordingUri(string $recordingUri): self
     {
-        $this->audioUri = $audioUri;
+        $this->recordingUri = $recordingUri;
 
         return $this;
     }

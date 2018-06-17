@@ -2,9 +2,9 @@
 
 namespace App\Command;
 
-use App\Entity\Show;
+use App\Entity\Episode;
 use App\Entity\TranscriptLine;
-use App\Repository\ShowRepository;
+use App\Repository\EpisodeRepository;
 use App\Repository\TranscriptLineRepository;
 use App\TranscriptParser;
 use Doctrine\ORM\EntityManagerInterface;
@@ -26,29 +26,29 @@ class CrawlTranscriptCommand extends Command
     private $entityManager;
 
     /**
-     * @var ShowRepository
+     * @var EpisodeRepository
      */
-    private $showRepository;
+    private $episodeRepository;
 
     /**
      * @var TranscriptLineRepository
      */
     private $transcriptLineRepository;
 
-    public function __construct(?string $name = null, EntityManagerInterface $entityManager, ShowRepository $showRepository, TranscriptLineRepository $transcriptLineRepository)
+    public function __construct(?string $name = null, EntityManagerInterface $entityManager, EpisodeRepository $episodeRepository, TranscriptLineRepository $transcriptLineRepository)
     {
         parent::__construct($name);
 
         $this->entityManager = $entityManager;
-        $this->showRepository = $showRepository;
+        $this->episodeRepository = $episodeRepository;
         $this->transcriptLineRepository = $transcriptLineRepository;
     }
 
     protected function configure()
     {
         $this
-            ->setDescription('Crawls a transcript file for a single show')
-            ->addArgument('show', InputArgument::REQUIRED, 'The show code')
+            ->setDescription('Crawls a transcript file for a single episode')
+            ->addArgument('episode', InputArgument::REQUIRED, 'The episode code')
             ->addArgument('uri', InputArgument::REQUIRED, 'URI to the transcript file')
             ->addOption('save', null, InputOption::VALUE_NONE, 'Save crawling results in the database')
         ;
@@ -60,22 +60,22 @@ class CrawlTranscriptCommand extends Command
 
         $save = $input->getOption('save');
 
-        $code = $input->getArgument('show');
-        $show = $this->showRepository->findOneBy(['code' => $code]);
+        $code = $input->getArgument('episode');
+        $episode = $this->episodeRepository->findOneBy(['code' => $code]);
 
-        if ($show === null) {
-            $io->error(sprintf('Unknown show "%s".', $code));
-
-            return;
-        }
-
-        if ($this->transcriptLineRepository->count(['show' => $show]) > 0) {
-            $io->warning('This show already has transcript lines. This part of the application still needs work.');
+        if ($episode === null) {
+            $io->error(sprintf('Unknown episode "%s".', $code));
 
             return;
         }
 
-        $io->text(sprintf('Crawling transcript file for show %s ...', $code));
+        if ($this->transcriptLineRepository->count(['episode' => $episode]) > 0) {
+            $io->warning('This episode already has transcript lines. This part of the application still needs work.');
+
+            return;
+        }
+
+        $io->text(sprintf('Crawling transcript file for episode %s ...', $code));
 
         $data = (new TranscriptParser())->parse($input->getArgument('uri'));
         $result = count($data['lines']);
@@ -83,7 +83,7 @@ class CrawlTranscriptCommand extends Command
         $io->text(sprintf('Found %s transcript lines.', $result));
 
         foreach ($data['lines'] as $line) {
-            $this->handleEntry($io, $line, $show, $save);
+            $this->handleEntry($io, $line, $episode, $save);
         }
 
         if ($save) {
@@ -96,11 +96,11 @@ class CrawlTranscriptCommand extends Command
         }
     }
 
-    private function handleEntry(OutputStyle $io, array $entry, Show $show, $save)
+    private function handleEntry(OutputStyle $io, array $entry, Episode $episode, $save)
     {
         $line = new TranscriptLine;
 
-        $line->setShow($show);
+        $line->setEpisode($episode);
         $line->setText($entry['text']);
         $line->setTimestamp($entry['timestamp']);
         $line->setDuration(0);

@@ -36,15 +36,19 @@ class FeedParser
             list(, $code, $name) = $matches;
 
             $xpath = $podcast->getXpath();
-            $image = $xpath->evaluate('string(' . $podcast->getXpathPrefix() . '/itunes:image/@href)');
+            $cover = $xpath->evaluate('string(' . $podcast->getXpathPrefix() . '/itunes:image/@href)');
+
+            /** @var object $enclosure */
+            $enclosure = $item->getEnclosure();
+            $recording = $enclosure->uri;
 
             $output['entries'][] = [
                 'code' => $code,
                 'name' => $name,
                 'author' => $podcast->getCastAuthor(),
-                'image' => $image,
+                'coverUri' => $cover,
+                'recordingUri' => $recording,
                 'publishedAt' => $item->getDateCreated(),
-                'enclosure' => $item->getEnclosure(),
             ];
         }
 
