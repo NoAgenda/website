@@ -8,4 +8,8 @@ fi
 
 SOURCE=$1
 TARGET=$2
-ffmpeg -i $SOURCE -f segment -segment_time 600 -c copy $2%03d.mp3
+
+for OFFSET in 0 300 600 900 1200 1500 1800 2100 2400
+do
+  ffmpeg -ss $OFFSET -t 600 -i $SOURCE $TARGET$OFFSET.mp3
+done

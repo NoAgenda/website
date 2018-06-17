@@ -41,6 +41,13 @@ class Show
     private $author;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $duration;
+
+    /**
      * @var \DateTimeInterface
      *
      * @ORM\Column(type="date")
@@ -110,6 +117,18 @@ class Show
     public function setAuthor(string $author): self
     {
         $this->author = $author;
+
+        return $this;
+    }
+
+    public function getDuration(): int
+    {
+        return $this->duration ?? 0;
+    }
+
+    public function setDuration(int $duration): self
+    {
+        $this->duration = $duration;
 
         return $this;
     }

@@ -41,9 +41,21 @@ class SplitRecordingCommand extends Command
         $sourcePath = sprintf('%s/shows/%s.mp3', $this->storagePath, $code);
         $targetPath = sprintf('%s/show_chunks/long/%s_', $this->storagePath, $code);
 
-        $process = new Process(sprintf('bin/splitter.bash "%s" "%s"', $sourcePath, $targetPath));
+        $cmd = sprintf('bin/splitter.bash "%s" "%s"', $sourcePath, $targetPath);
+
+        if ($output->isVerbose()) {
+            $io->text('Executing command: ' . $cmd);
+        }
+
+        $process = new Process($cmd, null, null, null, null);
         $process->run();
 
         $io->success('Done splitting recording.');
+
+        // todo get length of show
+        // split files into segments of 10 minutes, seperated by 5 minutes...
+        // first only first hour lol
+        // find highest score, (make sure it matches in 2 seperate files?)
+        // >>MATCH<<
     }
 }
