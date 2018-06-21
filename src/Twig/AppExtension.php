@@ -12,6 +12,7 @@ class AppExtension extends AbstractExtension
     {
         return [
             new TwigFilter('prettyTimestamp', [$this, 'prettyTimestamp']),
+            new TwigFilter('visualTimestamp', [$this, 'visualTimestamp']),
         ];
     }
 
@@ -19,6 +20,7 @@ class AppExtension extends AbstractExtension
     {
         return [
             new TwigFunction('prettyTimestamp', [$this, 'prettyTimestamp']),
+            new TwigFunction('visualTimestamp', [$this, 'visualTimestamp']),
         ];
     }
 
@@ -42,5 +44,22 @@ class AppExtension extends AbstractExtension
         $minutes = strlen($minutes) == 1 ? '0' . $minutes : $minutes;
 
         return implode(':', [$hours, $minutes, $seconds]);
+    }
+
+    public function visualTimestamp($value): string
+    {
+        $value = (int) $value;
+
+        $hours = floor($value / 60 / 60);
+        $value = $value - ($hours * 60 * 60);
+
+        $minutes = floor($value / 60);
+        $value = $value - ($minutes * 60);
+
+        if ($hours == 0) {
+            return sprintf('%sm', $minutes);
+        }
+
+        return sprintf('%sh %sm', $hours, $minutes);
     }
 }

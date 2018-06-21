@@ -14,14 +14,9 @@ class CrawlChatCommand extends Command
     protected static $defaultName = 'app:crawl-chat';
 
     /**
-     * @var EntityManagerInterface
+     * @var string
      */
-    private $entityManager;
-
-    /**
-     * @var ChatSourceMessageRepository
-     */
-    private $messageRepository;
+    private $storagePath;
 
     /**
      * @var \DateTimeImmutable
@@ -38,12 +33,11 @@ class CrawlChatCommand extends Command
      */
     private $increment;
 
-    public function __construct(?string $name = null, EntityManagerInterface $entityManager, ChatSourceMessageRepository $messageRepository)
+    public function __construct(?string $name = null, string $storagePath)
     {
         parent::__construct($name);
 
-        $this->entityManager = $entityManager;
-        $this->messageRepository = $messageRepository;
+        $this->storagePath = $storagePath;
     }
 
     protected function configure()
@@ -62,7 +56,7 @@ class CrawlChatCommand extends Command
         $config = [
             'server' => 'irc.zeronode.net',
             'port' => 6667,
-            'nick' => 'BotOfCourage',
+            'nick' => $this->getRandomName(),
         ];
 
         $server = [];
@@ -71,20 +65,12 @@ class CrawlChatCommand extends Command
         if ($server['socket']) {
             $this->sendCommand($output, $server, "PASS NOPASS\n\r");
             $this->sendCommand($output, $server, "NICK " . $config['nick'] . "\n\r");
-            $this->sendCommand($output, $server, "USER " . $config['nick'] . " USING PHP IRC\n\r");
+            $this->sendCommand($output, $server, "USER " . $config['nick'] . " USING THE TROLL FACTORY\n\r");
 
             while (!feof($server['socket'])) {
                 $this->readServer($output, $server);
                 flush();
                 usleep(100000);
-
-                $difference = $this->connectedAt->diff(new \DateTimeImmutable);
-
-                if ($difference->h > 5) {
-                    $output->writeln('<bg=green;fg=white>Done crawling chat</bg=green;fg=white>');
-
-                    exit(0);
-                }
             }
         }
     }
@@ -92,7 +78,10 @@ class CrawlChatCommand extends Command
     protected function readServer(OutputInterface $output, array &$server)
     {
         $server['buffer'] = fgets($server['socket'], 1024);
-        $output->writeln(sprintf('[RECEIVE] %s', trim($server['buffer'])));
+
+        if ($output->isVerbose()) {
+            $output->writeln(sprintf('[RECEIVE] %s', trim($server['buffer'])));
+        }
 
         // Ping Pong
         if (substr($server['buffer'], 0, 4) == 'PING') {
@@ -103,21 +92,13 @@ class CrawlChatCommand extends Command
 
         // Save messages
         if ($this->joined) {
-            $message = (new ChatSourceMessage)
-                ->setText($server['buffer'])
-                ->setReceivedAt(new \DateTimeImmutable)
-            ;
+            $now = new \DateTimeImmutable;
 
-            $this->entityManager->persist($message);
-            ++$this->increment;
+            $logPath = sprintf('%s/chat_logs/%s.log', $this->storagePath, $now->format('Ymd'));
 
-            if ($this->increment >= 10) {
-                $this->increment = 0;
+            $log = sprintf('%s >>> %s', $now->format('Y-m-d H:i:s'), trim($server['buffer']));
 
-                $this->entityManager->flush();
-
-                $output->writeln('<bg=green;fg=white>Flushed database operations</bg=green;fg=white>');
-            }
+            file_put_contents($logPath, $log . PHP_EOL, FILE_APPEND | LOCK_EX);
         }
 
         // Join channel
@@ -136,6 +117,35 @@ class CrawlChatCommand extends Command
     protected function sendCommand(OutputInterface $output, array &$server, string $command)
     {
         fwrite($server['socket'], $command, strlen($command));
-        $output->writeln(sprintf('[SEND] %s', trim($command)));
+
+        if ($output->isVerbose()) {
+            $output->writeln(sprintf('[SEND] %s', trim($command)));
+        }
+    }
+
+    protected function getRandomName(): string
+    {
+        $adjectives = [
+            'tiny',
+            'delicious',
+            'gentle',
+            'agreeable',
+            'brave',
+            'orange',
+            'grumpy',
+            'fierce',
+            'victorious',
+        ];
+        $nouns = [
+            'elephant',
+            'pizza',
+            'jellybean',
+            'chef',
+            'puppy',
+            'gnome',
+            'kangaroo',
+        ];
+
+        return sprintf('%s%s', ucfirst($adjectives[array_rand($adjectives)]), ucfirst($nouns[array_rand($nouns)]));
     }
 }

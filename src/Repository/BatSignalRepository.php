@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\BatSignal;
+use App\Entity\Episode;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
@@ -19,8 +20,8 @@ class BatSignalRepository extends ServiceEntityRepository
         parent::__construct($registry, BatSignal::class);
     }
 
-    public function findLatest(): ?BatSignal
+    public function findOneByCode($code): ?BatSignal
     {
-        return $this->findOneBy([], ['deployedAt' => 'DESC']);
+        return $this->findOneBy(['code' => $code]);
     }
 }

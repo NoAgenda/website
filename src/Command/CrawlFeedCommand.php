@@ -7,8 +7,10 @@ use App\FeedParser;
 use App\Repository\EpisodeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\OutputStyle;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -63,17 +65,17 @@ class CrawlFeedCommand extends Command
 
         $io->text('Crawling No Agenda RSS feed ...');
 
-        $output = (new FeedParser())->parse();
+        $feedOutput = (new FeedParser())->parse();
         $results = [
             self::ENTRY_EXISTS => 0,
             self::ENTRY_NEW => 0,
             self::ENTRY_UPDATED => 0,
         ];
 
-        $entries = array_reverse($output['entries']);
+        $entries = array_reverse($feedOutput['entries']);
 
         foreach ($entries as $entry) {
-            $result = $this->handleEntry($io, $entry, $files, $save);
+            $result = $this->handleEntry($input, $output, $entry, $files, $save);
 
             ++$results[$result];
         }
@@ -92,8 +94,10 @@ class CrawlFeedCommand extends Command
         }
     }
 
-    private function handleEntry(OutputStyle $io, array $entry, bool $files, bool $save)
+    private function handleEntry(InputInterface $input, OutputInterface $output, array $entry, bool $files, bool $save)
     {
+        $io = new SymfonyStyle($input, $output);
+
         $episode = $this->episodeRepository->findOneBy(['code' => $entry['code']]);
 
         $new = $episode === null;
@@ -123,11 +127,20 @@ class CrawlFeedCommand extends Command
 
             $io->text(sprintf('Updated episode: %s', $episode->getCode()));
 
-            return self::ENTRY_UPDATED;
-        }
+            if ($files) {
+                $command = $this->getApplication()->find('app:crawl-files');
 
-        if ($files) {
-            // $this->handleFiles($io, $episode);
+                $commandInput = new ArrayInput([
+                    'command' => 'app:crawl-files',
+                    'episode' => $episode->getCode(),
+                    '--verbose' => $output->isVerbose(),
+                    '--save' => $save,
+                ]);
+
+                $command->run($commandInput, $output->isVerbose() ? $output : new NullOutput);
+            }
+
+            return self::ENTRY_UPDATED;
         }
 
         return self::ENTRY_EXISTS;

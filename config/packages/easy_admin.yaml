@@ -1,8 +1,8 @@
 easy_admin:
   site_name: 'No Agenda Player Administration Panel'
   entities:
-    Show:
-      class: App\Entity\Show
+    Episode:
+      class: App\Entity\Episode
       form:
         fields:
           - { property: 'code', type: 'text' }

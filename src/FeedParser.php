@@ -24,7 +24,7 @@ class FeedParser
         /** @var PodcastFeed $podcast */
         $podcast = $feed->getExtension('Podcast');
 
-        // parse feed attributes...
+        // Parse feed attributes
         $podcast->getXpath();
 
         /** @var RssEntry $item */
@@ -40,7 +40,7 @@ class FeedParser
 
             /** @var object $enclosure */
             $enclosure = $item->getEnclosure();
-            $recording = $enclosure->uri;
+            $recording = $enclosure->url;
 
             $output['entries'][] = [
                 'code' => $code,

@@ -39,17 +39,24 @@ class SplitRecordingCommand extends Command
 
         $code = $input->getArgument('episode');
 
-        $sourcePath = sprintf('%s/recordings/%s.mp3', $this->storagePath, $code);
+        $sourcePath = sprintf('%s/episode_recordings/%s.mp3', $this->storagePath, $code);
         $targetPath = sprintf('%s/audio_chunks/long/%s_', $this->storagePath, $code);
 
-        $cmd = sprintf('bin/splitter.bash "%s" "%s"', $sourcePath, $targetPath);
+        $cmd = sprintf('bin/scripts/splitter.bash "%s" "%s"', $sourcePath, $targetPath);
 
         if ($output->isVerbose()) {
             $io->text('Executing command: ' . $cmd);
         }
 
-        $process = new Process($cmd, null, null, null, null);
-        $process->run();
+        $process = new Process($cmd);
+        $process->setTimeout(null);
+        $returnCode = $process->run();
+
+        if ($returnCode > 0) {
+            $io->error($output->isVerbose() ? $process->getErrorOutput() : 'An error occurred while creating a recording.');
+
+            return;
+        }
 
         $io->success('Done splitting recording.');
 

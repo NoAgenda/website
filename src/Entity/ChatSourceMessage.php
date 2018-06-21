@@ -5,7 +5,10 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
+ * @todo deprecated for file logs
+ *
  * @ORM\Entity(repositoryClass="App\Repository\ChatSourceMessageRepository")
+ * @ORM\Table(name="na_chat_source_message")
  */
 class ChatSourceMessage
 {

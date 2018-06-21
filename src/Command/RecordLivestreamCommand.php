@@ -10,7 +10,7 @@ use Symfony\Component\Process\Process;
 
 class RecordLivestreamCommand extends Command
 {
-    protected static $defaultName = 'app:crawl-audio';
+    protected static $defaultName = 'app:record-livestream';
 
     /**
      * @var string
@@ -27,7 +27,7 @@ class RecordLivestreamCommand extends Command
     protected function configure()
     {
         $this
-            ->setDescription('Crawls a short clip from the livestream to match timestamps')
+            ->setDescription('Crawls an audio clip from the livestream to match chat timestamps')
         ;
     }
 
@@ -35,12 +35,27 @@ class RecordLivestreamCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
+        $io->text('Recording livestream ...');
+
         $time = (new \DateTimeImmutable())->format('YmdHis');
-        $path = sprintf('%s/audio_chunks/short/%s', $this->storagePath, $time);
+        $path = sprintf('%s/livestream_recordings/recording_%s', $this->storagePath, $time);
 
-        $process = new Process(sprintf('bin/recorder.bash "%s"', $path));
-        $process->run();
+        $cmd = sprintf('bin/scripts/record-livestream.bash "%s"', $path);
 
-        $io->success(sprintf('Created recording: %s', $path));
+        if ($output->isVerbose()) {
+            $io->text('Executing command: ' . $cmd);
+        }
+
+        $process = new Process($cmd);
+        $process->setTimeout(null);
+        $returnCode = $process->run();
+
+        if ($returnCode > 0) {
+            $io->error($output->isVerbose() ? $process->getErrorOutput() : 'An error occurred while creating the recording.');
+
+            return;
+        }
+
+        $io->success(sprintf('Created recording "%s".', $path));
     }
 }

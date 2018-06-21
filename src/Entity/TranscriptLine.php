@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\TranscriptLineRepository")
+ * @ORM\Table(name="na_transcript_line")
  */
 class TranscriptLine
 {
@@ -21,7 +22,7 @@ class TranscriptLine
     /**
      * @var Episode
      *
-     * @ORM\ManyToOne(targetEntity="Episode.php")
+     * @ORM\ManyToOne(targetEntity="Episode")
      * @ORM\JoinColumn(nullable=false)
      */
     private $episode;

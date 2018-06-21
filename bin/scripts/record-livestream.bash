@@ -8,5 +8,5 @@ fi
 
 PATH=$1
 echo "Recording $PATH.asf ...";
-mplayer "http://listen.noagendastream.com/noagenda" -dumpstream -dumpfile $PATH.asf &> $PATH.log & sleep 60s;
-killall mplayer;
+/usr/bin/mplayer "http://listen.noagendastream.com/noagenda" -dumpstream -dumpfile $PATH.asf &> $PATH.log & /bin/sleep 60s;
+/usr/bin/pkill mplayer;

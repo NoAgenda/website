@@ -50,9 +50,9 @@ class CrawlBatSignalCommand extends Command
 
         $data = (new BatSignalReceiver)->receive();
 
-        $latest = $this->signalRepository->findLatest();
+        $signal = $this->signalRepository->findOneByCode($data['code']);
 
-        if ($latest && $latest->getCode() == $data['code'] && $latest->getDeployedAt() == $data['deployedAt']) {
+        if ($signal !== null) {
             $io->note('The latest bat signal has already been crawled.');
 
             return;

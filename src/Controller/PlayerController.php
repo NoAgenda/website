@@ -33,7 +33,7 @@ class PlayerController extends Controller
 
     /**
      * @Route("/listen/{episode}", name="player")
-     * @ParamConverter("episode", class="Episode", options={"mapping": {"episode": "code"}})
+     * @ParamConverter("episode", class="App\Entity\Episode", options={"mapping": {"episode": "code"}})
      */
     public function playerAction(Episode $episode): Response
     {

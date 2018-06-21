@@ -6,7 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\EpisodeRepository")
- * @ORM\Table(name="na_episodes")
+ * @ORM\Table(name="na_episode")
  */
 class Episode
 {
@@ -41,13 +41,6 @@ class Episode
     private $author;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $duration;
-
-    /**
      * @var \DateTimeInterface
      *
      * @ORM\Column(type="date")
@@ -67,6 +60,20 @@ class Episode
      * @ORM\Column(type="text")
      */
     private $recordingUri;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $duration;
+
+    /**
+     * @var \DateTimeInterface|null
+     *
+     * @ORM\Column(type="date", nullable=true)
+     */
+    private $recordedAt;
 
     /**
      * @var array
@@ -121,18 +128,6 @@ class Episode
         return $this;
     }
 
-    public function getDuration(): int
-    {
-        return $this->duration ?? 0;
-    }
-
-    public function setDuration(int $duration): self
-    {
-        $this->duration = $duration;
-
-        return $this;
-    }
-
     public function getPublishedAt(): \DateTimeInterface
     {
         return $this->publishedAt;
@@ -165,6 +160,30 @@ class Episode
     public function setRecordingUri(string $recordingUri): self
     {
         $this->recordingUri = $recordingUri;
+
+        return $this;
+    }
+
+    public function getDuration(): int
+    {
+        return $this->duration ?? 0;
+    }
+
+    public function setDuration(int $duration): self
+    {
+        $this->duration = $duration;
+
+        return $this;
+    }
+
+    public function getRecordedAt(): ?\DateTimeInterface
+    {
+        return $this->recordedAt;
+    }
+
+    public function setRecordedAt(?\DateTimeInterface $recordedAt): self
+    {
+        $this->recordedAt = $recordedAt;
 
         return $this;
     }

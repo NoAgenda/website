@@ -26,10 +26,12 @@
         <h1>{{ title }}</h1>
         <h4>{{ episode.author }}</h4>
         <div class="btn-toolbar pt-2">
+          {% if episode.duration %}
           <div class="btn btn-sm btn-outline-light disabled mr-2">
             <span class="fas fa-clock mr-1"></span>
-            Not Available
+            {{ episode.duration|visualTimestamp }}
           </div>
+          {% endif %}
           <div class="btn btn-sm btn-outline-light disabled">
             <span class="fas fa-calendar mr-1"></span>
             {{ episode.publishedAt|date('F jS, Y') }}

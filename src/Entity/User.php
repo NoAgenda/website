@@ -7,6 +7,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
+ * @ORM\Table(name="na_user")
  */
 class User implements UserInterface, \Serializable
 {
@@ -65,6 +66,8 @@ class User implements UserInterface, \Serializable
      * @ORM\Column(type="array")
      */
     private $roles;
+
+    // todo createdAt
 
     public function __construct()
     {
