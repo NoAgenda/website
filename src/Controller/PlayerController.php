@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Episode;
+use App\Form\ChatMessageType;
+use App\Repository\ChatMessageRepository;
 use App\Repository\EpisodeRepository;
 use App\Repository\TranscriptLineRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -13,11 +15,13 @@ use Symfony\Component\Routing\Annotation\Route;
 class PlayerController extends Controller
 {
     private $episodeRepository;
+    private $chatMessageRepository;
     private $transcriptLineRepository;
 
-    public function __construct(EpisodeRepository $episodeRepository, TranscriptLineRepository $transcriptLineRepository)
+    public function __construct(EpisodeRepository $episodeRepository, ChatMessageRepository $chatMessageRepository, TranscriptLineRepository $transcriptLineRepository)
     {
         $this->episodeRepository = $episodeRepository;
+        $this->chatMessageRepository = $chatMessageRepository;
         $this->transcriptLineRepository = $transcriptLineRepository;
     }
 
@@ -37,11 +41,20 @@ class PlayerController extends Controller
      */
     public function playerAction(Episode $episode): Response
     {
+        $messages = $this->chatMessageRepository->findByEpisode($episode);
         $lines = $this->transcriptLineRepository->findByEpisode($episode);
+
+        $messageForm = $this->createForm(ChatMessageType::class, [
+            'episode' => $episode->getCode(),
+            'postedAt' => 0,
+        ]);
 
         return $this->render('player/episode.html.twig', [
             'episode' => $episode,
+            'chatMessages' => $messages,
             'transcriptLines' => $lines,
+
+            'chatMessageForm' => $messageForm->createView(),
         ]);
     }
 }

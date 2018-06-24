@@ -8,6 +8,12 @@ easy_admin:
           - { property: 'code', type: 'text' }
           - { property: 'name', type: 'text' }
           - { property: 'author', type: 'text' }
+    ChatMessage:
+      class: App\Entity\ChatMessage
+      form:
+        fields:
+          - { property: 'username', type: 'text' }
+          - { property: 'contents', type: 'textarea' }
     User:
       class: App\Entity\User
       form:

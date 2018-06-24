@@ -1,0 +1,15 @@
+<ul class="list-unstyled">
+  {% for message in chatMessages %}
+  <li
+    class="site-chat-message media py-1"
+    data-timestamp="{{ message.postedAt }}"
+  >
+    <div class="text-right mr-3" style="width: 80px;">
+      {{ message.postedAt|prettyTimestamp }}
+    </div>
+    <div class="media-body">
+      <strong>{{ message.username }}</strong>: {{ message.contents }}
+    </div>
+  </li>
+  {% endfor %}
+</ul>

@@ -127,11 +127,16 @@
           </ul>
         </div>
         <div class="flex-grow-1 oy-scroll">
+          {% include 'player/blocks/chat.html.twig' %}
         </div>
         <div class="flex-shrink-0 p-3">
-          <div class="btn-toolbar">
-            <div class="btn btn-sm btn-dark">Live Replay</div>
-          </div>
+          {{ form_start(chatMessageForm) }}
+            {{ form_widget(chatMessageForm.contents) }}
+            {{ form_rest(chatMessageForm) }}
+            <div class="btn-toolbar mt-2">
+              <button class="btn btn-sm btn-primary ml-auto" type="submit" disabled>Post at <span class="fal fa-clock" aria-hidden="true"></span> <span data-player-data="timer">0:00</span></button>
+            </div>
+          {{ form_end(chatMessageForm) }}
         </div>
       </div>
     </div>

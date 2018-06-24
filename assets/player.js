@@ -48,6 +48,53 @@ export default class Player {
 
       this.seekTimestamp(timestamp);
     });
+
+    this.stepChat(0);
+
+    jQuery(document).on('submit', 'form[name="chat_message"]', (event) => {
+      event.preventDefault();
+
+      let messageForm = jQuery('form[name="chat_message"]');
+      let messageContentsInput = messageForm.find('[name="chat_message[contents]"]');
+      let messagePostedAtInput = messageForm.find('[name="chat_message[postedAt]"]');
+
+      if (messagePostedAtInput.val() < 1) {
+        alert('Please start playing before posting a message.');
+
+        return;
+      }
+
+      if (messageContentsInput.val().length < 1) {
+        alert('Please enter a message before trying to post.');
+
+        return;
+      }
+
+      let data = {};
+      messageForm.serializeArray().forEach((value) => {
+        let name = value.name.match(/\[([^)]+)]/)[1];
+        data[name] = value.value;
+      });
+
+      let requestOptions = {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      };
+      fetch('/chat', requestOptions)
+        .then(response => response.json())
+        .then(response => {
+          if (typeof response.status === 'undefined' || response.status === 'error') {
+            alert('An error occurred while trying to post your message.');
+          }
+
+          // todo render message
+        })
+      ;
+    });
   }
 
   play() {
@@ -77,11 +124,26 @@ export default class Player {
     jQuery('[data-player-data="timer"]').text(Player.formatTime(timestamp));
     jQuery('[data-player-data="progress"]').css('width', progress);
 
+    this.stepChat(timestamp);
     this.stepTranscript(timestamp);
 
     // If the sound is still playing, continue stepping.
     if (this.sound.playing()) {
       requestAnimationFrame(this.step.bind(this));
+    }
+  }
+
+  stepChat(timestamp) {
+    let messageForm = jQuery('form[name="chat_message"]');
+    let messagePostedAtInput = messageForm.find('[name="chat_message[postedAt]"]');
+
+    messagePostedAtInput.val(Math.trunc(timestamp));
+
+    if (Math.trunc(timestamp) > 0) {
+      messageForm.find('[type="submit"]').removeAttr('disabled');
+    }
+    else {
+      messageForm.find('[type="submit"]').attr('disabled', 'disabled');
     }
   }
 
@@ -92,8 +154,8 @@ export default class Player {
     let activeLines = [];
 
     for (let line of lines) {
-      let lineTimestamp = jQuery(line).data('timestamp');
       let lineDuration = jQuery(line).data('duration');
+      let lineTimestamp = jQuery(line).data('timestamp');
 
       if (lineTimestamp <= timestamp) {
         if (lineDuration !== 0 && lineTimestamp + lineDuration >= timestamp) {
