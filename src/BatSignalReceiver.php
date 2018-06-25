@@ -26,7 +26,7 @@ class BatSignalReceiver
         }
 
         if ($signal === null) {
-            return null;
+            throw new \RuntimeException('The sky is dark. No bat signal was found.');
         }
 
         preg_match('/episode (\d+)/', $signal->getTitle(),$matches);

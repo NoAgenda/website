@@ -47,7 +47,7 @@ class CrawlFilesCommand extends Command
         $this
             ->setDescription('Crawls the media files for a episode')
             ->addArgument('episode', InputArgument::REQUIRED, 'The episode code')
-            ->addOption('force', null, InputOption::VALUE_NONE, 'Force crawling already processed files')
+            ->addOption('force', null, InputOption::VALUE_NONE, 'Force download of existing files')
             ->addOption('save', null, InputOption::VALUE_NONE, 'Save processing results in the database')
         ;
     }

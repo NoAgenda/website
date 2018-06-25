@@ -15,4 +15,6 @@ RUN a2enmod rewrite && \
 # Install additional packages
 RUN apt-get update && apt-get install -y \
     ffmpeg mplayer python-pip && \
-    pip install numpy scikits.talkbox audio-offset-finder
+    pip install numpy && \
+    pip install scikits.talkbox && \
+    pip install audio-offset-finder

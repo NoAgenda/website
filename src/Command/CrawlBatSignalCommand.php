@@ -50,6 +50,10 @@ class CrawlBatSignalCommand extends Command
 
         $data = (new BatSignalReceiver)->receive();
 
+        if ($output->isVerbose()) {
+            $io->note(sprintf('Found bat signal for episode "%s" at %s.', $data['code'], $data['deployedAt']));
+        }
+
         $signal = $this->signalRepository->findOneByCode($data['code']);
 
         if ($signal !== null) {

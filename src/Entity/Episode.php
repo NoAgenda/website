@@ -71,7 +71,7 @@ class Episode
     /**
      * @var \DateTimeInterface|null
      *
-     * @ORM\Column(type="date", nullable=true)
+     * @ORM\Column(type="datetime", nullable=true)
      */
     private $recordedAt;
 

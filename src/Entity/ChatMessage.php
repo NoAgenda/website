@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 class ChatMessage
 {
     const SOURCE_WEBSITE = 1;
-    const SOURCE_CHAT = 2;
+    const SOURCE_TROLL_ROOM = 2;
 
     /**
      * @var integer
@@ -132,9 +132,9 @@ class ChatMessage
         return $this->source;
     }
 
-    public function fromChat(): self
+    public function fromTrollRoom(): self
     {
-        $this->source = self::SOURCE_CHAT;
+        $this->source = self::SOURCE_TROLL_ROOM;
 
         return $this;
     }

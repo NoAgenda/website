@@ -14,6 +14,12 @@ easy_admin:
         fields:
           - { property: 'username', type: 'text' }
           - { property: 'contents', type: 'textarea' }
+    BatSignal:
+      class: App\Entity\BatSignal
+      form:
+        fields:
+          - { property: 'code', type: 'text' }
+          - { property: 'deployedAt', type: 'datetime' }
     User:
       class: App\Entity\User
       form:
