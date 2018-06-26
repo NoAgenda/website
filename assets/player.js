@@ -109,7 +109,7 @@ export default class Player {
           }
 
           let newMessage = '' +
-            '<li class="site-chat-message media py-1" style="display: flex; background: rgba(255, 193, 7, .3);" data-timestamp="' + response.message.postedAt + '">' +
+            '<li class="site-chat-message media text-sm" style="display: flex; padding: .125rem 0; background: rgba(255, 193, 7, .3);" data-timestamp="' + response.message.postedAt + '">' +
               '<div class="text-right mr-3" style="width: 80px;">' + Player.formatTime(response.message.postedAt) + '</div>' +
               '<div class="media-body">' +
                 '<strong>' + response.message.username + '</strong>: ' + response.message.contents +
@@ -170,6 +170,9 @@ export default class Player {
 
     messagePostedAtInput.val(Math.trunc(timestamp));
 
+    let messageContainer = jQuery('.site-chat-messages');
+    let maxScrollTop = messageContainer.get(0).scrollHeight - messageContainer.height();
+
     if (Math.trunc(timestamp) > 0) {
       messageForm.find('[type="submit"]').removeAttr('disabled');
     }
@@ -190,9 +193,9 @@ export default class Player {
       }
     }
 
-    let messageContainer = jQuery('.site-chat-messages');
-
-    messageContainer.get(0).scrollTop = messageContainer.get(0).scrollHeight;
+    if (messageContainer.get(0).scrollTop === maxScrollTop) {
+      messageContainer.get(0).scrollTop = messageContainer.get(0).scrollHeight;
+    }
   }
 
   stepTranscript(timestamp) {
@@ -215,15 +218,23 @@ export default class Player {
     }
 
     let highlightedLines = jQuery('.site-transcript-line.site-transcript-highlight');
+    let previousLineIsOnScreen = false;
 
     for (let line of highlightedLines) {
       if (line !== lastActiveLine && activeLines.indexOf(line) === -1) {
         jQuery(line).removeClass('site-transcript-highlight');
+        previousLineIsOnScreen = Player.lineIsOnScreen(line, 0);
       }
     }
 
     jQuery(lastActiveLine).addClass('site-transcript-highlight');
     activeLines.map(line => jQuery(line).addClass('site-transcript-highlight'));
+
+    if (previousLineIsOnScreen && !Player.lineIsOnScreen(lastActiveLine, 200)) {
+      jQuery('html,body').animate({
+        scrollTop: jQuery(lastActiveLine).offset().top + jQuery(lastActiveLine).height() + 250 - jQuery(window).height(),
+      });
+    }
   }
 
   static formatTime(value) {
@@ -237,4 +248,14 @@ export default class Player {
 
     return minutes + ':' + (seconds < 10 ? '0' : '') + Math.trunc(seconds);
   }
+
+  static lineIsOnScreen(element, bottomOffset) {
+    let elementTop = jQuery(element).offset().top;
+    let elementBottom = elementTop + jQuery(element).outerHeight();
+
+    let viewportTop = jQuery(window).scrollTop();
+    let viewportBottom = viewportTop + jQuery(window).height() - bottomOffset;
+
+    return elementTop > viewportTop && elementBottom < viewportBottom;
+  };
 }

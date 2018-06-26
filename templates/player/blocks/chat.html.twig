@@ -1,4 +1,4 @@
-<ul class="list-unstyled">
+<ul class="list-unstyled mb-0">
   {% for message in chatMessages %}
   {% set customStyling = '' %}
   {% set isTrollRoom = message.source == constant('App\\Entity\\ChatMessage::SOURCE_TROLL_ROOM') %}
@@ -10,11 +10,11 @@
     {% set customStyling = 'background: rgba(0, 123, 255, .3);' %}
   {% endif %}
   <li
-    class="site-chat-message media py-1"
-    style="display: none; {{ customStyling }}"
+    class="site-chat-message media text-sm"
+    style="display: none; padding: .125rem 0; {{ customStyling }}"
     data-timestamp="{{ message.postedAt }}"
   >
-    <div class="text-right mr-3" style="width: 80px;">
+    <div class="text-right text-muted mr-3" style="width: 70px;">
       {{ message.postedAt|prettyTimestamp }}
     </div>
     <div class="media-body">
