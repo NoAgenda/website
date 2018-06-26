@@ -7,6 +7,7 @@ use App\Entity\Episode;
 use App\Repository\BatSignalRepository;
 use App\Repository\EpisodeRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use ForceUTF8\Encoding;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -154,7 +155,7 @@ class MatchChatMessagesCommand extends Command
             $message = (new ChatMessage)
                 ->setEpisode($episode)
                 ->setUsername($messageDefinition['username'])
-                ->setContents($messageDefinition['contents'])
+                ->setContents(Encoding::fixUTF8($messageDefinition['contents']))
                 ->setPostedAt($messageDefinition['postedAt'])
                 ->fromTrollRoom()
             ;

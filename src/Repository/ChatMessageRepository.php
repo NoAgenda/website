@@ -25,6 +25,6 @@ class ChatMessageRepository extends ServiceEntityRepository
      */
     public function findByEpisode(Episode $episode): array
     {
-        return $this->findBy(['episode' => $episode], ['postedAt' => 'ASC']);
+        return $this->findBy(['episode' => $episode], ['postedAt' => 'ASC', 'source' => 'DESC', 'createdAt' => 'ASC']);
     }
 }

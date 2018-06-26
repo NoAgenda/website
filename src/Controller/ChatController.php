@@ -45,15 +45,22 @@ class ChatController extends Controller
                 $message = (new ChatMessage())
                     ->setEpisode($episode)
                     ->setUsername($user->getUsername())
-                    ->setContents($data['contents'])
-                    ->setPostedAt($data['postedAt'])
+                    ->setContents(trim($form->get('contents')->getData()))
+                    ->setPostedAt($form->get('postedAt')->getData())
                     ->fromWebsite()
                 ;
 
                 $this->entityManager->persist($message);
                 $this->entityManager->flush();
 
-                return JsonResponse::create(['status' => 'ok']);
+                return JsonResponse::create([
+                    'status' => 'ok',
+                    'message' => [
+                        'username' => $message->getUsername(),
+                        'contents' => nl2br($message->getContents()),
+                        'postedAt' => $message->getPostedAt(),
+                    ],
+                ]);
             }
         }
 

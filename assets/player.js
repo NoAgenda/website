@@ -50,6 +50,7 @@ export default class Player {
     });
 
     this.stepChat(0);
+    jQuery('form[name="chat_message"]').get(0).reset();
 
     jQuery(document).on('submit', 'form[name="chat_message"]', (event) => {
       event.preventDefault();
@@ -76,6 +77,8 @@ export default class Player {
         data[name] = value.value;
       });
 
+      messageForm.get(0).reset();
+
       let requestOptions = {
         method: 'POST',
         credentials: 'same-origin',
@@ -91,7 +94,35 @@ export default class Player {
             alert('An error occurred while trying to post your message.');
           }
 
-          // todo render message
+          let messages = jQuery('.site-chat-message');
+          let lastMessage = null;
+
+          for (let message of messages) {
+            let messageTimestamp = jQuery(message).data('timestamp');
+
+            if (messageTimestamp <= response.message.postedAt) {
+              lastMessage = message;
+            }
+            else {
+              break;
+            }
+          }
+
+          let newMessage = '' +
+            '<li class="site-chat-message media py-1" style="display: flex; background: rgba(255, 193, 7, .3);" data-timestamp="' + response.message.postedAt + '">' +
+              '<div class="text-right mr-3" style="width: 80px;">' + Player.formatTime(response.message.postedAt) + '</div>' +
+              '<div class="media-body">' +
+                '<strong>' + response.message.username + '</strong>: ' + response.message.contents +
+              '</div>' +
+            '</li>'
+          ;
+
+          if (lastMessage === null) {
+            jQuery('.site-chat-messages > ul').prepend(newMessage);
+          }
+          else {
+            jQuery(lastMessage).after(newMessage);
+          }
         })
       ;
     });
@@ -145,6 +176,23 @@ export default class Player {
     else {
       messageForm.find('[type="submit"]').attr('disabled', 'disabled');
     }
+
+    let messages = jQuery('.site-chat-message');
+
+    for (let message of messages) {
+      let messageTimestamp = jQuery(message).data('timestamp');
+
+      if (messageTimestamp <= timestamp) {
+        jQuery(message).css('display', 'flex');
+      }
+      else {
+        jQuery(message).css('display', 'none');
+      }
+    }
+
+    let messageContainer = jQuery('.site-chat-messages');
+
+    messageContainer.get(0).scrollTop = messageContainer.get(0).scrollHeight;
   }
 
   stepTranscript(timestamp) {

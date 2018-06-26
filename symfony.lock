@@ -98,6 +98,9 @@
     "monolog/monolog": {
         "version": "1.x-dev"
     },
+    "neitanod/forceutf8": {
+        "version": "v2.0.1"
+    },
     "nikic/php-parser": {
         "version": "4.0-dev"
     },
