@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ChatMessageRepository")
+ * @ORM\Table("na_chat_message")
  */
 class ChatMessage
 {

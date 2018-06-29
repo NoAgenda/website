@@ -1,0 +1,45 @@
+<div class="list-group">
+  {% for part in parts %}
+  <div class="list-group-item list-group-item-action flex-column align-items-start p-2">
+    <div class="d-flex w-100 justify-content-between">
+      <div class="d-flex mb-1">
+        <div class="text-center mr-3" style="min-width: 70px;">
+          <span class="h5 d-block mb-2"><span class="fas fa-play" aria-hidden="true"></span></span>
+          <span class="text-sm">{{ part.startsAt|prettyTimestamp }}</span>
+        </div>
+        <div>
+          <h5 class="mb-2">{{ part.name }}</h5>
+          <div>
+            <span class="fas fa-user" aria-hidden="true"></span> Woodstock
+          </div>
+          <div id="section-collapse-{{ loop.index }}" class="collapse mt-2">
+            <div class="bg-gray d-inline-block p-1 rounded">
+              <span title="Suggestions Box">
+                <span class="fas fa-lightbulb fa-fw fa-lg" aria-hidden="true"></span>
+              </span>
+              <div class="cursor-pointer d-inline-block" title="Suggest a new section" data-toggle="modal" data-target="#correctionModal">
+                <span class="fas fa-plus-circle fa-fw fa-lg text-success" aria-hidden="true"></span>
+              </div>
+              <div class="cursor-pointer d-inline-block" title="Suggest a correction for this section" data-toggle="modal" data-target="#correctionModal">
+                <span class="fas fa-exclamation-triangle fa-fw fa-lg text-danger" aria-hidden="true"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <span
+        class="h5 cursor-pointer mx-2"
+        data-toggle="collapse"
+        data-target="#section-collapse-{{ loop.index }}"
+      >
+        <span class="fas fa-ellipsis-h" aria-hidden="true"></span>
+      </span>
+    </div>
+  </div>
+  {#<div class="list-group-item list-group-item-action flex-column align-items-start border-top-0 border-bottom-0 p-2">#}
+    {#<div style="padding-left: 86px; padding-right: 100px;">#}
+      {#<span class="fab fa-lightbulb" aria-hidden="true"></span> An additional topic was discussed in this section: [Topic Name] [4/2/1]#}
+    {#</div>#}
+  {#</div>#}
+  {% endfor %}
+</div>

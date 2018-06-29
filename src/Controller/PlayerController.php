@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Episode;
+use App\Entity\EpisodePart;
 use App\Form\ChatMessageType;
 use App\Repository\ChatMessageRepository;
 use App\Repository\EpisodeRepository;
@@ -49,8 +50,17 @@ class PlayerController extends Controller
             'postedAt' => 0,
         ]);
 
+        if (true || count($parts) === 0) {
+            $parts = [
+                (new EpisodePart)
+                    ->setName('Start of Show')
+                    ->setStartsAt(0)
+            ];
+        }
+
         return $this->render('player/episode.html.twig', [
             'episode' => $episode,
+            'parts' => $parts,
             'chatMessages' => $messages,
             'transcriptLines' => $lines,
 
