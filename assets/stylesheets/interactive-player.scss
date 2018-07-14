@@ -1,0 +1,65 @@
+.site-interactive-player {
+
+}
+
+.site-chat-messages {
+  .site-chat-message {
+    padding: .125rem 0;
+
+    .message-timestamp {
+      min-width: 50px;
+      font-size: .8rem;
+
+      @include media-breakpoint-up(md) {
+        min-width: 70px;
+        font-size: 1rem;
+      }
+    }
+  }
+}
+
+.site-episode-parts {
+  .episode-actions {
+    min-width: 50px;
+
+    @include media-breakpoint-up(md) {
+      min-width: 70px;
+    }
+  }
+
+  .text-sm {
+    font-size: .8rem;
+
+    @include media-breakpoint-up(md) {
+      font-size: .95rem;
+    }
+  }
+}
+
+.site-transcript-lines {
+  .transcript-action {
+    width: 55px;
+
+    @include media-breakpoint-up(md) {
+      width: 100px;
+    }
+
+    .transcript-text {
+      display: block;
+      padding-top: 5px;
+      padding-right: 3px;
+      font-size: .8rem;
+
+      @include media-breakpoint-up(md) {
+        display: inline;
+        padding-top: 0;
+        padding-right: 0;
+        font-size: 1rem;
+      }
+    }
+  }
+
+  .transcript-highlight {
+    background-color: #ebc944aa;
+  }
+}

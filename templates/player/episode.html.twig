@@ -7,16 +7,19 @@
 {% set tabs = [
   {
     key: 'info',
+    icon: '<span class="fal fa-fw fa-info" aria-hidden="true"></span> <span class="d-md-none">' ~ episode.code ~ '</span>',
     name: title,
     contents: 'player/blocks/information.html.twig',
   },
   {
     key: 'transcript',
+    icon: '<span class="fal fa-fw fa-list-ol" aria-hidden="true"></span>',
     name: 'Transcript <span class="badge badge-secondary text-uppercase">Beta</span>',
     contents: 'player/blocks/transcript.html.twig',
   },
   {
     key: 'chat',
+    icon: '<span class="fal fa-fw fa-smile" aria-hidden="true"></span>',
     name: 'Troll room',
     contents: 'player/blocks/chat.html.twig',
   },
@@ -28,12 +31,14 @@
 {% include 'player/blocks/correction_modal.html.twig' %}
 {% endblock %}
 
+{% block body_attributes %}data-player="{{ episode.recordingUri }}"{% endblock %}
+
 {% block content %}
-<div class="site-player" data-player="{{ episode.recordingUri }}">
+<div class="site-masthead-player">
   <div class="container">
-    <div class="d-md-flex">
-      <img src="{{ episode.coverUri }}" class="shadow-sm">
-      <div class="flex-grow-1 m-md-3 mx-lg-5 mt-lg-5">
+    <div class="d-sm-flex">
+      <img src="{{ episode.coverUri }}" class="masthead-cover img-fluid">
+      <div class="flex-grow-1 pb-3 pb-sm-0 m-sm-3 m-md-4 m-lg-5">
         <h1>{{ title }}</h1>
         <h4>{{ episode.author }}</h4>
         <div class="btn-toolbar pt-2">
@@ -49,32 +54,31 @@
           </div>
         </div>
         <div class="btn-toolbar d-none d-lg-flex align-items-center justify-content-center pt-5">
-          {# todo copy for mobile #}
-          <div class="mx-2">
+          <div class="mx-2 cursor-pointer" data-player-action="rewind" data-amount="60">
             <span class="fa-layers fa-fw fa-2x">
               <i class="fal fa-undo-alt"></i>
               <span class="fa-layers-text fa-inverse" data-fa-transform="shrink-10 down-1">60</span>
             </span>
           </div>
-          <div class="mx-2">
+          <div class="mx-2 cursor-pointer" data-player-action="rewind" data-amount="15">
             <span class="fa-layers fa-fw fa-2x">
               <i class="fal fa-undo-alt"></i>
               <span class="fa-layers-text fa-inverse" data-fa-transform="shrink-10 down-1">15</span>
             </span>
           </div>
-          <div class="mx-5" data-player-action="play">
+          <div class="mx-5 cursor-pointer" data-player-action="play">
             <span class="fal fa-3x fa-play" aria-hidden="true"></span>
           </div>
-          <div class="mx-5" data-player-action="pause">
+          <div class="mx-5 cursor-pointer" data-player-action="pause">
             <span class="fal fa-3x fa-pause" aria-hidden="true"></span>
           </div>
-          <div class="mx-2">
+          <div class="mx-2 cursor-pointer" data-player-action="forward" data-amount="15">
             <span class="fa-layers fa-fw fa-2x">
               <i class="fal fa-redo-alt"></i>
               <span class="fa-layers-text fa-inverse" data-fa-transform="shrink-10 down-1">15</span>
             </span>
           </div>
-          <div class="mx-2">
+          <div class="mx-2 cursor-pointer" data-player-action="forward" data-amount="60">
             <span class="fa-layers fa-fw fa-2x">
               <i class="fal fa-redo-alt"></i>
               <span class="fa-layers-text fa-inverse" data-fa-transform="shrink-10 down-1">60</span>
@@ -84,7 +88,7 @@
       </div>
     </div>
     <div>
-      <div class="py-3">
+      <div class="d-none d-lg-block py-3">
         <div><span data-player-data="timer">0:00</span> / <span data-player-data="duration">0:00</span></div>
         <div class="bg-white cursor-pointer mt-2 mb-2" data-player-action="progress" style="height: 5px;">
           <div class="bg-primary h-100" data-player-data="progress" style="width: 0;"></div>
@@ -94,26 +98,27 @@
   </div>
 </div>
 
-<div id="full_player" class="container vh-100">
+<div class="site-interactive-player container vh-100">
   <div class="row">
-    <div id="full_player_main" class="col-12">
+    <div class="player-main-col col-12">
       <div class="d-flex flex-column vh-100">
         <div class="flex-grow-0 bg-white position-sticky top-0 pt-3">
           <ul class="nav nav-tabs">
             {% for tab in tabs %}
             <li class="nav-item">
-              <a
+              <div
                 id="{{ tab.key }}-tab"
-                class="nav-link {{ loop.first ? 'active' : '' }}"
-                href="#{{ tab.key }}"
+                class="nav-link cursor-pointer {{ loop.first ? 'active' : '' }}"
+                href="#{{ tab.key }}-tabcontent"
                 role="tab"
                 data-toggle="tab"
                 aria-controls="{{ tab.key }}"
                 aria-selected="{{ loop.first ? 'true' : 'false' }}"
                 {% if tab.key == 'chat' %}data-chat-activator{% endif %}
               >
-                {{ tab.name|raw }}
-              </a>
+                {{ tab.icon|raw }}
+                <span class="d-none d-md-inline ml-1">{{ tab.name|raw }}</span>
+              </div>
             </li>
             {% endfor %}
 
@@ -124,15 +129,15 @@
         </div>
         <div class="flex-grow-1 tab-content pt-4">
           {% for tab in tabs %}
-          <div class="tab-pane fade {{ loop.first ? 'active show' : '' }}" id="{{ tab.key }}" role="tabpanel" aria-labelledby="{{ tab.key }}-tab">
+          <div class="tab-pane fade {{ loop.first ? 'active show' : '' }}" id="{{ tab.key }}-tabcontent" role="tabpanel" aria-labelledby="{{ tab.key }}-tab">
             {% include tab.contents %}
           </div>
           {% endfor %}
         </div>
         <div class="flex-grow-0 position-sticky bg-white py-3" style="bottom: 0; z-index: 1000;">
-          <div class="d-flex">
-            <div class="btn-toolbar d-flex align-items-center justify-content-center">
-              <div class="mx-3">
+          <div class="d-md-flex">
+            <div class="btn-toolbar d-flex align-items-center justify-content-center mb-2 mb-md-0">
+              <div class="mx-3" data-player-action="rewind" data-amount="15">
                 <span class="fa-layers fa-fw fa-lg">
                   <i class="fal fa-undo-alt"></i>
                   <span class="fa-layers-text" data-fa-transform="shrink-10 down-1">15</span>
@@ -144,7 +149,7 @@
               <div class="mx-2" data-player-action="pause">
                 <span class="fal fa-2x fa-pause" aria-hidden="true"></span>
               </div>
-              <div class="mx-3">
+              <div class="mx-3" data-player-action="forward" data-amount="15">
                 <span class="fa-layers fa-fw fa-lg">
                   <i class="fal fa-redo-alt"></i>
                   <span class="fa-layers-text" data-fa-transform="shrink-10 down-1">15</span>
@@ -154,17 +159,17 @@
             <div class="flex-grow-1">
               <div>
                 <span data-player-data="timer">0:00</span> / <span data-player-data="duration">0:00</span>
-                <span class="ml-4">Now playing: 001 - Start of Show</span>
+                <span class="d-none d-md-inline ml-4">Now playing: 001 - Start of Show</span>
               </div>
               <div class="bg-dark cursor-pointer mt-2 mb-2" data-player-action="progress" style="height: 5px;">
-                <div class="bg-success h-100" data-player-data="progress" style="width: 0;"></div>
+                <div class="bg-primary h-100" data-player-data="progress" style="width: 0;"></div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <div id="full_player_aside" class="col-xl-4 d-none">
+    <div class="player-aside-col col-xl-4 d-none">
       <div class="d-flex flex-column vh-100 mvh-100 position-sticky top-0 pt-3">
         <div class="flex-shrink-0">
           <ul class="nav nav-tabs">

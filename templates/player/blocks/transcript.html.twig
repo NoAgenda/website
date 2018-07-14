@@ -1,14 +1,14 @@
-<ul class="list-unstyled">
+<ul class="site-transcript-lines list-unstyled">
   {% for line in transcriptLines %}
   <li
     class="site-transcript-line media py-1"
     data-timestamp="{{ line.timestamp }}"
     data-duration="{{ line.duration }}"
   >
-    <div class="text-right mr-3" style="width: 100px;">
-      <div class="cursor-pointer" data-player-action="play-transcript">
+    <div class="transcript-action text-right mr-3">
+      <div class="cursor-pointer" data-player-action="play-timestamp" data-timestamp="{{ line.timestamp }}">
         <span class="fas fa-sm fa-play mr-2" aria-hidden="true"></span>
-        {{ line.timestamp|prettyTimestamp }}
+        <span class="transcript-text">{{ line.timestamp|prettyTimestamp }}</span>
       </div>
     </div>
     <div class="media-body">

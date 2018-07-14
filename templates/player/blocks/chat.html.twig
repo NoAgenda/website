@@ -6,16 +6,4 @@
   <div class="flex-grow-1 oy-scroll">
     {% include 'player/blocks/chat_container.html.twig' %}
   </div>
-
-  <div class="flex-grow-0 py-2">
-    {{ form_start(chatMessageForm) }}
-      <div class="input-group">
-        {{ form_widget(chatMessageForm.contents) }}
-        <span class="input-group-append">
-          <button class="btn btn btn-primary" type="submit" disabled>Post at <span class="fal fa-clock" aria-hidden="true"></span> <span data-player-data="timer">0:00</span></button>
-        </span>
-      </div>
-      {{ form_rest(chatMessageForm) }}
-    {{ form_end(chatMessageForm) }}
-  </div>
 </div>

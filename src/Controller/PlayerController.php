@@ -49,16 +49,19 @@ class PlayerController extends Controller
     {
         $lines = $this->transcriptLineRepository->findByEpisode($episode);
 
-        $messageForm = $this->createForm(ChatMessageType::class, [
-            'episode' => $episode->getCode(),
-            'postedAt' => 0,
-        ]);
+        // $messageForm = $this->createForm(ChatMessageType::class, [
+        //     'episode' => $episode->getCode(),
+        //     'postedAt' => 0,
+        // ]);
 
         if (true || count($parts) === 0) {
             $parts = [
                 (new EpisodePart)
                     ->setName('Start of Show')
-                    ->setStartsAt(0)
+                    ->setStartsAt(0),
+                (new EpisodePart)
+                    ->setName('A Very Long Section Title For Debugging Purposes')
+                    ->setStartsAt(7200)
             ];
         }
 
@@ -67,7 +70,7 @@ class PlayerController extends Controller
             'parts' => $parts,
             'transcriptLines' => $lines,
 
-            'chatMessageForm' => $messageForm->createView(),
+            // 'chatMessageForm' => $messageForm->createView(),
         ]);
     }
 }

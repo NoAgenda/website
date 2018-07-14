@@ -1,41 +1,19 @@
 @import "~bootstrap/scss/bootstrap";
 
+@import "stylesheets/masthead-player";
+@import "stylesheets/interactive-player";
+
 .navbar {
   z-index: 1000;
-}
-
-.site-player {
-  color: $white;
-  background: $gray-700;
-
-  img {
-    height: 330px - ($grid-gutter-width / 2);
-    width: 330px - ($grid-gutter-width / 2);
-    margin: ($grid-gutter-width / 2) 0;
-  }
-
-  .player-toolbar {
-    > div {
-      line-height: 3em;
-    }
-
-    svg {
-      line-height: 3em;
-    }
-  }
-}
-
-.site-transcript-highlight {
-  background-color: #ebc944aa;
 }
 
 .bg-gray { background: #c5c5c5; }
 
 .cursor-pointer { cursor: pointer; }
 
-.text-sm { font-size: .95rem; }
-
 .oy-scroll { overflow-y: scroll; }
+
+.text-sm { font-size: .95rem; }
 
 .top-0 { top: 0; }
 

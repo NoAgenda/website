@@ -39,6 +39,18 @@ export default class Player {
       this.pause();
     });
 
+    jQuery(document).on('click', '[data-player-action="forward"]', (event) => {
+      let amount = jQuery(event.currentTarget).data('amount');
+
+      this.seekTimestamp(this.timestamp + amount);
+    });
+
+    jQuery(document).on('click', '[data-player-action="rewind"]', (event) => {
+      let amount = jQuery(event.currentTarget).data('amount');
+
+      this.seekTimestamp(this.timestamp - amount);
+    });
+
     jQuery(document).on('click', '[data-player-action="progress"]', (event) => {
       let distance = event.pageX - jQuery(event.currentTarget).offset().left;
       let percentage = distance / jQuery(event.currentTarget).width();
@@ -46,11 +58,28 @@ export default class Player {
       this.seekPercentage(percentage);
     });
 
-    jQuery(document).on('click', '[data-player-action="play-transcript"]', (event) => {
-      let container = jQuery(event.currentTarget).closest('.site-transcript-line');
-      let timestamp = container.data('timestamp');
+    jQuery(document).on('click', '[data-player-action="play-timestamp"]', (event) => {
+      event.stopPropagation();
+
+      let timestamp = jQuery(event.currentTarget).data('timestamp');
 
       this.seekTimestamp(timestamp);
+
+      if (!this.sound.playing()) {
+        this.sound.play();
+      }
+    });
+
+    jQuery(document).on('click', '.site-episode-part', (event) => {
+      let collapse = jQuery(event.currentTarget).find('.collapse');
+
+      if (!collapse.hasClass('show')) {
+        collapse.collapse('show');
+      }
+    });
+
+    jQuery(document).on('show.bs.collapse', '.site-episode-parts .collapse', () => {
+      jQuery('.site-episode-parts .collapse.show').collapse('hide');
     });
   }
 
@@ -141,18 +170,18 @@ export default class Player {
       }
     }
 
-    let highlightedLines = jQuery('.site-transcript-line.site-transcript-highlight');
+    let highlightedLines = jQuery('.site-transcript-line.transcript-highlight');
     let previousLineIsOnScreen = false;
 
     for (let line of highlightedLines) {
       if (line !== lastActiveLine && activeLines.indexOf(line) === -1) {
-        jQuery(line).removeClass('site-transcript-highlight');
+        jQuery(line).removeClass('transcript-highlight');
         previousLineIsOnScreen = Player.lineIsOnScreen(line, 0);
       }
     }
 
-    jQuery(lastActiveLine).addClass('site-transcript-highlight');
-    activeLines.map(line => jQuery(line).addClass('site-transcript-highlight'));
+    jQuery(lastActiveLine).addClass('transcript-highlight');
+    activeLines.map(line => jQuery(line).addClass('transcript-highlight'));
 
     // Determine if a transition of transcript lines occurred and scrolls to it if it goes out of screen boundary
     if (previousLineIsOnScreen && !Player.lineIsOnScreen(lastActiveLine, 200) && Player.lineIsOnScreen(lastActiveLine, 0)) {

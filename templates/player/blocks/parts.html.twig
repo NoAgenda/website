@@ -1,10 +1,12 @@
-<div class="list-group">
+<div class="site-episode-parts list-group">
   {% for part in parts %}
-  <div class="list-group-item list-group-item-action flex-column align-items-start p-2">
+  <div class="site-episode-part list-group-item list-group-item-action flex-column align-items-start p-2">
     <div class="d-flex w-100 justify-content-between">
       <div class="d-flex mb-1">
-        <div class="text-center mr-3" style="min-width: 70px;">
-          <span class="h5 d-block mb-2"><span class="fas fa-play" aria-hidden="true"></span></span>
+        <div class="episode-actions text-center mr-3">
+          <div class="h5 mb-2 cursor-pointer" data-player-action="play-timestamp" data-timestamp="{{ part.startsAt }}">
+            <span class="fas fa-play" aria-hidden="true"></span>
+          </div>
           <span class="text-sm">{{ part.startsAt|prettyTimestamp }}</span>
         </div>
         <div>
@@ -28,7 +30,7 @@
         </div>
       </div>
       <span
-        class="h5 cursor-pointer mx-2"
+        class="d-none d-md-inline-block h5 cursor-pointer mx-2"
         data-toggle="collapse"
         data-target="#section-collapse-{{ loop.index }}"
       >

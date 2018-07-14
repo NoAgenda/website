@@ -14,9 +14,6 @@ export default class PlayerChat {
     this.lastTimestamp = false;
 
     this.registerEventListeners();
-
-    // Reset interface
-    jQuery('form[name="chat_message"]').get(0).reset();
   }
 
   registerEventListeners() {
@@ -36,36 +33,6 @@ export default class PlayerChat {
       jQuery(window).resize(this.resize);
       jQuery('#chat_container').resize(this.resize);
     });
-
-    jQuery(document).on('submit', 'form[name="chat_message"]', (event) => {
-      event.preventDefault();
-
-      let messageForm = jQuery('form[name="chat_message"]');
-      let messageContentsInput = messageForm.find('[name="chat_message[contents]"]');
-      let messagePostedAtInput = messageForm.find('[name="chat_message[postedAt]"]');
-
-      if (messagePostedAtInput.val() < 1) {
-        alert('Please start playing before posting a message.');
-
-        return;
-      }
-
-      if (messageContentsInput.val().length < 1) {
-        alert('Please enter a message before trying to post.');
-
-        return;
-      }
-
-      let data = {};
-      messageForm.serializeArray().forEach((value) => {
-        let name = value.name.match(/\[([^)]+)]/)[1];
-        data[name] = value.value;
-      });
-
-      messageForm.get(0).reset();
-
-      postMessage(data);
-    });
   }
 
   resize() {
@@ -76,7 +43,7 @@ export default class PlayerChat {
     // viewportContainer.css('height', 'calc(' + viewportContainer.closest('.flex-grow-1').height() + 'px - 1.5rem)');
     viewportContainer.css('height', viewportContainer.closest('.flex-grow-1').height() + 'px');
 
-    jQuery('#chat').addClass('active').addClass('show');
+    jQuery('#chat-tabcontent').addClass('active').addClass('show');
   }
 
   reset(timestamp) {
@@ -100,28 +67,11 @@ export default class PlayerChat {
   }
 
   step(timestamp) {
-    if (timestamp === this.timestamp) {
-      return;
-    }
-
     this.timestamp = timestamp;
 
     if (!this.initialized) {
       return;
     }
-
-    // Update message form
-    let messageForm = jQuery('form[name="chat_message"]');
-    let messagePostedAtInput = messageForm.find('[name="chat_message[postedAt]"]');
-
-    if (Math.trunc(timestamp) > 0) {
-      messageForm.find('[type="submit"]').removeAttr('disabled');
-    }
-    else {
-      messageForm.find('[type="submit"]').attr('disabled', 'disabled');
-    }
-
-    messagePostedAtInput.val(Math.trunc(timestamp));
 
     let messages = jQuery('.site-chat-message');
     if (messages.length >= 500) {

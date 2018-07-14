@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!--
-    {% block title %}{% endblock %}
+    {% block title '' %}
     No Agenda Player
     -->
 
@@ -17,8 +17,8 @@
     <link rel="stylesheet" href="{{ asset('/assets/app.css') }}">
     {% endblock %}
   </head>
-  <body>
-    {% block body %}{% endblock %}
+  <body {% block body_attributes '' %}>
+    {% block body '' %}
 
     {% block scripts %}
     <script src="{{ asset('/assets/app.js') }}"></script>

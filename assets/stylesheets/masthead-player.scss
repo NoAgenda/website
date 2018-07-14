@@ -1,0 +1,44 @@
+.site-masthead-player {
+  color: $white;
+  background: $gray-700;
+
+  .masthead-cover {
+    margin: ($grid-gutter-width / 2) 0;
+
+    @include media-breakpoint-up(sm) {
+      height: 230px - ($grid-gutter-width / 2);
+      width: 230px - ($grid-gutter-width / 2);
+      margin: ($grid-gutter-width / 2) 0;
+    }
+
+    @include media-breakpoint-up(md) {
+      height: 330px - ($grid-gutter-width / 2);
+      width: 330px - ($grid-gutter-width / 2);
+      margin: ($grid-gutter-width / 2) 0;
+    }
+  }
+
+  h1 {
+    font-size: 1.5rem;
+
+    @include media-breakpoint-up(md) {
+      font-size: 1.8rem;
+    }
+
+    @include media-breakpoint-up(lg) {
+      font-size: $h1-font-size;
+    }
+  }
+
+  h4 {
+    font-size: 1rem;
+
+    @include media-breakpoint-up(lg) {
+      font-size: 1.2rem;
+    }
+
+    @include media-breakpoint-up(lg) {
+      font-size: $h4-font-size;
+    }
+  }
+}
