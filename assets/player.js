@@ -1,9 +1,13 @@
 import {Howl} from 'howler';
 import jQuery from 'jquery';
+import PlayerChat from './player-chat';
 
 export default class Player {
   constructor(uri) {
+    this.timestamp = 0;
     this.uri = uri;
+
+    this.chat = new PlayerChat();
     this.sound = new Howl({
       src: [uri],
       onload: () => {
@@ -48,88 +52,16 @@ export default class Player {
 
       this.seekTimestamp(timestamp);
     });
-
-    this.stepChat(0);
-    jQuery('form[name="chat_message"]').get(0).reset();
-
-    jQuery(document).on('submit', 'form[name="chat_message"]', (event) => {
-      event.preventDefault();
-
-      let messageForm = jQuery('form[name="chat_message"]');
-      let messageContentsInput = messageForm.find('[name="chat_message[contents]"]');
-      let messagePostedAtInput = messageForm.find('[name="chat_message[postedAt]"]');
-
-      if (messagePostedAtInput.val() < 1) {
-        alert('Please start playing before posting a message.');
-
-        return;
-      }
-
-      if (messageContentsInput.val().length < 1) {
-        alert('Please enter a message before trying to post.');
-
-        return;
-      }
-
-      let data = {};
-      messageForm.serializeArray().forEach((value) => {
-        let name = value.name.match(/\[([^)]+)]/)[1];
-        data[name] = value.value;
-      });
-
-      messageForm.get(0).reset();
-
-      let requestOptions = {
-        method: 'POST',
-        credentials: 'same-origin',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      };
-      fetch('/chat', requestOptions)
-        .then(response => response.json())
-        .then(response => {
-          if (typeof response.status === 'undefined' || response.status === 'error') {
-            alert('An error occurred while trying to post your message.');
-          }
-
-          let messages = jQuery('.site-chat-message');
-          let lastMessage = null;
-
-          for (let message of messages) {
-            let messageTimestamp = jQuery(message).data('timestamp');
-
-            if (messageTimestamp <= response.message.postedAt) {
-              lastMessage = message;
-            }
-            else {
-              break;
-            }
-          }
-
-          let newMessage = '' +
-            '<li class="site-chat-message media text-sm" style="display: flex; padding: .125rem 0; background: rgba(255, 193, 7, .3);" data-timestamp="' + response.message.postedAt + '">' +
-              '<div class="text-right mr-3" style="width: 80px;">' + Player.formatTime(response.message.postedAt) + '</div>' +
-              '<div class="media-body">' +
-                '<strong>' + response.message.username + '</strong>: ' + response.message.contents +
-              '</div>' +
-            '</li>'
-          ;
-
-          if (lastMessage === null) {
-            jQuery('.site-chat-messages > ul').prepend(newMessage);
-          }
-          else {
-            jQuery(lastMessage).after(newMessage);
-          }
-        })
-      ;
-    });
   }
 
   play() {
     this.sound.play();
+
+    let timestamp = this.sound.seek() || 0;
+
+    if (timestamp !== this.timestamp) {
+      this.sound.seek(this.timestamp);
+    }
   }
 
   pause() {
@@ -137,26 +69,44 @@ export default class Player {
   }
 
   seekPercentage(percentage) {
+    let duration = this.sound.duration() || 0;
+    let timestamp = percentage * duration;
+
     if (this.sound.playing()) {
-      this.sound.seek(this.sound.duration() * percentage);
+      this.sound.seek(timestamp);
     }
+    else {
+      this.timestamp = timestamp;
+
+      this.stepInterface(timestamp);
+      this.stepTranscript(timestamp);
+    }
+
+    this.chat.reset(timestamp);
   }
 
   seekTimestamp(timestamp) {
     if (this.sound.playing()) {
       this.sound.seek(timestamp);
     }
+    else {
+      this.timestamp = timestamp;
+
+      this.stepInterface(timestamp);
+      this.stepTranscript(timestamp);
+    }
+
+    this.chat.reset(timestamp);
   }
 
   step() {
     let timestamp = this.sound.seek() || 0;
-    let progress = (((timestamp / this.sound.duration()) * 100) || 0) + '%';
 
-    jQuery('[data-player-data="timer"]').text(Player.formatTime(timestamp));
-    jQuery('[data-player-data="progress"]').css('width', progress);
+    this.timestamp = timestamp;
 
-    this.stepChat(timestamp);
+    this.stepInterface(timestamp);
     this.stepTranscript(timestamp);
+    this.chat.step(timestamp);
 
     // If the sound is still playing, continue stepping.
     if (this.sound.playing()) {
@@ -164,38 +114,12 @@ export default class Player {
     }
   }
 
-  stepChat(timestamp) {
-    let messageForm = jQuery('form[name="chat_message"]');
-    let messagePostedAtInput = messageForm.find('[name="chat_message[postedAt]"]');
+  stepInterface(timestamp) {
+    let duration = this.sound.duration() || 0;
+    let progress = (((timestamp / duration) * 100) || 0) + '%';
 
-    messagePostedAtInput.val(Math.trunc(timestamp));
-
-    let messageContainer = jQuery('.site-chat-messages');
-    let maxScrollTop = messageContainer.get(0).scrollHeight - messageContainer.height();
-
-    if (Math.trunc(timestamp) > 0) {
-      messageForm.find('[type="submit"]').removeAttr('disabled');
-    }
-    else {
-      messageForm.find('[type="submit"]').attr('disabled', 'disabled');
-    }
-
-    let messages = jQuery('.site-chat-message');
-
-    for (let message of messages) {
-      let messageTimestamp = jQuery(message).data('timestamp');
-
-      if (messageTimestamp <= timestamp) {
-        jQuery(message).css('display', 'flex');
-      }
-      else {
-        jQuery(message).css('display', 'none');
-      }
-    }
-
-    if (messageContainer.get(0).scrollTop === maxScrollTop) {
-      messageContainer.get(0).scrollTop = messageContainer.get(0).scrollHeight;
-    }
+    jQuery('[data-player-data="timer"]').text(Player.formatTime(timestamp));
+    jQuery('[data-player-data="progress"]').css('width', progress);
   }
 
   stepTranscript(timestamp) {
@@ -230,7 +154,8 @@ export default class Player {
     jQuery(lastActiveLine).addClass('site-transcript-highlight');
     activeLines.map(line => jQuery(line).addClass('site-transcript-highlight'));
 
-    if (previousLineIsOnScreen && !Player.lineIsOnScreen(lastActiveLine, 200)) {
+    // Determine if a transition of transcript lines occurred and scrolls to it if it goes out of screen boundary
+    if (previousLineIsOnScreen && !Player.lineIsOnScreen(lastActiveLine, 200) && Player.lineIsOnScreen(lastActiveLine, 0)) {
       jQuery('html,body').animate({
         scrollTop: jQuery(lastActiveLine).offset().top + jQuery(lastActiveLine).height() + 250 - jQuery(window).height(),
       });

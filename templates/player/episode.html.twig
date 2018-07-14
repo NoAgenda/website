@@ -15,6 +15,11 @@
     name: 'Transcript <span class="badge badge-secondary text-uppercase">Beta</span>',
     contents: 'player/blocks/transcript.html.twig',
   },
+  {
+    key: 'chat',
+    name: 'Troll room',
+    contents: 'player/blocks/chat.html.twig',
+  },
 ] %}
 
 {% block body %}
@@ -89,11 +94,11 @@
   </div>
 </div>
 
-<div class="container-fluid vh-100">
+<div id="full_player" class="container vh-100">
   <div class="row">
-    <div class="col-xl-8">
-      <div>
-        <div class="bg-white position-sticky top-0 pt-3">
+    <div id="full_player_main" class="col-12">
+      <div class="d-flex flex-column vh-100">
+        <div class="flex-grow-0 bg-white position-sticky top-0 pt-3">
           <ul class="nav nav-tabs">
             {% for tab in tabs %}
             <li class="nav-item">
@@ -105,23 +110,61 @@
                 data-toggle="tab"
                 aria-controls="{{ tab.key }}"
                 aria-selected="{{ loop.first ? 'true' : 'false' }}"
+                {% if tab.key == 'chat' %}data-chat-activator{% endif %}
               >
                 {{ tab.name|raw }}
               </a>
             </li>
             {% endfor %}
+
+            <li class="nav-item ml-auto d-none d-lg-block">
+              <a id="full_player_chat_toggle" class="nav-link" href="#">Expand chat</a>
+            </li>
           </ul>
         </div>
-        <div class="tab-content pt-4">
+        <div class="flex-grow-1 tab-content pt-4">
           {% for tab in tabs %}
           <div class="tab-pane fade {{ loop.first ? 'active show' : '' }}" id="{{ tab.key }}" role="tabpanel" aria-labelledby="{{ tab.key }}-tab">
             {% include tab.contents %}
           </div>
           {% endfor %}
         </div>
+        <div class="flex-grow-0 position-sticky bg-white py-3" style="bottom: 0; z-index: 1000;">
+          <div class="d-flex">
+            <div class="btn-toolbar d-flex align-items-center justify-content-center">
+              <div class="mx-3">
+                <span class="fa-layers fa-fw fa-lg">
+                  <i class="fal fa-undo-alt"></i>
+                  <span class="fa-layers-text" data-fa-transform="shrink-10 down-1">15</span>
+                </span>
+              </div>
+              <div class="mx-2" data-player-action="play">
+                <span class="fal fa-2x fa-play" aria-hidden="true"></span>
+              </div>
+              <div class="mx-2" data-player-action="pause">
+                <span class="fal fa-2x fa-pause" aria-hidden="true"></span>
+              </div>
+              <div class="mx-3">
+                <span class="fa-layers fa-fw fa-lg">
+                  <i class="fal fa-redo-alt"></i>
+                  <span class="fa-layers-text" data-fa-transform="shrink-10 down-1">15</span>
+                </span>
+              </div>
+            </div>
+            <div class="flex-grow-1">
+              <div>
+                <span data-player-data="timer">0:00</span> / <span data-player-data="duration">0:00</span>
+                <span class="ml-4">Now playing: 001 - Start of Show</span>
+              </div>
+              <div class="bg-dark cursor-pointer mt-2 mb-2" data-player-action="progress" style="height: 5px;">
+                <div class="bg-success h-100" data-player-data="progress" style="width: 0;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="col-xl-4">
+    <div id="full_player_aside" class="col-xl-4 d-none">
       <div class="d-flex flex-column vh-100 mvh-100 position-sticky top-0 pt-3">
         <div class="flex-shrink-0">
           <ul class="nav nav-tabs">
@@ -130,17 +173,17 @@
             </li>
           </ul>
         </div>
-        <div class="flex-grow-1 oy-scroll site-chat-messages">
-          {% include 'player/blocks/chat.html.twig' %}
-        </div>
+        {#<div class="flex-grow-1 oy-scroll site-chat-messages">#}
+          {#{% include 'player/blocks/chat_container.html.twig' %}#}
+        {#</div>#}
         <div class="flex-shrink-0 p-3">
-          {{ form_start(chatMessageForm) }}
-            {{ form_widget(chatMessageForm.contents) }}
-            {{ form_rest(chatMessageForm) }}
-            <div class="btn-toolbar mt-2">
-              <button class="btn btn-sm btn-primary ml-auto" type="submit" disabled>Post at <span class="fal fa-clock" aria-hidden="true"></span> <span data-player-data="timer">0:00</span></button>
-            </div>
-          {{ form_end(chatMessageForm) }}
+          {#{{ form_start(chatMessageForm) }}#}
+            {#{{ form_widget(chatMessageForm.contents) }}#}
+            {#{{ form_rest(chatMessageForm) }}#}
+            {#<div class="btn-toolbar mt-2">#}
+              {#<button class="btn btn-sm btn-primary ml-auto" type="submit" disabled>Post at <span class="fal fa-clock" aria-hidden="true"></span> <span data-player-data="timer">0:00</span></button>#}
+            {#</div>#}
+          {#{{ form_end(chatMessageForm) }}#}
         </div>
       </div>
     </div>

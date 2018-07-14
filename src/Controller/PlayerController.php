@@ -12,15 +12,20 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class PlayerController extends Controller
 {
+    private $serializer;
+
     private $episodeRepository;
     private $chatMessageRepository;
     private $transcriptLineRepository;
 
-    public function __construct(EpisodeRepository $episodeRepository, ChatMessageRepository $chatMessageRepository, TranscriptLineRepository $transcriptLineRepository)
+    public function __construct(SerializerInterface $serializer, EpisodeRepository $episodeRepository, ChatMessageRepository $chatMessageRepository, TranscriptLineRepository $transcriptLineRepository)
     {
+        $this->serializer = $serializer;
+
         $this->episodeRepository = $episodeRepository;
         $this->chatMessageRepository = $chatMessageRepository;
         $this->transcriptLineRepository = $transcriptLineRepository;
@@ -42,7 +47,6 @@ class PlayerController extends Controller
      */
     public function playerAction(Episode $episode): Response
     {
-        $messages = $this->chatMessageRepository->findByEpisode($episode);
         $lines = $this->transcriptLineRepository->findByEpisode($episode);
 
         $messageForm = $this->createForm(ChatMessageType::class, [
@@ -61,7 +65,6 @@ class PlayerController extends Controller
         return $this->render('player/episode.html.twig', [
             'episode' => $episode,
             'parts' => $parts,
-            'chatMessages' => $messages,
             'transcriptLines' => $lines,
 
             'chatMessageForm' => $messageForm->createView(),

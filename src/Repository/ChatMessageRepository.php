@@ -27,4 +27,30 @@ class ChatMessageRepository extends ServiceEntityRepository
     {
         return $this->findBy(['episode' => $episode], ['postedAt' => 'ASC', 'source' => 'DESC', 'createdAt' => 'ASC']);
     }
+
+    /**
+     * @return ChatMessage[]
+     */
+    public function findByEpisodeCollection(Episode $episode, int $collection): array
+    {
+        $builder = $this->createQueryBuilder('message');
+
+        $builder
+            ->where($builder->expr()->andX(
+                $builder->expr()->eq('message.episode', ':episode'),
+                $builder->expr()->gte('message.postedAt', ':collectionStart'),
+                $builder->expr()->lte('message.postedAt', ':collectionEnd')
+            ))
+            ->setParameter('episode', $episode->getId())
+            ->setParameter('collectionStart', $collection * 1000)
+            ->setParameter('collectionEnd', ($collection + 1) * 1000)
+            ->addOrderBy('message.postedAt', 'ASC')
+            ->addOrderBy('message.source', 'DESC')
+            ->addOrderBy('message.createdAt', 'ASC')
+        ;
+
+        $query = $builder->getQuery();
+
+        return $query->getResult();
+    }
 }

@@ -1,25 +1,21 @@
-<ul class="list-unstyled mb-0">
-  {% for message in chatMessages %}
-  {% set customStyling = '' %}
-  {% set isTrollRoom = message.source == constant('App\\Entity\\ChatMessage::SOURCE_TROLL_ROOM') %}
-  {% set isAuthor = app.user and app.user.username == message.username %}
-  {% if isAuthor %}
-    {% set customStyling = 'background: rgba(255, 193, 7, .3);' %}
-  {% endif %}
-  {% if isTrollRoom %}
-    {% set customStyling = 'background: rgba(0, 123, 255, .3);' %}
-  {% endif %}
-  <li
-    class="site-chat-message media text-sm"
-    style="display: none; padding: .125rem 0; {{ customStyling }}"
-    data-timestamp="{{ message.postedAt }}"
-  >
-    <div class="text-right text-muted mr-3" style="width: 70px;">
-      {{ message.postedAt|prettyTimestamp }}
-    </div>
-    <div class="media-body">
-      <strong>{{ message.username }}</strong>: {{ message.contents|nl2br }}
-    </div>
-  </li>
-  {% endfor %}
-</ul>
+<div id="chat_loading" class="text-center">
+  <span class="fas fa-spinner fa-spin" aria-hidden="true"></span> Loading troll messages...
+</div>
+
+<div id="chat_container" class="d-none flex-column">
+  <div class="flex-grow-1 oy-scroll">
+    {% include 'player/blocks/chat_container.html.twig' %}
+  </div>
+
+  <div class="flex-grow-0 py-2">
+    {{ form_start(chatMessageForm) }}
+      <div class="input-group">
+        {{ form_widget(chatMessageForm.contents) }}
+        <span class="input-group-append">
+          <button class="btn btn btn-primary" type="submit" disabled>Post at <span class="fal fa-clock" aria-hidden="true"></span> <span data-player-data="timer">0:00</span></button>
+        </span>
+      </div>
+      {{ form_rest(chatMessageForm) }}
+    {{ form_end(chatMessageForm) }}
+  </div>
+</div>

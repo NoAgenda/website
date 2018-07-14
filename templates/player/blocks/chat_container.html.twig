@@ -1,0 +1,20 @@
+{% set chat_message_template %}
+<li
+  class="site-chat-message media text-sm"
+  style="padding: .125rem 0;"
+>
+  <div class="text-right text-muted mr-3" style="width: 70px;">__timestamp__</div>
+  <div class="media-body">
+    <strong class="site-chat-username">__username__</strong> __text__
+  </div>
+</li>
+{% endset %}
+<ul
+  class="list-unstyled mb-0"
+  data-chat-container
+  data-episode="{{ episode.code }}"
+  {% if app.user %}data-username="{{ app.user.username }}"{% endif %}
+  data-prototype="{{  chat_message_template|e }}"
+>
+  <li class="d-none temp-chat-message"></li>
+</ul>
