@@ -31,19 +31,39 @@ export default class PlayerChat {
       // Set up styling
       this.resize();
       jQuery(window).resize(this.resize);
-      jQuery('#chat_container').resize(this.resize);
+      jQuery('.chat-container').resize(this.resize);
+
+      jQuery('.player-chat-activator').removeClass('d-xl-block');
     });
   }
 
   resize() {
-    let viewportContainer = jQuery('#chat_container');
+    if (jQuery(window).width() >= 1200) {
+      jQuery('.site-interactive-player').removeClass('container').addClass('container-fluid');
+      jQuery('.player-main-col').removeClass('col-12').addClass('col-8');
+      jQuery('.player-aside-col').removeClass('d-none').addClass('.d-xl-block');
 
-    viewportContainer.closest('.flex-grow-1').find('> .tab-pane').removeClass('active').removeClass('show');
+      let chatTab = jQuery('#chat-tabcontent');
 
-    // viewportContainer.css('height', 'calc(' + viewportContainer.closest('.flex-grow-1').height() + 'px - 1.5rem)');
-    viewportContainer.css('height', viewportContainer.closest('.flex-grow-1').height() + 'px');
+      if (chatTab.hasClass('active')) {
+        jQuery('.player-tabs li:first-child div').tab('show');
+      }
+    }
+    else {
+      jQuery('.site-interactive-player').addClass('container').removeClass('container-fluid');
+      jQuery('.player-main-col').addClass('col-12').removeClass('col-8');
+      jQuery('.player-aside-col').addClass('d-none');
 
-    jQuery('#chat-tabcontent').addClass('active').addClass('show');
+      let responsiveContainer = jQuery('.chat-responsive-container');
+      let activeTab = responsiveContainer.closest('.flex-grow-1').find('> .tab-pane.active');
+
+      activeTab.removeClass('active').removeClass('show');
+
+      // responsiveContainer.css('height', 'calc(' + responsiveContainer.closest('.flex-grow-1').height() + 'px - 1.5rem)');
+      responsiveContainer.css('height', responsiveContainer.closest('.flex-grow-1').height() + 'px');
+
+      activeTab.addClass('active').addClass('show');
+    }
   }
 
   reset(timestamp) {
@@ -59,8 +79,8 @@ export default class PlayerChat {
     if (typeof this.collections[collection] === 'undefined') {
       this.loading = true;
 
-      jQuery('#chat_loading').removeClass('d-none');
-      jQuery('#chat_container').addClass('d-none').removeClass('d-flex');
+      jQuery('.chat-loader').removeClass('d-none');
+      jQuery('.chat-responsive-container').addClass('d-none').removeClass('d-flex');
     }
 
     this.step(timestamp);
@@ -73,13 +93,15 @@ export default class PlayerChat {
       return;
     }
 
-    let messages = jQuery('.site-chat-message');
-    if (messages.length >= 500) {
-      messages.slice(0, messages.length - 500).remove();
-    }
+    jQuery('.site-chat-messages').each((index, element) => {
+      let messages = jQuery(element).find('.site-chat-message');
+      if (messages.length >= 500) {
+        messages.slice(0, messages.length - 500).remove();
+      }
+    });
 
     // Grab current scroll position
-    let messageViewportContainer = jQuery('[data-chat-container]').closest('.oy-scroll');
+    let messageViewportContainer = jQuery(window).width() >= 1200 ? jQuery('.player-aside-col .chat-container.oy-scroll') : jQuery('.chat-responsive-container .oy-scroll') ;
     let maxScrollTop = messageViewportContainer.get(0).scrollHeight - messageViewportContainer.height();
 
     // Render messages
@@ -129,8 +151,8 @@ export default class PlayerChat {
         if (this.loading) {
           this.loading = false;
 
-          jQuery('#chat_loading').addClass('d-none');
-          jQuery('#chat_container').removeClass('d-none').addClass('d-flex');
+          jQuery('.chat-loader').addClass('d-none');
+          jQuery('.chat-container').removeClass('d-none').addClass('d-flex');
         }
       })
     ;
@@ -168,8 +190,6 @@ export default class PlayerChat {
       .replace('__text__', message[1])
     ;
     let element = jQuery(html);
-
-    // element.data('timestamp', message[2]);
 
     if (message[3] === 2) {
       element.find('.site-chat-username').css('color', 'rgba(0, 123, 255, .3)');

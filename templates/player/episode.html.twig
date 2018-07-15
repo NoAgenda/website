@@ -103,12 +103,15 @@
     <div class="player-main-col col-12">
       <div class="d-flex flex-column vh-100">
         <div class="flex-grow-0 bg-white position-sticky top-0 pt-3">
-          <ul class="nav nav-tabs">
+          <ul class="player-tabs nav nav-tabs">
             {% for tab in tabs %}
             <li class="nav-item">
               <div
+                {% set classes = ['nav-link cursor-pointer'] %}
+                {% if loop.first %}{% set classes = classes|merge(['active']) %}{% endif %}
+                {% if tab.key == 'chat' %}{% set classes = classes|merge(['d-xl-none']) %}{% endif %}
                 id="{{ tab.key }}-tab"
-                class="nav-link cursor-pointer {{ loop.first ? 'active' : '' }}"
+                class="{{ classes|join(' ') }}"
                 href="#{{ tab.key }}-tabcontent"
                 role="tab"
                 data-toggle="tab"
@@ -122,8 +125,10 @@
             </li>
             {% endfor %}
 
-            <li class="nav-item ml-auto d-none d-lg-block">
-              <a id="full_player_chat_toggle" class="nav-link" href="#">Expand chat</a>
+            <li class="player-chat-activator nav-item ml-auto d-none d-xl-block">
+              <div class="nav-link cursor-pointer" data-chat-activator>
+                <span class="fal fa-fw fa-smile" aria-hidden="true"></span> Troll room
+              </div>
             </li>
           </ul>
         </div>
@@ -174,21 +179,18 @@
         <div class="flex-shrink-0">
           <ul class="nav nav-tabs">
             <li class="nav-item">
-              <div class="nav-link disabled">Chat</div>
+              <div class="nav-link disabled">
+                <span class="fal fa-fw fa-smile" aria-hidden="true"></span> Troll room
+              </div>
             </li>
           </ul>
         </div>
-        {#<div class="flex-grow-1 oy-scroll site-chat-messages">#}
-          {#{% include 'player/blocks/chat_container.html.twig' %}#}
-        {#</div>#}
-        <div class="flex-shrink-0 p-3">
-          {#{{ form_start(chatMessageForm) }}#}
-            {#{{ form_widget(chatMessageForm.contents) }}#}
-            {#{{ form_rest(chatMessageForm) }}#}
-            {#<div class="btn-toolbar mt-2">#}
-              {#<button class="btn btn-sm btn-primary ml-auto" type="submit" disabled>Post at <span class="fal fa-clock" aria-hidden="true"></span> <span data-player-data="timer">0:00</span></button>#}
-            {#</div>#}
-          {#{{ form_end(chatMessageForm) }}#}
+        <div class="chat-loader text-center my-4">
+          <span class="fas fa-spinner fa-spin" aria-hidden="true"></span> Loading troll messages...
+        </div>
+
+        <div class="chat-container flex-grow-1 oy-scroll my-4">
+          {% include 'player/blocks/chat_container.html.twig' %}
         </div>
       </div>
     </div>
