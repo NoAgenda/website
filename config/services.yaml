@@ -8,6 +8,7 @@ services:
     autoconfigure: true
     public: false
     bind:
+      $projectPath: '%kernel.project_dir%'
       $storagePath: '%storage_path%'
 
   App\:

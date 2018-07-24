@@ -60,6 +60,8 @@ class CrawlTranscriptCommand extends Command
 
         $save = $input->getOption('save');
 
+        $io->title('No Agenda Transcript Crawler');
+
         $code = $input->getArgument('episode');
         $episode = $this->episodeRepository->findOneBy(['code' => $code]);
 
@@ -74,8 +76,6 @@ class CrawlTranscriptCommand extends Command
 
             return;
         }
-
-        $io->text(sprintf('Crawling transcript file for episode %s ...', $code));
 
         $data = (new TranscriptParser())->parse($input->getArgument('uri'));
         $result = count($data['lines']);

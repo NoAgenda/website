@@ -28,6 +28,14 @@ class EpisodePart
     private $episode;
 
     /**
+     * @var User
+     *
+     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $creator;
+
+    /**
      * @var string
      *
      * @ORM\Column(type="string", length=1023)
@@ -53,7 +61,7 @@ class EpisodePart
      *
      * @ORM\Column(type="integer", nullable=true)
      */
-    private $endsAt;
+    private $duration;
 
     public function isPersisted(): bool
     {
@@ -73,6 +81,18 @@ class EpisodePart
     public function setEpisode(Episode $episode): self
     {
         $this->episode = $episode;
+
+        return $this;
+    }
+
+    public function getCreator(): User
+    {
+        return $this->creator;
+    }
+
+    public function setCreator(User $creator): self
+    {
+        $this->creator = $creator;
 
         return $this;
     }
@@ -113,14 +133,14 @@ class EpisodePart
         return $this;
     }
 
-    public function getEndsAt(): ?int
+    public function getDuration(): ?int
     {
-        return $this->endsAt;
+        return $this->duration;
     }
 
-    public function setEndsAt(?int $endsAt): self
+    public function setDuration(?int $duration): self
     {
-        $this->endsAt = $endsAt;
+        $this->duration = $duration;
 
         return $this;
     }

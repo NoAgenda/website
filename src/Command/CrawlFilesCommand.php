@@ -60,12 +60,15 @@ class CrawlFilesCommand extends Command
         $save = $input->getOption('save');
 
         $code = $input->getArgument('episode');
+
+        $io->title('No Agenda File Crawler');
+
         $episode = $this->episodeRepository->findOneBy(['code' => $code]);
 
         if ($episode === null) {
             $io->error(sprintf('Unknown episode "%s".', $code));
 
-            return;
+            return 1;
         }
 
         $recordingPath = sprintf('%s/episode_recordings/%s.mp3', $this->storagePath, $episode->getCode());
@@ -101,6 +104,8 @@ class CrawlFilesCommand extends Command
         else {
             $io->note('The files have been downloaded but processing results have not been saved. Pass the `--save` option to save the results in the database.');
         }
+
+        return 0;
     }
 
     private function downloadCoverFile(InputInterface $input, OutputInterface $output, Episode $episode, $targetPath)

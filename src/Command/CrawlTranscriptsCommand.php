@@ -30,7 +30,7 @@ class CrawlTranscriptsCommand extends Command
         $history = $input->getOption('history');
         $save = $input->getOption('save');
 
-        $io->text('Crawling site for transcript files ...');
+        $io->title('No Agenda Transcripts Crawler');
 
         $data = (new TranscriptParser())->crawl($history);
         $result = 0;

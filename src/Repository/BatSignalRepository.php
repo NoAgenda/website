@@ -3,7 +3,6 @@
 namespace App\Repository;
 
 use App\Entity\BatSignal;
-use App\Entity\Episode;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
@@ -23,5 +22,10 @@ class BatSignalRepository extends ServiceEntityRepository
     public function findOneByCode($code): ?BatSignal
     {
         return $this->findOneBy(['code' => $code]);
+    }
+
+    public function findOneUnprocessed(): ?BatSignal
+    {
+        return $this->findOneBy(['processed' => false]);
     }
 }

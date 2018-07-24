@@ -3,9 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Episode;
-use App\Entity\EpisodePart;
-use App\Form\ChatMessageType;
 use App\Repository\ChatMessageRepository;
+use App\Repository\EpisodePartRepository;
 use App\Repository\EpisodeRepository;
 use App\Repository\TranscriptLineRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -19,14 +18,22 @@ class PlayerController extends Controller
     private $serializer;
 
     private $episodeRepository;
+    private $episodePartRepository;
     private $chatMessageRepository;
     private $transcriptLineRepository;
 
-    public function __construct(SerializerInterface $serializer, EpisodeRepository $episodeRepository, ChatMessageRepository $chatMessageRepository, TranscriptLineRepository $transcriptLineRepository)
+    public function __construct(
+        SerializerInterface $serializer,
+        EpisodeRepository $episodeRepository,
+        EpisodePartRepository $episodePartRepository,
+        ChatMessageRepository $chatMessageRepository,
+        TranscriptLineRepository $transcriptLineRepository
+    )
     {
         $this->serializer = $serializer;
 
         $this->episodeRepository = $episodeRepository;
+        $this->episodePartRepository = $episodePartRepository;
         $this->chatMessageRepository = $chatMessageRepository;
         $this->transcriptLineRepository = $transcriptLineRepository;
     }
@@ -54,16 +61,7 @@ class PlayerController extends Controller
         //     'postedAt' => 0,
         // ]);
 
-        if (true || count($parts) === 0) {
-            $parts = [
-                (new EpisodePart)
-                    ->setName('Start of Show')
-                    ->setStartsAt(0),
-                (new EpisodePart)
-                    ->setName('A Very Long Section Title For Debugging Purposes')
-                    ->setStartsAt(7200)
-            ];
-        }
+        $parts = $this->episodePartRepository->findBy(['episode' => $episode]);
 
         return $this->render('player/episode.html.twig', [
             'episode' => $episode,

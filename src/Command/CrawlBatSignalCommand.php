@@ -48,7 +48,16 @@ class CrawlBatSignalCommand extends Command
 
         $save = $input->getOption('save');
 
-        $data = (new BatSignalReceiver)->receive();
+        $io->title('No Agenda Bat Signal Crawler');
+
+        try {
+            $data = (new BatSignalReceiver)->receive();
+        }
+        catch (\RuntimeException $exception) {
+            $io->error($exception->getMessage());
+
+            return 0;
+        }
 
         if ($output->isVerbose()) {
             $io->note(sprintf('Found bat signal for episode "%s" at %s.', $data['code'], $data['deployedAt']));
@@ -59,11 +68,12 @@ class CrawlBatSignalCommand extends Command
         if ($signal !== null) {
             $io->note('The latest bat signal has already been crawled.');
 
-            return;
+            return 0;
         }
 
         $signal = (new BatSignal)
             ->setCode($data['code'])
+            ->setProcessed(false)
             ->setDeployedAt($data['deployedAt'])
         ;
 
@@ -79,5 +89,7 @@ class CrawlBatSignalCommand extends Command
         else {
             $io->note('The crawling results have not been saved. Pass the `--save` option to save the results in the database.');
         }
+
+        return 0;
     }
 }

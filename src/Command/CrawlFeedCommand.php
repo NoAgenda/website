@@ -3,17 +3,20 @@
 namespace App\Command;
 
 use App\Entity\Episode;
+use App\Entity\EpisodePart;
+use App\Entity\User;
 use App\FeedParser;
+use App\Repository\EpisodePartRepository;
 use App\Repository\EpisodeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\OutputStyle;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Process\ExecutableFinder;
+use Symfony\Component\Process\Process;
 
 class CrawlFeedCommand extends Command
 {
@@ -34,16 +37,28 @@ class CrawlFeedCommand extends Command
     private $episodeRepository;
 
     /**
+     * @var EpisodePartRepository
+     */
+    private $episodePartRepository;
+
+    /**
+     * @var string
+     */
+    private $projectPath;
+
+    /**
      * @var string
      */
     private $storagePath;
 
-    public function __construct(?string $name = null, EntityManagerInterface $entityManager, EpisodeRepository $episodeRepository, string $storagePath)
+    public function __construct(?string $name = null, EntityManagerInterface $entityManager, EpisodeRepository $episodeRepository, EpisodePartRepository $episodePartRepository, string $projectPath, string $storagePath)
     {
         parent::__construct($name);
 
         $this->entityManager = $entityManager;
         $this->episodeRepository = $episodeRepository;
+        $this->episodePartRepository = $episodePartRepository;
+        $this->projectPath = $projectPath;
         $this->storagePath = $storagePath;
     }
 
@@ -63,7 +78,7 @@ class CrawlFeedCommand extends Command
         $files = $input->getOption('files');
         $save = $input->getOption('save');
 
-        $io->text('Crawling No Agenda RSS feed ...');
+        $io->title('No Agenda RSS Feed Crawler');
 
         $feedOutput = (new FeedParser())->parse();
         $results = [
@@ -75,18 +90,16 @@ class CrawlFeedCommand extends Command
         $entries = array_reverse($feedOutput['entries']);
 
         foreach ($entries as $entry) {
-            $result = $this->handleEntry($input, $output, $entry, $files, $save);
+            $result = $this->handleEntry($io, $entry, $files, $save);
 
             ++$results[$result];
         }
 
-        if ($results[self::ENTRY_NEW] === 0 && $results[self::ENTRY_NEW] === 0) {
+        if ($results[self::ENTRY_NEW] === 0 && $results[self::ENTRY_UPDATED] === 0) {
             $io->text('No changes');
         }
 
         if ($save) {
-            $this->entityManager->flush();
-
             $io->success(sprintf('Found %s existing episodes, saved %s new and %s updated episodes.', $results[self::ENTRY_EXISTS], $results[self::ENTRY_NEW], $results[self::ENTRY_UPDATED]));
         }
         else {
@@ -94,10 +107,8 @@ class CrawlFeedCommand extends Command
         }
     }
 
-    private function handleEntry(InputInterface $input, OutputInterface $output, array $entry, bool $files, bool $save)
+    private function handleEntry(OutputStyle $io, array $entry, bool $files, bool $save)
     {
-        $io = new SymfonyStyle($input, $output);
-
         $episode = $this->episodeRepository->findOneBy(['code' => $entry['code']]);
 
         $new = $episode === null;
@@ -107,40 +118,54 @@ class CrawlFeedCommand extends Command
         }
 
         if ($new || $episode->getCrawlerOutput() != $entry) {
-            $episode->setCode($entry['code']);
-            $episode->setName($entry['name']);
-            $episode->setAuthor($entry['author']);
-            $episode->setPublishedAt($entry['publishedAt']);
-            $episode->setCoverUri($entry['coverUri']);
-            $episode->setRecordingUri($entry['recordingUri']);
-            $episode->setCrawlerOutput($entry);
+            $episode
+                ->setCode($entry['code'])
+                ->setName($entry['name'])
+                ->setAuthor($entry['author'])
+                ->setPublishedAt($entry['publishedAt'])
+                ->setCoverUri($entry['coverUri'])
+                ->setRecordingUri($entry['recordingUri'])
+                ->setCrawlerOutput($entry)
+            ;
+
+            $part = null;
+
+            if (!$episode->isPersisted()) {
+                $part = (new EpisodePart)
+                    ->setEpisode($episode)
+                    ->setCreator($this->entityManager->find(User::class, 1))
+                    ->setName('Start of Show')
+                    ->setStartsAt(0)
+                ;
+            }
+
+            $io->text(sprintf('%s episode: %s', $new ? 'New' : 'Updated', $episode->getCode()));
 
             if ($save) {
                 $this->entityManager->persist($episode);
+
+                if ($part) {
+                    $this->entityManager->persist($part);
+                }
+
+                // Flush entities in advance of retrieving files
+                $this->entityManager->flush();
+
+                if ($files) {
+                    $io->text(sprintf('Fetching files for episode: %s', $episode->getCode()));
+
+                    $processor = $this->getHelper('process');
+                    $verbosity = $io->isDebug() ? '-vvv' : ($io->isVeryVerbose() ? '-vv' : ($io->isVerbose() ? '-v' : ''));
+                    $phpExecutable = (new ExecutableFinder)->find('php');
+
+                    $command = sprintf('%s bin/console app:crawl-files %s %s %s', $phpExecutable, $episode->getCode(), $save ? '--save' : '', $verbosity);
+                    $process = new Process($command, $this->projectPath);
+                    $process->setTimeout(600);
+                    $processor->run($io, $process, sprintf('An error occurred while fetching files for episode %s.', $episode->getCode()), null, OutputInterface::VERBOSITY_VERBOSE);
+                }
             }
 
-            if ($new) {
-                $io->text(sprintf('New episode: %s', $episode->getCode()));
-
-                return self::ENTRY_NEW;
-            }
-
-            $io->text(sprintf('Updated episode: %s', $episode->getCode()));
-
-            if ($files) {
-                $command = $this->getApplication()->find('app:crawl-files');
-
-                $commandInput = new ArrayInput([
-                    'command' => 'app:crawl-files',
-                    'episode' => $episode->getCode(),
-                    '--verbose' => $output->isVerbose(),
-                    '--save' => $save,
-                ]);
-
-                $command->run($commandInput, $output->isVerbose() ? $output : new NullOutput);
-            }
-
-            return self::ENTRY_UPDATED;
+            return $new ? self::ENTRY_NEW : self::ENTRY_UPDATED;
         }
 
         return self::ENTRY_EXISTS;

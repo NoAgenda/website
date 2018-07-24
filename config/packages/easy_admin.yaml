@@ -19,6 +19,7 @@ easy_admin:
       form:
         fields:
           - { property: 'code', type: 'text' }
+          - { property: 'processed', type: 'checkbox', type_options: { disabled: true } }
           - { property: 'deployedAt', type: 'datetime' }
     User:
       class: App\Entity\User
