@@ -60,7 +60,10 @@ class CrawlBatSignalCommand extends Command
         }
 
         if ($output->isVerbose()) {
-            $io->note(sprintf('Found bat signal for episode "%s" at %s.', $data['code'], $data['deployedAt']));
+            /** @var \DateTimeInterface $deployedAt */
+            $deployedAt = $data['deployedAt'];
+
+            $io->note(sprintf('Found bat signal for episode "%s" at %s.', $data['code'], $deployedAt->format('Y-m-d H:i:s')));
         }
 
         $signal = $this->signalRepository->findOneByCode($data['code']);

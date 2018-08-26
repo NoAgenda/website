@@ -117,7 +117,9 @@ class CrawlFeedCommand extends Command
             $episode = new Episode;
         }
 
-        if ($new || $episode->getCrawlerOutput() != $entry) {
+        $updated = $new || $episode->getCrawlerOutput() != $entry;
+
+        if ($updated) {
             $episode
                 ->setCode($entry['code'])
                 ->setName($entry['name'])
@@ -150,21 +152,23 @@ class CrawlFeedCommand extends Command
 
                 // Flush entities in advance of retrieving files
                 $this->entityManager->flush();
-
-                if ($files) {
-                    $io->text(sprintf('Fetching files for episode: %s', $episode->getCode()));
-
-                    $processor = $this->getHelper('process');
-                    $verbosity = $io->isDebug() ? '-vvv' : ($io->isVeryVerbose() ? '-vv' : ($io->isVerbose() ? '-v' : ''));
-                    $phpExecutable = (new ExecutableFinder)->find('php');
-
-                    $command = sprintf('%s bin/console app:crawl-files %s %s %s', $phpExecutable, $episode->getCode(), $save ? '--save' : '', $verbosity);
-                    $process = new Process($command, $this->projectPath);
-                    $process->setTimeout(600);
-                    $processor->run($io, $process, sprintf('An error occurred while fetching files for episode %s.', $episode->getCode()), null, OutputInterface::VERBOSITY_VERBOSE);
-                }
             }
+        }
 
+        if ($save && $files) {
+            $io->text(sprintf('Fetching files for episode: %s', $episode->getCode()));
+
+            $processor = $this->getHelper('process');
+            $verbosity = $io->isDebug() ? '-vvv' : ($io->isVeryVerbose() ? '-vv' : ($io->isVerbose() ? '-v' : ''));
+            $phpExecutable = (new ExecutableFinder)->find('php');
+
+            $command = sprintf('%s bin/console app:crawl-files %s %s %s', $phpExecutable, $episode->getCode(), $save ? '--save' : '', $verbosity);
+            $process = new Process($command);
+            $process->setTimeout(600);
+            $processor->run($io, $process, sprintf('An error occurred while fetching files for episode %s.', $episode->getCode()), null, OutputInterface::VERBOSITY_VERBOSE);
+        }
+
+        if ($updated) {
             return $new ? self::ENTRY_NEW : self::ENTRY_UPDATED;
         }
 

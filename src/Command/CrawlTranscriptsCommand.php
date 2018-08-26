@@ -4,11 +4,12 @@ namespace App\Command;
 
 use App\TranscriptParser;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Process\ExecutableFinder;
+use Symfony\Component\Process\Process;
 
 class CrawlTranscriptsCommand extends Command
 {
@@ -36,18 +37,15 @@ class CrawlTranscriptsCommand extends Command
         $result = 0;
 
         foreach ($data as $code => $uri) {
-            $command = $this->getApplication()->find('app:crawl-transcript');
+            $processor = $this->getHelper('process');
+            $verbosity = $io->isDebug() ? '-vvv' : ($io->isVeryVerbose() ? '-vv' : ($io->isVerbose() ? '-v' : ''));
+            $phpExecutable = (new ExecutableFinder)->find('php');
 
-            $input = new ArrayInput([
-                'command' => 'app:crawl-transcript',
-                'episode' => $code,
-                'uri' => $uri,
-                '--save' => $save,
-            ]);
+            $command = sprintf('%s bin/console app:crawl-transcript %s %s %s %s', $phpExecutable, $code, $uri, $save ? '--save' : '', $verbosity);
+            $process = new Process($command);
+            $processor->run($io, $process, sprintf('An error occurred while fetching the transcript for episode %s.', $code), null, OutputInterface::VERBOSITY_VERBOSE);
 
-            $returnCode = $command->run($input, $output);
-
-            if ($returnCode === 0) {
+            if ($process->getExitCode() === 0) {
                 ++$result;
             }
         }

@@ -33,19 +33,13 @@ class ProcessBatSignalCommand extends Command
      */
     private $signalRepository;
 
-    /**
-     * @var string
-     */
-    private $projectPath;
-
-    public function __construct(?string $name = null, EntityManagerInterface $entityManager, EpisodeRepository $episodeRepository, BatSignalRepository $signalRepository, string $projectPath)
+    public function __construct(?string $name = null, EntityManagerInterface $entityManager, EpisodeRepository $episodeRepository, BatSignalRepository $signalRepository)
     {
         parent::__construct($name);
 
         $this->entityManager = $entityManager;
         $this->episodeRepository = $episodeRepository;
         $this->signalRepository = $signalRepository;
-        $this->projectPath = $projectPath;
     }
 
     protected function configure()
@@ -99,14 +93,14 @@ class ProcessBatSignalCommand extends Command
 
         // Match recording time
         $command = sprintf('%s bin/console app:match-recording-time %s %s %s', $phpExecutable, $signal->getCode(), $save ? '--save' : '', $verbosity);
-        $process = new Process($command, $this->projectPath);
+        $process = new Process($command);
         $process->setTimeout(3000);
         $processor->run($io, $process, 'An error occurred while matching the recording time.', null, OutputInterface::VERBOSITY_NORMAL);
         $io->newLine();
 
         // Match chat messages
         $command = sprintf('%s bin/console app:match-chat-messages %s %s %s', $phpExecutable, $signal->getCode(), $save ? '--save' : '', $verbosity);
-        $process = new Process($command, $this->projectPath);
+        $process = new Process($command);
         $process->setTimeout(300);
         $processor->run($io, $process, 'An error occurred while matching the chat messages.', null, OutputInterface::VERBOSITY_NORMAL);
         $io->newLine();
