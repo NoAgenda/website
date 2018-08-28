@@ -56,17 +56,19 @@ class CrawlBatSignalCommand extends Command
         catch (\RuntimeException $exception) {
             $io->error($exception->getMessage());
 
-            return 0;
+            return 1;
         }
 
-        if ($output->isVerbose()) {
-            /** @var \DateTimeInterface $deployedAt */
-            $deployedAt = $data['deployedAt'];
+        $code = $data['code'];
+        /** @var \DateTimeInterface $deployedAt */
+        $deployedAt = $data['deployedAt'];
 
-            $io->note(sprintf('Found bat signal for episode "%s" at %s.', $data['code'], $deployedAt->format('Y-m-d H:i:s')));
-        }
+        $io->text(sprintf('Found a new bat signal with code "%s" was deployed at %s.', $code, $deployedAt->format('Y-m-d H:i:s')));
 
-        $signal = $this->signalRepository->findOneByCode($data['code']);
+        $signal = $this->signalRepository->findOneBy([
+            'code' => $code,
+            'deployedAt' => $deployedAt,
+        ]);
 
         if ($signal !== null) {
             $io->note('The latest bat signal has already been crawled.');
@@ -75,14 +77,12 @@ class CrawlBatSignalCommand extends Command
         }
 
         $signal = (new BatSignal)
-            ->setCode($data['code'])
+            ->setCode($code)
             ->setProcessed(false)
-            ->setDeployedAt($data['deployedAt'])
+            ->setDeployedAt($deployedAt)
         ;
 
         $this->entityManager->persist($signal);
-
-        $io->text(sprintf('Found a new bat signal for episode %s that was deployed at %s.', $signal->getCode(), $signal->getDeployedAt()->format('Y-m-d H:i:s')));
 
         if ($save) {
             $this->entityManager->flush();

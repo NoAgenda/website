@@ -40,12 +40,16 @@ class RunCommand extends Command
         $verbosity = $io->isDebug() ? '-vvv' : ($io->isVeryVerbose() ? '-vv' : ($io->isVerbose() ? '-v' : ''));
         $phpExecutable = (new ExecutableFinder)->find('php');
 
+        $io->text('> Crawl feed');
+
         // Crawl RSS feed including episode files
         $command = sprintf('%s bin/console app:crawl-feed --files --save %s', $phpExecutable, $verbosity);
         $process = new Process($command);
         $process->setTimeout(1500);
         $processor->run($io, $process, 'An error occurred while crawling the RSS feed.', null, OutputInterface::VERBOSITY_NORMAL);
         $io->newLine();
+
+        $io->text('> Crawl transcripts');
 
         // Crawl transcripts
         $command = sprintf('%s bin/console app:crawl-transcripts --save %s', $phpExecutable, $verbosity);
@@ -54,15 +58,20 @@ class RunCommand extends Command
         $processor->run($io, $process, 'An error occurred while crawling the transcripts.', null, OutputInterface::VERBOSITY_NORMAL);
         $io->newLine();
 
+        $io->text('> Crawl the latest bat signal');
+
         // Crawl bat signal
         $command = sprintf('%s bin/console app:crawl-bat-signal --save %s', $phpExecutable, $verbosity);
         $process = new Process($command);
         $processor->run($io, $process, 'An error occurred while crawling for a bat signal.', null, OutputInterface::VERBOSITY_NORMAL);
         $io->newLine();
 
+        $io->text('> Process the latest bat signal');
+
         // Process bat signal
-        $command = sprintf('%s bin/console app:process-bat-signal --unprocessed --save %s', $phpExecutable, $verbosity);
+        $command = sprintf('%s bin/console app:process-bat-signal --latest --save %s', $phpExecutable, $verbosity);
         $process = new Process($command);
+        $process->setTimeout(3300);
         $processor->run($io, $process, 'An error occurred while processing a bat signal.', null, OutputInterface::VERBOSITY_NORMAL);
         $io->newLine();
 

@@ -9,6 +9,7 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
 /**
  * @method Episode|null find($id, $lockMode = null, $lockVersion = null)
  * @method Episode|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Episode|null findOneByCode(string $code, array $orderBy = null)
  * @method Episode[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class EpisodeRepository extends ServiceEntityRepository
@@ -28,6 +29,12 @@ class EpisodeRepository extends ServiceEntityRepository
 
     public function findLatest(): Episode
     {
-        return $this->findOneBy([], ['publishedAt' => 'desc']);
+        $result = $this->findOneBy([], ['publishedAt' => 'desc']);
+
+        if (!$result) {
+            throw new \RuntimeException('No episodes found');
+        }
+
+        return $result;
     }
 }

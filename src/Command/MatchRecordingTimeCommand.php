@@ -102,6 +102,8 @@ class MatchRecordingTimeCommand extends Command
         $recordedAt = $this->matchRecordings($input, $output, $signal);
 
         if (!$recordedAt) {
+            $io->error(sprintf('Recording time for episode "%s" could not be matched.', $code));
+
             return;
         }
 
@@ -164,6 +166,10 @@ class MatchRecordingTimeCommand extends Command
             })
             ->sortByName()
         ;
+
+        if ($liveFiles->count() === 0) {
+            return false;
+        }
 
         $recordingMatrix = [];
 

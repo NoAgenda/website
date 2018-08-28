@@ -48,7 +48,7 @@ class ProcessBatSignalCommand extends Command
             ->setDescription('Processes a bat signal')
             ->addArgument('episode', InputArgument::OPTIONAL, 'The episode code')
             ->addOption('save', null, InputOption::VALUE_NONE, 'Save processing results in the database')
-            ->addOption('unprocessed', null, InputOption::VALUE_NONE, 'Find an unprocessed bat signal')
+            ->addOption('latest', null, InputOption::VALUE_NONE, 'Automatically find the bat signal for the latest episode')
         ;
     }
 
@@ -59,18 +59,18 @@ class ProcessBatSignalCommand extends Command
         $save = $input->getOption('save');
 
         $code = $input->getArgument('episode');
-        $unprocessed = $input->getOption('unprocessed');
+        $latest = $input->getOption('latest');
 
         $io->title('No Agenda Bat Signal Processor');
 
-        if ($code == null && $unprocessed) {
-            $signal = $this->signalRepository->findOneUnprocessed();
+        if ($code == null && $latest) {
+            $signal = $this->signalRepository->findOneByLatestEpisode();
         }
         elseif ($code) {
-            $signal = $this->signalRepository->findOneBy(['code' => $code]);
+            $signal = $this->signalRepository->findOneByEpisode($code);
         }
         else {
-            $io->error('Unable to determine bat signal source. Pass the `--unprocessed` option to get started.');
+            $io->error('Unable to determine bat signal source. Pass the `--latest` option to get started.');
 
             return 1;
         }
@@ -78,7 +78,13 @@ class ProcessBatSignalCommand extends Command
         if ($signal === null) {
             $io->error('No matching bat signal was found.');
 
-            return $unprocessed ? 0 : 1;
+            return $latest ? 0 : 1;
+        }
+
+        if ($signal->isProcessed()) {
+            $io->error('The matched bat signal has already been processed.');
+
+            return $latest ? 0 : 1;
         }
 
         if ($signal->getDeployedAt() > (new \DateTime)->modify('-6 hours')) {
@@ -109,7 +115,6 @@ class ProcessBatSignalCommand extends Command
             $io->success('Finished processing the bat signal.');
         }
         else {
-            $io->success('Finished processing the bat signal.');
             $io->note('Finished processing the bat signal but any results have not been saved. Pass the `--save` option to save the process results in the database.');
         }
 
