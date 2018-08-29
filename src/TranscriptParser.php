@@ -73,7 +73,15 @@ class TranscriptParser
                 continue;
             }
 
-            preg_match("#^<a target='naplayer' title='click to play' href='http://naplay.it/([^/]+)/([0-9\-]+)'>([^<]+)</a>(.+)$#", $line, $matches);
+            if (strpos($line, "target='naplayer'") !== false) {
+                preg_match("#^<a target='naplayer' title='click to play' href='http://naplay.it/([^/]+)/([0-9\-]+)'>([^<]+)</a>(.+)$#", $line, $matches);
+            }
+            elseif (strpos($line, "target='yt'") !== false) {
+                preg_match("#^<a target='yt' title='click to play' href='https://youtu.be/([^?]+)\?t=([^s]+)s'>([^<]+)</a>(.+)$#", $line, $matches);
+            }
+            else {
+                $matches = [];
+            }
 
             if (count($matches) < 5) {
                 $output['invalidLines'][] = $line;
@@ -81,7 +89,7 @@ class TranscriptParser
                 $matches = [null, null, $lastTimestamp + 1, htmlspecialchars($line), ''];
             }
 
-            list(, $code, $rawTimestamp, $firstText, $lastText) = $matches;
+            list(, , $rawTimestamp, $firstText, $lastText) = $matches;
 
             $timestamp = $this->parseTimestamp($rawTimestamp);
 
@@ -100,17 +108,27 @@ class TranscriptParser
 
     private function parseTimestamp($raw): int
     {
-        if (!strpos($raw, '-')) {
-            return (int) $raw;
+        if (strpos($raw, '-')) {
+            list($hours, $minutes, $seconds) = explode('-', $raw);
+
+            $timestamp = $seconds;
+            $timestamp += $minutes * 60;
+            $timestamp += $hours * 60 * 60;
+
+            return $timestamp;
         }
 
-        list($hours, $minutes, $seconds) = explode('-', $raw);
+        if (strpos($raw, 'h')) {
+            list($hours, $minutes, $seconds) = preg_split('/[a-z]/i', $raw);
 
-        $timestamp = $seconds;
-        $timestamp += $minutes * 60;
-        $timestamp += $hours * 60 * 60;
+            $timestamp = $seconds;
+            $timestamp += $minutes * 60;
+            $timestamp += $hours * 60 * 60;
 
-        return $timestamp;
+            return $timestamp;
+        }
+
+        return (int) $raw;
     }
 
     function matchHtmlTags(string $page, string $tagname)
