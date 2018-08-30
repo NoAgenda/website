@@ -1,6 +1,6 @@
 parameters:
   locale: 'en'
-  storage_path: '%kernel.project_dir%/%env(APP_STORAGE_PATH)%'
+  storage_path: '%env(APP_STORAGE_PATH)%'
 
 services:
   _defaults:
