@@ -15,6 +15,19 @@ if (!isset($_SERVER['APP_ENV'])) {
     (new Dotenv())->load(__DIR__.'/../.env');
 }
 
+if ('prod' !== $env) {
+    $ip = [
+        '172.0.0.1',
+        '172.18.0.1',
+        '82.173.117.56',
+    ];
+
+    if (!in_array($_SERVER['REMOTE_ADDR'], $ip)) {
+        header('HTTP/1.1 403 Forbidden');
+        die('Not allowed: ' . $_SERVER['REMOTE_ADDR']);
+    }
+}
+
 $env = $_SERVER['APP_ENV'] ?? 'dev';
 $debug = (bool) ($_SERVER['APP_DEBUG'] ?? ('prod' !== $env));
 
