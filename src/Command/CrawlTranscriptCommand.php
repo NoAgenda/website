@@ -71,7 +71,7 @@ class CrawlTranscriptCommand extends Command
             return;
         }
 
-        if ($this->transcriptLineRepository->count(['episode' => $episode]) > 0) {
+        if ($episode->hasTranscript()) {
             $io->warning('This episode already has transcript lines. This part of the application still needs work.');
 
             return;
@@ -85,6 +85,9 @@ class CrawlTranscriptCommand extends Command
         foreach ($data['lines'] as $line) {
             $this->handleEntry($io, $line, $episode, $save);
         }
+
+        $episode->setTranscript(true);
+        $this->entityManager->persist($episode);
 
         if ($save) {
             $this->entityManager->flush();

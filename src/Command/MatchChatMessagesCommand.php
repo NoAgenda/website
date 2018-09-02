@@ -76,16 +76,25 @@ class MatchChatMessagesCommand extends Command
         if ($episode === null) {
             $io->error(sprintf('Unknown episode "%s".', $code));
 
-            return;
+            return 1;
         }
 
         if (!$episode->getRecordedAt()) {
             $io->error('Unable to match chat messages for an episode without a recording time.');
 
-            return;
+            return 1;
         }
 
         $messages = $this->matchMessages($input, $output, $episode);
+
+        if (count($messages) == 0) {
+            $io->note('No messages were matched to the episode recording time.');
+
+            return 0;
+        }
+
+        $episode->setChatMessages(true);
+        $this->entityManager->persist($episode);
 
         if ($save) {
             $this->saveMessages($input, $output, $episode, $messages);
@@ -99,6 +108,8 @@ class MatchChatMessagesCommand extends Command
 
             $io->note('The crawling results have not been saved. Pass the `--save` option to save the results in the database.');
         }
+
+        return 0;
     }
 
     protected function matchMessages(InputInterface $input, OutputInterface $output, Episode $episode)

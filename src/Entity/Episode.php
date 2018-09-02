@@ -41,6 +41,27 @@ class Episode
     private $author;
 
     /**
+     * @var boolean
+     *
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $special;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $chatMessages;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $transcript;
+
+    /**
      * @var \DateTimeInterface
      *
      * @ORM\Column(type="date")
@@ -62,7 +83,7 @@ class Episode
     private $recordingUri;
 
     /**
-     * @var string
+     * @var integer|null
      *
      * @ORM\Column(type="integer", nullable=true)
      */
@@ -76,9 +97,9 @@ class Episode
     private $recordedAt;
 
     /**
-     * @var array
+     * @var array|null
      *
-     * @ORM\Column(type="array")
+     * @ORM\Column(type="array", nullable=true)
      */
     private $crawlerOutput;
 
@@ -124,6 +145,42 @@ class Episode
     public function setAuthor(string $author): self
     {
         $this->author = $author;
+
+        return $this;
+    }
+
+    public function isSpecial(): bool
+    {
+        return $this->special ?? false;
+    }
+
+    public function setSpecial(bool $special): self
+    {
+        $this->special = $special;
+
+        return $this;
+    }
+
+    public function hasChatMessages(): bool
+    {
+        return $this->chatMessages ?? false;
+    }
+
+    public function setChatMessages(bool $chatMessages): self
+    {
+        $this->chatMessages = $chatMessages;
+
+        return $this;
+    }
+
+    public function hasTranscript(): bool
+    {
+        return $this->transcript ?? false;
+    }
+
+    public function setTranscript(bool $transcript): self
+    {
+        $this->transcript = $transcript;
 
         return $this;
     }
@@ -190,7 +247,7 @@ class Episode
 
     public function getCrawlerOutput(): array
     {
-        return $this->crawlerOutput;
+        return $this->crawlerOutput ?? [];
     }
 
     public function setCrawlerOutput(array $crawlerOutput): self

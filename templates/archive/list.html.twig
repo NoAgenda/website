@@ -1,0 +1,26 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}Archive{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h1 class="my-3">Archive</h1>
+
+  <div class="btn-toolbar my-3" role="toolbar" aria-label="Toolbar with button groups">
+    {% include 'archive/parts/buttons.html.twig' %}
+  </div>
+
+  <div class="list-group my-3">
+    {% for episode in episodes %}
+    <a class="list-group-item list-group-item-action" href="{{ path('player', {episode: episode.code}) }}">
+      <span class="float-right text-muted">
+        {{ episode.publishedAt|date('F jS, Y') }}
+      </span>
+
+      {{ episode.code }}: {{ episode.name }}
+      {% if episode.special %}<span class="fas fa-star ml-2"></span>{% endif %}
+    </a>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

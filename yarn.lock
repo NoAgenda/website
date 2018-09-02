@@ -6,6 +6,12 @@
   version "0.1.7"
   resolved "https://npm.fontawesome.com/2D1D0D05-DC56-4A3A-9466-1976F03B4DC6/@fortawesome/fontawesome-common-types/-/fontawesome-common-types-0.1.7.tgz#4336c4b06d0b5608ff1215464b66fcf9f4795284"
 
+"@fortawesome/fontawesome-free-brands@^5.0.13":
+  version "5.0.13"
+  resolved "https://npm.fontawesome.com/2D1D0D05-DC56-4A3A-9466-1976F03B4DC6/@fortawesome/fontawesome-free-brands/-/fontawesome-free-brands-5.0.13.tgz#4d15ff4e1e862d5e4a4df3654f8e8acbd47e9c09"
+  dependencies:
+    "@fortawesome/fontawesome-common-types" "^0.1.7"
+
 "@fortawesome/fontawesome-pro-light@^5.0.13":
   version "5.0.13"
   resolved "https://npm.fontawesome.com/2D1D0D05-DC56-4A3A-9466-1976F03B4DC6/@fortawesome/fontawesome-pro-light/-/fontawesome-pro-light-5.0.13.tgz#d233f91dffeb945a93b5723c3a7cabb63d24ca98"

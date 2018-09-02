@@ -1,0 +1,19 @@
+{% set default_path = path('archive') %}
+{% set buttons = [
+  {
+    name: 'Specials',
+    path: path('archive_specials'),
+    active: app.request.attributes.get('_route') == 'archive_specials',
+  },
+  {
+    name: 'All Episodes',
+    path: path('archive_all'),
+    active: app.request.attributes.get('_route') == 'archive_all',
+  },
+] %}
+{% for button in buttons %}
+  {% set classes = button.active ? 'btn btn-outline-primary active mr-2' : 'btn btn-outline-primary mr-2' %}
+  {% set path = button.active ? default_path : button.path %}
+  {% set name = button.active ? button.name ~ '<span class="fal fa-times ml-2"></span>' : button.name %}
+  <a class="{{ classes }}" href="{{ path }}">{{ name|raw }}</a>
+{% endfor %}

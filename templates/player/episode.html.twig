@@ -10,18 +10,21 @@
     icon: '<span class="fal fa-fw fa-info" aria-hidden="true"></span> <span class="d-md-none">' ~ episode.code ~ '</span>',
     name: title,
     contents: 'player/blocks/information.html.twig',
+    enabled: true,
   },
   {
     key: 'transcript',
     icon: '<span class="fal fa-fw fa-list-ol" aria-hidden="true"></span>',
     name: 'Transcript <span class="badge badge-secondary text-uppercase">Beta</span>',
     contents: 'player/blocks/transcript.html.twig',
+    enabled: episode.transcript,
   },
   {
     key: 'chat',
     icon: '<span class="fal fa-fw fa-smile" aria-hidden="true"></span>',
     name: 'Troll room',
     contents: 'player/blocks/chat.html.twig',
+    enabled: episode.chatMessages,
   },
 ] %}
 
@@ -41,14 +44,14 @@
       <div class="flex-grow-1 pb-3 pb-sm-0 m-sm-3 m-md-4 m-lg-5">
         <h1>{{ title }}</h1>
         <h4>{{ episode.author }}</h4>
-        <div class="btn-toolbar pt-2">
+        <div class="btn-toolbar">
           {% if episode.duration %}
-          <div class="btn btn-sm btn-outline-light disabled mr-2">
+          <div class="btn btn-sm btn-outline-light disabled mt-2 mr-2">
             <span class="fas fa-clock mr-1"></span>
             {{ episode.duration|visualTimestamp }}
           </div>
           {% endif %}
-          <div class="btn btn-sm btn-outline-light disabled">
+          <div class="btn btn-sm btn-outline-light disabled mt-2">
             <span class="fas fa-calendar mr-1"></span>
             {{ episode.publishedAt|date('F jS, Y') }}
           </div>
@@ -104,7 +107,7 @@
       <div class="d-flex flex-column vh-100">
         <div class="flex-grow-0 bg-white position-sticky top-0 pt-3">
           <ul class="player-tabs nav nav-tabs">
-            {% for tab in tabs %}
+            {% for tab in tabs if tab.enabled %}
             <li class="nav-item">
               <div
                 {% set classes = ['nav-link cursor-pointer'] %}
@@ -125,15 +128,17 @@
             </li>
             {% endfor %}
 
+            {% if episode.chatMessages %}
             <li class="player-chat-activator nav-item ml-auto d-none d-xl-block">
               <div class="nav-link cursor-pointer" data-chat-activator>
                 <span class="fal fa-fw fa-smile" aria-hidden="true"></span> Troll room
               </div>
             </li>
+            {% endif %}
           </ul>
         </div>
         <div class="flex-grow-1 tab-content pt-4">
-          {% for tab in tabs %}
+          {% for tab in tabs if tab.enabled %}
           <div class="tab-pane fade {{ loop.first ? 'active show' : '' }}" id="{{ tab.key }}-tabcontent" role="tabpanel" aria-labelledby="{{ tab.key }}-tab">
             {% include tab.contents %}
           </div>

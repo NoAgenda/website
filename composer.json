@@ -8,6 +8,7 @@
         "ext-iconv": "*",
         "ext-simplexml": "*",
         "easycorp/easyadmin-bundle": "^1.17",
+        "liip/imagine-bundle": "^2.1",
         "neitanod/forceutf8": "^2.0",
         "sensio/framework-extra-bundle": "^5.1",
         "symfony/apache-pack": "^1.0",
@@ -29,9 +30,11 @@
         "symfony/web-link": "^4.1",
         "symfony/webpack-encore-pack": "*",
         "symfony/yaml": "^4.1",
+        "white-october/pagerfanta-bundle": "^1.2",
         "zendframework/zend-feed": "^2.10"
     },
     "require-dev": {
+        "ext-json": "*",
         "doctrine/doctrine-fixtures-bundle": "^3.0",
         "symfony/browser-kit": "^4.1",
         "symfony/css-selector": "^4.1",

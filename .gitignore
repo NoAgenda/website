@@ -6,6 +6,10 @@
 /vendor/
 ###< symfony/framework-bundle ###
 
+###> liip/imagine-bundle ###
+/public/media/
+###< liip/imagine-bundle ###
+
 ###> symfony/webpack-encore-pack ###
 /node_modules/
 /public/assets/

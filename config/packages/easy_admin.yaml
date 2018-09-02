@@ -1,5 +1,5 @@
 easy_admin:
-  site_name: 'No Agenda Player Administration Panel'
+  site_name: 'No Agenda Experience Administration Panel'
   entities:
     Episode:
       class: App\Entity\Episode
@@ -8,6 +8,7 @@ easy_admin:
           - { property: 'code', type: 'text' }
           - { property: 'name', type: 'text' }
           - { property: 'author', type: 'text' }
+          - { property: 'special', type: 'checkbox' }
     ChatMessage:
       class: App\Entity\ChatMessage
       form:

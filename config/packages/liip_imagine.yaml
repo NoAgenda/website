@@ -1,0 +1,23 @@
+liip_imagine:
+  driver: "imagick"
+  loaders:
+    episode_covers:
+      filesystem:
+        data_root: "%storage_path%/episode_covers"
+  filter_sets:
+    cover_small:
+      data_loader: episode_covers
+      jpeg_quality: 85
+      png_compression_level: 8
+      cache: ~
+      filters:
+        scale:
+          dim: [ 512, 512 ]
+    cover_large:
+      data_loader: episode_covers
+      jpeg_quality: 85
+      png_compression_level: 8
+      cache: ~
+      filters:
+        scale:
+          dim: [ 1024, 1024 ]
