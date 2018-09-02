@@ -87,12 +87,6 @@ class ProcessBatSignalCommand extends Command
             return $latest ? 0 : 1;
         }
 
-        if ($signal->getDeployedAt() > (new \DateTime)->modify('-6 hours')) {
-            $io->error('The related bat signal is too fresh.');
-
-            return 0;
-        }
-
         $processor = $this->getHelper('process');
         $verbosity = $io->isDebug() ? '-vvv' : ($io->isVeryVerbose() ? '-vv' : ($io->isVerbose() ? '-v' : ''));
         $phpExecutable = (new ExecutableFinder)->find('php');
