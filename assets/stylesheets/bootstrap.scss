@@ -1,10 +1,14 @@
 $primary: #343a40;
+$highlight: #e53d40;
 $theme-colors: (
   "primary": $primary,
+  "highlight": $highlight,
 );
 
-$link-hover-color: #e53d40;
+$link-hover-color: $highlight;
 $link-hover-decoration: none;
+
+$font-family-sans-serif: Mukta;
 
 @import "~bootstrap/scss/functions";
 @import "~bootstrap/scss/variables";

@@ -3,10 +3,11 @@
 namespace App\Twig;
 
 use Twig\Extension\AbstractExtension;
+use Twig\Extension\GlobalsInterface;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
 
-class AppExtension extends AbstractExtension
+class AppExtension extends AbstractExtension implements GlobalsInterface
 {
     public function getFilters(): array
     {
@@ -21,6 +22,13 @@ class AppExtension extends AbstractExtension
         return [
             new TwigFunction('prettyTimestamp', [$this, 'prettyTimestamp']),
             new TwigFunction('visualTimestamp', [$this, 'visualTimestamp']),
+        ];
+    }
+
+    public function getGlobals(): array
+    {
+        return [
+            'analytics_code' => $_SERVER['APP_ANALYTICS_CODE'] ?? false,
         ];
     }
 

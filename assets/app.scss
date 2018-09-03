@@ -3,6 +3,8 @@
 @import "stylesheets/masthead-player";
 @import "stylesheets/interactive-player";
 
+@import url('https://fonts.googleapis.com/css?family=Mukta');
+
 .navbar {
   z-index: 1000;
 }
@@ -19,3 +21,14 @@
 
 .vh-100 { min-height: 100vh; }
 .mvh-100 { max-height: 100vh; }
+
+.position-sticky.position-sticky {
+  position: -webkit-sticky !important;
+  position: sticky !important;
+}
+
+.bottom-holder {
+  background: rgba(0,0,0,.05);
+  border-top-left-radius: $border-radius;
+  border-top-right-radius: $border-radius;
+}

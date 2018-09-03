@@ -93,7 +93,7 @@
     <div>
       <div class="d-none d-lg-block py-3">
         <div><span data-player-data="timer">0:00</span> / <span data-player-data="duration">0:00</span></div>
-        <div class="bg-white cursor-pointer mt-2 mb-2" data-player-action="progress" style="height: 5px;">
+        <div class="bg-white cursor-pointer my-2" data-player-action="progress" style="height: 30px;">
           <div class="bg-primary h-100" data-player-data="progress" style="width: 0;"></div>
         </div>
       </div>
@@ -144,35 +144,35 @@
           </div>
           {% endfor %}
         </div>
-        <div class="flex-grow-0 position-sticky bg-white py-3" style="bottom: 0; z-index: 1000;">
-          <div class="d-md-flex">
+        <div class="bottom-holder flex-grow-0 position-sticky py-3" style="bottom: 0; z-index: 1000;">
+          <div class="d-sm-flex">
             <div class="btn-toolbar d-flex align-items-center justify-content-center mb-2 mb-md-0">
-              <div class="mx-3" data-player-action="rewind" data-amount="15">
+              <div class="mx-3 cursor-pointer" data-player-action="rewind" data-amount="15">
                 <span class="fa-layers fa-fw fa-lg">
-                  <i class="fal fa-undo-alt"></i>
+                  <i class="far fa-undo-alt"></i>
                   <span class="fa-layers-text" data-fa-transform="shrink-10 down-1">15</span>
                 </span>
               </div>
-              <div class="mx-2" data-player-action="play">
-                <span class="fal fa-2x fa-play" aria-hidden="true"></span>
+              <div class="mx-2 cursor-pointer" data-player-action="play">
+                <span class="far fa-2x fa-play" aria-hidden="true"></span>
               </div>
-              <div class="mx-2" data-player-action="pause">
-                <span class="fal fa-2x fa-pause" aria-hidden="true"></span>
+              <div class="mx-2 cursor-pointer" data-player-action="pause">
+                <span class="far fa-2x fa-pause" aria-hidden="true"></span>
               </div>
-              <div class="mx-3" data-player-action="forward" data-amount="15">
+              <div class="mx-3 cursor-pointer" data-player-action="forward" data-amount="15">
                 <span class="fa-layers fa-fw fa-lg">
-                  <i class="fal fa-redo-alt"></i>
+                  <i class="far fa-redo-alt"></i>
                   <span class="fa-layers-text" data-fa-transform="shrink-10 down-1">15</span>
                 </span>
               </div>
             </div>
-            <div class="flex-grow-1">
+            <div class="flex-grow-1 m-2">
               <div>
                 <span data-player-data="timer">0:00</span> / <span data-player-data="duration">0:00</span>
                 <span class="d-none d-md-inline ml-4">Now playing: 001 - Start of Show</span>
               </div>
-              <div class="bg-dark cursor-pointer mt-2 mb-2" data-player-action="progress" style="height: 5px;">
-                <div class="bg-primary h-100" data-player-data="progress" style="width: 0;"></div>
+              <div class="bg-dark cursor-pointer" data-player-action="progress" style="height: 5px;">
+                <div class="bg-highlight h-100" data-player-data="progress" style="width: 0;"></div>
               </div>
             </div>
           </div>
