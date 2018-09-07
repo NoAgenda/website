@@ -35,13 +35,6 @@ class User implements UserInterface, \Serializable
     private $email;
 
     /**
-     * @var boolean
-     *
-     * @ORM\Column(type="boolean")
-     */
-    private $hidden;
-
-    /**
      * @var string|null
      */
     private $plainPassword;
@@ -67,12 +60,39 @@ class User implements UserInterface, \Serializable
      */
     private $roles;
 
-    // todo createdAt
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(type="boolean")
+     */
+    private $hidden;
+
+    /**
+     * @var string|null
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $activationToken;
+
+    /**
+     * @var \DateTimeInterface|null
+     *
+     * @ORM\Column(type="datetime_immutable", nullable=true)
+     */
+    private $activationTokenExpiresAt;
+
+    /**
+     * @var \DateTimeInterface
+     *
+     * @ORM\Column(type="datetime_immutable")
+     */
+    private $createdAt;
 
     public function __construct()
     {
         $this->hidden = false;
         $this->roles = ['ROLE_USER'];
+        $this->createdAt = new \DateTimeImmutable;
     }
 
     public function isPersisted(): bool
@@ -146,6 +166,11 @@ class User implements UserInterface, \Serializable
         return $this;
     }
 
+    public function eraseCredentials()
+    {
+        $this->plainPassword = null;
+    }
+
     public function getRoles(): array
     {
         return $this->roles;
@@ -190,9 +215,35 @@ class User implements UserInterface, \Serializable
         return $this;
     }
 
-    public function eraseCredentials()
+    public function getActivationToken(): ?string
     {
-        $this->plainPassword = null;
+        return $this->activationToken;
+    }
+
+    public function activationTokenIsValid(): bool
+    {
+        return $this->activationTokenExpiresAt > new \DateTime;
+    }
+
+    public function generateActivationToken(): self
+    {
+        $this->activationToken = md5(random_bytes(10));
+        $this->activationTokenExpiresAt = new \DateTimeImmutable('+1 hour');
+
+        return $this;
+    }
+
+    public function clearActivationToken(): self
+    {
+        $this->activationToken = null;
+        $this->activationTokenExpiresAt = null;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): \DateTimeInterface
+    {
+        return $this->createdAt;
     }
 
     /** @see \Serializable::serialize() */

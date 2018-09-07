@@ -1,16 +1,16 @@
 {% extends 'layout.html.twig' %}
 
-{% block title %}Sign in{% endblock %}
+{% block title %}Registration{% endblock %}
 
 {% block content %}
 <div class="container my-md-5">
-  <div class="row flex-md-row-reverse">
-    <div class="col-md-6">
-      {% include 'security/parts/login_form.html.twig' %}
-    </div>
-
+  <div class="row">
     <div class="col-md-6 border-right">
       {% include 'security/parts/registration_form.html.twig' %}
+    </div>
+
+    <div class="col-md-6">
+      {% include 'security/parts/login_form.html.twig' %}
     </div>
   </div>
 </div>

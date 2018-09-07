@@ -1,0 +1,35 @@
+<form class="mx-2 mx-lg-5" action="{{ path('security_login') }}" method="post">
+  <div class="text-center my-5">
+    <h1 class="h3 mb-3 font-weight-normal">Sign in</h1>
+    <p style="height: 50px;">Welcome back producer.</p>
+  </div>
+
+  {% if authenticationError %}
+    {% include 'blocks/alerts.html.twig' with {alerts: {danger: [authenticationError.message]}} %}
+  {% endif %}
+  {% include 'blocks/alerts.html.twig' with {alerts: app.flashes} %}
+
+  <div class="form-group">
+    <label for="inputUsername" class="sr-only">Username</label>
+    <input type="text" id="inputUsername" name="_username" class="form-control form-control-lg" placeholder="Username" {% if lastUsername %}value="{{ lastUsername }}"{% endif %} required autofocus>
+  </div>
+
+  <div class="form-group">
+    <label for="inputPassword" class="sr-only">Password</label>
+    <input type="password" id="inputPassword" name="_password" class="form-control form-control-lg" placeholder="Password" required>
+  </div>
+
+  <div class="checkbox m-2">
+    <label>
+      <input type="checkbox" name="_remember_me" checked> Keep me logged in
+    </label>
+  </div>
+
+  <div class="btn-toolbar justify-content-center mb-2">
+    <button class="btn btn-lg btn-primary" type="submit">Sign in</button>
+  </div>
+
+  <div class="btn-toolbar justify-content-center mb-5">
+    <a class="btn btn-link" href="{{ path('security_forgot_password') }}">Forgot password</a>
+  </div>
+</form>

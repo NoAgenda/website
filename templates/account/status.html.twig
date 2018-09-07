@@ -1,4 +1,4 @@
-{% extends 'security/account/layout.html.twig' %}
+{% extends 'account/layout.html.twig' %}
 
 {% set status = 'Activated' %}
 {% if app.user.hidden %}{% set status = 'Disabled' %}{% endif %}
@@ -11,7 +11,7 @@
   You can hide your account details across the website by disabling your account. Note that you'll be unable to access
   other features of the website while your account is disabled.
 </p>
-<form action="{{ url('security_status') }}" method="post">
+<form action="{{ url('account_status') }}" method="post">
   <input type="hidden" name="action" value="hide"/>
   <input type="hidden" name="token" value="{{ csrf_token('update-status') }}"/>
   <button type="submit" class="btn btn-outline-warning">
@@ -24,7 +24,7 @@
   Your account is currently disabled. Enabling your account will expose your account information to other users and
   allows you to fully access the website again.
 </p>
-<form action="{{ url('security_status') }}" method="post">
+<form action="{{ url('account_status') }}" method="post">
   <input type="hidden" name="action" value="expose"/>
   <input type="hidden" name="token" value="{{ csrf_token('update-status') }}"/>
   <button type="submit" class="btn btn-outline-success">

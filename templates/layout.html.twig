@@ -25,9 +25,9 @@
 
 {% if app.user %}
   {% set authenticationLinks = authenticationLinks|merge([{
-    path: 'security_account',
+    path: 'account_index',
     title: app.user.username,
-    active: app.request.attributes.get('_route') starts with 'security_',
+    active: app.request.attributes.get('_route') starts with 'account_',
   }]) %}
 
   {% if is_granted('ROLE_ADMIN') %}
