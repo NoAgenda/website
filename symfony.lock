@@ -128,6 +128,9 @@
     "ocramius/proxy-manager": {
         "version": "2.2.x-dev"
     },
+    "onlinq/bundle-monitoring": {
+        "version": "dev-master"
+    },
     "pagerfanta/pagerfanta": {
         "version": "v1.1.0"
     },
@@ -469,5 +472,8 @@
     },
     "zendframework/zend-stdlib": {
         "version": "3.3.x-dev"
+    },
+    "zendframework/zenddiagnostics": {
+        "version": "v1.3.0"
     }
 }
