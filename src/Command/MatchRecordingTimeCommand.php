@@ -95,6 +95,14 @@ class MatchRecordingTimeCommand extends Command
             return;
         }
 
+        $liveFiles = $this->getLivestreamRecordings($signal);
+
+        if ($liveFiles->count() === 0) {
+            $io->error('No livestream recordings found that match the given bat signal.');
+
+            return;
+        }
+
         if (!$this->splitRecording($input, $output, $episode)) {
             return;
         }
@@ -140,32 +148,7 @@ class MatchRecordingTimeCommand extends Command
             ->name(sprintf('%s_*.mp3', $signal->getCode()))
         ;
 
-        $livePath = sprintf('%s/livestream_recordings', $this->storagePath);
-
-        $liveFiles = (new Finder)
-            ->files()
-            ->in($livePath)
-            ->name('recording_*.asf')
-            ->filter(function(\SplFileInfo $file) use ($signal) {
-                $timestamp = substr($file->getFilename(), strlen('recording_'), 14);
-                $recordedAt = new \DateTime($timestamp);
-
-                // Filter out files that are recorded before the bat signal
-                if ($recordedAt < $signal->getDeployedAt()) {
-                    return false;
-                }
-
-                $recordedBefore = (new \DateTime($signal->getDeployedAt()->format('YmdHis')))->add(new \DateInterval('PT3H'));
-
-                // Filter out files that are recorded more than 3 hours after the bat signal
-                if ($recordedAt > $recordedBefore) {
-                    return false;
-                }
-
-                return true;
-            })
-            ->sortByName()
-        ;
+        $liveFiles = $this->getLivestreamRecordings($signal);
 
         if ($liveFiles->count() === 0) {
             return false;
@@ -302,5 +285,35 @@ class MatchRecordingTimeCommand extends Command
         }
 
         return true;
+    }
+
+    protected function getLivestreamRecordings(BatSignal $signal): Finder
+    {
+        $livePath = sprintf('%s/livestream_recordings', $this->storagePath);
+
+        return (new Finder)
+            ->files()
+            ->in($livePath)
+            ->name('recording_*.asf')
+            ->filter(function(\SplFileInfo $file) use ($signal) {
+                $timestamp = substr($file->getFilename(), strlen('recording_'), 14);
+                $recordedAt = new \DateTime($timestamp);
+
+                // Filter out files that are recorded before the bat signal
+                if ($recordedAt < $signal->getDeployedAt()) {
+                    return false;
+                }
+
+                $recordedBefore = (new \DateTime($signal->getDeployedAt()->format('YmdHis')))->add(new \DateInterval('PT3H'));
+
+                // Filter out files that are recorded more than 3 hours after the bat signal
+                if ($recordedAt > $recordedBefore) {
+                    return false;
+                }
+
+                return true;
+            })
+            ->sortByName()
+        ;
     }
 }
