@@ -40,7 +40,7 @@
 <div class="site-masthead-player">
   <div class="container">
     <div class="d-sm-flex">
-      <img src="{{ episode.coverUri }}" class="masthead-cover img-fluid">
+      <img class="masthead-cover img-fluid" src="{{ asset(episode.code ~ '.png')|imagine_filter('cover_small') }}" alt="Art for episode {{ episode.code }}">
       <div class="flex-grow-1 pb-3 pb-sm-0 m-sm-3 m-md-4 m-lg-5">
         <h1>{{ title }}</h1>
         <h4>{{ episode.author }}</h4>
