@@ -40,6 +40,11 @@ class BatSignal
      */
     private $deployedAt;
 
+    public function __construct()
+    {
+        $this->processed = false;
+    }
+
     public function isPersisted(): bool
     {
         return $this->id !== null;
