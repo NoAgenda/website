@@ -4,6 +4,7 @@ namespace App\Command;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class CrawlChatCommand extends Command
@@ -41,6 +42,8 @@ class CrawlChatCommand extends Command
     {
         $this
             ->setDescription('Crawl messages from the troll room')
+            ->addOption('identifier', null, InputOption::VALUE_OPTIONAL, 'The identifer to match the PID')
+
         ;
     }
 
