@@ -4,6 +4,7 @@ namespace App\Command;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Process;
@@ -28,6 +29,7 @@ class RecordLivestreamCommand extends Command
     {
         $this
             ->setDescription('Crawls an audio clip from the livestream to match chat timestamps')
+            ->addOption('identifier', null, InputOption::VALUE_OPTIONAL, 'The identifer to match the PID')
         ;
     }
 
@@ -35,27 +37,33 @@ class RecordLivestreamCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $io->text('Recording livestream ...');
+        while (true) {
+            $io->text('Recording livestream ...');
 
-        $time = (new \DateTimeImmutable())->format('YmdHis');
-        $path = sprintf('%s/livestream_recordings/recording_%s', $this->storagePath, $time);
+            $time = (new \DateTimeImmutable())->format('YmdHis');
+            $path = sprintf('%s/livestream_recordings/recording_%s', $this->storagePath, $time);
 
-        $cmd = sprintf('bin/scripts/record-livestream.bash "%s"', $path);
+            $cmd = sprintf('bin/scripts/record-livestream.bash "%s"', $path);
 
-        if ($output->isVerbose()) {
-            $io->text('Executing command: ' . $cmd);
+            if ($output->isVerbose()) {
+                $io->text('Executing command: ' . $cmd);
+            }
+
+            $process = new Process($cmd);
+            $process->setTimeout(null);
+            $returnCode = $process->run();
+
+            if ($returnCode > 0) {
+                $io->error($output->isVerbose() ? $process->getErrorOutput() : 'An error occurred while creating the recording.');
+
+                return 1;
+            }
+
+            $io->success(sprintf('Created recording "%s".', $path));
+
+            sleep(60 * 29);
         }
 
-        $process = new Process($cmd);
-        $process->setTimeout(null);
-        $returnCode = $process->run();
-
-        if ($returnCode > 0) {
-            $io->error($output->isVerbose() ? $process->getErrorOutput() : 'An error occurred while creating the recording.');
-
-            return;
-        }
-
-        $io->success(sprintf('Created recording "%s".', $path));
+        return 1;
     }
 }
