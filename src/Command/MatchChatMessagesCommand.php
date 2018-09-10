@@ -151,8 +151,8 @@ class MatchChatMessagesCommand extends Command
             list(, $username, $client, $ip, $message) = $matches;
 
             $messages[] = [
-                'username' => htmlspecialchars($username),
-                'contents' => htmlspecialchars($message),
+                'username' => htmlentities($username),
+                'contents' => htmlentities($message),
                 'postedAt' => $interval,
             ];
         }
