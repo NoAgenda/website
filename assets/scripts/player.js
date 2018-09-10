@@ -81,6 +81,24 @@ export default class Player {
     jQuery(document).on('show.bs.collapse', '.site-episode-parts .collapse', () => {
       jQuery('.site-episode-parts .collapse.show').collapse('hide');
     });
+
+    jQuery(document).on('submit', 'form[name="episode_part_suggestion"]', (event) => {
+      event.preventDefault();
+
+      let form = jQuery(event.currentTarget);
+
+      fetch(form.attr('action'), {
+        method: 'post',
+        body: new FormData(form),
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+        .then(response => response.json())
+        .then(response => {
+          console.log(response);
+        })
+    });
   }
 
   play() {

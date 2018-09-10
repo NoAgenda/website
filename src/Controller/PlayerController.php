@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Episode;
+use App\Form\EpisodePartSuggestionType;
 use App\Repository\ChatMessageRepository;
 use App\Repository\EpisodePartRepository;
 use App\Repository\EpisodeRepository;
@@ -63,12 +64,17 @@ class PlayerController extends Controller
 
         $parts = $this->episodePartRepository->findBy(['episode' => $episode]);
 
+        $partSuggestionForm = $this->createForm(EpisodePartSuggestionType::class, null, [
+            'action' => $this->generateUrl('episode_part_suggestion'),
+        ]);
+
         return $this->render('player/episode.html.twig', [
             'episode' => $episode,
             'parts' => $parts,
             'transcriptLines' => $lines,
 
             // 'chatMessageForm' => $messageForm->createView(),
+            'partSuggestionForm' => $partSuggestionForm->createView(),
         ]);
     }
 }

@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -36,6 +38,11 @@ class EpisodePart
     private $creator;
 
     /**
+     * @ORM\OneToMany(targetEntity="App\Entity\EpisodePartCorrection", mappedBy="part")
+     */
+    private $corrections;
+
+    /**
      * @var string
      *
      * @ORM\Column(type="string", length=1023)
@@ -62,6 +69,11 @@ class EpisodePart
      * @ORM\Column(type="integer", nullable=true)
      */
     private $duration;
+
+    public function __construct()
+    {
+        $this->corrections = new ArrayCollection();
+    }
 
     public function isPersisted(): bool
     {
@@ -93,6 +105,39 @@ class EpisodePart
     public function setCreator(User $creator): self
     {
         $this->creator = $creator;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|EpisodePartCorrection[]
+     */
+    public function getCorrections(): Collection
+    {
+        return $this->corrections;
+    }
+
+    public function addCorrection(EpisodePartCorrection $correction): self
+    {
+        if (!$this->corrections->contains($correction)) {
+            $this->corrections[] = $correction;
+
+            $correction->setPart($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCorrection(EpisodePartCorrection $correction): self
+    {
+        if ($this->corrections->contains($correction)) {
+            $this->corrections->removeElement($correction);
+
+            // set the owning side to null (unless already changed)
+            if ($correction->getPart() === $this) {
+                $correction->setPart(null);
+            }
+        }
 
         return $this;
     }
