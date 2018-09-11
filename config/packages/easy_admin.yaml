@@ -1,20 +1,12 @@
 easy_admin:
   site_name: 'No Agenda Experience Administration Panel'
+  design:
+    menu:
+      - { entity: 'Episode', icon: 'podcast' }
+      - { entity: 'ChatMessage', label: 'Chat messages', icon: 'comment' }
+      - { entity: 'BatSignal', label: 'Bat signals', icon: 'signal' }
+      - { entity: 'User', label: 'Users', icon: 'user' }
   entities:
-    Episode:
-      class: App\Entity\Episode
-      form:
-        fields:
-          - { property: 'code', type: 'text' }
-          - { property: 'name', type: 'text' }
-          - { property: 'author', type: 'text' }
-          - { property: 'special', type: 'checkbox' }
-    ChatMessage:
-      class: App\Entity\ChatMessage
-      form:
-        fields:
-          - { property: 'username', type: 'text' }
-          - { property: 'contents', type: 'textarea' }
     BatSignal:
       class: App\Entity\BatSignal
       form:
@@ -22,6 +14,41 @@ easy_admin:
           - { property: 'code', type: 'text' }
           - { property: 'processed', type: 'checkbox', type_options: { disabled: true } }
           - { property: 'deployedAt', type: 'datetime' }
+    ChatMessage:
+      class: App\Entity\ChatMessage
+      form:
+        fields:
+          - { property: 'username', type: 'text' }
+          - { property: 'contents', type: 'textarea' }
+    Episode:
+      class: App\Entity\Episode
+      label: 'Episodes'
+      list:
+        title: 'Episodes'
+        sort: ['publishedAt', 'DESC']
+        fields: ['code', {property: 'cover_uri', type: 'image'}, 'name', 'publishedAt', 'special']
+      form:
+        fields:
+          - { property: 'code', type: 'text' }
+          - { property: 'name', type: 'text' }
+          - { property: 'author', type: 'text' }
+          - { property: 'duration', type: 'integer' }
+          - { property: 'published_at', type: 'date' }
+          - { property: 'special', type: 'checkbox', label: 'Special episode' }
+          - { property: 'chat_messages', type: 'checkbox', label: 'Episode has live chat messages' }
+          - { property: 'transcript', type: 'checkbox', label: 'Episode has a transcript' }
+          -
+            type: 'section'
+            icon: 'bug'
+            label: 'Crawler data'
+            help: 'Data used for crawling and processing metadata related to the show.'
+          - { property: 'cover_uri', type: 'text' }
+          - { property: 'recording_uri', type: 'text' }
+          - { property: 'recorded_at', type: 'datetime', type_options: {widget: 'single_text', format: 'yyyy-MM-dd HH:mm:ss'}}
+      edit:
+        title: 'Edit episode'
+      new:
+        title: 'New episode'
     User:
       class: App\Entity\User
       form:
