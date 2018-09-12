@@ -5,6 +5,7 @@ namespace App\Command;
 use App\Entity\Episode;
 use App\Repository\EpisodeRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Liip\ImagineBundle\Imagine\Cache\CacheManager as ImagineCacheManager;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -29,16 +30,22 @@ class CrawlFilesCommand extends Command
     private $episodeRepository;
 
     /**
+     * @var ImagineCacheManager
+     */
+    private $imagineCacheManager;
+
+    /**
      * @var string
      */
     private $storagePath;
 
-    public function __construct(?string $name = null, EntityManagerInterface $entityManager, EpisodeRepository $episodeRepository, string $storagePath)
+    public function __construct(?string $name = null, EntityManagerInterface $entityManager, EpisodeRepository $episodeRepository, ImagineCacheManager $imagineCacheManager, string $storagePath)
     {
         parent::__construct($name);
 
         $this->entityManager = $entityManager;
         $this->episodeRepository = $episodeRepository;
+        $this->imagineCacheManager = $imagineCacheManager;
         $this->storagePath = $storagePath;
     }
 
@@ -93,6 +100,8 @@ class CrawlFilesCommand extends Command
             $io->text(sprintf('Downloading cover file for episode %s ...', $episode->getCode()));
 
             $this->downloadCoverFile($input, $output, $episode, $coverPath);
+
+            $this->imagineCacheManager->remove(sprintf('%s.png', $episode->getCode()));
         }
 
         if ($save) {
