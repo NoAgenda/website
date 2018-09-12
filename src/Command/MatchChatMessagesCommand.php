@@ -102,6 +102,14 @@ class MatchChatMessagesCommand extends Command
         $episode->setChatMessages(true);
         $this->entityManager->persist($episode);
 
+        $signal = $this->batSignalRepository->findOneByEpisode($episode);
+
+        if ($signal) {
+            $signal->setProcessed(true);
+
+            $this->entityManager->persist($signal);
+        }
+
         if ($save) {
             $this->saveMessages($input, $output, $episode, $messages);
 
