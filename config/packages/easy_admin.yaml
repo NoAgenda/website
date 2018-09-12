@@ -2,13 +2,14 @@ easy_admin:
   site_name: 'No Agenda Experience Administration Panel'
   design:
     menu:
-      - { entity: 'Episode', icon: 'podcast' }
-      - { entity: 'ChatMessage', label: 'Chat messages', icon: 'comment' }
-      - { entity: 'BatSignal', label: 'Bat signals', icon: 'signal' }
-      - { entity: 'User', label: 'Users', icon: 'user' }
+      - { entity: 'Episode', icon: 'podcast', default: true }
+      - { entity: 'ChatMessage', icon: 'comment' }
+      - { entity: 'BatSignal', icon: 'signal' }
+      - { entity: 'User', icon: 'user' }
   entities:
     BatSignal:
       class: App\Entity\BatSignal
+      label: 'Bat signals'
       form:
         fields:
           - { property: 'code', type: 'text' }
@@ -16,6 +17,7 @@ easy_admin:
           - { property: 'deployedAt', type: 'datetime' }
     ChatMessage:
       class: App\Entity\ChatMessage
+      label: 'Chat messages'
       form:
         fields:
           - { property: 'username', type: 'text' }
@@ -26,7 +28,7 @@ easy_admin:
       list:
         title: 'Episodes'
         sort: ['publishedAt', 'DESC']
-        fields: ['code', {property: 'cover_uri', type: 'image'}, 'name', 'publishedAt', 'special']
+        fields: ['code', { property: 'cover_uri', type: 'image', label: 'Cover' }, 'name', 'publishedAt', 'special']
       form:
         fields:
           - { property: 'code', type: 'text' }
@@ -44,13 +46,14 @@ easy_admin:
             help: 'Data used for crawling and processing metadata related to the show.'
           - { property: 'cover_uri', type: 'text' }
           - { property: 'recording_uri', type: 'text' }
-          - { property: 'recorded_at', type: 'datetime', type_options: {widget: 'single_text', format: 'yyyy-MM-dd HH:mm:ss'}}
+          - { property: 'recorded_at', type: 'datetime', type_options: { widget: 'single_text', format: 'yyyy-MM-dd HH:mm:ss' } }
       edit:
         title: 'Edit episode'
       new:
         title: 'New episode'
     User:
       class: App\Entity\User
+      label: 'Users'
       form:
         fields:
           - { property: 'username', type: 'text' }
