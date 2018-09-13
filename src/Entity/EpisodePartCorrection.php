@@ -64,7 +64,7 @@ class EpisodePartCorrection
         return $this->id;
     }
 
-    public function getPart(): EpisodePart
+    public function getPart(): ?EpisodePart
     {
         return $this->part;
     }
