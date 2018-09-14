@@ -85,6 +85,12 @@ class MatchChatMessagesCommand extends Command
             return 1;
         }
 
+        if ($episode->hasChatMessages()) {
+            $io->note('The chat messages for this episode have already been matched.');
+
+            return 0;
+        }
+
         $messages = $this->matchMessages($input, $output, $episode);
 
         if (count($messages) == 0) {
@@ -95,6 +101,14 @@ class MatchChatMessagesCommand extends Command
 
         $episode->setChatMessages(true);
         $this->entityManager->persist($episode);
+
+        $signal = $this->batSignalRepository->findOneByEpisode($episode);
+
+        if ($signal) {
+            $signal->setProcessed(true);
+
+            $this->entityManager->persist($signal);
+        }
 
         if ($save) {
             $this->saveMessages($input, $output, $episode, $messages);
@@ -148,11 +162,17 @@ class MatchChatMessagesCommand extends Command
                 continue;
             }
 
-            list(, $username, $client, $ip, $message) = $matches;
+            list(, $username, $client, $ip, $contents) = $matches;
+
+            $username = Encoding::fixUTF8($username);
+            $username = htmlentities($username, ENT_SUBSTITUTE);
+
+            $contents = Encoding::fixUTF8($contents);
+            $contents = htmlentities($contents, ENT_SUBSTITUTE);
 
             $messages[] = [
-                'username' => htmlentities($username),
-                'contents' => htmlentities($message),
+                'username' => $username,
+                'contents' => $contents,
                 'postedAt' => $interval,
             ];
         }
