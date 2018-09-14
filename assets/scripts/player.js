@@ -86,18 +86,52 @@ export default class Player {
       event.preventDefault();
 
       let form = jQuery(event.currentTarget);
+      let formData = jQuery(event.currentTarget).serialize();
+
+      form.find('[data-form-error]').remove();
 
       fetch(form.attr('action'), {
         method: 'post',
-        body: new FormData(form),
+        body: formData,
         headers: {
-          'Content-Type': 'multipart/form-data',
+          'Content-Type': 'application/x-www-form-urlencoded',
         },
       })
-        .then(response => response.json())
         .then(response => {
-          console.log(response);
+          if (response.status === 200) {
+            jQuery('#suggestionModal').modal('hide');
+            jQuery('#successModal').modal('show');
+
+            return;
+          }
+
+          if (response.status === 400) {
+            response.json().then((data) => {
+              for (let field in data) {
+                if (!data.hasOwnProperty(field)) {
+                  continue;
+                }
+
+                let errors = data[field];
+
+                let errorSubstitute = form.find('.' + field + '-errors');
+
+                errors.map((message) => {
+                  errorSubstitute.after('<div class="form-text text-danger" data-form-error>' + message + '</div>');
+                });
+              }
+            });
+          }
         })
+      ;
+    });
+
+    jQuery(document).on('show.bs.modal', '#suggestionModal, #correctionModal', (event) => {
+      let button = jQuery(event.relatedTarget);
+      let partId = button.data('part-id');
+
+      let modal = jQuery(event.currentTarget);
+      modal.find('[name$="[part]"]').val(partId);
     });
   }
 

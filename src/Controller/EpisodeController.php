@@ -3,14 +3,17 @@
 namespace App\Controller;
 
 use App\Entity\EpisodePartCorrection;
+use App\Entity\User;
 use App\Form\EpisodePartSuggestionType;
 use App\Repository\EpisodePartRepository;
 use App\Repository\EpisodeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -42,31 +45,43 @@ class EpisodeController extends AbstractController
     }
 
     /**
+     * @param User $user
+     *
      * @Route("/part_suggestion", name="part_suggestion")
      */
-    public function partSuggestionAction(Request $request): Response
+    public function partSuggestionAction(Request $request, UserInterface $user): Response
     {
         $correction = new EpisodePartCorrection;
+        $correction->setCreator($user);
 
         $form = $this->createForm(EpisodePartSuggestionType::class, $correction);
 
         $form->handleRequest($request);
-        dump($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            dump($correction);
-            die('valid');
-            $this->entityManager->persist($correction);
+        if ($form->isSubmitted()) {
+            if ($form->get('part')->getData() == null) {
+                throw new \RuntimeException('Invalid episode part.');
+            }
 
-            $this->entityManager->flush();
+            if ($form->isValid()) {
+                $this->entityManager->persist($correction);
+
+                $this->entityManager->flush();
+
+                return JsonResponse::create();
+            }
         }
 
-        $violations = $form->getErrors(true);
+        $violations = [];
 
-        dump($form->get('part')->getErrors());
-        dump($correction);
+        foreach ($form->getErrors(true) as $violation) {
+            $field = $violation->getOrigin()->getName();
 
-        dump($form->isSubmitted() && $form->isValid());
-        die;
+            $violations[$field] = $violations[$field] ?? [];
+
+            $violations[$field][] = $violation->getMessage();
+        }
+
+        return JsonResponse::create($violations, Response::HTTP_BAD_REQUEST);
     }
 }

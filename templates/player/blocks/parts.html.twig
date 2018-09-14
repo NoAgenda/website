@@ -2,7 +2,7 @@
   {% for part in parts %}
   <div class="site-episode-part list-group-item list-group-item-action flex-column align-items-start p-2">
     <div class="d-flex w-100 justify-content-between">
-      <div class="d-flex mb-1">
+      <div class="d-flex">
         <div class="episode-actions text-center mr-3">
           <div class="h5 mb-2 cursor-pointer" data-player-action="play-timestamp" data-timestamp="{{ part.startsAt }}">
             <span class="fas fa-play" aria-hidden="true"></span>
@@ -10,22 +10,55 @@
           <span class="text-sm">{{ part.startsAt|prettyTimestamp }}</span>
         </div>
         <div>
-          <h5 class="mb-2">{{ part.name }}</h5>
-          <div>
-            <span class="fas fa-user" aria-hidden="true"></span> Woodstock
+          <div class="mb-1">
+            <h5 class="mb-2">{{ part.name }}</h5>
+            <div>
+              <span class="fas fa-user" aria-hidden="true"></span> Woodstock
+            </div>
           </div>
           <div id="section-collapse-{{ loop.index }}" class="collapse mt-2">
             <div class="bg-gray d-inline-block p-1 rounded">
               <span title="Suggestions Box">
                 <span class="fas fa-lightbulb fa-fw fa-lg" aria-hidden="true"></span>
               </span>
-              <div class="cursor-pointer d-inline-block" title="Suggest a new section" data-toggle="modal" data-target="#suggestionModal">
+              <div class="cursor-pointer d-inline-block" title="Suggest a new section" data-toggle="modal" data-target="#suggestionModal" data-part-id="{{ part.id }}">
                 <span class="fas fa-plus-circle fa-fw fa-lg text-success" aria-hidden="true"></span>
               </div>
-              <div class="cursor-pointer d-inline-block" title="Suggest a correction for this section" data-toggle="modal" data-target="#correctionModal">
+              <div class="cursor-pointer d-inline-block" title="Suggest a correction for this section" data-toggle="modal" data-target="#correctionModal" data-part-id="{{ part.id }}">
                 <span class="fas fa-exclamation-triangle fa-fw fa-lg text-danger" aria-hidden="true"></span>
               </div>
             </div>
+          </div>
+          <div>
+            {% for correction in part.corrections %}
+            {% set canVote = correction.creator != app.user %}
+            <div class="my-2">
+              <small>{{ correction.creator.username }}</small>
+              New chapter {{ correction.position }} this{% if correction.startsAt %} at {{ correction.startsAt|prettyTimestamp }}{% endif %}: {{ correction.name }}
+              (
+                <span class="text-success">0</span>
+                {% if canVote %}
+                <div class="cursor-pointer d-inline-block" title="Support this correction" data-vote-correction="support" data-correction-id="{{ correction.id }}">
+                  <span class="fas fa-check fa-lg text-success" aria-hidden="true"></span>
+                </div>
+                {% endif %}
+                ,
+                <span class="text-danger">0</span>
+                {% if canVote %}
+                <div class="cursor-pointer d-inline-block" title="Reject this correction" data-vote-correction="reject" data-correction-id="{{ correction.id }}">
+                  <span class="fas fa-times fa-lg text-danger" aria-hidden="true"></span>
+                </div>
+                {% endif %}
+                ,
+                <span class="text-info">0</span>
+                {% if canVote %}
+                <div class="cursor-pointer d-inline-block" title="I'm not sure about this correction" data-vote-correction="question" data-correction-id="{{ correction.id }}">
+                  <span class="fas fa-question fa-lg text-info" aria-hidden="true"></span>
+                </div>
+                {% endif %}
+              )
+            </div>
+            {% endfor %}
           </div>
         </div>
       </div>

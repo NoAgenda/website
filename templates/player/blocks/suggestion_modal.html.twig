@@ -19,7 +19,13 @@
               {{ form_widget(partSuggestionForm.startsAt, {attr: {class: 'd-inline w-auto', placeholder: '0:00:00'}}) }}
               <button type="button" class="btn btn-secondary d-inline">Grab current player time</button>
             </div>
-            {{ form_errors(partSuggestionForm.startsAt) }}
+            <span class="startsAt-errors"></span>
+         </div>
+
+          <div class="form-group">
+            {{ form_label(partSuggestionForm.name, 'Select the name of the new chapter:') }}
+              {{ form_widget(partSuggestionForm.name, {attr: {placeholder: 'Chapter name'}}) }}
+            <span class="name-errors"></span>
          </div>
 
           {{ form_row(partSuggestionForm.name, {
@@ -28,29 +34,6 @@
           }) }}
 
           {{ form_rest(partSuggestionForm) }}
-
-          {#<p>Select the position of the missing section:</p>#}
-          {#<div class="form-group">#}
-            {#<div class="form-check">#}
-              {#<input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="option1" checked>#}
-              {#<label class="form-check-label" for="exampleRadios1">#}
-                {#There was another section played <em>before</em>#}
-              {#</label>#}
-            {#</div>#}
-            {#<div class="form-check">#}
-              {#<input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios2" value="option2">#}
-              {#<label class="form-check-label" for="exampleRadios2">#}
-                {#There was another section played <em>after</em>#}
-              {#</label>#}
-            {#</div>#}
-          {#</div>#}
-          {#<p>Select the starting time of the missing section:</p>#}
-          {#<div class="form-group">#}
-            {#<input type="text" class="form-control d-inline w-auto" placeholder="0:00:00">#}
-            {#<button type="button" class="btn btn-secondary d-inline">Grab current player time</button>#}
-          {#</div>#}
-          {#<p>Select the name of the new section:</p>#}
-          {#<input type="text" class="form-control" placeholder="Section name">#}
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>

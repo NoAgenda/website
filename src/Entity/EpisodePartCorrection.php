@@ -27,6 +27,14 @@ class EpisodePartCorrection
     private $part;
 
     /**
+     * @var User
+     *
+     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $creator;
+
+    /**
      * @var string|null
      *
      * @ORM\Column(type="string", length=15, nullable=true)
@@ -62,6 +70,18 @@ class EpisodePartCorrection
     public function getId(): int
     {
         return $this->id;
+    }
+
+    public function getCreator(): User
+    {
+        return $this->creator;
+    }
+
+    public function setCreator(User $creator): self
+    {
+        $this->creator = $creator;
+
+        return $this;
     }
 
     public function getPart(): ?EpisodePart

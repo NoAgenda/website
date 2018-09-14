@@ -36,7 +36,7 @@ class TimestampTransformer implements DataTransformerInterface
 
         $parts = explode(':', $timestampAsString);
 
-        if (count($parts) < 2 && count($parts) > 3) {
+        if (count($parts) < 2 || count($parts) > 3) {
             throw new TransformationFailedException('Invalid timestamp format.');
         }
 
