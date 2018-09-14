@@ -2,69 +2,40 @@
 
 namespace App\Form;
 
-use App\Entity\EpisodePart;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 class EpisodePartSuggestionType extends AbstractType
 {
+    private $episodePartTransformer;
+    private $timestampTransformer;
+
+    public function __construct(EpisodePartTransformer $episodePartTransformer, TimestampTransformer $timestampTransformer)
+    {
+        $this->episodePartTransformer = $episodePartTransformer;
+        $this->timestampTransformer = $timestampTransformer;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('part', EntityType::class, [
-                'class' => EpisodePart::class,
+            ->add('part', HiddenType::class, [
+                'required' => true,
             ])
             ->add('position', ChoiceType::class, [
                 'choices' => self::getPositionChoices(),
                 'expanded' => true,
+                'required' => true,
             ])
             ->add('name', TextType::class)
             ->add('startsAt', TextType::class)
         ;
 
-        $builder->get('startsAt')
-            ->addModelTransformer(new CallbackTransformer(
-                function ($timestampAsInt) {
-                    if (!$timestampAsInt) {
-                        return null;
-                    }
-
-                    dump($timestampAsInt);die;
-                },
-                function ($timestampAsString) {
-                    if (!$timestampAsString) {
-                        return null;
-                    }
-
-                    if (!strpos($timestampAsString, ':')) {
-                        return null;
-                    }
-
-                    $parts = explode(':', $timestampAsString);
-
-                    if (count($parts) > 3) {
-                        return null;
-                    }
-
-                    if (count($parts) === 3) {
-                        list($hours, $minutes, $seconds) = $parts;
-                    }
-                    else if (count($parts) === 2) {
-                        $hours = 0;
-                        list($minutes, $seconds) = $parts;
-                    }
-                    else {
-                        return null;
-                    }
-
-                    return ($hours * 3600) + ($minutes * 60) + $seconds;
-                }
-            ))
-        ;
+        //$builder->get('part')->addModelTransformer($this->episodePartTransformer);
+        $builder->get('startsAt')->addModelTransformer($this->timestampTransformer);
     }
 
     public static function getPositionChoices(): array
