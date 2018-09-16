@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -70,9 +71,27 @@ class EpisodePart
      */
     private $duration;
 
+    /**
+     * @var \DateTimeImmutable
+     *
+     * @ORM\Column(type="datetime_immutable", nullable=true)
+     *                        todo remove nullable
+     */
+    private $createdAt;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(type="boolean", nullable=true)
+     *             todo remove nullable
+     */
+    private $enabled;
+
     public function __construct()
     {
-        $this->corrections = new ArrayCollection();
+        $this->corrections = new ArrayCollection;
+        $this->createdAt = new \DateTimeImmutable;
+        $this->enabled = true;
     }
 
     public function isPersisted(): bool
@@ -114,7 +133,11 @@ class EpisodePart
      */
     public function getCorrections(): Collection
     {
-        return $this->corrections;
+        $criteria = Criteria::create()
+            ->where(Criteria::expr()->eq('handled', false))
+        ;
+
+        return $this->corrections->matching($criteria);
     }
 
     public function addCorrection(EpisodePartCorrection $correction): self
@@ -186,6 +209,23 @@ class EpisodePart
     public function setDuration(?int $duration): self
     {
         $this->duration = $duration;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): \DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function getEnabled(): bool
+    {
+        return $this->enabled;
+    }
+
+    public function setEnabled(bool $enabled): self
+    {
+        $this->enabled = $enabled;
 
         return $this;
     }

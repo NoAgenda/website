@@ -3,6 +3,8 @@ easy_admin:
   design:
     menu:
       - { entity: 'Episode', icon: 'podcast', default: true }
+      - { entity: 'EpisodePart', icon: 'bookmark' }
+      - { entity: 'EpisodePartCorrection', icon: 'lightbulb-o'  }
       - { entity: 'ChatMessage', icon: 'comment' }
       - { entity: 'BatSignal', icon: 'signal' }
       - { entity: 'User', icon: 'user' }
@@ -28,7 +30,12 @@ easy_admin:
       list:
         title: 'Episodes'
         sort: ['publishedAt', 'DESC']
-        fields: ['code', { property: 'cover_uri', type: 'image', label: 'Cover' }, 'name', 'publishedAt', 'special']
+        fields:
+          - 'code'
+          - { property: 'cover_uri', type: 'image', label: 'Cover' }
+          - 'name'
+          - 'publishedAt'
+          - { property: 'special', type: 'boolean' }
       form:
         fields:
           - { property: 'code', type: 'text' }
@@ -51,6 +58,18 @@ easy_admin:
         title: 'Edit episode'
       new:
         title: 'New episode'
+    EpisodePart:
+      class: App\Entity\EpisodePart
+      label: 'Chapters'
+    EpisodePartCorrection:
+      class: App\Entity\EpisodePartCorrection
+      label: 'Chapter Corrections'
+      list:
+        actions: ['show']
+      show:
+        actions:
+          - { name: 'approve', icon: 'plus-square' }
+          - { name: 'dismiss', icon: 'minus-square' }
     User:
       class: App\Entity\User
       label: 'Users'

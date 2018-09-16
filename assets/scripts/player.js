@@ -82,6 +82,50 @@ export default class Player {
       jQuery('.site-episode-parts .collapse.show').collapse('hide');
     });
 
+    jQuery(document).on('submit', 'form[name="episode_part_correction"]', (event) => {
+      event.preventDefault();
+
+      let form = jQuery(event.currentTarget);
+      let formData = jQuery(event.currentTarget).serialize();
+
+      form.find('[data-form-error]').remove();
+
+      fetch(form.attr('action'), {
+        method: 'post',
+        body: formData,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      })
+        .then(response => {
+          if (response.status === 200) {
+            jQuery('#correctionModal').modal('hide');
+            jQuery('#successModal').modal('show');
+
+            return;
+          }
+
+          if (response.status === 400) {
+            response.json().then((data) => {
+              for (let field in data) {
+                if (!data.hasOwnProperty(field)) {
+                  continue;
+                }
+
+                let errors = data[field];
+
+                let errorSubstitute = form.find('.' + field + '-errors');
+
+                errors.map((message) => {
+                  errorSubstitute.after('<div class="form-text text-danger" data-form-error>' + message + '</div>');
+                });
+              }
+            });
+          }
+        })
+      ;
+    });
+
     jQuery(document).on('submit', 'form[name="episode_part_suggestion"]', (event) => {
       event.preventDefault();
 
@@ -125,6 +169,45 @@ export default class Player {
         })
       ;
     });
+
+    jQuery(document).on('click', '[data-vote-correction]', (event) => {
+      let button = jQuery(event.currentTarget);
+      let vote = button.data('vote-correction');
+      let correction = button.data('correction-id');
+
+      let data = { vote: vote, correction: correction };
+      let encodedData = [];
+
+      for (let key in data) {
+        encodedData.push(encodeURIComponent(key) + '=' + encodeURIComponent(data[key]));
+      }
+
+      fetch('/episode/vote', {
+        method: 'post',
+        body: encodedData.join('&').replace(/%20/g, '+'),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      });
+
+      jQuery('[data-vote-correction][data-correction-id="' + correction + '"]').addClass('d-none');
+
+      let output = jQuery('[data-vote-correction-output="' + vote + '"][data-correction-id="' + correction + '"]');
+
+      let count = +output.html();
+      ++count;
+
+      output.html(count);
+    });
+
+    jQuery(document).on('change', '[name="episode_part_correction[action]"]', function() {
+      let action = this.value;
+
+      jQuery('[data-correction-field]').addClass('d-none');
+      jQuery('[data-correction-field="' + action + '"]').removeClass('d-none');
+    });
+
+    jQuery('[name="episode_part_correction[action]"]').change();
 
     jQuery(document).on('show.bs.modal', '#suggestionModal, #correctionModal', (event) => {
       let button = jQuery(event.relatedTarget);

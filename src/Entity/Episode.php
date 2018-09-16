@@ -103,6 +103,11 @@ class Episode
      */
     private $crawlerOutput;
 
+    public function __toString()
+    {
+        return $this->getCode();
+    }
+
     public function isPersisted(): bool
     {
         return $this->id !== null;

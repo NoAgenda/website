@@ -1,6 +1,7 @@
 <div class="site-episode-parts list-group">
   {% for part in parts %}
-  <div class="site-episode-part list-group-item list-group-item-action flex-column align-items-start p-2">
+  {% set borderClasses = part.corrections|length ? 'border-bottom-0' : null %}
+  <div class="site-episode-part list-group-item list-group-item-action flex-column align-items-start {{ borderClasses }} p-2">
     <div class="d-flex w-100 justify-content-between">
       <div class="d-flex">
         <div class="episode-actions text-center mr-3">
@@ -28,37 +29,16 @@
                 <span class="fas fa-exclamation-triangle fa-fw fa-lg text-danger" aria-hidden="true"></span>
               </div>
             </div>
-          </div>
-          <div>
-            {% for correction in part.corrections %}
-            {% set canVote = correction.creator != app.user %}
-            <div class="my-2">
-              <small>{{ correction.creator.username }}</small>
-              New chapter {{ correction.position }} this{% if correction.startsAt %} at {{ correction.startsAt|prettyTimestamp }}{% endif %}: {{ correction.name }}
-              (
-                <span class="text-success">0</span>
-                {% if canVote %}
-                <div class="cursor-pointer d-inline-block" title="Support this correction" data-vote-correction="support" data-correction-id="{{ correction.id }}">
-                  <span class="fas fa-check fa-lg text-success" aria-hidden="true"></span>
-                </div>
-                {% endif %}
-                ,
-                <span class="text-danger">0</span>
-                {% if canVote %}
-                <div class="cursor-pointer d-inline-block" title="Reject this correction" data-vote-correction="reject" data-correction-id="{{ correction.id }}">
-                  <span class="fas fa-times fa-lg text-danger" aria-hidden="true"></span>
-                </div>
-                {% endif %}
-                ,
-                <span class="text-info">0</span>
-                {% if canVote %}
-                <div class="cursor-pointer d-inline-block" title="I'm not sure about this correction" data-vote-correction="question" data-correction-id="{{ correction.id }}">
-                  <span class="fas fa-question fa-lg text-info" aria-hidden="true"></span>
-                </div>
-                {% endif %}
-              )
+            {% if is_granted('ROLE_ADMIN') %}
+            <div class="bg-gray d-inline-block p-1 rounded">
+              <span title="Administration Box">
+                <span class="fas fa-cog fa-fw fa-lg" aria-hidden="true"></span>
+              </span>
+              <a class="cursor-pointer d-inline-block" href="{{ path('easyadmin', {entity: 'EpisodePart', id: part.id, action: 'show'}) }}" target="_blank" title="Manage chapter">
+                <span class="fas fa-file-alt fa-fw fa-lg" aria-hidden="true"></span>
+              </a>
             </div>
-            {% endfor %}
+            {% endif %}
           </div>
         </div>
       </div>
@@ -71,10 +51,43 @@
       </span>
     </div>
   </div>
-  {#<div class="list-group-item list-group-item-action flex-column align-items-start border-top-0 border-bottom-0 p-2">#}
-    {#<div style="padding-left: 86px; padding-right: 100px;">#}
-      {#<span class="fab fa-lightbulb" aria-hidden="true"></span> An additional topic was discussed in this section: [Topic Name] [4/2/1]#}
-    {#</div>#}
-  {#</div>#}
+  {% for correction in part.corrections %}
+  {% set borderClasses = (loop.length > 1 and not loop.last ? 'border-bottom-0') ~ ' border-top-0' %}
+  {% set canVote = canVoteCorrection(correction) %}
+  {% set votes = correctionVotes(correction) %}
+  <div class="list-group-item list-group-item-action flex-column align-items-start {{ borderClasses }} p-2">
+    <div style="padding-left: 86px; padding-right: 100px;">
+      <span class="fas fa-lightbulb" aria-hidden="true"></span>
+      <small>{{ correction.creator.username }}</small>
+      {{ correction.summary }}
+      (
+        <span class="text-success" data-vote-correction-output="support" data-correction-id="{{ correction.id }}">{{ votes.support }}</span>
+        {% if canVote %}
+        <div class="cursor-pointer d-inline-block" title="Support this correction" data-vote-correction="support" data-correction-id="{{ correction.id }}">
+          <span class="fas fa-check fa-lg text-success" aria-hidden="true"></span>
+        </div>
+        {% endif %}
+        ,
+        <span class="text-danger" data-vote-correction-output="reject" data-correction-id="{{ correction.id }}">{{ votes.reject }}</span>
+        {% if canVote %}
+        <div class="cursor-pointer d-inline-block" title="Reject this correction" data-vote-correction="reject" data-correction-id="{{ correction.id }}">
+          <span class="fas fa-times fa-lg text-danger" aria-hidden="true"></span>
+        </div>
+        {% endif %}
+        ,
+        <span class="text-info" data-vote-correction-output="question" data-correction-id="{{ correction.id }}">{{ votes.question }}</span>
+        {% if canVote %}
+        <div class="cursor-pointer d-inline-block" title="I'm not sure about this correction" data-vote-correction="question" data-correction-id="{{ correction.id }}">
+          <span class="fas fa-question fa-lg text-info" aria-hidden="true"></span>
+        </div>
+        {% endif %}
+      )
+
+      {% if is_granted('ROLE_ADMIN') %}
+      <a class="ml-3" href="{{ path('easyadmin', {entity: 'EpisodePartCorrection', id: correction.id, action: 'show'}) }}" target="_blank"><span class="fas fa-file-alt mr-1"></span> Manage</a>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
   {% endfor %}
 </div>

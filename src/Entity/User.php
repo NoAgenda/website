@@ -82,7 +82,7 @@ class User implements UserInterface, \Serializable
     private $activationTokenExpiresAt;
 
     /**
-     * @var \DateTimeInterface
+     * @var \DateTimeImmutable
      *
      * @ORM\Column(type="datetime_immutable")
      */
@@ -93,6 +93,11 @@ class User implements UserInterface, \Serializable
         $this->hidden = false;
         $this->roles = ['ROLE_USER'];
         $this->createdAt = new \DateTimeImmutable;
+    }
+
+    public function __toString()
+    {
+        return $this->getUsername();
     }
 
     public function isPersisted(): bool
@@ -241,7 +246,7 @@ class User implements UserInterface, \Serializable
         return $this;
     }
 
-    public function getCreatedAt(): \DateTimeInterface
+    public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->createdAt;
     }
