@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Episode;
+use App\Form\EpisodePartCorrectionType;
+use App\Form\EpisodePartSuggestionType;
 use App\Repository\ChatMessageRepository;
 use App\Repository\EpisodePartRepository;
 use App\Repository\EpisodeRepository;
@@ -61,7 +63,15 @@ class PlayerController extends Controller
         //     'postedAt' => 0,
         // ]);
 
-        $parts = $this->episodePartRepository->findBy(['episode' => $episode]);
+        $parts = $this->episodePartRepository->findBy(['episode' => $episode, 'enabled' => true], ['startsAt' => 'ASC']);
+
+        $partCorrectionForm = $this->createForm(EpisodePartCorrectionType::class, null, [
+            'action' => $this->generateUrl('episode_part_correction'),
+        ]);
+
+        $partSuggestionForm = $this->createForm(EpisodePartSuggestionType::class, null, [
+            'action' => $this->generateUrl('episode_part_suggestion'),
+        ]);
 
         return $this->render('player/episode.html.twig', [
             'episode' => $episode,
@@ -69,6 +79,8 @@ class PlayerController extends Controller
             'transcriptLines' => $lines,
 
             // 'chatMessageForm' => $messageForm->createView(),
+            'partCorrectionForm' => $partCorrectionForm->createView(),
+            'partSuggestionForm' => $partSuggestionForm->createView(),
         ]);
     }
 }

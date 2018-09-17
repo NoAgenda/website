@@ -2,6 +2,9 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -36,6 +39,11 @@ class EpisodePart
     private $creator;
 
     /**
+     * @ORM\OneToMany(targetEntity="App\Entity\EpisodePartCorrection", mappedBy="part")
+     */
+    private $corrections;
+
+    /**
      * @var string
      *
      * @ORM\Column(type="string", length=1023)
@@ -63,17 +71,38 @@ class EpisodePart
      */
     private $duration;
 
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(type="boolean")
+     */
+    private $enabled;
+
+    /**
+     * @var \DateTimeImmutable
+     *
+     * @ORM\Column(type="datetime_immutable")
+     */
+    private $createdAt;
+
+    public function __construct()
+    {
+        $this->corrections = new ArrayCollection;
+        $this->enabled = true;
+        $this->createdAt = new \DateTimeImmutable;
+    }
+
     public function isPersisted(): bool
     {
         return $this->id !== null;
     }
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getEpisode(): Episode
+    public function getEpisode(): ?Episode
     {
         return $this->episode;
     }
@@ -85,7 +114,7 @@ class EpisodePart
         return $this;
     }
 
-    public function getCreator(): User
+    public function getCreator(): ?User
     {
         return $this->creator;
     }
@@ -97,7 +126,44 @@ class EpisodePart
         return $this;
     }
 
-    public function getName(): string
+    /**
+     * @return Collection|EpisodePartCorrection[]
+     */
+    public function getCorrections(): Collection
+    {
+        $criteria = Criteria::create()
+            ->where(Criteria::expr()->eq('handled', false))
+        ;
+
+        return $this->corrections->matching($criteria);
+    }
+
+    public function addCorrection(EpisodePartCorrection $correction): self
+    {
+        if (!$this->corrections->contains($correction)) {
+            $this->corrections[] = $correction;
+
+            $correction->setPart($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCorrection(EpisodePartCorrection $correction): self
+    {
+        if ($this->corrections->contains($correction)) {
+            $this->corrections->removeElement($correction);
+
+            // set the owning side to null (unless already changed)
+            if ($correction->getPart() === $this) {
+                $correction->setPart(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -121,7 +187,7 @@ class EpisodePart
         return $this;
     }
 
-    public function getStartsAt(): int
+    public function getStartsAt(): ?int
     {
         return $this->startsAt;
     }
@@ -143,5 +209,22 @@ class EpisodePart
         $this->duration = $duration;
 
         return $this;
+    }
+
+    public function getEnabled(): bool
+    {
+        return $this->enabled;
+    }
+
+    public function setEnabled(bool $enabled): self
+    {
+        $this->enabled = $enabled;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): \DateTimeImmutable
+    {
+        return $this->createdAt;
     }
 }

@@ -1,40 +1,40 @@
 <div id="correctionModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Create a correction</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <p>Select the position of the missing section:</p>
-        <div class="form-group">
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="option1" checked>
-            <label class="form-check-label" for="exampleRadios1">
-              There was another section played <em>before</em>
-            </label>
-          </div>
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios2" value="option2">
-            <label class="form-check-label" for="exampleRadios2">
-              There was another section played <em>after</em>
-            </label>
-          </div>
+      {{ form_start(partCorrectionForm) }}
+        <div class="modal-header">
+          <h5 class="modal-title">Suggest a correction</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
         </div>
-        <p>Select the starting time of the missing section:</p>
-        <div class="form-group">
-          <input type="text" class="form-control d-inline w-auto" placeholder="0:00:00">
-          <button type="button" class="btn btn-secondary d-inline">Grab current player time</button>
+        <div class="modal-body">
+          {{ form_row(partCorrectionForm.action, {
+            label: 'Select the type of correction:',
+          }) }}
+
+          <div class="form-group d-none" data-correction-field="startsAt">
+            {{ form_label(partCorrectionForm.startsAt, 'Select the new starting time of the chapter:') }}
+            <div>
+              {{ form_widget(partCorrectionForm.startsAt, {attr: {class: 'd-inline w-auto', placeholder: '0:00:00'}}) }}
+              <button type="button" class="btn btn-secondary d-inline">Grab current player time</button>
+            </div>
+            <span class="startsAt-errors"></span>
+          </div>
+
+          <div class="form-group d-none" data-correction-field="name">
+            {{ form_label(partCorrectionForm.name, 'Select the new name of the chapter:') }}
+            {{ form_widget(partCorrectionForm.name, {attr: {placeholder: 'Chapter name'}}) }}
+            <span class="name-errors"></span>
+          </div>
+
+          {{ form_rest(partCorrectionForm) }}
         </div>
-        <p>Select the name of the new section:</p>
-        <input type="text" class="form-control" placeholder="Section name">
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary">Save changes</button>
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-      </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create correction</button>
+        </div>
+      {{ form_end(partCorrectionForm) }}
     </div>
   </div>
 </div>

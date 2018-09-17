@@ -1,0 +1,9 @@
+easy_admin:
+  entities:
+    ChatMessage:
+      class: App\Entity\ChatMessage
+      label: 'Chat messages'
+      form:
+        fields:
+          - { property: 'username', type: 'text' }
+          - { property: 'contents', type: 'textarea' }

@@ -1,0 +1,12 @@
+easy_admin:
+  entities:
+    User:
+      class: App\Entity\User
+      label: 'Users'
+      form:
+        fields:
+          - { property: 'username', type: 'text' }
+          - { property: 'plainPassword', type: 'text', label: 'New password' }
+          - { property: 'email', type: 'email' }
+          - { property: 'hidden', type: 'checkbox', label: 'Account is disabled by user' }
+          - { property: 'roles' }

@@ -103,6 +103,11 @@ class Episode
      */
     private $crawlerOutput;
 
+    public function __toString()
+    {
+        return sprintf('%s: %s', $this->getCode(), $this->getName());
+    }
+
     public function isPersisted(): bool
     {
         return $this->id !== null;

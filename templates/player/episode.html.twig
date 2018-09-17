@@ -32,6 +32,8 @@
 {{ parent() }}
 
 {% include 'player/blocks/correction_modal.html.twig' %}
+{% include 'player/blocks/suggestion_modal.html.twig' %}
+{% include 'player/blocks/success_modal.html.twig' %}
 {% endblock %}
 
 {% block body_attributes %}data-player="{{ episode.recordingUri }}"{% endblock %}
