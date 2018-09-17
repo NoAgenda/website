@@ -82,8 +82,7 @@ class EpisodePartCorrection
     /**
      * @var boolean
      *
-     * @ORM\Column(type="boolean", nullable=true)
-     *             todo remove nullable
+     * @ORM\Column(type="boolean")
      */
     private $handled;
 
@@ -97,8 +96,7 @@ class EpisodePartCorrection
     /**
      * @var \DateTimeImmutable
      *
-     * @ORM\Column(type="datetime_immutable", nullable=true)
-     *                        todo remove nullable
+     * @ORM\Column(type="datetime_immutable")
      */
     private $createdAt;
 

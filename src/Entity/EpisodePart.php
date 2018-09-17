@@ -72,26 +72,24 @@ class EpisodePart
     private $duration;
 
     /**
-     * @var \DateTimeImmutable
-     *
-     * @ORM\Column(type="datetime_immutable", nullable=true)
-     *                        todo remove nullable
-     */
-    private $createdAt;
-
-    /**
      * @var boolean
      *
-     * @ORM\Column(type="boolean", nullable=true)
-     *             todo remove nullable
+     * @ORM\Column(type="boolean")
      */
     private $enabled;
+
+    /**
+     * @var \DateTimeImmutable
+     *
+     * @ORM\Column(type="datetime_immutable")
+     */
+    private $createdAt;
 
     public function __construct()
     {
         $this->corrections = new ArrayCollection;
-        $this->createdAt = new \DateTimeImmutable;
         $this->enabled = true;
+        $this->createdAt = new \DateTimeImmutable;
     }
 
     public function isPersisted(): bool
@@ -213,11 +211,6 @@ class EpisodePart
         return $this;
     }
 
-    public function getCreatedAt(): \DateTimeImmutable
-    {
-        return $this->createdAt;
-    }
-
     public function getEnabled(): bool
     {
         return $this->enabled;
@@ -228,5 +221,10 @@ class EpisodePart
         $this->enabled = $enabled;
 
         return $this;
+    }
+
+    public function getCreatedAt(): \DateTimeImmutable
+    {
+        return $this->createdAt;
     }
 }
