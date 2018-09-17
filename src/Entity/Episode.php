@@ -105,7 +105,7 @@ class Episode
 
     public function __toString()
     {
-        return $this->getCode();
+        return sprintf('%s: %s', $this->getCode(), $this->getName());
     }
 
     public function isPersisted(): bool

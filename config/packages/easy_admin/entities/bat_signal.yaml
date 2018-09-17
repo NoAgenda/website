@@ -1,0 +1,10 @@
+easy_admin:
+  entities:
+    BatSignal:
+      class: App\Entity\BatSignal
+      label: 'Bat signals'
+      form:
+        fields:
+          - { property: 'code', type: 'text' }
+          - { property: 'processed', type: 'checkbox', type_options: { disabled: true } }
+          - { property: 'deployedAt', type: 'datetime' }

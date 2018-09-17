@@ -97,12 +97,12 @@ class EpisodePart
         return $this->id !== null;
     }
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getEpisode(): Episode
+    public function getEpisode(): ?Episode
     {
         return $this->episode;
     }
@@ -114,7 +114,7 @@ class EpisodePart
         return $this;
     }
 
-    public function getCreator(): User
+    public function getCreator(): ?User
     {
         return $this->creator;
     }
@@ -163,7 +163,7 @@ class EpisodePart
         return $this;
     }
 
-    public function getName(): string
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -187,7 +187,7 @@ class EpisodePart
         return $this;
     }
 
-    public function getStartsAt(): int
+    public function getStartsAt(): ?int
     {
         return $this->startsAt;
     }

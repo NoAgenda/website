@@ -1,0 +1,10 @@
+easy_admin:
+  site_name: 'No Agenda Experience Administration Panel'
+  design:
+    menu:
+      - { entity: 'Episode', icon: 'podcast', default: true }
+      - { entity: 'EpisodePart', icon: 'bookmark' }
+      - { entity: 'EpisodePartCorrection', icon: 'lightbulb-o'  }
+      - { entity: 'ChatMessage', icon: 'comment' }
+      - { entity: 'BatSignal', icon: 'signal' }
+      - { entity: 'User', icon: 'user' }

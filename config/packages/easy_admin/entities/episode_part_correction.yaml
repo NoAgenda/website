@@ -1,0 +1,11 @@
+easy_admin:
+  entities:
+    EpisodePartCorrection:
+      class: App\Entity\EpisodePartCorrection
+      label: 'Chapter Corrections'
+      list:
+        actions: ['show']
+      show:
+        actions:
+          - { name: 'approve', icon: 'plus-square' }
+          - { name: 'dismiss', icon: 'minus-square' }
