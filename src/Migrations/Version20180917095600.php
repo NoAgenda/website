@@ -35,9 +35,9 @@ final class Version20180917095600 extends AbstractMigration
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE na_episode_part_correction_vote DROP FOREIGN KEY FK_9E51E66D94AE086B');
-        $this->addSql('DROP TABLE na_episode_part_correction');
-
         $this->addSql('DROP TABLE na_episode_part_correction_vote');
+
+        $this->addSql('DROP TABLE na_episode_part_correction');
 
         $this->addSql('ALTER TABLE na_chat_message CHANGE created_at created_at DATETIME NOT NULL');
 
