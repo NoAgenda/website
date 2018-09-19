@@ -31,7 +31,7 @@ class EpisodePartSuggestionType extends AbstractType
             ])
             ->add('name', TextType::class, [
                 'required' => false,
-                'constraints' => [new Length(['min' => 6, 'max' => 48])],
+                'constraints' => [new Length(['min' => 6, 'max' => 128])],
             ])
             ->add('startsAt', TextType::class, [
                 'required' => false,
