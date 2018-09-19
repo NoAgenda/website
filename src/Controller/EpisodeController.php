@@ -5,12 +5,14 @@ namespace App\Controller;
 use App\Entity\EpisodePartCorrection;
 use App\Entity\EpisodePartCorrectionVote;
 use App\Entity\User;
+use App\Entity\UserToken;
 use App\Form\EpisodePartCorrectionType;
 use App\Form\EpisodePartSuggestionType;
 use App\Repository\EpisodePartCorrectionRepository;
 use App\Repository\EpisodePartCorrectionVoteRepository;
 use App\Repository\EpisodePartRepository;
 use App\Repository\EpisodeRepository;
+use App\Repository\UserTokenRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -33,8 +35,17 @@ class EpisodeController extends AbstractController
     private $episodePartRepository;
     private $episodePartCorrectionRepository;
     private $episodePartCorrectionVoteRepository;
+    private $userTokenRepository;
 
-    public function __construct(SerializerInterface $serializer, EntityManagerInterface $entityManager, EpisodeRepository $episodeRepository, EpisodePartRepository $episodePartRepository, EpisodePartCorrectionRepository $episodePartCorrectionRepository, EpisodePartCorrectionVoteRepository $episodePartCorrectionVoteRepository)
+    public function __construct(
+        SerializerInterface $serializer,
+        EntityManagerInterface $entityManager,
+        EpisodeRepository $episodeRepository,
+        EpisodePartRepository $episodePartRepository,
+        EpisodePartCorrectionRepository $episodePartCorrectionRepository,
+        EpisodePartCorrectionVoteRepository $episodePartCorrectionVoteRepository,
+        UserTokenRepository $userTokenRepository
+    )
     {
         $this->serializer = $serializer;
         $this->entityManager = $entityManager;
@@ -42,17 +53,27 @@ class EpisodeController extends AbstractController
         $this->episodePartRepository = $episodePartRepository;
         $this->episodePartCorrectionRepository = $episodePartCorrectionRepository;
         $this->episodePartCorrectionVoteRepository = $episodePartCorrectionVoteRepository;
+        $this->userTokenRepository = $userTokenRepository;
     }
 
     /**
-     * @param User $user
+     * @param User|null $user
      *
      * @Route("/part_correction", name="part_correction", methods="POST")
      */
-    public function partCorrectionAction(Request $request, UserInterface $user): Response
+    public function partCorrectionAction(Request $request, ?UserInterface $user): Response
     {
         $correction = new EpisodePartCorrection;
-        $correction->setCreator($user);
+
+        if ($user) {
+            $correction->setCreator($user);
+        }
+        else if ($token = $this->getUserToken($request)) {
+            $correction->setCreatorToken($token);
+        }
+        else {
+            return JsonResponse::create(null, Response::HTTP_BAD_REQUEST);
+        }
 
         $form = $this->createForm(EpisodePartCorrectionType::class, $correction);
 
@@ -86,14 +107,23 @@ class EpisodeController extends AbstractController
     }
 
     /**
-     * @param User $user
+     * @param User|null $user
      *
      * @Route("/part_suggestion", name="part_suggestion", methods="POST")
      */
-    public function partSuggestionAction(Request $request, UserInterface $user): Response
+    public function partSuggestionAction(Request $request, ?UserInterface $user): Response
     {
         $correction = new EpisodePartCorrection;
-        $correction->setCreator($user);
+
+        if ($user) {
+            $correction->setCreator($user);
+        }
+        else if ($token = $this->getUserToken($request)) {
+            $correction->setCreatorToken($token);
+        }
+        else {
+            return JsonResponse::create(null, Response::HTTP_BAD_REQUEST);
+        }
 
         $form = $this->createForm(EpisodePartSuggestionType::class, $correction);
 
@@ -127,11 +157,11 @@ class EpisodeController extends AbstractController
     }
 
     /**
-     * @param User $user
+     * @param User|null $user
      *
      * @Route("/vote", name="vote", methods="POST")
      */
-    public function voteAction(Request $request, UserInterface $user): Response
+    public function voteAction(Request $request, ?UserInterface $user): Response
     {
         $correction = null;
         $correctionId = $request->request->get('correction');
@@ -149,21 +179,45 @@ class EpisodeController extends AbstractController
             throw new \RuntimeException(sprintf('Invalid correction "%s".', $correctionId));
         }
 
+        $creator = $user ?? $this->getUserToken($request);
+        $creatorField = $user ? 'creator' : 'creatorToken';
+
+        if (!$creator) {
+            throw new \RuntimeException('Not a valid user.');
+        }
+
         $vote = $this->episodePartCorrectionVoteRepository->findOneBy([
             'correction' => $correction,
-            'creator' => $user,
+            $creatorField => $creator,
         ]);
 
         if ($vote) {
             throw new \RuntimeException('You already voted on this correction.');
         }
 
-        $vote = EpisodePartCorrectionVote::create($correction, $user, $voteValue);
+        $vote = EpisodePartCorrectionVote::create($correction, $creator, $voteValue);
 
         $this->entityManager->persist($vote);
 
         $this->entityManager->flush();
 
         return JsonResponse::create();
+    }
+
+    private function getUserToken(Request $request): ?UserToken
+    {
+        $string = $request->cookies->get('guest_token');
+
+        $token = $this->userTokenRepository->findOneBy(['token' => $string]);
+
+        if (!$token) {
+            return null;
+        }
+
+        $token->addCurrentIpAddress();
+
+        $this->entityManager->persist($token);
+
+        return $token;
     }
 }

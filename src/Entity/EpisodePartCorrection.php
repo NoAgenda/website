@@ -37,12 +37,20 @@ class EpisodePartCorrection
     private $result;
 
     /**
-     * @var User
+     * @var User|null
      *
-     * @ORM\ManyToOne(targetEntity="User")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\ManyToOne(targetEntity="App\Entity\User")
+     * @ORM\JoinColumn(nullable=true)
      */
     private $creator;
+
+    /**
+     * @var UserToken|null
+     *
+     * @ORM\ManyToOne(targetEntity="App\Entity\UserToken")
+     * @ORM\JoinColumn(nullable=true)
+     */
+    private $creatorToken;
 
     /**
      * @var Collection
@@ -146,14 +154,26 @@ class EpisodePartCorrection
         return $this;
     }
 
-    public function getCreator(): User
+    public function getCreator(): ?User
     {
         return $this->creator;
     }
 
-    public function setCreator(User $creator): self
+    public function setCreator(?User $creator): self
     {
         $this->creator = $creator;
+
+        return $this;
+    }
+
+    public function getCreatorToken(): ?UserToken
+    {
+        return $this->creatorToken;
+    }
+
+    public function setCreatorToken(?UserToken $creatorToken): self
+    {
+        $this->creatorToken = $creatorToken;
 
         return $this;
     }
@@ -269,11 +289,17 @@ class EpisodePartCorrection
     public function getSummary(): string
     {
         if ($this->position !== null) {
+            $summary = 'New chapter ' . $this->position . ' this';
+
             if ($this->startsAt !== null) {
-                return sprintf('New chapter %s this at %s: %s', $this->position, $this->prettyTimestamp($this->startsAt), $this->name);
+                $summary .= ' at ' . $this->prettyTimestamp($this->startsAt);
             }
 
-            return sprintf('New chapter %s this: %s', $this->position, $this->name);
+            if ($this->name !== null) {
+                $summary .= ': ' . $this->name;
+            }
+
+            return $summary;
         }
 
         if ($this->action !== null) {

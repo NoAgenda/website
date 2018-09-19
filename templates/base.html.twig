@@ -17,8 +17,9 @@
     <link rel="stylesheet" href="{{ asset('/assets/app.css') }}">
     {% endblock %}
   </head>
-  <body {% block body_attributes '' %}>
+  <body data-authenticated="{{ authenticated ? 'true' : 'false' }}" {% block body_attributes '' %}>
     {% block body '' %}
+    {% include 'blocks/token_modal.html.twig' %}
 
     {% block scripts %}
     <script src="{{ asset('/assets/app.js') }}"></script>

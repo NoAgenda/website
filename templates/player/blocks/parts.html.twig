@@ -22,10 +22,10 @@
               <span title="Suggestions Box">
                 <span class="fas fa-lightbulb fa-fw fa-lg" aria-hidden="true"></span>
               </span>
-              <div class="cursor-pointer d-inline-block" title="Suggest a new section" data-toggle="modal" data-target="#suggestionModal" data-part-id="{{ part.id }}">
+              <div class="cursor-pointer d-inline-block" title="Suggest a new section" data-action="part-suggestion" data-part-id="{{ part.id }}">
                 <span class="fas fa-plus-circle fa-fw fa-lg text-success" aria-hidden="true"></span>
               </div>
-              <div class="cursor-pointer d-inline-block" title="Suggest a correction for this section" data-toggle="modal" data-target="#correctionModal" data-part-id="{{ part.id }}">
+              <div class="cursor-pointer d-inline-block" title="Suggest a correction for this section" data-action="part-suggestion" data-part-id="{{ part.id }}">
                 <span class="fas fa-exclamation-triangle fa-fw fa-lg text-danger" aria-hidden="true"></span>
               </div>
             </div>
@@ -58,7 +58,7 @@
   <div class="list-group-item list-group-item-action flex-column align-items-start {{ borderClasses }} p-2">
     <div style="padding-left: 86px; padding-right: 100px;">
       <span class="fas fa-lightbulb" aria-hidden="true"></span>
-      <small>{{ correction.creator.username }}</small>
+      <small>{% if correction.creator %}{{ correction.creator.username }}{% else %}<em>Guest</em>{% endif %}</small>
       {{ correction.summary }}
       (
         <span class="text-success" data-vote-correction-output="support" data-correction-id="{{ correction.id }}">{{ votes.support }}</span>

@@ -38,12 +38,20 @@ class EpisodePartCorrectionVote
     private $correction;
 
     /**
-     * @var User
+     * @var User|null
      *
      * @ORM\ManyToOne(targetEntity="App\Entity\User")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=true)
      */
     private $creator;
+
+    /**
+     * @var UserToken|null
+     *
+     * @ORM\ManyToOne(targetEntity="App\Entity\UserToken")
+     * @ORM\JoinColumn(nullable=true)
+     */
+    private $creatorToken;
 
     /**
      * @var boolean
@@ -90,8 +98,10 @@ class EpisodePartCorrectionVote
         if ($creator instanceof User) {
             $instance->setCreator($creator);
         }
+        else if ($creator instanceof UserToken) {
+            $instance->setCreatorToken($creator);
+        }
         else {
-            // set ip
             throw new \LogicException;
         }
 
@@ -125,7 +135,7 @@ class EpisodePartCorrectionVote
 
         $vote = current(array_keys($filteredMethod));
 
-        return sprintf('%s vote by %s', ucfirst($vote), $this->getCreator());
+        return sprintf('%s vote by %s', ucfirst($vote), $this->getCreator() ?? 'guest');
     }
 
     public function getId(): ?int
@@ -153,6 +163,18 @@ class EpisodePartCorrectionVote
     public function setCreator(?User $creator): self
     {
         $this->creator = $creator;
+
+        return $this;
+    }
+
+    public function getCreatorToken(): ?UserToken
+    {
+        return $this->creatorToken;
+    }
+
+    public function setCreatorToken(?UserToken $creatorToken): self
+    {
+        $this->creatorToken = $creatorToken;
 
         return $this;
     }

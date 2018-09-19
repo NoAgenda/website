@@ -5,19 +5,26 @@ namespace App\Twig;
 use App\Entity\EpisodePartCorrection;
 use App\Entity\EpisodePartCorrectionVote;
 use App\Repository\EpisodePartCorrectionVoteRepository;
+use App\Repository\UserTokenRepository;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
 class EpisodePartCorrectionExtension extends AbstractExtension
 {
     private $episodePartCorrectionVoteRepository;
+    private $requestStack;
     private $tokenStorage;
+    private $userTokenRepository;
 
-    public function __construct(TokenStorageInterface $tokenStorage, EpisodePartCorrectionVoteRepository $episodePartCorrectionVoteRepository)
+    public function __construct(RequestStack $requestStack, TokenStorageInterface $tokenStorage, EpisodePartCorrectionVoteRepository $episodePartCorrectionVoteRepository, UserTokenRepository $userTokenRepository)
     {
+        $this->requestStack = $requestStack;
         $this->tokenStorage = $tokenStorage;
         $this->episodePartCorrectionVoteRepository = $episodePartCorrectionVoteRepository;
+        $this->userTokenRepository = $userTokenRepository;
     }
 
     public function getFunctions(): array
@@ -54,25 +61,51 @@ class EpisodePartCorrectionExtension extends AbstractExtension
 
     public function canVote(EpisodePartCorrection $correction): bool
     {
-        if (null === $token = $this->tokenStorage->getToken()) {
-            return false;
-        }
-
+        $token = $this->tokenStorage->getToken();
         $user = $token->getUser();
 
-        if ($user === $correction->getCreator()) {
-            return false;
+        if ($token && $user instanceof UserInterface) {
+            if ($user === $correction->getCreator()) {
+                return false;
+            }
+
+            $vote = $this->episodePartCorrectionVoteRepository->findOneBy([
+                'correction' => $correction,
+                'creator' => $user,
+            ]);
+
+            if ($vote) {
+                return false;
+            }
+
+            return true;
         }
 
-        $vote = $this->episodePartCorrectionVoteRepository->findOneBy([
-            'correction' => $correction,
-            'creator' => $user,
-        ]);
+        if ($request = $this->requestStack->getMasterRequest()) {
+            $string = $request->cookies->get('guest_token');
 
-        if ($vote) {
-            return false;
+            $token = $this->userTokenRepository->findOneBy(['token' => $string]);
+
+            if (!$token) {
+                return true;
+            }
+
+            if ($token === $correction->getCreatorToken()) {
+                return false;
+            }
+
+            $vote = $this->episodePartCorrectionVoteRepository->findOneBy([
+                'correction' => $correction,
+                'creatorToken' => $token,
+            ]);
+
+            if ($vote) {
+                return false;
+            }
+
+            return true;
         }
 
-        return true;
+        return false;
     }
 }
