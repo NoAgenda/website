@@ -92,6 +92,11 @@ class EpisodePart
         $this->createdAt = new \DateTimeImmutable;
     }
 
+    public function __toString()
+    {
+        return $this->getName();
+    }
+
     public function isPersisted(): bool
     {
         return $this->id !== null;
