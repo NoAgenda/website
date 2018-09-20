@@ -54,6 +54,7 @@
     description: 'The unofficial Troll Room of The Best Podcast In The Universe.',
     website: 'reddit.com/r/trollroom',
     url: 'https://reddit.com/r/trollroom/',
+    new: true,
   },
 ] %}
 
@@ -77,7 +78,10 @@
     <div class="col-md-6 col-lg-4">
       <a class="d-block" href="{{ site.url }}">
         <h4>{{ site.name|raw }}</h4>
-        <span class="text-muted">{{ site.website }}</span>
+        <span class="text-muted">
+          {{ site.website }}
+          {% if site.new is defined and site.new %}<span class="badge badge-secondary">New</span>{% endif %}
+        </span>
         <p>{{ site.description }}</p>
       </a>
     </div>
