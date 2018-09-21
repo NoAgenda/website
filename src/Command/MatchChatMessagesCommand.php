@@ -96,9 +96,20 @@ class MatchChatMessagesCommand extends Command
         }
 
         if ($episode->hasChatMessages()) {
-            $io->note('The chat messages for this episode have already been matched.');
+            if ($clear) {
+                $oldMessages = $this->chatMessageRepository->findByEpisode($episode);
 
-            return 0;
+                foreach ($oldMessages as $oldMessage) {
+                    $this->entityManager->remove($oldMessage);
+                }
+
+                $io->note(sprintf('Cleared %s old messages.', count($oldMessages), $episode->getCode()));
+            }
+            else {
+                $io->note('The chat messages for this episode have already been matched.');
+
+                return 0;
+            }
         }
 
         $messages = $this->matchMessages($input, $output, $episode);
@@ -118,16 +129,6 @@ class MatchChatMessagesCommand extends Command
             $signal->setProcessed(true);
 
             $this->entityManager->persist($signal);
-        }
-
-        if ($clear) {
-            $oldMessages = $this->chatMessageRepository->findByEpisode($episode);
-
-            foreach ($oldMessages as $oldMessage) {
-                $this->entityManager->remove($oldMessage);
-            }
-
-            $io->note(sprintf('Cleared %s old messages for episode %s.', count($oldMessages), $episode->getCode()));
         }
 
         if ($save) {
