@@ -162,8 +162,6 @@ class MatchRecordingTimeCommand extends Command
         $progressBar = new ProgressBar($output, $amount);
         $progressBar->start();
 
-        dump($recordingMatrix);
-
         /** @var \SplFileInfo $liveFile */
         foreach ($liveFiles as $liveFile) {
             $timestamp = substr($liveFile->getFilename(), strlen('recording_'), 14);
@@ -211,12 +209,8 @@ class MatchRecordingTimeCommand extends Command
             }
         }
 
-        dump($recordingMatrix);
-
         // Optimize recording matrix
         ksort($recordingMatrix);
-
-        dump($recordingMatrix);
 
         foreach ($recordingMatrix as $key => $scores) {
             foreach ($recordingMatrix as $matchKey => $matchScores) {
@@ -236,8 +230,6 @@ class MatchRecordingTimeCommand extends Command
                 }
             }
         }
-
-        dump($recordingMatrix);
 
         // Sort by top match
         uasort($recordingMatrix, function($a, $b) {
@@ -261,7 +253,16 @@ class MatchRecordingTimeCommand extends Command
             return ($averageA > $averageB) ? -1 : 1;
         });
 
-        dump($recordingMatrix);
+        if ($io->isVerbose()) {
+            $io->note('Recording matrix dump:');
+
+            $listing = [];
+            foreach ($recordingMatrix as $key => $matches) {
+                $listing[] = sprintf('%s: %s', $key, implode(', ', $matches));
+            }
+
+            $io->listing($listing);
+        }
 
         return array_keys($recordingMatrix)[0];
     }
