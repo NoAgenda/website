@@ -4,8 +4,41 @@ easy_admin:
       class: App\Entity\EpisodePartCorrection
       label: 'Chapter Corrections'
       list:
-        actions: ['show']
+        title: 'Chapter Corrections'
+        sort: ['createdAt', 'DESC']
+        actions: ['show', '-delete']
       show:
         actions:
           - { name: 'approve', icon: 'plus-square' }
           - { name: 'dismiss', icon: 'minus-square' }
+      form:
+        actions: ['show', '-delete']
+        fields:
+          -
+            property: 'action'
+            type: 'choice'
+            type_options:
+              choices:
+                This chapter wasn't played here: 'remove'
+                The starting time of this chapter is incorrect: 'startsAt'
+                The name of this chapter is incorrect: 'name'
+          -
+            property: 'position'
+            type: 'choice'
+            type_options:
+              choices:
+                There was another chapter played before this: 'before'
+                There was another chapter played after this: 'after'
+          -
+            property: 'part'
+          -
+            type: 'section'
+            label: 'Correction values'
+          -
+            property: 'name'
+          -
+            property: 'startsAt'
+      edit:
+        title: 'Edit chapter correction'
+      new:
+        title: 'New chapter correction'

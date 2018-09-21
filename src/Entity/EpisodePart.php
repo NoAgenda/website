@@ -94,7 +94,7 @@ class EpisodePart
 
     public function __toString(): string
     {
-        return sprintf('%s (%s)', $this->getName(), $this->getEpisode()->getCode());
+        return sprintf('%s [%s]', $this->getName(), $this->getEpisode());
     }
 
     public function isPersisted(): bool

@@ -1,6 +1,7 @@
 easy_admin:
   site_name: 'No Agenda Experience Administration Panel'
   design:
+    color_scheme: 'dark'
     menu:
       - { entity: 'Episode', icon: 'podcast', default: true }
       - { entity: 'EpisodePart', icon: 'bookmark' }
