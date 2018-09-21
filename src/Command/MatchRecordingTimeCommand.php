@@ -63,6 +63,7 @@ class MatchRecordingTimeCommand extends Command
             ->setDescription('Finds the show\'s original recording time by matching livestream recordings')
             ->addArgument('episode', InputArgument::REQUIRED, 'The episode code')
             ->addOption('save', null, InputOption::VALUE_NONE, 'Save crawling results in the database')
+            ->addOption('skip-split', null, InputOption::VALUE_NONE, 'Skip splitting of the episode file')
         ;
     }
 
@@ -71,6 +72,7 @@ class MatchRecordingTimeCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         $save = $input->getOption('save');
+        $skipSplitting = $input->getOption('skip-split');
 
         $code = $input->getArgument('episode');
         $episode = $this->episodeRepository->findOneBy(['code' => $code]);
@@ -103,7 +105,7 @@ class MatchRecordingTimeCommand extends Command
             return;
         }
 
-        if (!$this->splitRecording($input, $output, $episode)) {
+        if (!$skipSplitting && !$this->splitRecording($input, $output, $episode)) {
             return;
         }
 
@@ -160,13 +162,22 @@ class MatchRecordingTimeCommand extends Command
         $progressBar = new ProgressBar($output, $amount);
         $progressBar->start();
 
+        dump($recordingMatrix);
+
         /** @var \SplFileInfo $liveFile */
         foreach ($liveFiles as $liveFile) {
+            $timestamp = substr($liveFile->getFilename(), strlen('recording_'), 14);
+
             /** @var \SplFileInfo $sourceFile */
             foreach ($sourceFiles as $sourceFile) {
-                $recordedAt = new \DateTime(substr($liveFile->getFilename(), strlen('recording_'), 14));
+                $recordedAt = new \DateTime($timestamp);
+
                 preg_match("/_(\d+)./", $sourceFile->getFilename(), $matches);
                 list(, $offset) = $matches;
+
+                if ($io->isVeryVerbose()) {
+                    $io->text(sprintf('Matching livestream recording "%s" to episode offset %s-%s.', $timestamp, $offset, $offset + 600));
+                }
 
                 $cmd = sprintf('audio-offset-finder --find-offset-of %s --within %s', $liveFile->getPathname(), $sourceFile->getPathname());
 
@@ -180,8 +191,6 @@ class MatchRecordingTimeCommand extends Command
 
                 $recordingOffset = $offset + $matchedOffset;
                 $episodeRecordedAt = $recordedAt->sub(new \DateInterval('PT' . $recordingOffset . 'S'));
-                // $roundedSeconds = 5 * round($episodeRecordedAt->format('s') / 5);
-                // $episodeRecordedAt->setTime($episodeRecordedAt->format('H'), $episodeRecordedAt->format('i'), $roundedSeconds);
 
                 $episodeRecordedAtKey = $episodeRecordedAt->format('YmdHis');
 
@@ -191,17 +200,23 @@ class MatchRecordingTimeCommand extends Command
 
                 $recordingMatrix[$episodeRecordedAtKey][] = $matchedScore;
 
-                // $io->text($episodeRecordedAtKey);
-                // $io->text($recordingOffset);
-                // $io->text($matchedScore);
+                if ($io->isVerbose()) {
+                    $io->text(sprintf('Matched recording for time "%s" with a score of %s.', $episodeRecordedAt->format('Y-m-d H:i:s'), $matchedScore));
+                }
+
+                $io->newLine();
 
                 $progressBar->advance();
                 $output->write("\n");
             }
         }
 
+        dump($recordingMatrix);
+
         // Optimize recording matrix
         ksort($recordingMatrix);
+
+        dump($recordingMatrix);
 
         foreach ($recordingMatrix as $key => $scores) {
             foreach ($recordingMatrix as $matchKey => $matchScores) {
@@ -221,6 +236,8 @@ class MatchRecordingTimeCommand extends Command
                 }
             }
         }
+
+        dump($recordingMatrix);
 
         // Sort by top match
         uasort($recordingMatrix, function($a, $b) {
@@ -243,6 +260,8 @@ class MatchRecordingTimeCommand extends Command
 
             return ($averageA > $averageB) ? -1 : 1;
         });
+
+        dump($recordingMatrix);
 
         return array_keys($recordingMatrix)[0];
     }

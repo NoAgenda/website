@@ -5,6 +5,7 @@ namespace App\Command;
 use App\Entity\ChatMessage;
 use App\Entity\Episode;
 use App\Repository\BatSignalRepository;
+use App\Repository\ChatMessageRepository;
 use App\Repository\EpisodeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use ForceUTF8\Encoding;
@@ -30,6 +31,11 @@ class MatchChatMessagesCommand extends Command
     private $batSignalRepository;
 
     /**
+     * @var ChatMessageRepository
+     */
+    private $chatMessageRepository;
+
+    /**
      * @var EpisodeRepository
      */
     private $episodeRepository;
@@ -43,6 +49,7 @@ class MatchChatMessagesCommand extends Command
         ?string $name = null,
         EntityManagerInterface $entityManager,
         BatSignalRepository $batSignalRepository,
+        ChatMessageRepository $chatMessageRepository,
         EpisodeRepository $episodeRepository,
         string $storagePath
     )
@@ -51,6 +58,7 @@ class MatchChatMessagesCommand extends Command
 
         $this->entityManager = $entityManager;
         $this->batSignalRepository = $batSignalRepository;
+        $this->chatMessageRepository = $chatMessageRepository;
         $this->episodeRepository = $episodeRepository;
         $this->storagePath = $storagePath;
     }
@@ -61,6 +69,7 @@ class MatchChatMessagesCommand extends Command
             ->setDescription('Matches chat messages from the troll room to the recording time')
             ->addArgument('episode', InputArgument::REQUIRED, 'The episode code')
             ->addOption('save', null, InputOption::VALUE_NONE, 'Save crawling results in the database')
+            ->addOption('clear', null, InputOption::VALUE_NONE, 'Clear previously crawled chat messages in the database if new messages are found')
         ;
     }
 
@@ -69,6 +78,7 @@ class MatchChatMessagesCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         $save = $input->getOption('save');
+        $clear = $input->getOption('clear');
 
         $code = $input->getArgument('episode');
         $episode = $this->episodeRepository->findOneBy(['code' => $code]);
@@ -108,6 +118,16 @@ class MatchChatMessagesCommand extends Command
             $signal->setProcessed(true);
 
             $this->entityManager->persist($signal);
+        }
+
+        if ($clear) {
+            $oldMessages = $this->chatMessageRepository->findByEpisode($episode);
+
+            foreach ($oldMessages as $oldMessage) {
+                $this->entityManager->remove($oldMessage);
+            }
+
+            $io->note(sprintf('Cleared %s old messages for episode %s.', count($oldMessages), $episode->getCode()));
         }
 
         if ($save) {
