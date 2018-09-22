@@ -111,6 +111,7 @@ export default class Player {
       this.timestamp = timestamp;
 
       this.stepInterface(timestamp);
+      this.stepParts(timestamp);
       this.stepTranscript(timestamp);
     }
 
@@ -125,6 +126,7 @@ export default class Player {
       this.timestamp = timestamp;
 
       this.stepInterface(timestamp);
+      this.stepParts(timestamp);
       this.stepTranscript(timestamp);
     }
 
@@ -137,6 +139,7 @@ export default class Player {
     this.timestamp = timestamp;
 
     this.stepInterface(timestamp);
+    this.stepParts(timestamp);
     this.stepTranscript(timestamp);
     this.chat.step(timestamp);
 
@@ -152,6 +155,33 @@ export default class Player {
 
     jQuery('[data-player-data="timer"]').text(Player.formatTime(timestamp));
     jQuery('[data-player-data="progress"]').css('width', progress);
+  }
+
+  stepParts(timestamp) {
+    let parts = jQuery('.site-episode-part');
+
+    let lastActivePart = null;
+
+    for (let part of parts) {
+      let partTimestamp = jQuery(part).data('timestamp');
+
+      if (partTimestamp <= timestamp) {
+        lastActivePart = jQuery(part);
+      }
+    }
+
+    parts.removeClass('part-highlight');
+
+    if (lastActivePart) {
+      lastActivePart.addClass('part-highlight');
+
+      if (lastActivePart.data('name')) {
+        jQuery('[data-player-data="chapter-name"]').text('Now playing: ' + lastActivePart.data('name'));
+      }
+      else {
+        jQuery('[data-player-data="chapter-name"]').text('');
+      }
+    }
   }
 
   stepTranscript(timestamp) {

@@ -170,8 +170,10 @@
             </div>
             <div class="flex-grow-1 m-2">
               <div>
-                <span data-player-data="timer">0:00</span> / <span data-player-data="duration">0:00</span>
-                <span class="d-none d-md-inline ml-4">Now playing: 001 - Start of Show</span>
+                <span class="d-inline-block" style="min-width: 120px;">
+                  <span data-player-data="timer">0:00</span> / <span data-player-data="duration">0:00</span>
+                </span>
+                <span class="d-none d-md-inline ml-4" data-player-data="chapter-name"></span>
               </div>
               <div class="bg-dark cursor-pointer" data-player-action="progress" style="height: 5px;">
                 <div class="bg-highlight h-100" data-player-data="progress" style="width: 0;"></div>

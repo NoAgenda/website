@@ -1,7 +1,11 @@
 <div class="site-episode-parts list-group">
   {% for part in parts %}
   {% set borderClasses = part.corrections|length ? 'border-bottom-0' : null %}
-  <div class="site-episode-part list-group-item list-group-item-action flex-column align-items-start {{ borderClasses }} p-2">
+  <div
+    class="site-episode-part list-group-item list-group-item-action flex-column align-items-start {{ borderClasses }} p-2"
+    data-timestamp="{{ part.startsAt }}"
+    data-name="{{ part.name }}"
+  >
     <div class="d-flex w-100 justify-content-between">
       <div class="d-flex">
         <div class="episode-actions text-center mr-3">
