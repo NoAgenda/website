@@ -7,7 +7,9 @@
   >
     <div class="transcript-action text-right mr-3">
       <div class="cursor-pointer" data-player-action="play-timestamp" data-timestamp="{{ line.timestamp }}">
-        <span class="fas fa-sm fa-play mr-2" aria-hidden="true"></span>
+        <span class="transcript-focus float-left">
+          <span class="fas fa-sm fa-play ml-3" aria-hidden="true"></span>
+        </span>
         <span class="transcript-text">{{ line.timestamp|prettyTimestamp }}</span>
       </div>
     </div>
