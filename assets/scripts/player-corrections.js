@@ -45,6 +45,10 @@ export default class PlayerCorrections {
 
       let form = jQuery(event.currentTarget);
       let formData = jQuery(event.currentTarget).serialize();
+      let button = form.find('[type="submit"]');
+
+      button.prop('disabled', true);
+      button.html(button.html() + ' <span class="fas fa-spinner fa-spin ml-2" aria-hidden="true"></span>');
 
       form.find('[data-form-error]').remove();
 
@@ -57,6 +61,9 @@ export default class PlayerCorrections {
         },
       })
         .then(response => {
+          button.prop('disabled', false);
+          button.find('svg, span').remove();
+
           if (response.status === 200) {
             jQuery('#correctionModal').modal('hide');
             jQuery('#successModal').modal('show');
@@ -66,6 +73,8 @@ export default class PlayerCorrections {
 
           if (response.status === 400) {
             response.json().then((data) => {
+              let errorCount = 0;
+
               for (let field in data) {
                 if (!data.hasOwnProperty(field)) {
                   continue;
@@ -76,11 +85,20 @@ export default class PlayerCorrections {
                 let errorSubstitute = form.find('.' + field + '-errors');
 
                 errors.map((message) => {
+                  ++errorCount;
                   errorSubstitute.after('<div class="form-text text-danger" data-form-error>' + message + '</div>');
                 });
               }
+
+              if (errorCount === 0) {
+                form.find('.form-errors').after('<div class="form-text text-danger" data-form-error>An unexpected error occurred.</div>');
+              }
             });
+
+            return;
           }
+
+          form.find('.form-errors').after('<div class="form-text text-danger" data-form-error>An unexpected error occurred.</div>');
         })
       ;
     });
@@ -90,6 +108,10 @@ export default class PlayerCorrections {
 
       let form = jQuery(event.currentTarget);
       let formData = jQuery(event.currentTarget).serialize();
+      let button = form.find('[type="submit"]');
+
+      button.prop('disabled', true);
+      button.html(button.html() + ' <span class="fas fa-spinner fa-spin ml-2" aria-hidden="true"></span>');
 
       form.find('[data-form-error]').remove();
 
@@ -102,6 +124,9 @@ export default class PlayerCorrections {
         },
       })
         .then(response => {
+          button.prop('disabled', false);
+          button.find('svg, span').remove();
+
           if (response.status === 200) {
             jQuery('#suggestionModal').modal('hide');
             jQuery('#successModal').modal('show');
@@ -111,6 +136,8 @@ export default class PlayerCorrections {
 
           if (response.status === 400) {
             response.json().then((data) => {
+              let errorCount = 0;
+
               for (let field in data) {
                 if (!data.hasOwnProperty(field)) {
                   continue;
@@ -121,11 +148,20 @@ export default class PlayerCorrections {
                 let errorSubstitute = form.find('.' + field + '-errors');
 
                 errors.map((message) => {
+                  ++errorCount;
                   errorSubstitute.after('<div class="form-text text-danger" data-form-error>' + message + '</div>');
                 });
               }
+
+              if (errorCount === 0) {
+                form.find('.form-errors').after('<div class="form-text text-danger" data-form-error>An unexpected error occurred.</div>');
+              }
             });
+
+            return;
           }
+
+          form.find('.form-errors').after('<div class="form-text text-danger" data-form-error>An unexpected error occurred.</div>');
         })
       ;
     });
