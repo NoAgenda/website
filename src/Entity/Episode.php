@@ -103,7 +103,7 @@ class Episode
      */
     private $crawlerOutput;
 
-    public function __toString()
+    public function __toString(): string
     {
         return sprintf('%s: %s', $this->getCode(), $this->getName());
     }

@@ -115,9 +115,9 @@ class EpisodePartCorrection
         $this->createdAt = new \DateTimeImmutable;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
-        return $this->getName();
+        return $this->getSummary();
     }
 
     public function isPersisted(): bool

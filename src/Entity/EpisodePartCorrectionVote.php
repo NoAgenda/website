@@ -121,7 +121,7 @@ class EpisodePartCorrectionVote
         $this->createdAt = new \DateTimeImmutable;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         $methods = [
             self::VOTE_SUPPORT => 'getSupported',
