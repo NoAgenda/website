@@ -10,7 +10,7 @@ export default class Player {
 
     this.token = token;
     this.chat = new PlayerChat();
-    this.corrections = new PlayerCorrections(token);
+    this.corrections = new PlayerCorrections(this, token);
     this.sound = new Howl({
       src: [uri],
       onload: () => {
@@ -18,12 +18,12 @@ export default class Player {
       },
       onplay: () => {
         jQuery('[data-player-action="play"]').css('display', 'none');
-        jQuery('[data-player-action="pause"]').css('display', 'block');
+        jQuery('[data-player-action="pause"]').css('display', 'inherit');
 
         requestAnimationFrame(this.step.bind(this));
       },
       onpause: () => {
-        jQuery('[data-player-action="play"]').css('display', 'block');
+        jQuery('[data-player-action="play"]').css('display', 'inherit');
         jQuery('[data-player-action="pause"]').css('display', 'none');
       },
     });
@@ -234,6 +234,20 @@ export default class Player {
     }
 
     return minutes + ':' + (seconds < 10 ? '0' : '') + Math.trunc(seconds);
+  }
+
+  static serializeTime(value) {
+    let values = value.split(':');
+    let result = false;
+
+    if (values.length > 2) {
+      result = (+values[0]) * 60 * 60 + (+values[1]) * 60 + (+values[2]);
+    }
+    else if (values.length === 2) {
+      result = (+values[0]) * 60 + (+values[1]);
+    }
+
+    return result;
   }
 
   static lineIsOnScreen(element, bottomOffset) {

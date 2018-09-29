@@ -15,11 +15,27 @@
             label: 'Select the type of correction:',
           }) }}
 
-          <div class="form-group d-none" data-correction-field="startsAt">
+          <div class="form-group d-none" data-correction-field="startsAt" data-correction-timestamp>
             {{ form_label(partCorrectionForm.startsAt, 'Select the new starting time of the chapter:') }}
             <div>
               {{ form_widget(partCorrectionForm.startsAt, {attr: {class: 'd-inline w-auto', placeholder: '0:00:00'}}) }}
-              <button type="button" class="btn btn-secondary d-inline">Grab current player time</button>
+              <div class="d-inline">
+                <div class="btn btn-primary mx-1 cursor-pointer" data-fill>
+                  Grab current player time
+                </div>
+              </div>
+              <div class="d-inline">
+                <div class="btn btn-secondary mx-1 cursor-pointer" data-play>
+                  <span class="far fa-sm fa-play" aria-hidden="true"></span>
+                  <span class="ml-1">Play from position</span>
+                </div>
+              </div>
+              <div class="d-inline">
+                <div class="btn btn-secondary mx-1 cursor-pointer" data-player-action="pause">
+                  <span class="far fa-sm fa-pause" aria-hidden="true"></span>
+                  <span class="sr-only">Pause</span>
+                </div>
+              </div>
             </div>
             <span class="startsAt-errors"></span>
           </div>

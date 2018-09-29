@@ -1,13 +1,42 @@
 import jQuery from 'jquery';
+import Player from './player';
 
 export default class PlayerCorrections {
-  constructor(token) {
+  constructor(player, token) {
+    this.player = player;
     this.token = token;
 
     this.registerEventListeners();
   }
 
   registerEventListeners() {
+    jQuery(document).on('click', '[data-correction-timestamp] [data-fill]', (event) => {
+      let container = jQuery(event.currentTarget).closest('[data-correction-timestamp]');
+
+      let timestamp = this.player.sound.seek() || 0;
+      container.find('input').val(Player.formatTime(timestamp));
+    });
+
+    jQuery(document).on('click', '[data-correction-timestamp] [data-play]', (event) => {
+      let container = jQuery(event.currentTarget).closest('[data-correction-timestamp]');
+
+      let value = container.find('input').val();
+      let timestamp = Player.serializeTime(value);
+
+      container.find('[data-form-error]').remove();
+
+      if (isNaN(timestamp)) {
+        container.find('.startsAt-errors').after('<div class="form-text text-danger" data-form-error>Invalid timestamp.</div>');
+
+        return;
+      }
+
+      this.player.seekTimestamp(timestamp);
+      if (!this.player.sound.playing()) {
+        this.player.sound.play();
+      }
+    });
+
     jQuery(document).on('click', '[data-action="part-correction"]', (event) => {
       if (!this.token.isAuthenticated()) {
         this.token.createToken();
