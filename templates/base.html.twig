@@ -12,6 +12,7 @@
     {% set page_title = block('title') == '' ? 'No Agenda Experience' : block('title') ~ ' - No Agenda Experience' %}
 
     <title>{{ page_title }}</title>
+    <link rel="icon" href="{{ asset('/favicon.ico') }}">
 
     {% block stylesheets %}
     <link rel="stylesheet" href="{{ asset('/assets/app.css') }}">
