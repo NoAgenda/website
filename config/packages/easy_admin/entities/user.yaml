@@ -10,3 +10,9 @@ easy_admin:
           - { property: 'email', type: 'email' }
           - { property: 'hidden', type: 'checkbox', label: 'Account is disabled by user' }
           - { property: 'roles' }
+      list:
+        title: 'Users'
+      edit:
+        title: 'Edit user'
+      new:
+        title: 'New user'

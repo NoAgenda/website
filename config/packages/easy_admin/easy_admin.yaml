@@ -7,5 +7,8 @@ easy_admin:
       - { entity: 'EpisodePart', icon: 'bookmark' }
       - { entity: 'EpisodePartCorrection', icon: 'lightbulb-o'  }
       - { entity: 'ChatMessage', icon: 'comment' }
-      - { entity: 'BatSignal', icon: 'signal' }
       - { entity: 'User', icon: 'user' }
+      - { label: 'Processing' }
+      - { entity: 'BatSignal', icon: 'signal' }
+      - { route: 'admin_livestream_recordings', label: 'Livestream Recordings', icon: 'microphone' }
+      - { route: 'admin_chat_logs', label: 'Chat Logs', icon: 'comments' }

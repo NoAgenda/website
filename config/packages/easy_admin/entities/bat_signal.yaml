@@ -2,9 +2,15 @@ easy_admin:
   entities:
     BatSignal:
       class: App\Entity\BatSignal
-      label: 'Bat signals'
+      label: 'Bat Signals'
       form:
         fields:
           - { property: 'code', type: 'text' }
           - { property: 'processed', type: 'checkbox', type_options: { disabled: true } }
           - { property: 'deployedAt', type: 'datetime' }
+      list:
+        title: 'Bat Signals'
+      edit:
+        title: 'Edit bat signal'
+      new:
+        title: 'New bat signal'
