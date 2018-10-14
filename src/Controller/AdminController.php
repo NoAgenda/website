@@ -204,6 +204,18 @@ class AdminController extends BaseAdminController
                     'recording' => file_exists($recordingPath),
                 ];
             }, $times);
+
+            usort($recordings, function ($a, $b) {
+                if ($a['time'] > $b['time']) {
+                    return 1;
+                }
+
+                if ($a['time'] < $b['time']) {
+                    return -1;
+                }
+
+                return 0;
+            });
         }
 
         return $this->render('admin/livestream_recordings.html.twig', [
