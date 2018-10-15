@@ -50,6 +50,9 @@ easy_admin:
             type: 'checkbox'
             label: 'Episode has a transcript'
           -
+            property: 'chat_notice'
+            type: 'text'
+          -
             type: 'section'
             icon: 'bug'
             label: 'Crawler data'

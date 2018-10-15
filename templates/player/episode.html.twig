@@ -194,10 +194,18 @@
             </li>
           </ul>
         </div>
+
+        {% if episode.chatNotice %}
+        <div class="alert alert-warning alert-dismissible fade show m-0" role="alert">
+          {{ episode.chatNotice }}
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        {% endif %}
         <div class="chat-loader text-center my-4">
           <span class="fas fa-spinner fa-spin" aria-hidden="true"></span> Loading troll messages...
         </div>
-
         <div class="chat-container flex-grow-1 oy-scroll my-4">
           {% include 'player/blocks/chat_container.html.twig' %}
         </div>

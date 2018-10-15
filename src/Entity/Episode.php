@@ -83,6 +83,13 @@ class Episode
     private $recordingUri;
 
     /**
+     * @var string|null
+     *
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $chatNotice;
+
+    /**
      * @var integer|null
      *
      * @ORM\Column(type="integer", nullable=true)
@@ -207,9 +214,9 @@ class Episode
         return $this->coverUri;
     }
 
-    public function setCoverUri(string $coverUri): self
+    public function setCoverUri(string $uri): self
     {
-        $this->coverUri = $coverUri;
+        $this->coverUri = $uri;
 
         return $this;
     }
@@ -219,9 +226,21 @@ class Episode
         return $this->recordingUri;
     }
 
-    public function setRecordingUri(string $recordingUri): self
+    public function setRecordingUri(string $uri): self
     {
-        $this->recordingUri = $recordingUri;
+        $this->recordingUri = $uri;
+
+        return $this;
+    }
+
+    public function getChatNotice(): ?string
+    {
+        return $this->chatNotice;
+    }
+
+    public function setChatNotice(?string $notice): self
+    {
+        $this->chatNotice = $notice;
 
         return $this;
     }
