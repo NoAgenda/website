@@ -8,6 +8,7 @@ import jQuery from 'jquery';
 import 'popper.js';
 // todo tree shaking of fa icons
 
+import Clipboard from './scripts/clipboard';
 import Archive from './scripts/archive';
 import Player from './scripts/player';
 import Token from './scripts/token';
@@ -15,6 +16,7 @@ import Token from './scripts/token';
 import './app.scss';
 
 jQuery(document).ready(() => {
+  let clipboard = new Clipboard();
   let token = new Token();
 
   let playerUri = jQuery('[data-player]').data('player');

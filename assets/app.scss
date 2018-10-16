@@ -17,10 +17,15 @@
 
 .text-sm { font-size: .95rem; }
 
+.text-facebook { color: #0d6aad; }
+.text-twitter { color: #00a7d0; }
+
 .top-0 { top: 0; }
 
 .vh-100 { min-height: 100vh; }
 .mvh-100 { max-height: 100vh; }
+
+.no-select { user-select: none; -moz-user-select: none; }
 
 .position-sticky.position-sticky {
   position: -webkit-sticky !important;

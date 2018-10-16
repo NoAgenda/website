@@ -9,8 +9,10 @@ use App\Repository\ChatMessageRepository;
 use App\Repository\EpisodePartRepository;
 use App\Repository\EpisodeRepository;
 use App\Repository\TranscriptLineRepository;
+use App\TimestampConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -54,8 +56,10 @@ class PlayerController extends Controller
      * @Route("/listen/{episode}", name="player")
      * @ParamConverter("episode", class="App\Entity\Episode", options={"mapping": {"episode": "code"}})
      */
-    public function playerAction(Episode $episode): Response
+    public function playerAction(Request $request, Episode $episode): Response
     {
+        $timestamp = TimestampConverter::parsePrettyTimestamp($request->query->get('t', 0));
+
         $lines = $this->transcriptLineRepository->findByEpisode($episode);
 
         // $messageForm = $this->createForm(ChatMessageType::class, [
@@ -74,6 +78,8 @@ class PlayerController extends Controller
         ]);
 
         return $this->render('player/episode.html.twig', [
+            'timestamp' => $timestamp,
+
             'episode' => $episode,
             'parts' => $parts,
             'transcriptLines' => $lines,

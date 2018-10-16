@@ -5,7 +5,7 @@ import PlayerCorrections from './player-corrections';
 
 export default class Player {
   constructor(uri, token) {
-    this.timestamp = 0;
+    this.timestamp = jQuery('[data-player]').data('player-timestamp') || 0;
     this.uri = uri;
 
     this.token = token;
@@ -15,6 +15,10 @@ export default class Player {
       src: [uri],
       onload: () => {
         jQuery('[data-player-data="duration"]').text(Player.formatTime(this.sound.duration()));
+
+        this.stepInterface(this.timestamp);
+        this.stepParts(this.timestamp);
+        this.stepTranscript(this.timestamp);
       },
       onplay: () => {
         jQuery('[data-player-action="play"]').css('display', 'none');
@@ -155,6 +159,22 @@ export default class Player {
 
     jQuery('[data-player-data="timer"]').text(Player.formatTime(timestamp));
     jQuery('[data-player-data="progress"]').css('width', progress);
+
+    jQuery('[data-player-data="timer-attribute"]').each((index, element) => {
+      element = jQuery(element);
+      let attribute = element.data('player-attribute');
+
+      if (typeof element.data('original-' + attribute) === 'undefined') {
+        element.data('original-' + attribute, element.data(attribute) || element.attr(attribute));
+      }
+
+      if (!element.data('original-' + attribute)) {
+        return;
+      }
+
+      let original = element.data('original-' + attribute);
+      element.attr(attribute, original.replace('t=0:00', 't=' + Player.formatTime(timestamp)));
+    });
   }
 
   stepParts(timestamp) {

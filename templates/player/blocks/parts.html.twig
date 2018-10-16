@@ -21,8 +21,9 @@
               <span class="fas fa-user" aria-hidden="true"></span> Woodstock
             </div>
           </div>
-          <div id="section-collapse-{{ loop.index }}" class="collapse mt-2">
-            <div class="bg-gray d-inline-block p-1 rounded">
+          <div id="section-collapse-{{ loop.index }}" class="collapse mt-2 no-select">
+            {% include 'blocks/sharing.html.twig' with {title: 'No Agenda ' ~ episode.code ~ ': ' ~ episode.name, url: url('player', {episode: episode.code, t: part.startsAt|prettyTimestamp})} %}
+            <div class="bg-gray d-inline-block p-1 my-1 rounded">
               <span title="Suggestions Box">
                 <span class="fas fa-lightbulb fa-fw fa-lg" aria-hidden="true"></span>
               </span>
@@ -34,7 +35,7 @@
               </div>
             </div>
             {% if is_granted('ROLE_ADMIN') %}
-            <div class="bg-gray d-inline-block p-1 rounded">
+            <div class="bg-gray d-inline-block p-1 my-1 rounded">
               <span title="Administration Box">
                 <span class="fas fa-cog fa-fw fa-lg" aria-hidden="true"></span>
               </span>
