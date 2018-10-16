@@ -73,7 +73,7 @@ export default class Player {
       this.seekTimestamp(timestamp);
 
       if (!this.sound.playing()) {
-        this.sound.play();
+        this.play();
       }
     });
 
