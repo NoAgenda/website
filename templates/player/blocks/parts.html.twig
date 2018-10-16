@@ -60,37 +60,44 @@
   {% set borderClasses = (loop.length > 1 and not loop.last ? 'border-bottom-0') ~ ' border-top-0' %}
   {% set canVote = canVoteCorrection(correction) %}
   {% set votes = correctionVotes(correction) %}
-  <div class="list-group-item list-group-item-action flex-column align-items-start {{ borderClasses }} p-2">
-    <div style="padding-left: 86px; padding-right: 100px;">
-      <span class="fas fa-lightbulb" aria-hidden="true"></span>
-      <small>{% if correction.creator %}{{ correction.creator.username }}{% else %}<em>Guest</em>{% endif %}</small>
-      {{ correction.summary }}
-      (
-        <span class="text-success" data-vote-correction-output="support" data-correction-id="{{ correction.id }}">{{ votes.support }}</span>
-        {% if canVote %}
-        <div class="cursor-pointer d-inline-block" title="Support this correction" data-vote-correction="support" data-correction-id="{{ correction.id }}">
-          <span class="fas fa-check fa-lg text-success" aria-hidden="true"></span>
+  <div class="site-episode-correction list-group-item list-group-item-action flex-column align-items-start {{ borderClasses }} p-2">
+    <div class="d-flex w-100 align-items-start">
+      <div class="episode-actions text-center mr-3">
+        <div class="correction-action cursor-pointer" data-player-action="play-timestamp" data-timestamp="{{ correction.startsAt }}">
+          <span class="fas fa-play" aria-hidden="true"></span>
         </div>
-        {% endif %}
-        ,
-        <span class="text-danger" data-vote-correction-output="reject" data-correction-id="{{ correction.id }}">{{ votes.reject }}</span>
-        {% if canVote %}
-        <div class="cursor-pointer d-inline-block" title="Reject this correction" data-vote-correction="reject" data-correction-id="{{ correction.id }}">
-          <span class="fas fa-times fa-lg text-danger" aria-hidden="true"></span>
-        </div>
-        {% endif %}
-        ,
-        <span class="text-info" data-vote-correction-output="question" data-correction-id="{{ correction.id }}">{{ votes.question }}</span>
-        {% if canVote %}
-        <div class="cursor-pointer d-inline-block" title="I'm not sure about this correction" data-vote-correction="question" data-correction-id="{{ correction.id }}">
-          <span class="fas fa-question fa-lg text-info" aria-hidden="true"></span>
-        </div>
-        {% endif %}
-      )
+      </div>
+      <div style="padding-right: 100px;">
+        <span class="fas fa-lightbulb" aria-hidden="true"></span>
+        <small>{% if correction.creator %}{{ correction.creator.username }}{% else %}<em>Guest</em>{% endif %}</small>
+        {{ correction.summary }}
+        (
+          <span class="text-success" data-vote-correction-output="support" data-correction-id="{{ correction.id }}">{{ votes.support }}</span>
+          {% if canVote %}
+          <div class="cursor-pointer d-inline-block" title="Support this correction" data-vote-correction="support" data-correction-id="{{ correction.id }}">
+            <span class="fas fa-check fa-lg text-success" aria-hidden="true"></span>
+          </div>
+          {% endif %}
+          ,
+          <span class="text-danger" data-vote-correction-output="reject" data-correction-id="{{ correction.id }}">{{ votes.reject }}</span>
+          {% if canVote %}
+          <div class="cursor-pointer d-inline-block" title="Reject this correction" data-vote-correction="reject" data-correction-id="{{ correction.id }}">
+            <span class="fas fa-times fa-lg text-danger" aria-hidden="true"></span>
+          </div>
+          {% endif %}
+          ,
+          <span class="text-info" data-vote-correction-output="question" data-correction-id="{{ correction.id }}">{{ votes.question }}</span>
+          {% if canVote %}
+          <div class="cursor-pointer d-inline-block" title="I'm not sure about this correction" data-vote-correction="question" data-correction-id="{{ correction.id }}">
+            <span class="fas fa-question fa-lg text-info" aria-hidden="true"></span>
+          </div>
+          {% endif %}
+        )
 
-      {% if is_granted('ROLE_ADMIN') %}
-      <a class="ml-3" href="{{ path('easyadmin', {entity: 'EpisodePartCorrection', id: correction.id, action: 'show'}) }}" target="_blank"><span class="fas fa-file-alt mr-1"></span> Manage</a>
-      {% endif %}
+        {% if is_granted('ROLE_ADMIN') %}
+        <a class="correction-action ml-3" href="{{ path('easyadmin', {entity: 'EpisodePartCorrection', id: correction.id, action: 'show'}) }}" target="_blank"><span class="fas fa-file-alt mr-1"></span> Manage</a>
+        {% endif %}
+      </div>
     </div>
   </div>
   {% endfor %}

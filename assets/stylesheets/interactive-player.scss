@@ -27,6 +27,16 @@
     }
   }
 
+  .site-episode-correction {
+    .correction-action {
+      display: none;
+    }
+
+    &:hover .correction-action {
+      display: inline-block;
+    }
+  }
+
   .text-sm {
     font-size: .8rem;
 
