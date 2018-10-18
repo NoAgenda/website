@@ -33,7 +33,7 @@ export default class PlayerCorrections {
 
       this.player.seekTimestamp(timestamp);
       if (!this.player.sound.playing()) {
-        this.player.sound.play();
+        this.player.play();
       }
     });
 
