@@ -26,12 +26,18 @@ class CrawlBatSignalCommand extends Command
      */
     private $signalRepository;
 
-    public function __construct(?string $name = null, EntityManagerInterface $entityManager, BatSignalRepository $signalRepository)
+    /**
+     * @var BatSignalReceiver
+     */
+    private $signalReceiver;
+
+    public function __construct(?string $name = null, EntityManagerInterface $entityManager, BatSignalRepository $signalRepository, BatSignalReceiver $signalReceiver)
     {
         parent::__construct($name);
 
         $this->entityManager = $entityManager;
         $this->signalRepository = $signalRepository;
+        $this->signalReceiver = $signalReceiver;
     }
 
     protected function configure()
@@ -51,7 +57,7 @@ class CrawlBatSignalCommand extends Command
         $io->title('No Agenda Bat Signal Crawler');
 
         try {
-            $data = (new BatSignalReceiver)->receive();
+            $data = $this->signalReceiver->receive();
         }
         catch (\RuntimeException $exception) {
             $io->error($exception->getMessage());

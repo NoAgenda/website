@@ -1,4 +1,7 @@
 {
+    "colorfield/mastodon-api": {
+        "version": "dev-master"
+    },
     "doctrine/annotations": {
         "version": "1.0",
         "recipe": {
@@ -101,6 +104,15 @@
     "fig/link-util": {
         "version": "1.0.x-dev"
     },
+    "guzzlehttp/guzzle": {
+        "version": "6.3.3"
+    },
+    "guzzlehttp/promises": {
+        "version": "v1.3.1"
+    },
+    "guzzlehttp/psr7": {
+        "version": "1.4.2"
+    },
     "imagine/imagine": {
         "version": "v0.7.1"
     },
@@ -148,6 +160,9 @@
     },
     "psr/container": {
         "version": "1.0.x-dev"
+    },
+    "psr/http-message": {
+        "version": "1.0.1"
     },
     "psr/link": {
         "version": "1.0.x-dev"

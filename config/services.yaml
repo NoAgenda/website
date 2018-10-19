@@ -22,3 +22,11 @@ services:
   App\EventListener\Doctrine\:
     resource: '../src/EventListener/Doctrine'
     tags: ['doctrine.event_subscriber']
+
+  Colorfield\Mastodon\MastodonAPI:
+    factory: 'App\MastodonFactory:build'
+    arguments:
+      - '%env(MASTODON_AUTHORIZATION_CODE)%'
+      - '%env(MASTODON_CLIENT_KEY)%'
+      - '%env(MASTODON_CLIENT_SECRET)%'
+      - '%env(MASTODON_ACCESS_TOKEN)%'
