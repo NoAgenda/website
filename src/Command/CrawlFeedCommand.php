@@ -6,6 +6,7 @@ use App\Entity\Episode;
 use App\Entity\EpisodePart;
 use App\Entity\User;
 use App\FeedParser;
+use App\NotificationPublisher;
 use App\Repository\EpisodePartRepository;
 use App\Repository\EpisodeRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -42,6 +43,11 @@ class CrawlFeedCommand extends Command
     private $episodePartRepository;
 
     /**
+     * @var NotificationPublisher
+     */
+    private $notificationPublisher;
+
+    /**
      * @var string
      */
     private $projectPath;
@@ -51,13 +57,22 @@ class CrawlFeedCommand extends Command
      */
     private $storagePath;
 
-    public function __construct(?string $name = null, EntityManagerInterface $entityManager, EpisodeRepository $episodeRepository, EpisodePartRepository $episodePartRepository, string $projectPath, string $storagePath)
+    public function __construct(
+        ?string $name = null,
+        EntityManagerInterface $entityManager,
+        EpisodeRepository $episodeRepository,
+        EpisodePartRepository $episodePartRepository,
+        NotificationPublisher $notificationPublisher,
+        string $projectPath,
+        string $storagePath
+    )
     {
         parent::__construct($name);
 
         $this->entityManager = $entityManager;
         $this->episodeRepository = $episodeRepository;
         $this->episodePartRepository = $episodePartRepository;
+        $this->notificationPublisher = $notificationPublisher;
         $this->projectPath = $projectPath;
         $this->storagePath = $storagePath;
     }
@@ -144,6 +159,10 @@ class CrawlFeedCommand extends Command
             $io->text(sprintf('%s episode: %s', $new ? 'New' : 'Updated', $episode->getCode()));
 
             if ($save) {
+                if ($new) {
+                    $this->notificationPublisher->publishEpisode($episode);
+                }
+
                 $this->entityManager->persist($episode);
 
                 if ($part) {

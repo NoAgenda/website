@@ -24,9 +24,17 @@ services:
     tags: ['doctrine.event_subscriber']
 
   Colorfield\Mastodon\MastodonAPI:
-    factory: 'App\MastodonFactory:build'
+    factory: 'App\ApiFactory:mastodon'
     arguments:
       - '%env(MASTODON_AUTHORIZATION_CODE)%'
       - '%env(MASTODON_CLIENT_KEY)%'
       - '%env(MASTODON_CLIENT_SECRET)%'
       - '%env(MASTODON_ACCESS_TOKEN)%'
+
+  Rudolf\OAuth2\Client\Provider\Reddit:
+    factory: 'App\ApiFactory:reddit'
+    arguments:
+      - '%env(REDDIT_CLIENT_KEY)%'
+      - '%env(REDDIT_CLIENT_SECRET)%'
+      - '%env(REDDIT_USERNAME)%'
+      - '%env(REDDIT_PASSWORD)%'

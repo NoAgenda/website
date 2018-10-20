@@ -119,6 +119,9 @@
     "jdorn/sql-formatter": {
         "version": "1.3.x-dev"
     },
+    "league/oauth2-client": {
+        "version": "2.3.0"
+    },
     "liip/imagine-bundle": {
         "version": "1.8",
         "recipe": {
@@ -146,6 +149,9 @@
     "pagerfanta/pagerfanta": {
         "version": "v1.1.0"
     },
+    "paragonie/random_compat": {
+        "version": "v2.0.17"
+    },
     "phpdocumentor/reflection-common": {
         "version": "1.0.1"
     },
@@ -172,6 +178,9 @@
     },
     "psr/simple-cache": {
         "version": "1.0.x-dev"
+    },
+    "rtheunissen/oauth2-reddit": {
+        "version": "v2.0.2"
     },
     "sensio/framework-extra-bundle": {
         "version": "4.0",
