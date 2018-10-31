@@ -5,7 +5,8 @@ namespace App\Command;
 use App\Entity\Episode;
 use App\Repository\EpisodeRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Liip\ImagineBundle\Imagine\Cache\CacheManager as ImagineCacheManager;
+use Liip\ImagineBundle\Imagine\Filter\FilterManager;
+use Liip\ImagineBundle\Service\FilterService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -30,22 +31,35 @@ class CrawlFilesCommand extends Command
     private $episodeRepository;
 
     /**
-     * @var ImagineCacheManager
+     * @var FilterManager
      */
-    private $imagineCacheManager;
+    private $filterManager;
+
+    /**
+     * @var FilterService
+     */
+    private $filterService;
 
     /**
      * @var string
      */
     private $storagePath;
 
-    public function __construct(?string $name = null, EntityManagerInterface $entityManager, EpisodeRepository $episodeRepository, ImagineCacheManager $imagineCacheManager, string $storagePath)
+    public function __construct(
+        ?string $name = null,
+        EntityManagerInterface $entityManager,
+        EpisodeRepository $episodeRepository,
+        FilterManager $filterManager,
+        FilterService $filterService,
+        string $storagePath
+    )
     {
         parent::__construct($name);
 
         $this->entityManager = $entityManager;
         $this->episodeRepository = $episodeRepository;
-        $this->imagineCacheManager = $imagineCacheManager;
+        $this->filterManager = $filterManager;
+        $this->filterService = $filterService;
         $this->storagePath = $storagePath;
     }
 
@@ -101,7 +115,13 @@ class CrawlFilesCommand extends Command
 
             $this->downloadCoverFile($input, $output, $episode, $coverPath);
 
-            $this->imagineCacheManager->remove(sprintf('%s.png', $episode->getCode()));
+            // Resolve Imagine cache
+            $filters = array_keys($this->filterManager->getFilterConfiguration()->all());
+
+            foreach ($filters as $filter) {
+                $this->filterService->bustCache(sprintf('%s.png', $episode->getCode()), $filter);
+                $this->filterService->getUrlOfFilteredImage(sprintf('%s.png', $episode->getCode()), $filter);
+            }
         }
 
         if ($save) {
