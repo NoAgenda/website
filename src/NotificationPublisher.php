@@ -33,6 +33,10 @@ class NotificationPublisher
 
     public function publishEpisode(Episode $episode)
     {
+        if (!isset($_SERVER['APP_ENV']) || 'prod' !== $_SERVER['APP_ENV']) {
+            return;
+        }
+
         $path = $this->router->generate('player', ['episode' => $episode->getCode()], RouterInterface::ABSOLUTE_URL);
         $path = str_replace(['localhost:8033', 'localhost'], 'noagendaexperience.com', $path);
 
