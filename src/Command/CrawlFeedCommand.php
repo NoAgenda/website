@@ -159,10 +159,6 @@ class CrawlFeedCommand extends Command
             $io->text(sprintf('%s episode: %s', $new ? 'New' : 'Updated', $episode->getCode()));
 
             if ($save) {
-                if ($new) {
-                    $this->notificationPublisher->publishEpisode($episode);
-                }
-
                 $this->entityManager->persist($episode);
 
                 if ($part) {
@@ -185,6 +181,10 @@ class CrawlFeedCommand extends Command
             $process = new Process($command);
             $process->setTimeout(600);
             $processor->run($io, $process, sprintf('An error occurred while fetching files for episode %s.', $episode->getCode()), null, OutputInterface::VERBOSITY_VERBOSE);
+        }
+
+        if ($save && $new) {
+            $this->notificationPublisher->publishEpisode($episode);
         }
 
         if ($updated) {
