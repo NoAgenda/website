@@ -79,6 +79,9 @@ class TranscriptParser
             elseif (strpos($line, "target='yt'") !== false) {
                 preg_match("#^<a target='yt' title='click to play' href='https://youtu.be/([^?]+)\?t=([^s]+)s'>([^<]+)</a>(.+)$#", $line, $matches);
             }
+            elseif (strpos($line, "youtu.be") !== false) {
+                preg_match("#^<a\s+href='https://youtu.be/([^?]+)\?t=([^s]+)s'>([^<]+)</a>(.+)$#", $line, $matches);
+            }
             else {
                 $matches = [];
             }
