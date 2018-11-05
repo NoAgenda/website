@@ -184,7 +184,18 @@ class CrawlFeedCommand extends Command
         }
 
         if ($save && $new) {
+            // Publish notifications
             $this->notificationPublisher->publishEpisode($episode);
+
+            // Crawl shownotes
+            $processor = $this->getHelper('process');
+            $verbosity = $io->isDebug() ? '-vvv' : ($io->isVeryVerbose() ? '-vv' : ($io->isVerbose() ? '-v' : ''));
+            $phpExecutable = (new ExecutableFinder)->find('php');
+
+            $command = sprintf('%s bin/console app:crawl-shownotes %s %s %s', $phpExecutable, $episode->getCode(), $save ? '--save' : '', $verbosity);
+            $process = new Process($command);
+            $process->setTimeout(600);
+            $processor->run($io, $process, sprintf('An error occurred while crawling the shownotes for episode %s.', $episode->getCode()), null, OutputInterface::VERBOSITY_VERBOSE);
         }
 
         if ($updated) {

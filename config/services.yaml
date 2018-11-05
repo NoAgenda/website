@@ -10,6 +10,7 @@ services:
     bind:
       $projectPath: '%kernel.project_dir%'
       $storagePath: '%storage_path%'
+      $shownotesClient: '@httplug.client.shownotes'
 
   App\:
     resource: '../src/*'
@@ -41,4 +42,3 @@ services:
 
   Liip\ImagineBundle\Imagine\Filter\FilterManager: '@liip_imagine.filter.manager'
   Liip\ImagineBundle\Service\FilterService: '@liip_imagine.service.filter'
-

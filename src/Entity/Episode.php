@@ -106,6 +106,13 @@ class Episode
     /**
      * @var array|null
      *
+     * @ORM\Column(type="json", nullable=true)
+     */
+    private $shownotes;
+
+    /**
+     * @var array|null
+     *
      * @ORM\Column(type="array", nullable=true)
      */
     private $crawlerOutput;
@@ -265,6 +272,18 @@ class Episode
     public function setRecordedAt(?\DateTimeInterface $recordedAt): self
     {
         $this->recordedAt = $recordedAt;
+
+        return $this;
+    }
+
+    public function getShownotes(): array
+    {
+        return $this->shownotes ?? [];
+    }
+
+    public function setShownotes(array $shownotes): self
+    {
+        $this->shownotes = $shownotes;
 
         return $this;
     }

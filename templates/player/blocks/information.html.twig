@@ -17,6 +17,17 @@
   </div>
 </div>
 
+{% if episode.shownotes %}
+<div class="mb-3 px-3">
+  <p>Executive Producers: {{ episode.shownotes.executiveProducers|join(', ') }}</p>
+  <p>Associate Executive Producers: {{ episode.shownotes.associateExecutiveProducers|join(', ') }}</p>
+
+  <p>Cover Art by {{ episode.shownotes.coverArtist|raw }}</p>
+
+  <a href="{{ episode.shownotes.url }}" class="btn btn-outline-primary" target="_blank">Visit the Shownotes for episode {{ episode.code }}</a>
+</div>
+{% endif %}
+
 <div class="mt-3 mb-5">
   <h4 class="px-3">Chapters</h4>
   {% include 'player/blocks/parts.html.twig' %}
