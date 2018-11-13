@@ -8,6 +8,9 @@
     <a class="cursor-pointer d-inline-block" href="{{ path('easyadmin', {entity: 'Episode', id: episode.id, action: 'edit'}) }}" target="_blank" title="Manage episode">
       <span class="fas fa-file-alt fa-fw fa-lg" aria-hidden="true"></span>
     </a>
+    <a class="cursor-pointer d-inline-block" href="{{ path('easyadmin', {entity: 'Episode', id: episode.id, action: 'approveAll'}) }}" target="_blank" title="Approve all corrections">
+      <span class="fas fa-check-square fa-fw fa-lg text-success" aria-hidden="true"></span>
+    </a>
   </div>
   {% endif %}
 
