@@ -97,6 +97,8 @@ export default class PlayerCorrections {
             jQuery('#correctionModal').modal('hide');
             jQuery('#successModal').modal('show');
 
+            form.trigger('reset');
+
             return;
           }
 
@@ -159,6 +161,8 @@ export default class PlayerCorrections {
           if (response.status === 200) {
             jQuery('#suggestionModal').modal('hide');
             jQuery('#successModal').modal('show');
+
+            form.trigger('reset');
 
             return;
           }
