@@ -1,12 +1,8 @@
-import '@fortawesome/fontawesome';
-import '@fortawesome/fontawesome-free-brands';
-import '@fortawesome/fontawesome-pro-light';
-import '@fortawesome/fontawesome-pro-regular';
-import '@fortawesome/fontawesome-pro-solid';
 import 'bootstrap';
 import jQuery from 'jquery';
 import 'popper.js';
-// todo tree shaking of fa icons
+
+import './fontawesome';
 
 import Clipboard from './scripts/clipboard';
 import Archive from './scripts/archive';

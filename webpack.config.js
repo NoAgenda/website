@@ -9,6 +9,7 @@ encore
   .enableSassLoader()
 
   .cleanupOutputBeforeBuild()
+  .disableSingleRuntimeChunk()
   .enableBuildNotifications()
   .enableSourceMaps(!encore.isProduction())
   // .enableVersioning()

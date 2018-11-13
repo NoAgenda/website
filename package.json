@@ -5,15 +5,15 @@
     "serve": "encore dev-server",
     "build": "encore dev",
     "watch": "encore dev --watch",
-    "prod": "encore production"
+    "production": "encore production"
   },
   "dependencies": {
-    "@fortawesome/fontawesome": "^1.1.8",
-    "@fortawesome/fontawesome-free-brands": "^5.0.13",
-    "@fortawesome/fontawesome-pro-light": "^5.0.13",
-    "@fortawesome/fontawesome-pro-regular": "^5.0.13",
-    "@fortawesome/fontawesome-pro-solid": "^5.0.13",
-    "@symfony/webpack-encore": "^0.19.0",
+    "@fortawesome/fontawesome-svg-core": "^1.2.8",
+    "@fortawesome/free-brands-svg-icons": "^5.5.0",
+    "@fortawesome/pro-light-svg-icons": "^5.5.0",
+    "@fortawesome/pro-regular-svg-icons": "^5.5.0",
+    "@fortawesome/pro-solid-svg-icons": "^5.5.0",
+    "@symfony/webpack-encore": "^0.21.0",
     "bootstrap": "^4.1.1",
     "howler": "^2.0.12",
     "jquery": "^3.3.1",
