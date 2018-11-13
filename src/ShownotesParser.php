@@ -57,7 +57,21 @@ class ShownotesParser
             $data['executiveProducers'][] = $executiveProducerElement->getAttribute('text');
         }
 
+        $executiveProducerElements = $xpath->query('.//outline[@text="Executive Producer: "]/outline');
+
+        foreach ($executiveProducerElements as $executiveProducerElement) {
+            /** @var \DOMElement $executiveProducerElement */
+            $data['executiveProducers'][] = $executiveProducerElement->getAttribute('text');
+        }
+
         $associateExecutiveProducerElements = $xpath->query('.//outline[@text="Associate Executive Producers: "]/outline');
+
+        foreach ($associateExecutiveProducerElements as $associateExecutiveProducerElement) {
+            /** @var \DOMElement $associateExecutiveProducerElement */
+            $data['associateExecutiveProducers'][] = $associateExecutiveProducerElement->getAttribute('text');
+        }
+
+        $associateExecutiveProducerElements = $xpath->query('.//outline[@text="Associate Executive Producer: "]/outline');
 
         foreach ($associateExecutiveProducerElements as $associateExecutiveProducerElement) {
             /** @var \DOMElement $associateExecutiveProducerElement */
