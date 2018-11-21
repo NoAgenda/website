@@ -11,8 +11,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
-use Symfony\Component\Process\ExecutableFinder;
-use Symfony\Component\Process\Process;
 
 class ClearCrawlingDataCommand extends Command
 {
@@ -61,7 +59,7 @@ class ClearCrawlingDataCommand extends Command
     {
         $finder = (new Finder)
             ->files()
-            ->date('> now - 14 days')
+            ->date('< now - 30 days')
             ->in(implode('/', [$this->storagePath, $path]))
         ;
 
