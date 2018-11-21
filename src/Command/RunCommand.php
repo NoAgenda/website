@@ -75,6 +75,15 @@ class RunCommand extends Command
         $processor->run($io, $process, 'An error occurred while processing a bat signal.', null, OutputInterface::VERBOSITY_NORMAL);
         $io->newLine();
 
+        $io->text('> Clear old crawling data');
+
+        // Remove old crawling data
+        $command = sprintf('%s bin/console app:clear-crawling-data --save %s', $phpExecutable, $verbosity);
+        $process = new Process($command);
+        $process->setTimeout(300);
+        $processor->run($io, $process, 'An error occurred while clearing old crawling data.', null, OutputInterface::VERBOSITY_NORMAL);
+        $io->newLine();
+
         $io->success('Finished executing No Agenda workflow.');
     }
 }
