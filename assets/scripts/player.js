@@ -13,7 +13,9 @@ export default class Player {
     this.corrections = new PlayerCorrections(this, token);
     this.sound = new Howl({
       src: [uri],
+      format: 'mp3',
       onload: () => {
+        debugger;
         jQuery('[data-player-data="duration"]').text(Player.formatTime(this.sound.duration()));
 
         this.stepInterface(this.timestamp);

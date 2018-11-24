@@ -12,6 +12,7 @@ use App\Repository\TranscriptLineRepository;
 use App\TimestampConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -26,12 +27,15 @@ class PlayerController extends Controller
     private $chatMessageRepository;
     private $transcriptLineRepository;
 
+    private $storagePath;
+
     public function __construct(
         SerializerInterface $serializer,
         EpisodeRepository $episodeRepository,
         EpisodePartRepository $episodePartRepository,
         ChatMessageRepository $chatMessageRepository,
-        TranscriptLineRepository $transcriptLineRepository
+        TranscriptLineRepository $transcriptLineRepository,
+        string $storagePath
     )
     {
         $this->serializer = $serializer;
@@ -40,6 +44,8 @@ class PlayerController extends Controller
         $this->episodePartRepository = $episodePartRepository;
         $this->chatMessageRepository = $chatMessageRepository;
         $this->transcriptLineRepository = $transcriptLineRepository;
+
+        $this->storagePath = $storagePath;
     }
 
     /**
@@ -88,5 +94,16 @@ class PlayerController extends Controller
             'partCorrectionForm' => $partCorrectionForm->createView(),
             'partSuggestionForm' => $partSuggestionForm->createView(),
         ]);
+    }
+
+    /**
+     * @Route("/listen/{episode}/audio", name="player_audio")
+     * @ParamConverter("episode", class="App\Entity\Episode", options={"mapping": {"episode": "code"}})
+     */
+    public function audioAction(Request $request, Episode $episode): Response
+    {
+        $path = sprintf('%s/episode_recordings/%s.mp3', $this->storagePath, $episode->getCode());
+
+        return new BinaryFileResponse($path);
     }
 }
