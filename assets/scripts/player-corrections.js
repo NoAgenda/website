@@ -13,7 +13,7 @@ export default class PlayerCorrections {
     jQuery(document).on('click', '[data-correction-timestamp] [data-fill]', (event) => {
       let container = jQuery(event.currentTarget).closest('[data-correction-timestamp]');
 
-      let timestamp = this.player.sound.seek() || 0;
+      let timestamp = this.player.sound.getTime() || 0;
       container.find('input').val(Player.formatTime(timestamp));
     });
 
@@ -32,7 +32,7 @@ export default class PlayerCorrections {
       }
 
       this.player.seekTimestamp(timestamp);
-      if (!this.player.sound.playing()) {
+      if (!this.player.sound.isPlaying()) {
         this.player.play();
       }
     });

@@ -1,5 +1,6 @@
-import {Howl} from 'howler';
 import jQuery from 'jquery';
+import 'waud.js';
+
 import PlayerChat from './player-chat';
 import PlayerCorrections from './player-corrections';
 
@@ -8,33 +9,27 @@ export default class Player {
     this.timestamp = jQuery('[data-player]').data('player-timestamp') || 0;
     this.uri = uri;
 
+    Waud.init();
+
     this.token = token;
     this.chat = new PlayerChat();
     this.corrections = new PlayerCorrections(this, token);
-    this.sound = new Howl({
-      src: [uri],
-      format: 'mp3',
+    this.sound = new WaudSound(uri, {
+      autoplay: false,
+      loop: false,
+      webaudio: false,
       onload: () => {
-        debugger;
-        jQuery('[data-player-data="duration"]').text(Player.formatTime(this.sound.duration()));
+        jQuery('[data-player-data="duration"]').text(Player.formatTime(this.sound.getDuration()));
 
         this.stepInterface(this.timestamp);
         this.stepParts(this.timestamp);
         this.stepTranscript(this.timestamp);
       },
-      onplay: () => {
-        jQuery('[data-player-action="play"]').css('display', 'none');
-        jQuery('[data-player-action="pause"]').css('display', 'inherit');
-
-        requestAnimationFrame(this.step.bind(this));
-      },
-      onpause: () => {
-        jQuery('[data-player-action="play"]').css('display', 'inherit');
-        jQuery('[data-player-action="pause"]').css('display', 'none');
-      },
     });
 
     this.registerEventListeners();
+
+    requestAnimationFrame(this.step.bind(this));
   }
 
   registerEventListeners() {
@@ -74,7 +69,7 @@ export default class Player {
 
       this.seekTimestamp(timestamp);
 
-      if (!this.sound.playing()) {
+      if (!this.sound.isPlaying()) {
         this.play();
       }
     });
@@ -95,23 +90,29 @@ export default class Player {
   play() {
     this.sound.play();
 
-    let timestamp = this.sound.seek() || 0;
+    let timestamp = this.sound.getTime() || 0;
 
     if (timestamp !== this.timestamp) {
-      this.sound.seek(this.timestamp);
+      this.sound.setTime(this.timestamp);
     }
+
+    this.togglePlayButton(false);
   }
 
   pause() {
     this.sound.pause();
+
+    this.togglePlayButton(true);
   }
 
   seekPercentage(percentage) {
     let duration = this.sound.duration() || 0;
     let timestamp = percentage * duration;
 
-    if (this.sound.playing()) {
-      this.sound.seek(timestamp);
+    if (this.sound.isPlaying()) {
+      console.log(timestamp);
+      this.sound.setTime(timestamp);
+      console.log(this.sound.getTime());
     }
     else {
       this.timestamp = timestamp;
@@ -125,8 +126,10 @@ export default class Player {
   }
 
   seekTimestamp(timestamp) {
-    if (this.sound.playing()) {
-      this.sound.seek(timestamp);
+    if (this.sound.isPlaying()) {
+      console.log(timestamp);
+      this.sound.setTime(timestamp);
+      console.log(this.sound.getTime());
     }
     else {
       this.timestamp = timestamp;
@@ -140,7 +143,7 @@ export default class Player {
   }
 
   step() {
-    let timestamp = this.sound.seek() || 0;
+    let timestamp = this.sound.getTime() || 0;
 
     this.timestamp = timestamp;
 
@@ -149,14 +152,11 @@ export default class Player {
     this.stepTranscript(timestamp);
     this.chat.step(timestamp);
 
-    // If the sound is still playing, continue stepping.
-    if (this.sound.playing()) {
-      requestAnimationFrame(this.step.bind(this));
-    }
+    requestAnimationFrame(this.step.bind(this));
   }
 
   stepInterface(timestamp) {
-    let duration = this.sound.duration() || 0;
+    let duration = this.sound.getDuration() || 0;
     let progress = (((timestamp / duration) * 100) || 0) + '%';
 
     jQuery('[data-player-data="timer"]').text(Player.formatTime(timestamp));
@@ -244,6 +244,13 @@ export default class Player {
         scrollTop: jQuery(lastActiveLine).offset().top + jQuery(lastActiveLine).height() + 250 - jQuery(window).height(),
       });
     }
+  }
+
+
+
+  togglePlayButton(show) {
+    jQuery('[data-player-action="play"]').css('display', show ? 'inherit' : 'none');
+    jQuery('[data-player-action="pause"]').css('display', show ? 'none' : 'inherit');
   }
 
   static formatTime(value) {

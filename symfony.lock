@@ -227,6 +227,9 @@
     "psr/simple-cache": {
         "version": "1.0.x-dev"
     },
+    "ralouphie/getallheaders": {
+        "version": "2.0.5"
+    },
     "rtheunissen/oauth2-reddit": {
         "version": "v2.0.2"
     },

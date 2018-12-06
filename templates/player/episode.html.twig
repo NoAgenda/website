@@ -36,7 +36,7 @@
 {% include 'player/blocks/success_modal.html.twig' %}
 {% endblock %}
 
-{% block body_attributes %}data-player="{{ url('player_audio', {episode: episode.code}) }}" data-player-timestamp="{{ timestamp }}"{% endblock %}
+{% block body_attributes %}data-player="{{ episode.recordingUri }}" data-player-timestamp="{{ timestamp }}"{% endblock %}
 
 {% block content %}
 <div class="site-masthead-player">
