@@ -88,6 +88,10 @@ export default class Player {
   }
 
   play() {
+    if (this.sound.isPlaying()) {
+      return;
+    }
+
     this.sound.play();
 
     let timestamp = this.sound.getTime() || 0;
@@ -106,13 +110,11 @@ export default class Player {
   }
 
   seekPercentage(percentage) {
-    let duration = this.sound.duration() || 0;
+    let duration = this.sound.getDuration() || 0;
     let timestamp = percentage * duration;
 
     if (this.sound.isPlaying()) {
-      console.log(timestamp);
       this.sound.setTime(timestamp);
-      console.log(this.sound.getTime());
     }
     else {
       this.timestamp = timestamp;
@@ -127,9 +129,7 @@ export default class Player {
 
   seekTimestamp(timestamp) {
     if (this.sound.isPlaying()) {
-      console.log(timestamp);
       this.sound.setTime(timestamp);
-      console.log(this.sound.getTime());
     }
     else {
       this.timestamp = timestamp;
@@ -143,6 +143,12 @@ export default class Player {
   }
 
   step() {
+    if (!this.sound.isPlaying()) {
+      requestAnimationFrame(this.step.bind(this));
+
+      return;
+    }
+
     let timestamp = this.sound.getTime() || 0;
 
     this.timestamp = timestamp;
