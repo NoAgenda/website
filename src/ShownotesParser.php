@@ -50,37 +50,72 @@ class ShownotesParser
 
         $xpath = new \DOMXPath($dom);
 
+        $data['executiveProducers'] = $this->parseExecutiveProducers($xpath);
+        $data['associateExecutiveProducers'] = $this->parseAssociateExecutiveProducers($xpath);
+
+        $coverArtistText = $xpath->query('.//outline[starts-with(@text, "Art By: ")]')->item(0)->getAttribute('text');
+        $data['coverArtist'] = str_replace('Art By: ', '', $coverArtistText);
+
+        return $data;
+    }
+
+    private function parseExecutiveProducers(\DOMXPath $xpath): array
+    {
+        $producers = [];
+
         $executiveProducerElements = $xpath->query('.//outline[@text="Executive Producers: "]/outline');
 
         foreach ($executiveProducerElements as $executiveProducerElement) {
             /** @var \DOMElement $executiveProducerElement */
-            $data['executiveProducers'][] = $executiveProducerElement->getAttribute('text');
+            $producers[] = $executiveProducerElement->getAttribute('text');
         }
 
         $executiveProducerElements = $xpath->query('.//outline[@text="Executive Producer: "]/outline');
 
         foreach ($executiveProducerElements as $executiveProducerElement) {
             /** @var \DOMElement $executiveProducerElement */
-            $data['executiveProducers'][] = $executiveProducerElement->getAttribute('text');
+            $producers[] = $executiveProducerElement->getAttribute('text');
         }
+
+        $executiveProducerElement = $xpath->query('.//outline[starts-with(@text, "Executive Producer:")]');
+        if (!count($producers) && isset($executiveProducerElement[0])) {
+            $executiveProducer = $executiveProducerElement[0]->getAttribute('text');
+
+            $prefix = 'Executive Producer:';
+
+            $producers[] = substr($executiveProducer, strlen($prefix));
+        }
+
+        return array_map('trim', $producers);
+    }
+
+    private function parseAssociateExecutiveProducers(\DOMXPath $xpath): array
+    {
+        $producers = [];
 
         $associateExecutiveProducerElements = $xpath->query('.//outline[@text="Associate Executive Producers: "]/outline');
 
         foreach ($associateExecutiveProducerElements as $associateExecutiveProducerElement) {
             /** @var \DOMElement $associateExecutiveProducerElement */
-            $data['associateExecutiveProducers'][] = $associateExecutiveProducerElement->getAttribute('text');
+            $producers[] = $associateExecutiveProducerElement->getAttribute('text');
         }
 
         $associateExecutiveProducerElements = $xpath->query('.//outline[@text="Associate Executive Producer: "]/outline');
 
         foreach ($associateExecutiveProducerElements as $associateExecutiveProducerElement) {
             /** @var \DOMElement $associateExecutiveProducerElement */
-            $data['associateExecutiveProducers'][] = $associateExecutiveProducerElement->getAttribute('text');
+            $producers[] = $associateExecutiveProducerElement->getAttribute('text');
         }
 
-        $coverArtistText = $xpath->query('.//outline[starts-with(@text, "Art By: ")]')->item(0)->getAttribute('text');
-        $data['coverArtist'] = str_replace('Art By: ', '', $coverArtistText);
+        $associateExecutiveProducerElement = $xpath->query('.//outline[starts-with(@text, "Associate Executive Producer:")]');
+        if (!count($producers) && isset($associateExecutiveProducerElement[0])) {
+            $executiveProducer = $associateExecutiveProducerElement[0]->getAttribute('text');
 
-        return $data;
+            $prefix = 'Associate Executive Producer:';
+
+            $producers[] = substr($executiveProducer, strlen($prefix));
+        }
+
+        return array_map('trim', $producers);
     }
 }
