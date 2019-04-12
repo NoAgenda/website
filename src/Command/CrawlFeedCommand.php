@@ -150,7 +150,7 @@ class CrawlFeedCommand extends Command
             if (!$episode->isPersisted()) {
                 $part = (new EpisodePart)
                     ->setEpisode($episode)
-                    ->setCreator($this->entityManager->find(User::class, 1))
+                    ->setCreator($this->entityManager->getRepository(User::class)->findOneBy(['username' => 'Woodstock']))
                     ->setName('Start of Show')
                     ->setStartsAt(0)
                 ;
