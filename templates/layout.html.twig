@@ -32,7 +32,7 @@
 
   {% if is_granted('ROLE_ADMIN') %}
     {% set authenticationLinks = authenticationLinks|merge([{
-      path: 'admin',
+      path: 'easyadmin',
       title: 'Administration Panel',
       active: false,
     }]) %}

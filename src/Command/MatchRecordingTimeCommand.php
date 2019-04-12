@@ -177,9 +177,15 @@ class MatchRecordingTimeCommand extends Command
                     $io->text(sprintf('Matching livestream recording "%s" to episode offset %s-%s.', $timestamp, $offset, $offset + 600));
                 }
 
-                $cmd = sprintf('audio-offset-finder --find-offset-of %s --within %s', $liveFile->getPathname(), $sourceFile->getPathname());
+                $command = [
+                    'audio-offset-finder',
+                    '--find-offset-of',
+                    $liveFile->getPathname(),
+                    '--within',
+                    $sourceFile->getPathname(),
+                ];
 
-                $process = new Process($cmd);
+                $process = new Process($command);
                 $processHelper->run($output, $process);
 
                 preg_match("/Offset: (\d+)/", $process->getOutput(), $matches);
@@ -288,13 +294,17 @@ class MatchRecordingTimeCommand extends Command
         $sourcePath = sprintf('%s/episode_recordings/%s.mp3', $this->storagePath, $episode->getCode());
         $targetPathPrefix = sprintf('%s/episode_parts/%s_', $this->storagePath, $episode->getCode());
 
-        $cmd = sprintf('bin/scripts/split-recording.bash "%s" "%s"', $sourcePath, $targetPathPrefix);
+        $command = [
+            'bin/scripts/split-recording.bash',
+            '"' . $sourcePath . '"',
+            '"' . $targetPathPrefix . '"',
+        ];
 
         if ($output->isVerbose()) {
-            $io->text('Executing command: ' . $cmd);
+            $io->text('Executing command: ' . implode(' ', $command));
         }
 
-        $process = new Process($cmd);
+        $process = new Process($command);
         $process->setTimeout(null);
         $returnCode = $process->run();
 

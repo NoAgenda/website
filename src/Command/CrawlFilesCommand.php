@@ -157,13 +157,13 @@ class CrawlFilesCommand extends Command
         // Grab recording duration
         $duration = 0;
 
-        $cmd = sprintf('ffmpeg -i %s 2>&1 | grep "Duration"', $targetPath);
+        $command = sprintf('ffmpeg -i %s 2>&1 | grep "Duration"', $targetPath);
 
         if ($output->isVerbose()) {
-            $io->text('Executing command: ' . $cmd);
+            $io->text('Executing command: ' . $command);
         }
 
-        $process = new Process($cmd, null, null, null, null);
+        $process = Process::fromShellCommandline($command);
         $process->run();
 
         $durationOutput = $process->getOutput();

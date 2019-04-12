@@ -92,14 +92,28 @@ class ProcessBatSignalCommand extends Command
         $phpExecutable = (new ExecutableFinder)->find('php');
 
         // Match recording time
-        $command = sprintf('%s bin/console app:match-recording-time %s %s %s', $phpExecutable, $signal->getCode(), $save ? '--save' : '', $verbosity);
+        $command = [
+            $phpExecutable,
+            'bin/console',
+            'app:match-recording-time',
+            $signal->getCode(),
+            $save ? '--save' : null,
+            $verbosity
+        ];
         $process = new Process($command);
         $process->setTimeout(3000);
         $processor->run($io, $process, 'An error occurred while matching the recording time.', null, OutputInterface::VERBOSITY_NORMAL);
         $io->newLine();
 
         // Match chat messages
-        $command = sprintf('%s bin/console app:match-chat-messages %s %s %s', $phpExecutable, $signal->getCode(), $save ? '--save' : '', $verbosity);
+        $command = [
+            $phpExecutable,
+            'bin/console',
+            'app:match-chat-messages',
+            $signal->getCode(),
+            $save ? '--save' : null,
+            $verbosity
+        ];
         $process = new Process($command);
         $process->setTimeout(300);
         $processor->run($io, $process, 'An error occurred while matching the chat messages.', null, OutputInterface::VERBOSITY_NORMAL);

@@ -16,12 +16,12 @@
         "ext-libxml": "*",
         "ext-simplexml": "*",
         "colorfield/mastodon-api": "dev-master",
-        "easycorp/easyadmin-bundle": "^1.17",
+        "easycorp/easyadmin-bundle": "^2.1",
         "liip/imagine-bundle": "^2.1",
         "neitanod/forceutf8": "^2.0",
         "onlinq/bundle-monitoring": "^1.0",
-        "php-http/guzzle6-adapter": "^1.1",
-        "php-http/httplug-pack": "^1.1",
+        "php-http/guzzle6-adapter": "^2.0",
+        "php-http/httplug-pack": "^1.2",
         "rtheunissen/oauth2-reddit": "^2.0",
         "sensio/framework-extra-bundle": "^5.1",
         "symfony/apache-pack": "^1.0",
@@ -100,7 +100,7 @@
     "extra": {
         "symfony": {
             "allow-contrib": false,
-            "require": "~4.1.0"
+            "require": "^4.1"
         }
     }
 }

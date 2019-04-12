@@ -43,7 +43,14 @@ class RunCommand extends Command
         $io->text('> Crawl feed');
 
         // Crawl RSS feed including episode files
-        $command = sprintf('%s bin/console app:crawl-feed --files --save %s', $phpExecutable, $verbosity);
+        $command = [
+            $phpExecutable,
+            'bin/console',
+            'app:crawl-feed',
+            '--files',
+            '--save',
+            $verbosity
+        ];
         $process = new Process($command);
         $process->setTimeout(1500);
         $processor->run($io, $process, 'An error occurred while crawling the RSS feed.', null, OutputInterface::VERBOSITY_NORMAL);
@@ -52,7 +59,13 @@ class RunCommand extends Command
         $io->text('> Crawl transcripts');
 
         // Crawl transcripts
-        $command = sprintf('%s bin/console app:crawl-transcripts --save %s', $phpExecutable, $verbosity);
+        $command = [
+            $phpExecutable,
+            'bin/console',
+            'app:crawl-transcripts',
+            '--save',
+            $verbosity
+        ];
         $process = new Process($command);
         $process->setTimeout(300);
         $processor->run($io, $process, 'An error occurred while crawling the transcripts.', null, OutputInterface::VERBOSITY_NORMAL);
@@ -61,7 +74,13 @@ class RunCommand extends Command
         $io->text('> Crawl the latest bat signal');
 
         // Crawl bat signal
-        $command = sprintf('%s bin/console app:crawl-bat-signal --save %s', $phpExecutable, $verbosity);
+        $command = [
+            $phpExecutable,
+            'bin/console',
+            'app:crawl-bat-signal',
+            '--save',
+            $verbosity
+        ];
         $process = new Process($command);
         $processor->run($io, $process, 'An error occurred while crawling for a bat signal.', null, OutputInterface::VERBOSITY_NORMAL);
         $io->newLine();
@@ -69,7 +88,14 @@ class RunCommand extends Command
         $io->text('> Process the latest bat signal');
 
         // Process bat signal
-        $command = sprintf('%s bin/console app:process-bat-signal --latest --save %s', $phpExecutable, $verbosity);
+        $command = [
+            $phpExecutable,
+            'bin/console',
+            'app:process-bat-signal',
+            '--latest',
+            '--save',
+            $verbosity
+        ];
         $process = new Process($command);
         $process->setTimeout(3300);
         $processor->run($io, $process, 'An error occurred while processing a bat signal.', null, OutputInterface::VERBOSITY_NORMAL);
@@ -78,7 +104,13 @@ class RunCommand extends Command
         $io->text('> Clear old crawling data');
 
         // Remove old crawling data
-        $command = sprintf('%s bin/console app:clear-crawling-data --save %s', $phpExecutable, $verbosity);
+        $command = [
+            $phpExecutable,
+            'bin/console',
+            'app:clear-crawling-data',
+            '--save',
+            $verbosity
+        ];
         $process = new Process($command);
         $process->setTimeout(300);
         $processor->run($io, $process, 'An error occurred while clearing old crawling data.', null, OutputInterface::VERBOSITY_NORMAL);

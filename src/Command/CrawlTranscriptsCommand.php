@@ -41,7 +41,15 @@ class CrawlTranscriptsCommand extends Command
             $verbosity = $io->isDebug() ? '-vvv' : ($io->isVeryVerbose() ? '-vv' : ($io->isVerbose() ? '-v' : ''));
             $phpExecutable = (new ExecutableFinder)->find('php');
 
-            $command = sprintf('%s bin/console app:crawl-transcript %s %s %s %s', $phpExecutable, $code, $uri, $save ? '--save' : '', $verbosity);
+            $command = [
+                $phpExecutable,
+                'bin/console',
+                'app:crawl-transcript',
+                $code,
+                $uri,
+                $save ? '--save' : null,
+                $verbosity
+            ];
             $process = new Process($command);
             $processor->run($io, $process, sprintf('An error occurred while fetching the transcript for episode %s.', $code), null, OutputInterface::VERBOSITY_VERBOSE);
 

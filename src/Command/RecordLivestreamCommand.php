@@ -43,13 +43,16 @@ class RecordLivestreamCommand extends Command
             $time = (new \DateTimeImmutable())->format('YmdHis');
             $path = sprintf('%s/livestream_recordings/recording_%s', $this->storagePath, $time);
 
-            $cmd = sprintf('bin/scripts/record-livestream.bash "%s"', $path);
+            $command = [
+                'bin/scripts/record-livestream.bash',
+                '"' . $path . '"',
+            ];
 
             if ($output->isVerbose()) {
-                $io->text('Executing command: ' . $cmd);
+                $io->text('Executing command: ' . implode(' ', $command));
             }
 
-            $process = new Process($cmd);
+            $process = new Process($command);
             $process->setTimeout(null);
             $returnCode = $process->run();
 

@@ -42,13 +42,17 @@ class SplitRecordingCommand extends Command
         $sourcePath = sprintf('%s/episode_recordings/%s.mp3', $this->storagePath, $code);
         $targetPath = sprintf('%s/audio_chunks/long/%s_', $this->storagePath, $code);
 
-        $cmd = sprintf('bin/scripts/splitter.bash "%s" "%s"', $sourcePath, $targetPath);
+        $command = [
+            'bin/scripts/splitter.bash',
+            '"' . $sourcePath . '"',
+            '"' . $targetPath . '"',
+        ];
 
         if ($output->isVerbose()) {
-            $io->text('Executing command: ' . $cmd);
+            $io->text('Executing command: ' . implode(' ', $command));
         }
 
-        $process = new Process($cmd);
+        $process = new Process($command);
         $process->setTimeout(null);
         $returnCode = $process->run();
 
