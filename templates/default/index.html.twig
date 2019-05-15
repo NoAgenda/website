@@ -1,63 +1,5 @@
 {% extends 'layout.html.twig' %}
 
-{% set sites = [
-  {
-    name: 'Landing Page',
-    description: 'The official landing page is the primary source of all things No Agenda.',
-    website: 'noagendashow.com',
-    url: 'http://noagendashow.com',
-  },
-  {
-    name: 'Livestream',
-    description: 'The official No Agenda livestream and chatroom.',
-    website: 'noagendastream.com',
-    url: 'http://noagendastream.com',
-  },
-  {
-    name: 'NA Social <span class="fab fa-mastodon mr-1"></span>',
-    description: 'The official No Agenda social network.',
-    website: 'noagendasocial.com',
-    url: 'https://noagendasocial.com',
-  },
-  {
-    name: 'Art Generator',
-    description: 'The Art Generator is where you can upload your own No Agenda cover art.',
-    website: 'noagendaartgenerator.com',
-    url: 'https://noagendaartgenerator.com',
-  },
-  {
-    name: 'NA Transcripts',
-    description: 'An ongoing archive of transcripts of No Agenda episodes.',
-    website: 'natranscript.online',
-    url: 'https://natranscript.online/tr/',
-  },
-  {
-    name: 'Community Code <span class="fab fa-gitlab mr-1"></span>',
-    description: 'Open source software of the best podcast in the universe.',
-    website: 'gitlab.com/No-Agenda/',
-    url: 'https://gitlab.com/No-Agenda/',
-  },
-  {
-    name: 'NA Subreddit <span class="fab fa-reddit-alien mr-1"></span>',
-    description: 'Unfiltered conversations about NA-related topics.',
-    website: 'reddit.com/r/inthemorning',
-    url: 'https://reddit.com/r/inthemorning/',
-  },
-  {
-    name: 'Gitmo List',
-    description: 'A list of resources related to No Agenda.',
-    website: 'gitmolist.org',
-    url: 'https://gitmolist.org',
-  },
-  {
-    name: 'Reddit Troll Room <span class="fab fa-reddit-alien mr-1"></span>',
-    description: 'The unofficial Troll Room of The Best Podcast In The Universe.',
-    website: 'reddit.com/r/trollroom',
-    url: 'https://reddit.com/r/trollroom/',
-    new: true,
-  },
-] %}
-
 {% block content %}
 <div class="container">
   <p class="my-3">
@@ -81,18 +23,12 @@
 
   <h2 class="my-3">Network</h2>
   <div class="row my-3">
-    {% for site in sites %}
-    <div class="col-md-6 col-lg-4">
-      <a class="d-block" href="{{ site.url }}">
-        <h4>{{ site.name|raw }}</h4>
-        <span class="text-muted">
-          {{ site.website }}
-          {% if site.new is defined and site.new %}<span class="badge badge-secondary text-uppercase">New</span>{% endif %}
-        </span>
-        <p>{{ site.description }}</p>
-      </a>
-    </div>
+    {% for site in network_sites %}
+    {% include 'network/site.html.twig' %}
     {% endfor %}
+  </div>
+  <div class="d-flex justify-content-end">
+    <a class="btn btn-link" href="{{ path('network') }}">View the entire network <span class="far fa-angle-right ml-1"></span></a>
   </div>
 
   <div class="text-right my-3">

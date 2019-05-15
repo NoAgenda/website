@@ -1,6 +1,9 @@
 EpisodePart: Chapter
 EpisodePartCorrection: Chapter Correction
 EpisodePartCorrectionVote: Chapter Correction Vote
+NetworkSite: Network Site
 
 Cover uri: Cover URL
 Recording uri: Recording URL
+Display uri: Display URL
+Uri: URL

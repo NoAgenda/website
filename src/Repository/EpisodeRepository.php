@@ -34,4 +34,9 @@ class EpisodeRepository extends AbstractRepository
 
         return $result;
     }
+
+    public function getHomepageEpisodes()
+    {
+        return $this->findBy(null, null, 4);
+    }
 }
