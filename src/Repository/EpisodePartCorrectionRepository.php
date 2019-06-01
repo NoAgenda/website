@@ -3,7 +3,6 @@
 namespace App\Repository;
 
 use App\Entity\EpisodePartCorrection;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
@@ -12,7 +11,7 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
  * @method EpisodePartCorrection[]    findAll()
  * @method EpisodePartCorrection[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class EpisodePartCorrectionRepository extends ServiceEntityRepository
+class EpisodePartCorrectionRepository extends AbstractRepository
 {
     public function __construct(RegistryInterface $registry)
     {

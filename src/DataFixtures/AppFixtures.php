@@ -29,10 +29,6 @@ class AppFixtures extends Fixture
         }
 
         foreach ($this->loadEpisodes() as $data) {
-            if (!isset($data['code'])) {
-                dump($data);die;
-            }
-
             $episode = (new Episode)
                 ->setCode($data['code'])
                 ->setName($data['name'])
@@ -58,10 +54,7 @@ class AppFixtures extends Fixture
 
     public function loadEpisodes()
     {
-        $data = file_get_contents(__DIR__ . '/episodes.json');
-        $data = json_decode($data, true);
-
-        return array_reverse($data);
+        return [];
     }
 
     public function loadUsers()
