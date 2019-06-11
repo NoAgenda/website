@@ -59,17 +59,11 @@
           </div>
         </div>
         <div class="btn-toolbar d-none d-lg-flex align-items-center justify-content-center pt-5">
-          <div class="mx-2 cursor-pointer" data-player-action="rewind" data-amount="60">
-            <span class="fa-layers fa-fw fa-2x">
-              <i class="fal fa-undo-alt"></i>
-              <span class="fa-layers-text fa-inverse" data-fa-transform="shrink-10 down-1">60</span>
-            </span>
+          <div class="btn btn-sm btn-light mx-2 cursor-pointer" data-player-action="rewind" data-amount="60">
+            <i class="fal fa-undo-alt mr-1"></i> 60s
           </div>
-          <div class="mx-2 cursor-pointer" data-player-action="rewind" data-amount="15">
-            <span class="fa-layers fa-fw fa-2x">
-              <i class="fal fa-undo-alt"></i>
-              <span class="fa-layers-text fa-inverse" data-fa-transform="shrink-10 down-1">15</span>
-            </span>
+          <div class="btn btn-sm btn-light mx-2 cursor-pointer" data-player-action="rewind" data-amount="15">
+            <i class="fal fa-undo-alt mr-1"></i> 15s
           </div>
           <div class="mx-5 cursor-pointer" data-player-action="play">
             <span class="fal fa-3x fa-play" aria-hidden="true"></span>
@@ -77,17 +71,11 @@
           <div class="mx-5 cursor-pointer" data-player-action="pause">
             <span class="fal fa-3x fa-pause" aria-hidden="true"></span>
           </div>
-          <div class="mx-2 cursor-pointer" data-player-action="forward" data-amount="15">
-            <span class="fa-layers fa-fw fa-2x">
-              <i class="fal fa-redo-alt"></i>
-              <span class="fa-layers-text fa-inverse" data-fa-transform="shrink-10 down-1">15</span>
-            </span>
+          <div class="btn btn-sm btn-light mx-2 cursor-pointer" data-player-action="forward" data-amount="15">
+            <i class="fal fa-redo-alt mr-1"></i> 15s
           </div>
-          <div class="mx-2 cursor-pointer" data-player-action="forward" data-amount="60">
-            <span class="fa-layers fa-fw fa-2x">
-              <i class="fal fa-redo-alt"></i>
-              <span class="fa-layers-text fa-inverse" data-fa-transform="shrink-10 down-1">60</span>
-            </span>
+          <div class="btn btn-sm btn-light mx-2 cursor-pointer" data-player-action="forward" data-amount="60">
+            <i class="fal fa-redo-alt mr-1"></i> 60s
           </div>
         </div>
       </div>
@@ -103,11 +91,11 @@
   </div>
 </div>
 
-<div class="site-interactive-player container vh-100">
+<div class="site-interactive-player container min-vh-100">
   <div class="row">
     <div class="player-main-col col-12">
-      <div class="d-flex flex-column vh-100">
-        <div class="flex-grow-0 bg-white position-sticky top-0 pt-3">
+      <div class="d-flex flex-column min-vh-100">
+        <div class="flex-grow-0 bg-white position-sticky top-0 pt-3" style="z-index: 1000;">
           <ul class="player-tabs nav nav-tabs">
             {% for tab in tabs if tab.enabled %}
             <li class="nav-item">
@@ -149,23 +137,17 @@
         <div class="bottom-holder flex-grow-0 position-sticky py-3" style="bottom: 0; z-index: 1000;">
           <div class="d-sm-flex">
             <div class="btn-toolbar d-flex align-items-center justify-content-center mb-2 mb-md-0">
-              <div class="mx-3 cursor-pointer" data-player-action="rewind" data-amount="15">
-                <span class="fa-layers fa-fw fa-lg">
-                  <i class="far fa-undo-alt"></i>
-                  <span class="fa-layers-text" data-fa-transform="shrink-10 down-1">15</span>
-                </span>
+              <div class="btn btn-sm btn-outline-dark mx-3 cursor-pointer" data-player-action="rewind" data-amount="15">
+                <i class="fal fa-undo-alt mr-1"></i> 15s
               </div>
               <div class="mx-2 cursor-pointer" data-player-action="play">
-                <span class="far fa-2x fa-play" aria-hidden="true"></span>
+                <span class="fal fa-2x fa-play" aria-hidden="true"></span>
               </div>
               <div class="mx-2 cursor-pointer" data-player-action="pause">
-                <span class="far fa-2x fa-pause" aria-hidden="true"></span>
+                <span class="fal fa-2x fa-pause" aria-hidden="true"></span>
               </div>
-              <div class="mx-3 cursor-pointer" data-player-action="forward" data-amount="15">
-                <span class="fa-layers fa-fw fa-lg">
-                  <i class="far fa-redo-alt"></i>
-                  <span class="fa-layers-text" data-fa-transform="shrink-10 down-1">15</span>
-                </span>
+              <div class="btn btn-sm btn-outline-dark mx-3 cursor-pointer" data-player-action="forward" data-amount="15">
+                <i class="fal fa-redo-alt mr-1"></i> 15s
               </div>
             </div>
             <div class="flex-grow-1 m-2">
@@ -184,7 +166,7 @@
       </div>
     </div>
     <div class="player-aside-col col-xl-4 d-none">
-      <div class="d-flex flex-column vh-100 mvh-100 position-sticky top-0 pt-3">
+      <div class="d-flex flex-column min-vh-100 max-vh-100 position-sticky top-0 pt-3">
         <div class="flex-shrink-0">
           <ul class="nav nav-tabs">
             <li class="nav-item">

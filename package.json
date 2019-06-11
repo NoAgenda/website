@@ -8,12 +8,8 @@
     "production": "encore production"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^1.2.8",
-    "@fortawesome/free-brands-svg-icons": "^5.5.0",
-    "@fortawesome/pro-light-svg-icons": "^5.5.0",
-    "@fortawesome/pro-regular-svg-icons": "^5.5.0",
-    "@fortawesome/pro-solid-svg-icons": "^5.5.0",
-    "@symfony/webpack-encore": "^0.22.0",
+    "@fortawesome/fontawesome-pro": "^5.9.0",
+    "@symfony/webpack-encore": "^0.27.0",
     "bootstrap": "^4.1.1",
     "jquery": "^3.3.1",
     "node-sass": "^4.9.0",

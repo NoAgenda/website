@@ -2,8 +2,6 @@ import 'bootstrap';
 import jQuery from 'jquery';
 import 'popper.js';
 
-import './fontawesome';
-
 import Clipboard from './scripts/clipboard';
 import Archive from './scripts/archive';
 import Player from './scripts/player';
