@@ -296,8 +296,8 @@ class MatchRecordingTimeCommand extends Command
 
         $command = [
             'bin/scripts/split-recording.bash',
-            '"' . $sourcePath . '"',
-            '"' . $targetPathPrefix . '"',
+            $sourcePath,
+            $targetPathPrefix,
         ];
 
         if ($output->isVerbose()) {

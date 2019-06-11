@@ -45,7 +45,7 @@ class RecordLivestreamCommand extends Command
 
             $command = [
                 'bin/scripts/record-livestream.bash',
-                '"' . $path . '"',
+                $path,
             ];
 
             if ($output->isVerbose()) {

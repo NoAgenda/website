@@ -44,8 +44,8 @@ class SplitRecordingCommand extends Command
 
         $command = [
             'bin/scripts/splitter.bash',
-            '"' . $sourcePath . '"',
-            '"' . $targetPath . '"',
+            $sourcePath,
+            $targetPath,
         ];
 
         if ($output->isVerbose()) {
