@@ -23,37 +23,37 @@
         "rtheunissen/oauth2-reddit": "^2.0",
         "sensio/framework-extra-bundle": "^5.1",
         "symfony/apache-pack": "^1.0",
-        "symfony/asset": "^4.1",
-        "symfony/console": "^4.1",
-        "symfony/expression-language": "^4.1",
+        "symfony/asset": "^4.3",
+        "symfony/console": "^4.3",
+        "symfony/expression-language": "^4.3",
         "symfony/flex": "^1.0",
-        "symfony/form": "^4.1",
-        "symfony/framework-bundle": "^4.1",
+        "symfony/form": "^4.3",
+        "symfony/framework-bundle": "^4.3",
         "symfony/monolog-bundle": "^3.1",
         "symfony/orm-pack": "*",
-        "symfony/process": "^4.1",
-        "symfony/security-bundle": "^4.1",
+        "symfony/process": "^4.3",
+        "symfony/security-bundle": "^4.3",
         "symfony/serializer-pack": "*",
         "symfony/swiftmailer-bundle": "^3.1",
-        "symfony/twig-bundle": "^4.1",
-        "symfony/validator": "^4.1",
-        "symfony/web-link": "^4.1",
+        "symfony/twig-bundle": "^4.3",
+        "symfony/validator": "^4.3",
+        "symfony/web-link": "^4.3",
         "symfony/webpack-encore-pack": "*",
-        "symfony/yaml": "^4.1",
+        "symfony/yaml": "^4.3",
         "white-october/pagerfanta-bundle": "^1.2",
         "zendframework/zend-feed": "^2.10"
     },
     "require-dev": {
         "ext-json": "*",
         "doctrine/doctrine-fixtures-bundle": "^3.0",
-        "symfony/browser-kit": "^4.1",
-        "symfony/css-selector": "^4.1",
+        "symfony/browser-kit": "^4.3",
+        "symfony/css-selector": "^4.3",
         "symfony/debug-pack": "*",
-        "symfony/dotenv": "^4.1",
+        "symfony/dotenv": "^4.3",
         "symfony/maker-bundle": "^1.0",
-        "symfony/phpunit-bridge": "^4.1",
+        "symfony/phpunit-bridge": "^4.3",
         "symfony/profiler-pack": "*",
-        "symfony/web-server-bundle": "^4.1"
+        "symfony/web-server-bundle": "^4.3"
     },
     "config": {
         "preferred-install": {
@@ -99,7 +99,7 @@
     "extra": {
         "symfony": {
             "allow-contrib": false,
-            "require": "^4.1"
+            "require": "^4.3"
         }
     }
 }
