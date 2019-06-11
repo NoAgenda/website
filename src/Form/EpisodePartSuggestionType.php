@@ -8,6 +8,7 @@ use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\NotNull;
 
 class EpisodePartSuggestionType extends AbstractType
 {
@@ -30,8 +31,8 @@ class EpisodePartSuggestionType extends AbstractType
                 'required' => true,
             ])
             ->add('name', TextType::class, [
-                'required' => false,
-                'constraints' => [new Length(['min' => 6, 'max' => 128])],
+                'required' => true,
+                'constraints' => [new Length(['min' => 6, 'max' => 128]), new NotNull],
             ])
             ->add('startsAt', TextType::class, [
                 'required' => false,
