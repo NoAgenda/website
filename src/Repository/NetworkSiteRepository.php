@@ -3,7 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\NetworkSite;
-use Symfony\Bridge\Doctrine\RegistryInterface;
+use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @method NetworkSite|null find($id, $lockMode = null, $lockVersion = null)
@@ -18,7 +18,7 @@ class NetworkSiteRepository extends AbstractRepository
         'name' => 'asc',
     ];
 
-    public function __construct(RegistryInterface $registry)
+    public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, NetworkSite::class);
     }

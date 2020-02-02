@@ -17,43 +17,42 @@
         "easycorp/easyadmin-bundle": "^2.1",
         "liip/imagine-bundle": "^2.1",
         "neitanod/forceutf8": "^2.0",
-        "onlinq/bundle-monitoring": "^2.0",
+        "onlinq/monitoring-bundle": "^1.0",
         "php-http/guzzle6-adapter": "^2.0",
         "php-http/httplug-pack": "^1.2",
         "rtheunissen/oauth2-reddit": "^2.0",
         "sensio/framework-extra-bundle": "^5.1",
         "symfony/apache-pack": "^1.0",
-        "symfony/asset": "^4.3",
-        "symfony/console": "^4.3",
-        "symfony/expression-language": "^4.3",
+        "symfony/asset": "^4.4",
+        "symfony/console": "^4.4",
+        "symfony/dotenv": "^4.4",
+        "symfony/expression-language": "^4.4",
         "symfony/flex": "^1.0",
-        "symfony/form": "^4.3",
-        "symfony/framework-bundle": "^4.3",
+        "symfony/form": "^4.4",
+        "symfony/framework-bundle": "^4.4",
         "symfony/monolog-bundle": "^3.1",
-        "symfony/orm-pack": "*",
-        "symfony/process": "^4.3",
-        "symfony/security-bundle": "^4.3",
-        "symfony/serializer-pack": "*",
+        "symfony/orm-pack": "^1.0",
+        "symfony/process": "^4.4",
+        "symfony/security-bundle": "^4.4",
+        "symfony/serializer-pack": "^1.0",
         "symfony/swiftmailer-bundle": "^3.1",
-        "symfony/twig-bundle": "^4.3",
-        "symfony/validator": "^4.3",
-        "symfony/web-link": "^4.3",
-        "symfony/webpack-encore-pack": "*",
-        "symfony/yaml": "^4.3",
+        "symfony/twig-bundle": "^4.4",
+        "symfony/validator": "^4.4",
+        "symfony/web-link": "^4.4",
+        "symfony/webpack-encore-bundle": "^1.7",
+        "symfony/yaml": "^4.4",
         "white-october/pagerfanta-bundle": "^1.2",
         "zendframework/zend-feed": "^2.10"
     },
     "require-dev": {
         "ext-json": "*",
         "doctrine/doctrine-fixtures-bundle": "^3.0",
-        "symfony/browser-kit": "^4.3",
-        "symfony/css-selector": "^4.3",
-        "symfony/debug-pack": "*",
-        "symfony/dotenv": "^4.3",
+        "symfony/browser-kit": "^4.4",
+        "symfony/css-selector": "^4.4",
+        "symfony/debug-pack": "^1.0",
         "symfony/maker-bundle": "^1.0",
-        "symfony/phpunit-bridge": "^4.3",
-        "symfony/profiler-pack": "*",
-        "symfony/web-server-bundle": "^4.3"
+        "symfony/phpunit-bridge": "^4.4",
+        "symfony/profiler-pack": "^1.0"
     },
     "config": {
         "preferred-install": {
@@ -99,7 +98,7 @@
     "extra": {
         "symfony": {
             "allow-contrib": false,
-            "require": "^4.3"
+            "require": "^4.4"
         }
     }
 }

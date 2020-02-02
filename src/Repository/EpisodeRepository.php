@@ -3,7 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Episode;
-use Symfony\Bridge\Doctrine\RegistryInterface;
+use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @method Episode|null find($id, $lockMode = null, $lockVersion = null)
@@ -19,7 +19,7 @@ class EpisodeRepository extends AbstractRepository
     ];
     protected $itemsPerPage = 16;
 
-    public function __construct(RegistryInterface $registry)
+    public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Episode::class);
     }

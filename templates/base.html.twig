@@ -15,7 +15,7 @@
     <link rel="icon" href="{{ asset('/favicon.ico') }}">
 
     {% block stylesheets %}
-    <link rel="stylesheet" href="{{ asset('/assets/app.css') }}">
+    {{ encore_entry_link_tags('app') }}
     {% endblock %}
   </head>
   <body data-authenticated="{{ authenticated ? 'true' : 'false' }}" {% block body_attributes '' %}>
@@ -23,7 +23,7 @@
     {% include 'blocks/token_modal.html.twig' %}
 
     {% block scripts %}
-    <script src="{{ asset('/assets/app.js') }}"></script>
+    {{ encore_entry_script_tags('app') }}
     {% include 'blocks/analytics.html.twig' %}
     {% endblock %}
   </body>

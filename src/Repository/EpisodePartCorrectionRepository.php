@@ -3,7 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\EpisodePartCorrection;
-use Symfony\Bridge\Doctrine\RegistryInterface;
+use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @method EpisodePartCorrection|null find($id, $lockMode = null, $lockVersion = null)
@@ -13,7 +13,7 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
  */
 class EpisodePartCorrectionRepository extends AbstractRepository
 {
-    public function __construct(RegistryInterface $registry)
+    public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, EpisodePartCorrection::class);
     }

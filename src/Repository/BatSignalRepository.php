@@ -5,7 +5,7 @@ namespace App\Repository;
 use App\Entity\BatSignal;
 use App\Entity\Episode;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Symfony\Bridge\Doctrine\RegistryInterface;
+use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @method BatSignal|null find($id, $lockMode = null, $lockVersion = null)
@@ -17,7 +17,7 @@ class BatSignalRepository extends ServiceEntityRepository
 {
     private $episodeRepository;
 
-    public function __construct(RegistryInterface $registry, EpisodeRepository $episodeRepository)
+    public function __construct(ManagerRegistry $registry, EpisodeRepository $episodeRepository)
     {
         parent::__construct($registry, BatSignal::class);
 

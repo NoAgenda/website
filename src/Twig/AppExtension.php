@@ -44,7 +44,7 @@ class AppExtension extends AbstractExtension implements GlobalsInterface
     {
         return [
             'authenticated' => $this->isAuthenticated(),
-            'analytics_code' => $_SERVER['APP_ANALYTICS_CODE'] ?? false,
+            'analytics_code' => $_SERVER['APP_ANALYTICS_CODE'] ?: false,
         ];
     }
 
