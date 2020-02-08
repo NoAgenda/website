@@ -186,6 +186,7 @@ class MatchRecordingTimeCommand extends Command
                 ];
 
                 $process = new Process($command);
+                $process->setTimeout(600);
                 $processHelper->run($output, $process);
 
                 preg_match("/Offset: (\d+)/", $process->getOutput(), $matches);
@@ -305,7 +306,7 @@ class MatchRecordingTimeCommand extends Command
         }
 
         $process = new Process($command);
-        $process->setTimeout(null);
+        $process->setTimeout(1800);
         $returnCode = $process->run();
 
         if ($returnCode > 0) {

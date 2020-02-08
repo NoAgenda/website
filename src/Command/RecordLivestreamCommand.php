@@ -53,7 +53,7 @@ class RecordLivestreamCommand extends Command
             }
 
             $process = new Process($command);
-            $process->setTimeout(null);
+            $process->setTimeout(600);
             $returnCode = $process->run();
 
             if ($returnCode > 0) {
