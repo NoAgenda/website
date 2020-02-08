@@ -2,7 +2,7 @@
 
 {% set title = episode.code ~ ': ' ~ episode.name %}
 
-{% block title %}{{ title }}{% endblock %}
+{% block title %}{{ title|raw }}{% endblock %}
 
 {% set tabs = [
   {
