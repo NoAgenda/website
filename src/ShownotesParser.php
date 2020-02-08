@@ -17,7 +17,7 @@ class ShownotesParser
         $this->client = $shownotesClient;
     }
 
-    public function parse(Episode $episode)
+    public function parse(Episode $episode, $extra = false)
     {
         $data = [
             'url' => null,
@@ -35,7 +35,7 @@ class ShownotesParser
         $htmlResponse = $this->client->get($data['url']);
         $htmlContents = $htmlResponse->getBody()->getContents();
 
-        $htmlDom = new \DOMDocument;
+        $htmlDom = new \DOMDocument();
         $htmlDom->loadHTML($htmlContents);
 
         $htmlXpath = new \DOMXPath($htmlDom);
@@ -45,7 +45,7 @@ class ShownotesParser
         $response = $this->client->get($url);
         $contents = $response->getBody()->getContents();
 
-        $dom = new \DOMDocument;
+        $dom = new \DOMDocument();
         $dom->loadXML($contents);
 
         $xpath = new \DOMXPath($dom);
@@ -53,8 +53,26 @@ class ShownotesParser
         $data['executiveProducers'] = $this->parseExecutiveProducers($xpath);
         $data['associateExecutiveProducers'] = $this->parseAssociateExecutiveProducers($xpath);
 
-        $coverArtistText = $xpath->query('.//outline[starts-with(@text, "Art By: ")]')->item(0)->getAttribute('text');
-        $data['coverArtist'] = str_replace('Art By: ', '', $coverArtistText);
+        $coverArtistText = $xpath->query('.//outline[starts-with(@text, "Art By:")]')->item(0)->getAttribute('text');
+        $data['coverArtist'] = trim(str_replace('Art By:', '', $coverArtistText));
+
+        if ($extra) {
+            $nameText = $xpath->query('.//outline[starts-with(@text, "No Agenda Ep")]')->item(0)->getAttribute('text');
+            preg_match('/"([^\"]+)"/', $nameText, $matches);
+            $episode->setName($matches[1]);
+
+            $linkText = $xpath->query('.//outline[starts-with(@text, "Direct [")]')->item(0)->getAttribute('text');
+            $linkText = str_replace(['Direct [<a href="', '">link</a>] to the mp3 file'], '', $linkText);
+            $episode->setRecordingUri($linkText);
+
+            $imgText = $xpath->query('.//outline[@text="Cover Art"]/outline[1]')->item(0)->getAttribute('text');
+            preg_match('/src="([^\"]+)"/', $imgText, $matches);
+            $episode->setCoverUri($matches[1]);
+
+            preg_match('/-' . $episode->getCode() . '-(\d+)-(\d+)-(\d+)/', $linkText, $matches);
+            $publishedAt = new \DateTime("${matches[1]}-${matches[2]}-${matches[3]}");
+            $episode->setPublishedAt($publishedAt);
+        }
 
         return $data;
     }
@@ -86,6 +104,20 @@ class ShownotesParser
             $producers[] = substr($executiveProducer, strlen($prefix));
         }
 
+        if (!count($producers)) {
+            $executiveProducerElement = $xpath->query('.//outline[starts-with(@text, "Executive Producers:")]');
+            if (!count($producers) && isset($executiveProducerElement[0])) {
+                $executiveProducer = $executiveProducerElement[0]->getAttribute('text');
+
+                $prefix = 'Executive Producers:';
+
+                $executiveProducer = substr($executiveProducer, strlen($prefix));
+
+                $producers = explode(',', $executiveProducer);
+                $producers = array_map('trim', $producers);
+            }
+        }
+
         return array_map('trim', $producers);
     }
 
@@ -114,6 +146,20 @@ class ShownotesParser
             $prefix = 'Associate Executive Producer:';
 
             $producers[] = substr($executiveProducer, strlen($prefix));
+        }
+
+        if (!count($producers)) {
+            $executiveProducerElement = $xpath->query('.//outline[starts-with(@text, "Associate Executive Producers:")]');
+            if (!count($producers) && isset($executiveProducerElement[0])) {
+                $executiveProducer = $executiveProducerElement[0]->getAttribute('text');
+
+                $prefix = 'Associate Executive Producers:';
+
+                $executiveProducer = substr($executiveProducer, strlen($prefix));
+
+                $producers = explode(',', $executiveProducer);
+                $producers = array_map('trim', $producers);
+            }
         }
 
         return array_map('trim', $producers);
