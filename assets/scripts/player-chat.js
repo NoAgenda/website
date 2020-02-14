@@ -1,5 +1,6 @@
 import jQuery from 'jquery';
-import Player from './player';
+
+import {formatTime} from './player';
 
 export default class PlayerChat {
   constructor() {
@@ -25,6 +26,11 @@ export default class PlayerChat {
       }
 
       this.initialized = true;
+
+      this.player = document.getElementById('episodePlayer');
+
+      this.player.addEventListener('audio-seek', event => this.reset(event.detail.timestamp));
+      this.player.addEventListener('audio-step', event => this.step(event.detail.timestamp));
 
       this.reset(this.timestamp);
 
@@ -185,7 +191,7 @@ export default class PlayerChat {
     let template = container.data('prototype');
 
     let html = template
-      .replace('__timestamp__', this.previousTimestamp !== message[2] ? Player.formatTime(message[2]) : '')
+      .replace('__timestamp__', this.previousTimestamp !== message[2] ? formatTime(message[2]) : '')
       .replace('__username__', message[0])
       .replace('__text__', message[1])
     ;

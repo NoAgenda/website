@@ -21,8 +21,13 @@
     <span class="fab fa-twitter fa-fw fa-lg text-twitter" aria-hidden="true"></span>
   </a>
   <div
-    class="cursor-pointer d-inline-block" title="Copy link to clipboard" data-clipboard="{{ url }}"
-    {% if dynamic is defined and dynamic %}data-player-data="timer-attribute" data-player-attribute="data-clipboard"{% endif %}
+    class="cursor-pointer d-inline-block"
+    title="Copy link to clipboard"
+    data-clipboard="{{ url }}"
+    {% if dynamic is defined and dynamic %}
+    data-player-data="timer-attribute"
+    data-player-attribute="data-clipboard"
+    {% endif %}
   >
     <span class="fas fa-link fa-fw" aria-hidden="true"></span>
   </div>

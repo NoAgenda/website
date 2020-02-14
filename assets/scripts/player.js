@@ -1,90 +1,33 @@
 import jQuery from 'jquery';
 import 'waud.js';
 
-import PlayerChat from './player-chat';
-import PlayerCorrections from './player-corrections';
-
-export default class Player {
-  constructor(uri, token) {
-    this.timestamp = jQuery('[data-player]').data('player-timestamp') || 0;
-    this.uri = uri;
+class AudioPlayerElement extends HTMLElement {
+  connectedCallback() {
+    this.src = this.getAttribute('data-src');
+    this.timestamp = this.getAttribute('data-timestamp') || 0;
+    this.playing = false;
+    this.duration = 0;
 
     Waud.init();
 
-    this.token = token;
-    this.chat = new PlayerChat();
-    this.corrections = new PlayerCorrections(this, token);
-    this.sound = new WaudSound(uri, {
+    this.sound = new WaudSound(this.src, {
       autoplay: false,
       loop: false,
       webaudio: false,
       onload: () => {
-        jQuery('[data-player-data="duration"]').text(Player.formatTime(this.sound.getDuration()));
+        this.duration = this.sound.getDuration();
 
-        this.stepInterface(this.timestamp);
-        this.stepParts(this.timestamp);
-        this.stepTranscript(this.timestamp);
+        this.dispatchEvent(new Event('audio-loaded'));
+
+        this.dispatchEvent(new CustomEvent('audio-seek', {
+          detail: {
+            timestamp: this.timestamp,
+          },
+        }));
       },
     });
 
-    this.registerEventListeners();
-
     requestAnimationFrame(this.step.bind(this));
-  }
-
-  registerEventListeners() {
-    jQuery('[data-player-action="pause"]').css('display', 'none');
-
-    jQuery(document).on('click', '[data-player-action="play"]', () => {
-      this.play();
-    });
-
-    jQuery(document).on('click', '[data-player-action="pause"]', () => {
-      this.pause();
-    });
-
-    jQuery(document).on('click', '[data-player-action="forward"]', (event) => {
-      let amount = jQuery(event.currentTarget).data('amount');
-
-      this.seekTimestamp(this.timestamp + amount);
-    });
-
-    jQuery(document).on('click', '[data-player-action="rewind"]', (event) => {
-      let amount = jQuery(event.currentTarget).data('amount');
-
-      this.seekTimestamp(this.timestamp - amount);
-    });
-
-    jQuery(document).on('click', '[data-player-action="progress"]', (event) => {
-      let distance = event.pageX - jQuery(event.currentTarget).offset().left;
-      let percentage = distance / jQuery(event.currentTarget).width();
-
-      this.seekPercentage(percentage);
-    });
-
-    jQuery(document).on('click', '[data-player-action="play-timestamp"]', (event) => {
-      event.stopPropagation();
-
-      let timestamp = jQuery(event.currentTarget).data('timestamp');
-
-      this.seekTimestamp(timestamp);
-
-      if (!this.sound.isPlaying()) {
-        this.play();
-      }
-    });
-
-    jQuery(document).on('click', '.site-episode-part', (event) => {
-      let collapse = jQuery(event.currentTarget).find('.collapse');
-
-      if (!collapse.hasClass('show')) {
-        collapse.collapse('show');
-      }
-    });
-
-    jQuery(document).on('show.bs.collapse', '.site-episode-parts .collapse', () => {
-      jQuery('.site-episode-parts .collapse.show').collapse('hide');
-    });
   }
 
   play() {
@@ -94,78 +37,269 @@ export default class Player {
 
     this.sound.play();
 
-    let timestamp = this.sound.getTime() || 0;
+    const timestamp = this.sound.getTime() || 0;
 
     if (timestamp !== this.timestamp) {
       this.sound.setTime(this.timestamp);
     }
 
-    this.togglePlayButton(false);
+    this.dispatchEvent(new Event('audio-start'));
   }
 
   pause() {
+    if (!this.sound.isPlaying()) {
+      return;
+    }
+
     this.sound.pause();
 
-    this.togglePlayButton(true);
-  }
-
-  seekPercentage(percentage) {
-    let duration = this.sound.getDuration() || 0;
-    let timestamp = percentage * duration;
-
-    if (this.sound.isPlaying()) {
-      this.sound.setTime(timestamp);
-    }
-    else {
-      this.timestamp = timestamp;
-
-      this.stepInterface(timestamp);
-      this.stepParts(timestamp);
-      this.stepTranscript(timestamp);
-    }
-
-    this.chat.reset(timestamp);
+    this.dispatchEvent(new Event('audio-pause'));
   }
 
   seekTimestamp(timestamp) {
     if (this.sound.isPlaying()) {
       this.sound.setTime(timestamp);
-    }
-    else {
+    } else {
       this.timestamp = timestamp;
-
-      this.stepInterface(timestamp);
-      this.stepParts(timestamp);
-      this.stepTranscript(timestamp);
     }
 
-    this.chat.reset(timestamp);
+    this.dispatchEvent(new CustomEvent('audio-seek', {
+      detail: {
+        timestamp: timestamp,
+      },
+    }));
   }
 
   step() {
-    if (!this.sound.isPlaying()) {
-      requestAnimationFrame(this.step.bind(this));
+    if (this.sound.isPlaying()) {
+      const timestamp = this.sound.getTime() || 0;
 
-      return;
+      if (this.timestamp !== timestamp) {
+        this.timestamp = timestamp;
+
+        this.dispatchEvent(new CustomEvent('audio-step', {
+          detail: {
+            timestamp: timestamp,
+          },
+        }));
+      }
     }
-
-    let timestamp = this.sound.getTime() || 0;
-
-    this.timestamp = timestamp;
-
-    this.stepInterface(timestamp);
-    this.stepParts(timestamp);
-    this.stepTranscript(timestamp);
-    this.chat.step(timestamp);
 
     requestAnimationFrame(this.step.bind(this));
   }
+}
 
-  stepInterface(timestamp) {
-    let duration = this.sound.getDuration() || 0;
+class AudioPlayButtonElement extends HTMLElement {
+  connectedCallback() {
+    this.player = document.getElementById(this.getAttribute('data-target'));
+
+    this.playButton = this.querySelector('[data-play-button]');
+    this.pauseButton = this.querySelector('[data-pause-button]');
+
+    this.playButton.addEventListener('click', () => {
+      this.player.play();
+    });
+
+    this.pauseButton.addEventListener('click', () => {
+      this.player.pause();
+    });
+
+    this.player.addEventListener('audio-start', () => {
+      this.updateButtons(true);
+    });
+
+    this.player.addEventListener('audio-pause', () => {
+      this.updateButtons(false);
+    });
+  }
+
+  updateButtons(playing) {
+    this.playButton.setAttribute('aria-hidden', ariaBoolean(playing));
+    this.pauseButton.setAttribute('aria-hidden', ariaBoolean(!playing));
+
+    if (playing) {
+      this.playButton.classList.add('d-none');
+      this.pauseButton.classList.remove('d-none');
+    } else {
+      this.playButton.classList.remove('d-none');
+      this.pauseButton.classList.add('d-none');
+    }
+  }
+}
+
+class AudioProgressButtonElement extends HTMLElement {
+  connectedCallback() {
+    this.player = document.getElementById(this.getAttribute('data-target'));
+
+    const direction = this.getAttribute('data-direction');
+    const seconds = this.getAttribute('data-seconds');
+
+    const diff = direction === 'forward' ? +seconds : -seconds;
+
+    this.addEventListener('click', () => {
+      this.player.seekTimestamp(this.player.timestamp + diff);
+    });
+  }
+}
+
+class AudioTimestampButtonElement extends HTMLElement {
+  connectedCallback() {
+    this.player = document.getElementById(this.getAttribute('data-target'));
+
+    const seconds = this.getAttribute('data-timestamp');
+
+    this.addEventListener('click', () => {
+      this.player.seekTimestamp(seconds);
+
+      if (!this.player.playing) {
+        this.player.play();
+      }
+    });
+  }
+}
+
+class AudioProgressBarElement extends HTMLElement {
+  connectedCallback() {
+    this.player = document.getElementById(this.getAttribute('data-target'));
+
+    this.progress = this.querySelector('[data-progress]');
+    this.duration = this.querySelector('[data-duration]');
+    this.seek = this.querySelector('[data-seek]');
+    this.progressBar = this.querySelector('[data-progress-bar]');
+    this.durationBar = this.querySelector('[data-duration-bar]');
+    this.pointer = this.querySelector('[data-pointer]');
+
+    this.movingNewTimestamp = 0;
+
+    this.duration.innerHTML = formatTime(this.player.duration);
+    this.player.addEventListener('audio-loaded', () => {
+      this.duration.innerHTML = formatTime(this.player.duration);
+    });
+
+    this.stepListener = event => {
+      const percentage = ((event.detail.timestamp / this.player.duration) * 100) || 0;
+
+      this.progress.innerHTML = formatTime(event.detail.timestamp);
+      this.progressBar.style.width = percentage + '%';
+    };
+
+    this.player.addEventListener('audio-step', this.stepListener);
+    this.player.addEventListener('audio-seek', this.stepListener);
+
+    this.enterListener = pageX => {
+      this.pointer.classList.remove('d-none');
+
+      this.duration.classList.add('d-none');
+      this.progress.classList.add('d-none');
+
+      this.querySelectorAll('[data-pointer-hide]').forEach(element => element.classList.add('d-none'));
+
+      this.seek.classList.remove('d-none');
+
+      this.moveListener(pageX);
+    };
+
+    this.durationBar.addEventListener('mouseenter', event => this.enterListener(event));
+    this.durationBar.addEventListener('touchstart', event => {
+      event.preventDefault();
+
+      const touch = event.changedTouches[0];
+
+      this.enterListener(touch.pageX);
+    });
+
+    this.leaveListener = touch => {
+      this.pointer.classList.add('d-none');
+
+      this.duration.classList.remove('d-none');
+      this.progress.classList.remove('d-none');
+
+      this.querySelectorAll('[data-pointer-hide]').forEach(element => element.classList.remove('d-none'));
+
+      this.seek.classList.add('d-none');
+
+      if (touch) {
+        this.player.seekTimestamp(this.movingNewTimestamp);
+      }
+    };
+
+    this.durationBar.addEventListener('mouseleave', () => this.leaveListener(false));
+    this.durationBar.addEventListener('touchend', () => this.leaveListener(true));
+
+    this.moveListener = (pageX) => {
+      const durationBarRect = this.durationBar.getBoundingClientRect();
+
+      let distance = pageX - durationBarRect.left;
+      const percentage = distance / durationBarRect.width;
+      let newTimestamp = percentage * this.player.duration;
+
+      if (newTimestamp < 0) {
+        distance = 1;
+        newTimestamp = 0;
+      } else if (newTimestamp > this.player.duration) {
+        distance = durationBarRect.width - 1;
+        newTimestamp = this.player.duration;
+      }
+
+      this.pointer.style.left = (distance - 1) + 'px';
+
+      this.movingNewTimestamp = newTimestamp;
+      this.seek.innerHTML = formatTime(newTimestamp);
+
+      if (!this.seek.hasAttribute('data-still')) {
+        const seekRect = this.seek.getBoundingClientRect();
+        let seekLeft = distance - (seekRect.width / 2) - 1;
+        const maxSeekLeft = durationBarRect.width - seekRect.width;
+
+        if (seekLeft < 0) {
+          seekLeft = 0;
+        } else if (seekLeft > maxSeekLeft) {
+          seekLeft = maxSeekLeft;
+        }
+
+        this.seek.style.left = seekLeft + 'px';
+      }
+    };
+
+    this.durationBar.addEventListener('mousemove', event => this.moveListener(event.pageX));
+    this.durationBar.addEventListener('touchmove', event => {
+      event.preventDefault();
+
+      const touch = event.changedTouches[0];
+
+      this.moveListener(touch.pageX);
+    });
+
+    this.durationBar.addEventListener('click', event => {
+      const durationBarRect = this.durationBar.getBoundingClientRect();
+
+      let distance = event.pageX - durationBarRect.left;
+      const percentage = distance / durationBarRect.width;
+      let newTimestamp = percentage * this.player.duration;
+
+      if (newTimestamp < 0) {
+        newTimestamp = 0;
+      } else if (newTimestamp > this.player.duration) {
+        newTimestamp = this.player.duration - 1;
+      }
+
+      this.player.seekTimestamp(newTimestamp);
+    });
+  }
+}
+
+jQuery(document).ready(() => {
+  const player = document.getElementById('episodePlayer');
+
+  if (!player) {
+    return;
+  }
+
+  const updateInterface = timestamp => {
+    let duration = player.duration;
     let progress = (((timestamp / duration) * 100) || 0) + '%';
 
-    jQuery('[data-player-data="timer"]').text(Player.formatTime(timestamp));
+    jQuery('[data-player-data="timer"]').text(formatTime(timestamp));
     jQuery('[data-player-data="progress"]').css('width', progress);
 
     jQuery('[data-player-data="timer-attribute"]').each((index, element) => {
@@ -181,117 +315,46 @@ export default class Player {
       }
 
       let original = element.data('original-' + attribute);
-      element.attr(attribute, original.replace('t=0:00', 't=' + Player.formatTime(timestamp)));
+      element.attr(attribute, original.replace('t=0:00', 't=' + formatTime(timestamp)));
     });
-  }
-
-  stepParts(timestamp) {
-    let parts = jQuery('.site-episode-part');
-
-    let lastActivePart = null;
-
-    for (let part of parts) {
-      let partTimestamp = jQuery(part).data('timestamp');
-
-      if (partTimestamp <= timestamp) {
-        lastActivePart = jQuery(part);
-      }
-    }
-
-    parts.removeClass('part-highlight');
-
-    if (lastActivePart) {
-      lastActivePart.addClass('part-highlight');
-
-      if (lastActivePart.data('name')) {
-        jQuery('[data-player-data="chapter-name"]').text('Now playing: ' + lastActivePart.data('name'));
-      }
-      else {
-        jQuery('[data-player-data="chapter-name"]').text('');
-      }
-    }
-  }
-
-  stepTranscript(timestamp) {
-    let lines = jQuery('.site-transcript-line');
-
-    let lastActiveLine = null;
-    let activeLines = [];
-
-    for (let line of lines) {
-      let lineDuration = jQuery(line).data('duration');
-      let lineTimestamp = jQuery(line).data('timestamp');
-
-      if (lineTimestamp <= timestamp) {
-        if (lineDuration !== 0 && lineTimestamp + lineDuration >= timestamp) {
-          activeLines.push(line);
-        }
-
-        lastActiveLine = line;
-      }
-    }
-
-    let highlightedLines = jQuery('.site-transcript-line.transcript-highlight');
-    let previousLineIsOnScreen = false;
-
-    for (let line of highlightedLines) {
-      if (line !== lastActiveLine && activeLines.indexOf(line) === -1) {
-        jQuery(line).removeClass('transcript-highlight');
-        previousLineIsOnScreen = Player.lineIsOnScreen(line, 0);
-      }
-    }
-
-    jQuery(lastActiveLine).addClass('transcript-highlight');
-    activeLines.map(line => jQuery(line).addClass('transcript-highlight'));
-
-    // Determine if a transition of transcript lines occurred and scrolls to it if it goes out of screen boundary
-    if (previousLineIsOnScreen && !Player.lineIsOnScreen(lastActiveLine, 200) && Player.lineIsOnScreen(lastActiveLine, 0)) {
-      jQuery('html,body').animate({
-        scrollTop: jQuery(lastActiveLine).offset().top + jQuery(lastActiveLine).height() + 250 - jQuery(window).height(),
-      });
-    }
-  }
-
-
-
-  togglePlayButton(show) {
-    jQuery('[data-player-action="play"]').css('display', show ? 'inherit' : 'none');
-    jQuery('[data-player-action="pause"]').css('display', show ? 'none' : 'inherit');
-  }
-
-  static formatTime(value) {
-    let hours = Math.floor(value / 60 / 60) || 0;
-    let minutes = Math.floor((value - (hours * 60 * 60)) / 60) || 0;
-    let seconds = (value - (minutes * 60) - (hours * 60 * 60)) || 0;
-
-    if (hours > 0) {
-      return hours + ':' + (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + Math.trunc(seconds);
-    }
-
-    return minutes + ':' + (seconds < 10 ? '0' : '') + Math.trunc(seconds);
-  }
-
-  static serializeTime(value) {
-    let values = value.split(':');
-    let result = false;
-
-    if (values.length > 2) {
-      result = (+values[0]) * 60 * 60 + (+values[1]) * 60 + (+values[2]);
-    }
-    else if (values.length === 2) {
-      result = (+values[0]) * 60 + (+values[1]);
-    }
-
-    return result;
-  }
-
-  static lineIsOnScreen(element, bottomOffset) {
-    let elementTop = jQuery(element).offset().top;
-    let elementBottom = elementTop + jQuery(element).outerHeight();
-
-    let viewportTop = jQuery(window).scrollTop();
-    let viewportBottom = viewportTop + jQuery(window).height() - bottomOffset;
-
-    return elementTop > viewportTop && elementBottom < viewportBottom;
   };
+
+  player.addEventListener('audio-seek', event => updateInterface(event.detail.timestamp));
+  player.addEventListener('audio-step', event => updateInterface(event.detail.timestamp));
+});
+
+function ariaBoolean(value) {
+  return value ? 'true' : 'false';
 }
+
+export function formatTime(value) {
+  let hours = Math.floor(value / 60 / 60) || 0;
+  let minutes = Math.floor((value - (hours * 60 * 60)) / 60) || 0;
+  let seconds = (value - (minutes * 60) - (hours * 60 * 60)) || 0;
+
+  if (hours > 0) {
+    return hours + ':' + (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + Math.trunc(seconds);
+  }
+
+  return minutes + ':' + (seconds < 10 ? '0' : '') + Math.trunc(seconds);
+}
+
+export function serializeTime(value) {
+  let values = value.split(':');
+  let result = false;
+
+  if (values.length > 2) {
+    result = (+values[0]) * 60 * 60 + (+values[1]) * 60 + (+values[2]);
+  }
+  else if (values.length === 2) {
+    result = (+values[0]) * 60 + (+values[1]);
+  }
+
+  return result;
+}
+
+window.customElements.define('na-audio', AudioPlayerElement);
+window.customElements.define('na-audio-play', AudioPlayButtonElement);
+window.customElements.define('na-audio-seek', AudioProgressButtonElement);
+window.customElements.define('na-audio-timestamp', AudioTimestampButtonElement);
+window.customElements.define('na-audio-progress', AudioProgressBarElement);

@@ -1,5 +1,76 @@
 {% extends 'layout.html.twig' %}
 
+{% import _self as macro %}
+
+{% macro play_button(size, class) %}
+<na-audio-play class="{{ class }}" data-target="episodePlayer">
+  <div class="cursor-pointer" role="button" aria-hidden="false" aria-label="Play" data-play-button>
+    <span class="fal fa-{{ size }}x fa-fw fa-play"></span>
+  </div>
+  <div class="cursor-pointer d-none" role="button" aria-hidden="true" aria-label="Pause" data-pause-button>
+    <span class="fal fa-{{ size }}x fa-fw fa-pause"></span>
+  </div>
+</na-audio-play>
+{% endmacro %}
+
+{% macro seek_button(direction, seconds, class, button_class) %}
+{% set icon = direction == 'forward' ? 'fa-redo-alt' : 'fa-undo-alt' %}
+{% set label = direction == 'forward' ? "Skip #{seconds} seconds" : "Go back #{seconds} seconds" %}
+
+<na-audio-seek
+  class="{{ class }}"
+  data-target="episodePlayer"
+  data-direction="{{ direction }}"
+  data-seconds="{{ seconds}}"
+>
+  <div class="btn cursor-pointer {{ button_class }}" role="button" aria-label="{{ label }}">
+    <span class="fal {{ icon }} mr-1"></span> {{ seconds }}s
+  </div>
+</na-audio-seek>
+{% endmacro %}
+
+{% macro progress_bar(big) %}
+{% set class = big ? 'd-none d-lg-block py-3' : 'flex-grow-1' %}
+{% set bar_height = big ? '30' : '5' %}
+{% set duration_color = big ? 'bg-white' : 'bg-dark' %}
+{% set progress_color = big ? 'bg-primary' : 'bg-highlight' %}
+{% set pointer_color = big ? 'bg-highlight' : 'bg-white' %}
+
+<na-audio-progress
+  class="{{ class }}"
+  data-target="episodePlayer"
+>
+  {% if big %}
+  <div class="position-relative d-flex justify-content-between">
+    <span data-progress>0:00</span>
+    <span>&nbsp;</span>
+    <span data-duration>0:00</span>
+    <span class="position-absolute d-none" data-seek>0:00</span>
+  </div>
+  <div class="position-relative {{ duration_color }} cursor-pointer mt-2" style="height: 30px;" data-duration-bar>
+    <div class="position-absolute {{ progress_color }} h-100" style="width: 0;" data-progress-bar></div>
+    <div class="position-absolute {{ pointer_color }} h-100 d-none" style="width: 3px; z-index: 2;" data-pointer></div>
+  </div>
+  {% else %}
+  <div>
+    <div class="d-inline-block" style="min-width: 120px;">
+      <span data-progress>0:00</span> <span data-pointer-hide>/</span> <span data-duration>0:00</span>
+      <span class="d-none" data-seek data-still>0:00</span>
+    </div>
+    <div class="d-none d-md-inline ml-4">Chapter name</div>
+  </div>
+  <div class="cursor-pointer" data-duration-bar>
+    <div class="py-2">
+      <div class="position-relative {{ duration_color }}" style="height: 5px;">
+        <div class="position-absolute {{ progress_color }} h-100" style="width: 0;" data-progress-bar></div>
+        <div class="position-absolute {{ pointer_color }} h-100 d-none" style="width: 3px; z-index: 2;" data-pointer></div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</na-audio-progress>
+{% endmacro %}
+
 {% set title = episode.code ~ ': ' ~ episode.name %}
 
 {% block title %}{{ title|raw }}{% endblock %}
@@ -34,16 +105,28 @@
 {% include 'player/blocks/correction_modal.html.twig' %}
 {% include 'player/blocks/suggestion_modal.html.twig' %}
 {% include 'player/blocks/success_modal.html.twig' %}
+
+<na-audio
+  id="episodePlayer"
+  data-src="{{ episode.recordingUri }}"
+  data-timestamp="{{ timestamp }}"
+></na-audio>
 {% endblock %}
 
-{% block body_attributes %}data-player="{{ episode.recordingUri }}" data-player-timestamp="{{ timestamp }}"{% endblock %}
+{% block body_attributes %}
+{% apply spaceless %}
+  {% if transcriptTimestamp != 0 %}
+    data-transcript-timestamp="{{ transcriptTimestamp }}"
+  {% endif %}
+{% endapply %}
+{% endblock %}
 
 {% block content %}
 <div class="site-masthead-player">
   <div class="container">
     <div class="d-sm-flex">
       <img class="masthead-cover img-fluid" src="{{ asset(episode.code ~ '.png')|imagine_filter('cover_large') }}" alt="Art for episode {{ episode.code }}">
-      <div class="flex-grow-1 pb-3 pb-sm-0 m-sm-3 m-md-4 m-lg-5">
+      <div class="flex-grow-1 pb-3 pb-sm-0 pt-2 pt-sm-0 m-sm-3 m-md-4 m-lg-5">
         <h1>{{ title }}</h1>
         <h4>{{ episode.author }}</h4>
         <div class="btn-toolbar">
@@ -59,34 +142,16 @@
           </div>
         </div>
         <div class="btn-toolbar d-none d-lg-flex align-items-center justify-content-center pt-5">
-          <div class="btn btn-sm btn-light mx-2 cursor-pointer" data-player-action="rewind" data-amount="60">
-            <i class="fal fa-undo-alt mr-1"></i> 60s
-          </div>
-          <div class="btn btn-sm btn-light mx-2 cursor-pointer" data-player-action="rewind" data-amount="15">
-            <i class="fal fa-undo-alt mr-1"></i> 15s
-          </div>
-          <div class="mx-5 cursor-pointer" data-player-action="play">
-            <span class="fal fa-3x fa-play" aria-hidden="true"></span>
-          </div>
-          <div class="mx-5 cursor-pointer" data-player-action="pause">
-            <span class="fal fa-3x fa-pause" aria-hidden="true"></span>
-          </div>
-          <div class="btn btn-sm btn-light mx-2 cursor-pointer" data-player-action="forward" data-amount="15">
-            <i class="fal fa-redo-alt mr-1"></i> 15s
-          </div>
-          <div class="btn btn-sm btn-light mx-2 cursor-pointer" data-player-action="forward" data-amount="60">
-            <i class="fal fa-redo-alt mr-1"></i> 60s
-          </div>
+          {{ macro.seek_button('backward', 60, 'mx-2', 'btn-sm btn-light') }}
+          {{ macro.seek_button('backward', 15, 'mx-2', 'btn-sm btn-light') }}
+          {{ macro.play_button(3, 'mx-4') }}
+          {{ macro.seek_button('forward', 15, 'mx-2', 'btn-sm btn-light') }}
+          {{ macro.seek_button('forward', 60, 'mx-2', 'btn-sm btn-light') }}
         </div>
       </div>
     </div>
     <div>
-      <div class="d-none d-lg-block py-3">
-        <div><span data-player-data="timer">0:00</span> / <span data-player-data="duration">0:00</span></div>
-        <div class="bg-white cursor-pointer my-2" data-player-action="progress" style="height: 30px;">
-          <div class="bg-primary h-100" data-player-data="progress" style="width: 0;"></div>
-        </div>
-      </div>
+      {{ macro.progress_bar(true) }}
     </div>
   </div>
 </div>
@@ -134,33 +199,14 @@
           </div>
           {% endfor %}
         </div>
-        <div class="bottom-holder flex-grow-0 position-sticky py-3" style="bottom: 0; z-index: 1000;">
+        <div class="bottom-holder flex-grow-0 position-sticky p-2" style="bottom: 0; z-index: 1000;">
           <div class="d-sm-flex">
             <div class="btn-toolbar d-flex align-items-center justify-content-center mb-2 mb-md-0">
-              <div class="btn btn-sm btn-outline-dark mx-3 cursor-pointer" data-player-action="rewind" data-amount="15">
-                <i class="fal fa-undo-alt mr-1"></i> 15s
-              </div>
-              <div class="mx-2 cursor-pointer" data-player-action="play">
-                <span class="fal fa-2x fa-play" aria-hidden="true"></span>
-              </div>
-              <div class="mx-2 cursor-pointer" data-player-action="pause">
-                <span class="fal fa-2x fa-pause" aria-hidden="true"></span>
-              </div>
-              <div class="btn btn-sm btn-outline-dark mx-3 cursor-pointer" data-player-action="forward" data-amount="15">
-                <i class="fal fa-redo-alt mr-1"></i> 15s
-              </div>
+              {{ macro.seek_button('backward', 15, 'ml-3 mr-2', 'btn-sm btn-outline-dark') }}
+              {{ macro.play_button(2, 'mx-2') }}
+              {{ macro.seek_button('forward', 15, 'ml-2 mr-3', 'btn-sm btn-outline-dark') }}
             </div>
-            <div class="flex-grow-1 m-2">
-              <div>
-                <span class="d-inline-block" style="min-width: 120px;">
-                  <span data-player-data="timer">0:00</span> / <span data-player-data="duration">0:00</span>
-                </span>
-                <span class="d-none d-md-inline ml-4" data-player-data="chapter-name"></span>
-              </div>
-              <div class="bg-dark cursor-pointer" data-player-action="progress" style="height: 5px;">
-                <div class="bg-highlight h-100" data-player-data="progress" style="width: 0;"></div>
-              </div>
-            </div>
+            {{ macro.progress_bar(false) }}
           </div>
         </div>
       </div>

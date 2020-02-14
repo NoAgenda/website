@@ -65,6 +65,11 @@ class PlayerController extends Controller
     public function playerAction(Request $request, Episode $episode): Response
     {
         $timestamp = TimestampConverter::parsePrettyTimestamp($request->query->get('t', 0));
+        $transcriptTimestamp = TimestampConverter::parsePrettyTimestamp($request->query->get('transcript', 0));
+
+        if ($transcriptTimestamp > 0) {
+            $timestamp = $transcriptTimestamp;
+        }
 
         $lines = $this->transcriptLineRepository->findByEpisode($episode);
 
@@ -85,6 +90,7 @@ class PlayerController extends Controller
 
         return $this->render('player/episode.html.twig', [
             'timestamp' => $timestamp,
+            'transcriptTimestamp' => $transcriptTimestamp,
 
             'episode' => $episode,
             'parts' => $parts,

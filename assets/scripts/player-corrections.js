@@ -1,12 +1,15 @@
 import jQuery from 'jquery';
-import Player from './player';
+
+import {formatTime, serializeTime} from './player';
 
 export default class PlayerCorrections {
-  constructor(player, token) {
-    this.player = player;
+  constructor(token) {
+    this.player = document.getElementById('episodePlayer');
     this.token = token;
 
-    this.registerEventListeners();
+    if (this.player) {
+      this.registerEventListeners();
+    }
   }
 
   registerEventListeners() {
@@ -14,14 +17,14 @@ export default class PlayerCorrections {
       let container = jQuery(event.currentTarget).closest('[data-correction-timestamp]');
 
       let timestamp = this.player.timestamp || 0;
-      container.find('input').val(Player.formatTime(timestamp));
+      container.find('input').val(formatTime(timestamp));
     });
 
     jQuery(document).on('click', '[data-correction-timestamp] [data-play]', (event) => {
       let container = jQuery(event.currentTarget).closest('[data-correction-timestamp]');
 
       let value = container.find('input').val();
-      let timestamp = Player.serializeTime(value);
+      let timestamp = serializeTime(value);
 
       container.find('[data-form-error]').remove();
 
