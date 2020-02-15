@@ -29,6 +29,17 @@
 </na-audio-seek>
 {% endmacro %}
 
+{% macro speed_button(class, button_class) %}
+<na-audio-speed
+  class="{{ class }}"
+  data-target="episodePlayer"
+>
+  <div class="btn cursor-pointer {{ button_class }}" role="button" aria-label="Set speed to × 1.5" data-btn>
+    <span class="fal fa-tachometer mr-1" aria-hidden="true"></span> <span data-speed>1</span>×
+  </div>
+</na-audio-speed>
+{% endmacro %}
+
 {% macro progress_bar(big) %}
 {% set class = big ? 'd-none d-lg-block py-3' : 'flex-grow-1' %}
 {% set bar_height = big ? '30' : '5' %}
@@ -149,6 +160,7 @@
           {{ macro.play_button(3, 'mx-4') }}
           {{ macro.seek_button('forward', 15, 'mx-2', 'btn-sm btn-light') }}
           {{ macro.seek_button('forward', 60, 'mx-2', 'btn-sm btn-light') }}
+          {{ macro.speed_button('mx-2', 'btn-sm btn-light') }}
         </div>
       </div>
     </div>
@@ -206,11 +218,12 @@
           {% endfor %}
         </div>
         <div class="bottom-holder flex-grow-0 position-sticky p-2" style="bottom: 0; z-index: 1000;">
-          <div class="d-sm-flex">
+          <div class="d-md-flex">
             <div class="btn-toolbar d-flex align-items-center justify-content-center mb-2 mb-md-0">
               {{ macro.seek_button('backward', 15, 'ml-3 mr-2', 'btn-sm btn-outline-dark') }}
               {{ macro.play_button(2, 'mx-2') }}
-              {{ macro.seek_button('forward', 15, 'ml-2 mr-3', 'btn-sm btn-outline-dark') }}
+              {{ macro.seek_button('forward', 15, 'mx-2', 'btn-sm btn-outline-dark') }}
+              {{ macro.speed_button('ml-2 mr-3 d-lg-none', 'btn-sm btn-outline-dark') }}
             </div>
             {{ macro.progress_bar(false) }}
           </div>

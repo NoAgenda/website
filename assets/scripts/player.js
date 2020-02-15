@@ -7,6 +7,7 @@ class AudioPlayerElement extends HTMLElement {
     this.timestamp = +this.getAttribute('data-timestamp') || 0;
     this.playing = false;
     this.duration = 0;
+    this.speed = 1;
 
     Waud.init();
 
@@ -66,6 +67,16 @@ class AudioPlayerElement extends HTMLElement {
     this.dispatchEvent(new CustomEvent('audio-seek', {
       detail: {
         timestamp: timestamp,
+      },
+    }));
+  }
+
+  setSpeed(speed) {
+    this.sound.playbackRate(speed);
+
+    this.dispatchEvent(new CustomEvent('audio-speed', {
+      detail: {
+        speed: speed,
       },
     }));
   }
@@ -138,6 +149,28 @@ class AudioProgressButtonElement extends HTMLElement {
 
     this.addEventListener('click', () => {
       this.player.seekTimestamp(this.player.timestamp + diff);
+    });
+  }
+}
+
+class AudioSpeedButtonElement extends HTMLElement {
+  connectedCallback() {
+    this.player = document.getElementById(this.getAttribute('data-target'));
+
+    this.currentSpeed = 0;
+    this.speeds = [1, 1.5, 2, 0.75, 1];
+
+    this.addEventListener('click', () => {
+      this.player.setSpeed(this.speeds[this.currentSpeed + 1]);
+    });
+
+    const button = this.querySelector('[data-btn]');
+
+    this.player.addEventListener('audio-speed', event => {
+      this.currentSpeed = this.speeds.indexOf(event.detail.speed);
+
+      button.setAttribute('aria-label', 'Set speed to × ' + this.speeds[this.currentSpeed + 1]);
+      this.querySelector('[data-speed]').innerHTML = this.speeds[this.currentSpeed];
     });
   }
 }
@@ -380,5 +413,6 @@ export function serializeTime(value) {
 window.customElements.define('na-audio', AudioPlayerElement);
 window.customElements.define('na-audio-play', AudioPlayButtonElement);
 window.customElements.define('na-audio-seek', AudioProgressButtonElement);
+window.customElements.define('na-audio-speed', AudioSpeedButtonElement);
 window.customElements.define('na-audio-timestamp', AudioTimestampButtonElement);
 window.customElements.define('na-audio-progress', AudioProgressBarElement);
