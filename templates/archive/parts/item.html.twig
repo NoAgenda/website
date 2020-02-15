@@ -24,6 +24,12 @@
           Special
         </span>
         {% endif %}
+        {% if episode.transcript %}
+        <span class="text-nowrap">
+          <span class="fas fa-list" aria-hidden="true"></span>
+          Transcript
+        </span>
+        {% endif %}
         {% if episode.chatMessages %}
         <span class="text-nowrap">
           <span class="fal fa-smile" aria-hidden="true"></span>
