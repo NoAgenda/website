@@ -30,7 +30,7 @@
   {% endif %}
 
   {% if episode.shownotes.coverArtist|default(null) != null %}
-  <p>Cover Art by {{ episode.shownotes.coverArtist|raw }}</p>
+  <p>Cover Art by {{ episode.shownotes.coverArtist|replace({' href=': ' target="_blank" href='})|raw }}</p>
   {% endif %}
 
   {% if episode.shownotes.url|default(null) != null %}
