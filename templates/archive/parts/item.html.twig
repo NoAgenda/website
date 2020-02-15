@@ -10,24 +10,23 @@
       </div>
       <div class="list-meta">
         {% if episode.duration %}
-        <span class="text-nowrap">
-          <span class="far fa-clock"></span>
+        <span class="text-nowrap" aria-label="Duration">
           {{ episode.duration|visualTimestamp }}
         </span>
         {% endif %}
-        <span class="text-nowrap">
-          <span class="far fa-calendar"></span>
+        <span class="text-nowrap" aria-label="Publish date">
+          <span class="far fa-calendar" aria-hidden="true"></span>
           {{ episode.publishedAt|date('F jS, Y') }}
         </span>
         {% if episode.special %}
         <span class="text-nowrap">
-          <span class="fas fa-star"></span>
+          <span class="fas fa-star" aria-hidden="true"></span>
           Special
         </span>
         {% endif %}
         {% if episode.chatMessages %}
         <span class="text-nowrap">
-          <span class="fal fa-smile"></span>
+          <span class="fal fa-smile" aria-hidden="true"></span>
           Troll Room
         </span>
         {% endif %}

@@ -13,12 +13,13 @@ jQuery(document).ready(() => {
     return;
   }
 
+  const transcriptTab = jQuery('#transcript-tab');
+
   lines = jQuery('.site-transcript-line');
   resetButton = jQuery('[data-reset-transcripts]');
 
   const initialTimestamp = +jQuery('body').data('transcript-timestamp');
   if (initialTimestamp > 0) {
-    const transcriptTab = jQuery('#transcript-tab');
     const showTabListener = () => {
       const transcriptLine = jQuery('.site-transcript-line[data-timestamp="' + initialTimestamp + '"]');
 
@@ -26,14 +27,16 @@ jQuery(document).ready(() => {
         scrollTop: transcriptLine.offset().top + transcriptLine.height() + 250 - jQuery(window).height(),
       });
 
-      jQuery(window).scroll();
-
       transcriptTab.off('shown.bs.tab', showTabListener);
     };
 
     transcriptTab.on('shown.bs.tab', showTabListener);
     transcriptTab.tab('show');
   }
+
+  transcriptTab.on('shown.bs.tab', () => {
+    jQuery(window).scroll();
+  });
 
   player.addEventListener('audio-seek', event => stepTranscript(event.detail.timestamp));
   player.addEventListener('audio-step', event => stepTranscript(event.detail.timestamp));
@@ -50,7 +53,7 @@ jQuery(document).ready(() => {
     } else {
       resetButton.addClass('d-none');
     }
-  })
+  });
 });
 
 function stepTranscript(timestamp) {

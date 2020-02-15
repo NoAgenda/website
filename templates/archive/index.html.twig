@@ -10,8 +10,8 @@
     {% include 'archive/parts/buttons.html.twig' %}
     <div class="flex-grow-1"></div>
     <div class="btn-group d-none d-sm-inline-flex" role="group">
-      <button type="button" class="btn btn-primary" data-archive-layout="grid"><span class="far fa-th"></span></button>
-      <button type="button" class="btn btn-outline-primary" data-archive-layout="list"><span class="far fa-list-alt"></span></button>
+      <button type="button" class="btn btn-primary" title="List view" data-archive-layout="grid"><span class="far fa-th" aria-hidden="true"></span></button>
+      <button type="button" class="btn btn-outline-primary" title="Grid view" data-archive-layout="list"><span class="far fa-list-alt" aria-hidden="true"></span></button>
     </div>
   </div>
 
@@ -26,8 +26,8 @@
   <div class="d-flex justify-content-center my-3">
     <div class="d-md-none">
       {{ pagerfanta(pager, 'twitter_bootstrap4', {
-        'prev_message': '<span class="fas fa-angle-left mr-2"></span> Newer',
-        'next_message': 'Older <span class="fas fa-angle-right ml-2"></span>',
+        'prev_message': '<span class="fas fa-angle-left mr-2" aria-hidden="true"></span> Newer',
+        'next_message': 'Older <span class="fas fa-angle-right ml-2" aria-hidden="true"></span>',
         'css_container_class': 'pagination m-0',
         'omitFirstPage': true,
         'proximity': 0,
@@ -35,8 +35,8 @@
     </div>
     <div class="d-none d-md-block">
       {{ pagerfanta(pager, 'twitter_bootstrap4', {
-        'prev_message': '<span class="fas fa-angle-left mr-2"></span> Newer',
-        'next_message': 'Older <span class="fas fa-angle-right ml-2"></span>',
+        'prev_message': '<span class="fas fa-angle-left mr-2" aria-hidden="true"></span> Newer',
+        'next_message': 'Older <span class="fas fa-angle-right ml-2" aria-hidden="true"></span>',
         'css_container_class': 'pagination m-0',
         'omitFirstPage': true,
       }) }}

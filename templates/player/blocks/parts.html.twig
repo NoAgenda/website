@@ -95,7 +95,7 @@
         )
 
         {% if is_granted('ROLE_ADMIN') %}
-        <a class="correction-action ml-3" href="{{ path('easyadmin', {entity: 'EpisodePartCorrection', id: correction.id, action: 'show'}) }}" target="_blank"><span class="fas fa-file-alt mr-1"></span> Manage</a>
+        <a class="correction-action ml-3" href="{{ path('easyadmin', {entity: 'EpisodePartCorrection', id: correction.id, action: 'show'}) }}" target="_blank"><span class="fas fa-file-alt mr-1" aria-hidden="true"></span> Manage</a>
         {% endif %}
       </div>
     </div>

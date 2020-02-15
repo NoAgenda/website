@@ -18,7 +18,7 @@
       </span>
 
       {{ episode.code }}: {{ episode.name }}
-      {% if episode.special %}<span class="fas fa-star ml-2"></span>{% endif %}
+      {% if episode.special %}<span class="fas fa-star ml-2" aria-hidden="true"></span><span class="sr-only">(special episode)</span>{% endif %}
     </a>
     {% endfor %}
   </div>

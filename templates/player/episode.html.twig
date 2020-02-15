@@ -5,10 +5,10 @@
 {% macro play_button(size, class) %}
 <na-audio-play class="{{ class }}" data-target="episodePlayer">
   <div class="cursor-pointer" role="button" aria-hidden="false" aria-label="Play" data-play-button>
-    <span class="fal fa-{{ size }}x fa-fw fa-play"></span>
+    <span class="fal fa-{{ size }}x fa-fw fa-play" aria-hidden="true"></span>
   </div>
   <div class="cursor-pointer d-none" role="button" aria-hidden="true" aria-label="Pause" data-pause-button>
-    <span class="fal fa-{{ size }}x fa-fw fa-pause"></span>
+    <span class="fal fa-{{ size }}x fa-fw fa-pause" aria-hidden="true"></span>
   </div>
 </na-audio-play>
 {% endmacro %}
@@ -24,7 +24,7 @@
   data-seconds="{{ seconds}}"
 >
   <div class="btn cursor-pointer {{ button_class }}" role="button" aria-label="{{ label }}">
-    <span class="fal {{ icon }} mr-1"></span> {{ seconds }}s
+    <span class="fal {{ icon }} mr-1" aria-hidden="true"></span> {{ seconds }}s
   </div>
 </na-audio-seek>
 {% endmacro %}
@@ -42,24 +42,26 @@
 >
   {% if big %}
   <div class="position-relative d-flex justify-content-between">
-    <span data-progress>0:00</span>
-    <span>&nbsp;</span>
-    <span data-duration>0:00</span>
-    <span class="position-absolute d-none" data-seek>0:00</span>
+    <span aria-label="Current timestamp" data-progress>0:00</span>
+    <span aria-hidden="true">&nbsp;</span>
+    <span aria-label="End timestamp" data-duration>0:00</span>
+    <span class="position-absolute d-none" aria-hidden="true" data-seek>0:00</span>
   </div>
-  <div class="position-relative {{ duration_color }} cursor-pointer mt-2" style="height: 30px;" data-duration-bar>
+  <div class="position-relative {{ duration_color }} cursor-pointer mt-2" aria-hidden="true" style="height: 30px;" data-duration-bar>
     <div class="position-absolute {{ progress_color }} h-100" style="width: 0;" data-progress-bar></div>
     <div class="position-absolute {{ pointer_color }} h-100 d-none" style="width: 3px; z-index: 2;" data-pointer></div>
   </div>
   {% else %}
   <div>
     <div class="d-inline-block" style="min-width: 120px;">
-      <span data-progress>0:00</span> <span data-pointer-hide>/</span> <span data-duration>0:00</span>
-      <span class="d-none" data-seek data-still>0:00</span>
+      <span aria-label="Current timestamp" data-progress>0:00</span>
+      <span aria-hidden="true" data-pointer-hide>/</span>
+      <span aria-label="End timestamp" data-duration>0:00</span>
+      <span class="d-none" aria-hidden="true" data-seek data-still>0:00</span>
     </div>
     <div class="d-none d-md-inline ml-4">Chapter name</div>
   </div>
-  <div class="cursor-pointer" data-duration-bar>
+  <div class="cursor-pointer" aria-hidden="true" data-duration-bar>
     <div class="py-2">
       <div class="position-relative {{ duration_color }}" style="height: 5px;">
         <div class="position-absolute {{ progress_color }} h-100" style="width: 0;" data-progress-bar></div>
@@ -131,17 +133,17 @@
         <h4>{{ episode.author }}</h4>
         <div class="btn-toolbar">
           {% if episode.duration %}
-          <div class="btn btn-sm btn-outline-light disabled mt-2 mr-2">
-            <span class="fas fa-clock mr-1"></span>
+          <div class="btn btn-sm btn-outline-light disabled mt-2 mr-2" aria-label="Duration">
+            <span class="fas fa-clock mr-1" aria-hidden="true"></span>
             {{ episode.duration|visualTimestamp }}
           </div>
           {% endif %}
-          <div class="btn btn-sm btn-outline-light disabled mt-2">
-            <span class="fas fa-calendar mr-1"></span>
+          <div class="btn btn-sm btn-outline-light disabled mt-2" aria-label="Publish date">
+            <span class="fas fa-calendar mr-1" aria-hidden="true"></span>
             {{ episode.publishedAt|date('F jS, Y') }}
           </div>
         </div>
-        <div class="btn-toolbar d-none d-lg-flex align-items-center justify-content-center pt-5">
+        <div class="btn-toolbar d-none d-lg-flex align-items-center justify-content-center pt-5" role="toolbar" aria-label="Player controls">
           {{ macro.seek_button('backward', 60, 'mx-2', 'btn-sm btn-light') }}
           {{ macro.seek_button('backward', 15, 'mx-2', 'btn-sm btn-light') }}
           {{ macro.play_button(3, 'mx-4') }}
@@ -160,17 +162,17 @@
   <div class="row">
     <div class="player-main-col col-12">
       <div class="d-flex flex-column min-vh-100">
-        <div class="flex-grow-0 bg-white position-sticky top-0 pt-3" style="z-index: 1000;">
+        <div class="flex-grow-0 bg-white position-sticky top-0 pt-3" role="navigation" style="z-index: 1000;">
           <ul class="player-tabs nav nav-tabs">
             {% for tab in tabs if tab.enabled %}
             <li class="nav-item">
-              <div
+              <a
                 {% set classes = ['nav-link cursor-pointer'] %}
                 {% if loop.first %}{% set classes = classes|merge(['active']) %}{% endif %}
                 {% if tab.key == 'chat' %}{% set classes = classes|merge(['d-xl-none']) %}{% endif %}
                 id="{{ tab.key }}-tab"
                 class="{{ classes|join(' ') }}"
-                href="#{{ tab.key }}-tabcontent"
+                href="#{{ tab.key }}"
                 role="tab"
                 data-toggle="tab"
                 aria-controls="{{ tab.key }}"
@@ -179,7 +181,7 @@
               >
                 {{ tab.icon|raw }}
                 <span class="d-none d-md-inline ml-1">{{ tab.name|raw }}</span>
-              </div>
+              </a>
             </li>
             {% endfor %}
 
@@ -194,7 +196,7 @@
         </div>
         <div class="flex-grow-1 tab-content pt-4">
           {% for tab in tabs if tab.enabled %}
-          <div class="tab-pane fade {{ loop.first ? 'active show' : '' }}" id="{{ tab.key }}-tabcontent" role="tabpanel" aria-labelledby="{{ tab.key }}-tab">
+          <div class="tab-pane fade {{ loop.first ? 'active show' : '' }}" id="{{ tab.key }}" role="tabpanel" aria-labelledby="{{ tab.key }}-tab">
             {% include tab.contents %}
           </div>
           {% endfor %}

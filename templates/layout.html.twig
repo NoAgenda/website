@@ -63,7 +63,7 @@
             {% if link.external %}target="_blank"{% endif %}
           >
             {{ link.title|raw }}
-            {% if link.external %}<span class="far fa-sm fa-external-link-square-alt"></span>{% endif %}
+            {% if link.external %}<span class="far fa-sm fa-external-link-square-alt" aria-hidden="true"></span><span class="sr-only">(external link)</span>{% endif %}
             {% if link.active %}<span class="sr-only">(current)</span>{% endif %}
           </a>
         </li>
