@@ -295,6 +295,9 @@ jQuery(document).ready(() => {
     return;
   }
 
+  const parts = jQuery('.site-episode-part');
+  let lastActivePart = null;
+
   const updateInterface = timestamp => {
     let duration = player.duration;
     let progress = (((timestamp / duration) * 100) || 0) + '%';
@@ -317,6 +320,27 @@ jQuery(document).ready(() => {
       let original = element.data('original-' + attribute);
       element.attr(attribute, original.replace('t=0:00', 't=' + formatTime(timestamp)));
     });
+
+    for (let part of parts) {
+      let partTimestamp = jQuery(part).data('timestamp');
+
+      if (partTimestamp <= timestamp) {
+        lastActivePart = jQuery(part);
+      }
+    }
+
+    parts.removeClass('part-highlight');
+
+    if (lastActivePart) {
+      lastActivePart.addClass('part-highlight');
+
+      if (lastActivePart.data('name')) {
+        jQuery('[data-chapter-name]').text('Now playing: ' + lastActivePart.data('name'));
+      }
+      else {
+        jQuery('[data-chapter-name]').text('');
+      }
+    }
   };
 
   player.addEventListener('audio-seek', event => updateInterface(event.detail.timestamp));
