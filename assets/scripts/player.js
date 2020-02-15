@@ -4,7 +4,7 @@ import 'waud.js';
 class AudioPlayerElement extends HTMLElement {
   connectedCallback() {
     this.src = this.getAttribute('data-src');
-    this.timestamp = this.getAttribute('data-timestamp') || 0;
+    this.timestamp = +this.getAttribute('data-timestamp') || 0;
     this.playing = false;
     this.duration = 0;
 

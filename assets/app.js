@@ -9,6 +9,7 @@ import PlayerCorrections from './scripts/player-corrections';
 import Token from './scripts/token';
 
 import './scripts/player';
+import './scripts/player-history';
 import './scripts/player-transcripts';
 
 import './app.scss';
