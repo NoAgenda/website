@@ -1,6 +1,5 @@
 parameters:
   locale: 'en'
-  storage_path: '%env(APP_STORAGE_PATH)%'
 
 services:
   _defaults:
@@ -8,8 +7,7 @@ services:
     autoconfigure: true
     public: false
     bind:
-      $projectPath: '%kernel.project_dir%'
-      $storagePath: '%storage_path%'
+      $httpClient: '@httplug.client.app'
       $shownotesClient: '@httplug.client.shownotes'
 
   App\:
@@ -19,6 +17,12 @@ services:
   App\Controller\:
     resource: '../src/Controller'
     tags: ['controller.service_arguments']
+
+  App\Crawling\:
+    resource: '../src/Crawling'
+    exclude: '../src/Crawling/CrawlingLogger.php'
+    calls:
+      - ['setLogger', ['@App\Crawling\CrawlingLogger']]
 
   App\EventListener\Doctrine\:
     resource: '../src/EventListener/Doctrine'

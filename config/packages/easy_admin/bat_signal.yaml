@@ -1,0 +1,15 @@
+easy_admin:
+  entities:
+    BatSignal:
+      class: App\Entity\BatSignal
+      label: 'Bat signal'
+      form:
+        fields:
+          - { property: 'code', type: 'text' }
+          - { property: 'deployedAt', type: 'datetime' }
+      list:
+        title: 'Bat signals'
+      edit:
+        title: 'Edit bat signal'
+      new:
+        title: 'New bat signal'

@@ -1,0 +1,35 @@
+version: '3.5'
+
+networks:
+  default:
+    name: noagenda_network
+
+services:
+  apache:
+    container_name: noagenda_apache
+    build:
+      context: .
+    depends_on:
+      - mysql
+    volumes:
+      - ./:/usr/src/application/
+    ports:
+      - "8033:80"
+    networks:
+      - default
+    stdin_open: true
+    tty: true
+  mysql:
+    image: mysql:8.0
+    container_name: noagenda_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: InTheMorning
+      MYSQL_DATABASE: noagenda
+      MYSQL_USER: dudenamedben
+      MYSQL_PASSWORD: dudettenamedbernadette
+    volumes:
+      - ./docker/my.cnf:/etc/my.cnf
+    ports:
+      - "8034:3306"
+    networks:
+      - default

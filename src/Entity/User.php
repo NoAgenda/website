@@ -12,7 +12,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 class User implements UserInterface, \Serializable
 {
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -58,14 +58,14 @@ class User implements UserInterface, \Serializable
      *
      * @ORM\Column(type="array")
      */
-    private $roles;
+    private $roles = ['ROLE_USER'];
 
     /**
-     * @var boolean
+     * @var bool
      *
      * @ORM\Column(type="boolean")
      */
-    private $hidden;
+    private $hidden = false;
 
     /**
      * @var string|null
@@ -90,19 +90,12 @@ class User implements UserInterface, \Serializable
 
     public function __construct()
     {
-        $this->hidden = false;
-        $this->roles = ['ROLE_USER'];
-        $this->createdAt = new \DateTimeImmutable;
+        $this->createdAt = new \DateTimeImmutable();
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->getUsername();
-    }
-
-    public function isPersisted(): bool
-    {
-        return $this->id !== null;
     }
 
     public function getId(): ?int
@@ -249,6 +242,24 @@ class User implements UserInterface, \Serializable
     public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->createdAt;
+    }
+
+    public function isAdmin(): bool
+    {
+        return in_array('ROLE_ADMIN', $this->roles) || in_array('ROLE_SUPER_ADMIN', $this->roles);
+    }
+
+    public function setAdmin(bool $admin): self
+    {
+        if (!in_array('ROLE_SUPER_ADMIN', $this->roles)) {
+            if ($admin) {
+                $this->roles = ['ROLE_USER', 'ROLE_ADMIN'];
+            } else {
+                $this->roles = ['ROLE_USER'];
+            }
+        }
+
+        return $this;
     }
 
     /** @see \Serializable::serialize() */

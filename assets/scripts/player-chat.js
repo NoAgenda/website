@@ -189,12 +189,22 @@ export default class PlayerChat {
   renderMessage(message) {
     let container = jQuery('[data-chat-container]');
     let template = container.data('prototype');
+    let html = null;
 
-    let html = template
-      .replace('__timestamp__', this.previousTimestamp !== message[2] ? formatTime(message[2]) : '')
-      .replace('__username__', message[0])
-      .replace('__text__', message[1])
-    ;
+    if (message[1].substring(0, 7) === 'ACTION ') {
+       html = template
+        .replace('__timestamp__', this.previousTimestamp !== message[2] ? formatTime(message[2]) : '')
+        .replace('__username__', '')
+        .replace('__text__', message[0] + ' ' + message[1].substring(7))
+      ;
+    } else {
+      html = template
+        .replace('__timestamp__', this.previousTimestamp !== message[2] ? formatTime(message[2]) : '')
+        .replace('__username__', message[0])
+        .replace('__text__', message[1])
+      ;
+    }
+
     html = replaceUrls(html);
     let element = jQuery(html);
 

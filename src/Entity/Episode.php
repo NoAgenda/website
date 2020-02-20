@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 class Episode
 {
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -41,25 +41,25 @@ class Episode
     private $author;
 
     /**
-     * @var boolean
+     * @var bool
      *
      * @ORM\Column(type="boolean", nullable=true)
      */
-    private $special;
+    private $special = false;
 
     /**
-     * @var boolean
+     * @var bool
      *
      * @ORM\Column(type="boolean", nullable=true)
      */
-    private $chatMessages;
+    private $chatMessages = false;
 
     /**
-     * @var boolean
+     * @var bool
      *
      * @ORM\Column(type="boolean", nullable=true)
      */
-    private $transcript;
+    private $transcript = false;
 
     /**
      * @var \DateTimeInterface
@@ -83,6 +83,13 @@ class Episode
     private $recordingUri;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $transcriptUri;
+
+    /**
      * @var string|null
      *
      * @ORM\Column(type="text", nullable=true)
@@ -90,7 +97,7 @@ class Episode
     private $chatNotice;
 
     /**
-     * @var integer|null
+     * @var int|null
      *
      * @ORM\Column(type="integer", nullable=true)
      */
@@ -122,17 +129,12 @@ class Episode
         return sprintf('%s: %s', $this->getCode(), $this->getName());
     }
 
-    public function isPersisted(): bool
-    {
-        return $this->id !== null;
-    }
-
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getCode(): string
+    public function getCode(): ?string
     {
         return $this->code;
     }
@@ -144,7 +146,7 @@ class Episode
         return $this;
     }
 
-    public function getName(): string
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -156,7 +158,7 @@ class Episode
         return $this;
     }
 
-    public function getAuthor(): string
+    public function getAuthor(): ?string
     {
         return $this->author;
     }
@@ -170,7 +172,7 @@ class Episode
 
     public function isSpecial(): bool
     {
-        return $this->special ?? false;
+        return $this->special;
     }
 
     public function setSpecial(bool $special): self
@@ -182,7 +184,7 @@ class Episode
 
     public function hasChatMessages(): bool
     {
-        return $this->chatMessages ?? false;
+        return $this->chatMessages;
     }
 
     public function setChatMessages(bool $chatMessages): self
@@ -194,7 +196,7 @@ class Episode
 
     public function hasTranscript(): bool
     {
-        return $this->transcript ?? false;
+        return $this->transcript;
     }
 
     public function setTranscript(bool $transcript): self
@@ -204,7 +206,7 @@ class Episode
         return $this;
     }
 
-    public function getPublishedAt(): \DateTimeInterface
+    public function getPublishedAt(): ?\DateTimeInterface
     {
         return $this->publishedAt;
     }
@@ -216,7 +218,7 @@ class Episode
         return $this;
     }
 
-    public function getCoverUri(): string
+    public function getCoverUri(): ?string
     {
         return $this->coverUri;
     }
@@ -228,7 +230,7 @@ class Episode
         return $this;
     }
 
-    public function getRecordingUri(): string
+    public function getRecordingUri(): ?string
     {
         return $this->recordingUri;
     }
@@ -236,6 +238,18 @@ class Episode
     public function setRecordingUri(string $uri): self
     {
         $this->recordingUri = $uri;
+
+        return $this;
+    }
+
+    public function getTranscriptUri(): ?string
+    {
+        return $this->transcriptUri;
+    }
+
+    public function setTranscriptUri(?string $uri): self
+    {
+        $this->transcriptUri = $uri;
 
         return $this;
     }
@@ -252,12 +266,12 @@ class Episode
         return $this;
     }
 
-    public function getDuration(): int
+    public function getDuration(): ?int
     {
-        return $this->duration ?? 0;
+        return $this->duration;
     }
 
-    public function setDuration(int $duration): self
+    public function setDuration(?int $duration): self
     {
         $this->duration = $duration;
 
@@ -276,24 +290,24 @@ class Episode
         return $this;
     }
 
-    public function getShownotes(): array
+    public function getShownotes(): ?array
     {
-        return $this->shownotes ?? [];
+        return $this->shownotes;
     }
 
-    public function setShownotes(array $shownotes): self
+    public function setShownotes(?array $shownotes): self
     {
         $this->shownotes = $shownotes;
 
         return $this;
     }
 
-    public function getCrawlerOutput(): array
+    public function getCrawlerOutput(): ?array
     {
-        return $this->crawlerOutput ?? [];
+        return $this->crawlerOutput;
     }
 
-    public function setCrawlerOutput(array $crawlerOutput): self
+    public function setCrawlerOutput(?array $crawlerOutput): self
     {
         $this->crawlerOutput = $crawlerOutput;
 

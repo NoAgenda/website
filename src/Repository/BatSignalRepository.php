@@ -25,19 +25,6 @@ class BatSignalRepository extends ServiceEntityRepository
     }
 
     /**
-     * @deprecated use findOneByEpisode instead
-     */
-    public function findOneByCode($code): ?BatSignal
-    {
-        return $this->findOneBy(['code' => $code]);
-    }
-
-    public function findOneUnprocessed(): ?BatSignal
-    {
-        return $this->findOneBy(['processed' => false]);
-    }
-
-    /**
      * @param Episode|string $episode
      */
     public function findOneByEpisode($episode): ?BatSignal
@@ -52,7 +39,7 @@ class BatSignalRepository extends ServiceEntityRepository
 
         $builder = $this->createQueryBuilder('signal');
 
-        $timespanEnd = new \DateTime;
+        $timespanEnd = new \DateTime();
         $timespanEnd->setTimestamp($episode->getPublishedAt()->getTimestamp());
         $timespanEnd->add(new \DateInterval('P1D'));
 

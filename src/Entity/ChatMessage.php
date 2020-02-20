@@ -14,7 +14,7 @@ class ChatMessage
     const SOURCE_TROLL_ROOM = 2;
 
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -45,14 +45,14 @@ class ChatMessage
     private $contents;
 
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Column(type="integer")
      */
     private $postedAt;
 
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Column(type="integer")
      */
@@ -67,12 +67,7 @@ class ChatMessage
 
     public function __construct()
     {
-        $this->createdAt = new \DateTimeImmutable;
-    }
-
-    public function isPersisted(): bool
-    {
-        return $this->id !== null;
+        $this->createdAt = new \DateTimeImmutable();
     }
 
     public function getId(): int

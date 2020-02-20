@@ -1,18 +1,20 @@
 {% extends '@EasyAdmin/default/layout.html.twig' %}
 
-{% block page_title %}Chat Logs{% endblock %}
+{% block content_title %}Chat logs{% endblock %}
 
 {% block main %}
-<select class="form-control" onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);">
-  <option value="{{ url('admin_chat_logs') }}">Today</option>
-  {% for file in files %}
-  <option value="{{ url('admin_chat_logs', {date: file}) }}" {% if current_file == file %}selected{% endif %}>
-    {{ file }}
-  </option>
-  {% endfor %}
-</select>
+<div class="m-3">
+  <select class="form-control" onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);">
+    <option value="{{ url('admin_chat_logs') }}">Today</option>
+    {% for file in files %}
+      <option value="{{ url('admin_chat_logs', {date: file}) }}" {% if current_file == file %}selected{% endif %}>
+        {{ file|desimplifyDate }}
+      </option>
+    {% endfor %}
+  </select>
 
-<hr>
+  <hr>
 
-<pre><code>{{ logs }}</code></pre>
+  <div>{{ logs|nl2br }}</div>
+</div>
 {% endblock %}

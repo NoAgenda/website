@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 class UserToken
 {
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -31,7 +31,7 @@ class UserToken
      *
      * @ORM\Column(type="array")
      */
-    private $ipAddresses;
+    private $ipAddresses = [];
 
     /**
      * @var \DateTimeImmutable
@@ -42,8 +42,7 @@ class UserToken
 
     public function __construct()
     {
-        $this->ipAddresses = [];
-        $this->createdAt = new \DateTimeImmutable;
+        $this->createdAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?int

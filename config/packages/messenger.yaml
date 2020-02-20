@@ -1,0 +1,32 @@
+framework:
+    messenger:
+        # Uncomment this (and the failed transport below) to send failed messages to this transport for later handling.
+        # failure_transport: failed
+
+        transports:
+            # https://symfony.com/doc/current/messenger.html#transport-configuration
+            crawler: 'doctrine://default?queue_name=crawler'
+
+        routing:
+            'App\Message\CrawlBatSignal': crawler
+            'App\Message\CrawlEpisodeFiles': crawler
+            'App\Message\CrawlEpisodeShownotes': crawler
+            'App\Message\CrawlEpisodeTranscript': crawler
+            'App\Message\CrawlFeed': crawler
+            'App\Message\CrawlTranscripts': crawler
+            'App\Message\EpisodeNotification': crawler
+            'App\Message\MatchEpisodeChatMessages': crawler
+            'App\Message\MatchEpisodeRecordingTime': crawler
+
+        default_bus: crawler_bus
+        buses:
+            crawler_bus:
+                middleware:
+                    -
+                        dispatch_after_current_bus
+                    -
+                        doctrine_ping_connection
+                    -
+                        doctrine_close_connection
+                    -
+                        doctrine_transaction

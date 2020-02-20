@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 class TranscriptLine
 {
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -28,14 +28,14 @@ class TranscriptLine
     private $episode;
 
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Column(type="integer")
      */
     private $timestamp;
 
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Column(type="integer")
      */
@@ -55,17 +55,12 @@ class TranscriptLine
      */
     private $crawlerOutput;
 
-    public function isPersisted(): bool
-    {
-        return $this->id !== null;
-    }
-
     public function getId(): int
     {
         return $this->id;
     }
 
-    public function getEpisode(): Episode
+    public function getEpisode(): ?Episode
     {
         return $this->episode;
     }
@@ -77,7 +72,7 @@ class TranscriptLine
         return $this;
     }
 
-    public function getTimestamp(): int
+    public function getTimestamp(): ?int
     {
         return $this->timestamp;
     }
@@ -89,7 +84,7 @@ class TranscriptLine
         return $this;
     }
 
-    public function getDuration(): int
+    public function getDuration(): ?int
     {
         return $this->duration;
     }
@@ -101,7 +96,7 @@ class TranscriptLine
         return $this;
     }
 
-    public function getText(): string
+    public function getText(): ?string
     {
         return $this->text;
     }
@@ -113,7 +108,7 @@ class TranscriptLine
         return $this;
     }
 
-    public function getCrawlerOutput(): array
+    public function getCrawlerOutput(): ?array
     {
         return $this->crawlerOutput;
     }

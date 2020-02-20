@@ -9,20 +9,9 @@ use Symfony\Component\Routing\RouterInterface;
 
 class NotificationPublisher
 {
-    /**
-     * @var RouterInterface
-     */
-    private $router;
-
-    /**
-     * @var MastodonAPI|null
-     */
     private $mastodonApi;
-
-    /**
-     * @var Reddit|null
-     */
     private $redditApi;
+    private $router;
 
     public function __construct(RouterInterface $router, ?MastodonAPI $mastodonApi, ?Reddit $redditApi)
     {
@@ -33,7 +22,7 @@ class NotificationPublisher
 
     public function publishEpisode(Episode $episode)
     {
-        if (!isset($_SERVER['APP_ENV']) || 'prod' !== $_SERVER['APP_ENV']) {
+        if ('prod' !== $_SERVER['APP_ENV']) {
             return;
         }
 
@@ -42,14 +31,12 @@ class NotificationPublisher
 
         $title = sprintf('No Agenda Episode %s - %s', $episode->getCode(), $episode->getName());
 
-        $contents = sprintf('%s %s', $title, $path);
-
         if ($this->mastodonApi) {
             // todo add episode art as media file
-            // see https://github.com/tootsuite/documentation/blob/master/Using-the-API/API.md#media
+            // see https://docs.joinmastodon.org/methods/statuses/ and https://docs.joinmastodon.org/methods/statuses/media/
 
             $this->mastodonApi->post('/statuses', [
-                'status' => $contents,
+                'status' => "$title $path",
             ]);
         }
 
@@ -65,7 +52,7 @@ class NotificationPublisher
                 // 'resubmit' => 'true',
             ];
 
-            $response = $client->request('post', 'https://oauth.reddit.com/api/submit', [
+            $client->request('post', 'https://oauth.reddit.com/api/submit', [
                 'form_params' => $message,
             ]);
         }

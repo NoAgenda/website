@@ -9,7 +9,6 @@ use App\Repository\ChatMessageRepository;
 use App\Repository\EpisodePartRepository;
 use App\Repository\EpisodeRepository;
 use App\Repository\TranscriptLineRepository;
-use App\TimestampConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -27,15 +26,12 @@ class PlayerController extends Controller
     private $chatMessageRepository;
     private $transcriptLineRepository;
 
-    private $storagePath;
-
     public function __construct(
         SerializerInterface $serializer,
         EpisodeRepository $episodeRepository,
         EpisodePartRepository $episodePartRepository,
         ChatMessageRepository $chatMessageRepository,
-        TranscriptLineRepository $transcriptLineRepository,
-        string $storagePath
+        TranscriptLineRepository $transcriptLineRepository
     )
     {
         $this->serializer = $serializer;
@@ -44,8 +40,6 @@ class PlayerController extends Controller
         $this->episodePartRepository = $episodePartRepository;
         $this->chatMessageRepository = $chatMessageRepository;
         $this->transcriptLineRepository = $transcriptLineRepository;
-
-        $this->storagePath = $storagePath;
     }
 
     /**
@@ -64,8 +58,8 @@ class PlayerController extends Controller
      */
     public function playerAction(Request $request, Episode $episode): Response
     {
-        $timestamp = TimestampConverter::parsePrettyTimestamp($request->query->get('t', 0));
-        $transcriptTimestamp = TimestampConverter::parsePrettyTimestamp($request->query->get('transcript', 0));
+        $timestamp = static::parsePrettyTimestamp($request->query->get('t', 0));
+        $transcriptTimestamp = static::parsePrettyTimestamp($request->query->get('transcript', 0));
 
         if ($transcriptTimestamp > 0) {
             $timestamp = $transcriptTimestamp;
@@ -108,8 +102,30 @@ class PlayerController extends Controller
      */
     public function audioAction(Request $request, Episode $episode): Response
     {
-        $path = sprintf('%s/episode_recordings/%s.mp3', $this->storagePath, $episode->getCode());
+        $path = sprintf('%s/episode_recordings/%s.mp3', $_SERVER['APP_STORAGE_PATH'], $episode->getCode());
 
         return new BinaryFileResponse($path);
+    }
+
+    public static function parsePrettyTimestamp(string $prettyTimestamp): int
+    {
+        if (strpos($prettyTimestamp, ':')) {
+            $components = explode(':', $prettyTimestamp);
+
+            if (count($components) >= 3) {
+                list($hours, $minutes, $seconds) = $components;
+            } else {
+                $hours = 0;
+                list($minutes, $seconds) = $components;
+            }
+
+            $timestamp = (int) $seconds;
+            $timestamp += (int) $minutes * 60;
+            $timestamp += (int) $hours * 60 * 60;
+
+            return $timestamp;
+        }
+
+        return (int) $prettyTimestamp;
     }
 }

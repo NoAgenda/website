@@ -14,7 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
 class EpisodePart
 {
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -58,25 +58,25 @@ class EpisodePart
     private $description;
 
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Column(type="integer")
      */
     private $startsAt;
 
     /**
-     * @var integer|null
+     * @var int|null
      *
      * @ORM\Column(type="integer", nullable=true)
      */
     private $duration;
 
     /**
-     * @var boolean
+     * @var bool
      *
      * @ORM\Column(type="boolean")
      */
-    private $enabled;
+    private $enabled = true;
 
     /**
      * @var \DateTimeImmutable
@@ -87,19 +87,13 @@ class EpisodePart
 
     public function __construct()
     {
-        $this->corrections = new ArrayCollection;
-        $this->enabled = true;
-        $this->createdAt = new \DateTimeImmutable;
+        $this->corrections = new ArrayCollection();
+        $this->createdAt = new \DateTimeImmutable();
     }
 
     public function __toString(): string
     {
         return sprintf('%s [%s]', $this->getName(), $this->getEpisode());
-    }
-
-    public function isPersisted(): bool
-    {
-        return $this->id !== null;
     }
 
     public function getId(): ?int

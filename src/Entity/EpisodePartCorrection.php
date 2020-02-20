@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
 class EpisodePartCorrection
 {
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -88,14 +88,14 @@ class EpisodePartCorrection
     private $description;
 
     /**
-     * @var boolean
+     * @var bool
      *
      * @ORM\Column(type="boolean")
      */
-    private $handled;
+    private $handled = false;
 
     /**
-     * @var integer|null
+     * @var int|null
      *
      * @ORM\Column(type="integer", nullable=true)
      */
@@ -110,19 +110,13 @@ class EpisodePartCorrection
 
     public function __construct()
     {
-        $this->votes = new ArrayCollection;
-        $this->handled = false;
-        $this->createdAt = new \DateTimeImmutable;
+        $this->votes = new ArrayCollection();
+        $this->createdAt = new \DateTimeImmutable();
     }
 
     public function __toString(): string
     {
         return $this->getSummary();
-    }
-
-    public function isPersisted(): bool
-    {
-        return $this->id !== null;
     }
 
     public function getId(): ?int
@@ -257,7 +251,7 @@ class EpisodePartCorrection
         return $this;
     }
 
-    public function getHandled(): bool
+    public function isHandled(): bool
     {
         return $this->handled;
     }

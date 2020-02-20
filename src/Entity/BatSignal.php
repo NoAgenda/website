@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 class BatSignal
 {
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -27,28 +27,11 @@ class BatSignal
     private $code;
 
     /**
-     * @var boolean
-     *
-     * @ORM\Column(type="boolean")
-     */
-    private $processed;
-
-    /**
      * @var \DateTimeInterface
      *
      * @ORM\Column(type="datetime")
      */
     private $deployedAt;
-
-    public function __construct()
-    {
-        $this->processed = false;
-    }
-
-    public function isPersisted(): bool
-    {
-        return $this->id !== null;
-    }
 
     public function getId(): ?int
     {
@@ -63,18 +46,6 @@ class BatSignal
     public function setCode(string $code): self
     {
         $this->code = $code;
-
-        return $this;
-    }
-
-    public function isProcessed(): bool
-    {
-        return $this->processed ?? false;
-    }
-
-    public function setProcessed(bool $processed): self
-    {
-        $this->processed = $processed;
 
         return $this;
     }

@@ -1,0 +1,24 @@
+easy_admin:
+  entities:
+    User:
+      class: App\Entity\User
+      label: 'Users'
+      form:
+        fields:
+          - { property: 'username', type: 'text' }
+          - { property: 'plainPassword', type: 'text', label: 'New password' }
+          - { property: 'email', type: 'email' }
+          - { property: 'hidden', type: 'checkbox', label: 'Account is disabled by user' }
+          - { property: 'admin', type: 'checkbox', label: 'Is administrator' }
+          # - { property: 'roles', permission: 'ROLE_SUPER_ADMIN' }
+      list:
+        title: 'Users'
+        fields:
+          - 'username'
+          - 'email'
+          - { property: 'admin', type: 'boolean' }
+          - { property: 'hidden', type: 'boolean' }
+      edit:
+        title: 'Edit user'
+      new:
+        title: 'New user'

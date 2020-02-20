@@ -23,10 +23,10 @@
 {% if episode.shownotes %}
 <div class="mb-3 px-3">
   {% if episode.shownotes.executiveProducers|default([])|length > 0 %}
-  <p>Executive Producers: {{ episode.shownotes.executiveProducers|join(', ') }}</p>
+  <p>Executive Producers: {{ episode.shownotes.executiveProducers|join(', ')|raw }}</p>
   {% endif %}
   {% if episode.shownotes.associateExecutiveProducers|default([])|length > 0 %}
-  <p>Associate Executive Producers: {{ episode.shownotes.associateExecutiveProducers|join(', ') }}</p>
+  <p>Associate Executive Producers: {{ episode.shownotes.associateExecutiveProducers|join(', ')|raw }}</p>
   {% endif %}
 
   {% if episode.shownotes.coverArtist|default(null) != null %}

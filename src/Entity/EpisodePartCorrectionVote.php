@@ -10,18 +10,18 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class EpisodePartCorrectionVote
 {
-    const VOTES = [
+    public const VOTES = [
         self::VOTE_SUPPORT,
         self::VOTE_REJECT,
         self::VOTE_QUESTION,
     ];
 
-    const VOTE_SUPPORT = 'support';
-    const VOTE_REJECT = 'reject';
-    const VOTE_QUESTION = 'question';
+    public const VOTE_SUPPORT = 'support';
+    public const VOTE_REJECT = 'reject';
+    public const VOTE_QUESTION = 'question';
 
     /**
-     * @var integer
+     * @var int
      *
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -54,21 +54,21 @@ class EpisodePartCorrectionVote
     private $creatorToken;
 
     /**
-     * @var boolean
+     * @var bool
      *
      * @ORM\Column(type="boolean")
      */
     private $supported;
 
     /**
-     * @var boolean
+     * @var bool
      *
      * @ORM\Column(type="boolean")
      */
     private $rejected;
 
     /**
-     * @var boolean
+     * @var bool
      *
      * @ORM\Column(type="boolean")
      */
@@ -92,17 +92,15 @@ class EpisodePartCorrectionVote
             throw new \RuntimeException(sprintf('Invalid vote "%s".', $vote));
         }
 
-        $instance = new self;
+        $instance = new self();
         $instance->setCorrection($correction);
 
         if ($creator instanceof User) {
             $instance->setCreator($creator);
-        }
-        else if ($creator instanceof UserToken) {
+        } elseif ($creator instanceof UserToken) {
             $instance->setCreatorToken($creator);
-        }
-        else {
-            throw new \LogicException;
+        } else {
+            throw new \LogicException();
         }
 
         static $methods = [
@@ -118,7 +116,7 @@ class EpisodePartCorrectionVote
 
     public function __construct()
     {
-        $this->createdAt = new \DateTimeImmutable;
+        $this->createdAt = new \DateTimeImmutable();
     }
 
     public function __toString(): string

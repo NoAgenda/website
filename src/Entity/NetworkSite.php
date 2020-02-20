@@ -45,7 +45,7 @@ class NetworkSite
     /**
      * @ORM\Column(type="integer")
      */
-    private $priority;
+    private $priority = 1000;
 
     /**
      * @var \DateTimeImmutable
@@ -56,8 +56,7 @@ class NetworkSite
 
     public function __construct()
     {
-        $this->createdAt = new \DateTimeImmutable;
-        $this->priority = 1000;
+        $this->createdAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?int

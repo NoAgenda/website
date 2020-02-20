@@ -26,13 +26,18 @@ class EpisodeRepository extends AbstractRepository
 
     public function findLatest(): Episode
     {
-        $result = $this->findOneBy();
+        return $this->findOneBy();
+    }
 
-        if (!$result) {
-            throw new \RuntimeException('No episodes found');
+    public function findFeedEpisodes(): array
+    {
+        $episodes = [];
+
+        foreach ($this->findBy(null, null, 16 + 4) as $episode) {
+            $episodes[$episode->getCode()] = $episode;
         }
 
-        return $result;
+        return $episodes;
     }
 
     public function getHomepageEpisodes()

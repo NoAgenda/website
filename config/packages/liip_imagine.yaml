@@ -1,9 +1,9 @@
 liip_imagine:
-  driver: "imagick"
+  driver: 'imagick'
   loaders:
     episode_covers:
       filesystem:
-        data_root: "%storage_path%/episode_covers"
+        data_root: '%env(APP_STORAGE_PATH)%/episode_covers'
   filter_sets:
     cover_small:
       data_loader: episode_covers

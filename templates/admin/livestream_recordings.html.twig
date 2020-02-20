@@ -1,43 +1,45 @@
 {% extends '@EasyAdmin/default/layout.html.twig' %}
 
-{% block page_title %}Livestream Recordings{% endblock %}
+{% block content_title %}Livestream recordings{% endblock %}
 
 {% block main %}
-<select class="form-control" onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);">
-  <option value="{{ url('admin_livestream_recordings') }}">Today</option>
-  {% for date in dates %}
-  <option value="{{ url('admin_livestream_recordings', {date: date}) }}" {% if current_date == date %}selected{% endif %}>
-    {{ date }}
-  </option>
-  {% endfor %}
-</select>
+<div class="m-3">
+  <select class="form-control" onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);">
+    <option value="{{ url('admin_livestream_recordings') }}">Today</option>
+    {% for date in dates %}
+    <option value="{{ url('admin_livestream_recordings', {date: date}) }}" {% if current_date == date %}selected{% endif %}>
+      {{ date|desimplifyDate }}
+    </option>
+    {% endfor %}
+  </select>
 
-<hr>
+  <hr>
 
-{% for recording in recordings %}
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Recording {{ recording.time }}</h3>
-  </div>
-  <div class="panel-body">
-    {% if recording.recording %}
-    <a class="btn btn-primary" href="{{ path('admin_livestream_recordings_download', {date: recording.date, time: recording.time}) }}">
-      Download recording
-    </a>
-    {% else %}
-      <a class="btn btn-primary disabled" href="#">
-        No recording available
+  {% for recording in recordings %}
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">Recording {{ recording.time|desimplifyTime }}</h3>
+    </div>
+    <div class="panel-body">
+      {% if recording.recording %}
+      <a class="btn btn-primary" href="{{ path('admin_livestream_recordings_download', {date: recording.date, time: recording.time}) }}">
+        Download recording
       </a>
-    {% endif %}
-    <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#time-{{ recording.time }}">
-      Show log
-    </button>
+      {% else %}
+        <a class="btn btn-primary disabled" href="#">
+          No recording available
+        </a>
+      {% endif %}
+      <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#time-{{ recording.time }}">
+        Show log
+      </button>
+    </div>
+    <div class="panel-body collapse" id="time-{{ recording.time }}">
+      <pre class="border mt-3 p-3"><code>{{ recording.logs }}</code></pre>
+    </div>
   </div>
-  <div class="panel-body collapse" id="time-{{ recording.time }}">
-    <pre><code>{{ recording.logs }}</code></pre>
-  </div>
+  {% else %}
+  No recordings for this date found.
+  {% endfor %}
 </div>
-{% else %}
-No recordings for this date found.
-{% endfor %}
 {% endblock %}
