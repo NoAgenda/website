@@ -180,7 +180,7 @@
       <div class="d-flex flex-column min-vh-100">
         <div class="flex-grow-0 bg-white position-sticky top-0 pt-3" role="navigation" style="z-index: 1000;">
           <ul class="player-tabs nav nav-tabs">
-            {% for tab in tabs if tab.enabled %}
+            {% for tab in tabs|filter(tab => tab.enabled) %}
             <li class="nav-item">
               <a
                 {% set classes = ['nav-link cursor-pointer'] %}
@@ -211,7 +211,7 @@
           </ul>
         </div>
         <div class="flex-grow-1 tab-content pt-4">
-          {% for tab in tabs if tab.enabled %}
+          {% for tab in tabs|filter(tab => tab.enabled) %}
           <div class="tab-pane fade {{ loop.first ? 'active show' : '' }}" id="{{ tab.key }}" role="tabpanel" aria-labelledby="{{ tab.key }}-tab">
             {% include tab.contents %}
           </div>
@@ -253,7 +253,7 @@
         <div class="chat-loader text-center my-4">
           <span class="fas fa-spinner fa-spin" aria-hidden="true"></span> Loading troll messages...
         </div>
-        <div class="chat-container flex-grow-1 oy-scroll my-4">
+        <div class="chat-container flex-grow-1 ox-hidden oy-scroll my-4">
           {% include 'player/blocks/chat_container.html.twig' %}
         </div>
       </div>
