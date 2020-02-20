@@ -13,6 +13,7 @@ services:
       - mysql
     volumes:
       - ./:/usr/src/application/
+      - ./docker/supervisor.conf:/etc/supervisor/conf.d/application.conf
     ports:
       - "8033:80"
     networks:

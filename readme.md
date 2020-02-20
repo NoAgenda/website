@@ -5,8 +5,8 @@ a [Symfony](https://symfony.com/) application.
 
 ## Installation
 
-To run this application you'll need a server running Apache, PHP 7.2
-and MySQL 8.
+To run this application you'll need a server running Apache, PHP 7.2, MySQL 8
+and Supervisor.
 
 You'll also need Composer and Yarn (+ NPM) to download third-party modules.
 
@@ -68,4 +68,15 @@ for details.
 ```bash
 php bin/console app:enqueue
 php bin/console messenger:consume crawler
+```
+
+## Running continuous tasks
+See `docker/supervisor.conf` for an example Supervisor configuration to 
+automatically keep the continuous processes running: chat recording, livestream
+recording and the Messenger queue.
+
+```bash
+sudo service supervisor start
+sudo supervisor update
+sudo supervisor start all
 ```

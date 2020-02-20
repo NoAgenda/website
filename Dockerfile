@@ -10,6 +10,7 @@ RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
 
 # Install additional packages
 RUN apt-get update && apt-get install -y \
+    supervisor \
     ffmpeg mplayer python-pip && \
     pip install numpy && \
     pip install scikits.talkbox && \
@@ -22,3 +23,7 @@ RUN apt-get update && apt-get install -y \
     pecl install imagick && \
 	docker-php-ext-enable imagick && \
     docker-php-ext-install pdo_mysql
+
+#RUN service supervisor start && \
+#    supervisorctl update && \
+#    supervisorctl start all
