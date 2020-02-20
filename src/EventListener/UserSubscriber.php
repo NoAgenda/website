@@ -20,14 +20,14 @@ class UserSubscriber implements EventSubscriberInterface
         $this->tokenStorage = $tokenStorage;
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             'kernel.request' => 'onKernelRequest',
         ];
     }
 
-    public function onKernelRequest(GetResponseEvent $event)
+    public function onKernelRequest(GetResponseEvent $event): void
     {
         $user = $this->getUser();
 
@@ -38,8 +38,8 @@ class UserSubscriber implements EventSubscriberInterface
         if ($user->isHidden()) {
             $route = $event->getRequest()->attributes->get('_route');
 
-            if (0 !== strpos($route, 'security_')) {
-                $event->setResponse(new RedirectResponse($this->router->generate('security_status')));
+            if (0 !== strpos($route, 'security_') && 0 !== strpos($route, 'account_')) {
+                $event->setResponse(new RedirectResponse($this->router->generate('account_status')));
             }
         }
     }
