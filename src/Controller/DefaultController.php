@@ -32,4 +32,12 @@ class DefaultController extends Controller
             'network_sites' => $networkSites,
         ]);
     }
+
+    /**
+     * @Route("/podcast", name="podcast")
+     */
+    public function podcast(): Response
+    {
+        return $this->render('default/podcast.html.twig');
+    }
 }

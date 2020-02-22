@@ -2,6 +2,41 @@
 
 {% block content %}
 <div class="container">
+  <p class="my-3">
+    The unofficial #1 source for all things No Agenda, a twice weekly podcast about politics by Adam Curry & John C. Dvorak.
+  </p>
+
+  <div class="my-3">
+    <div class="row">
+      <div class="col-md md-separator">
+        <a href="{{ path('podcast') }}">
+          <div class="d-flex justify-content-between">
+            <div class="my-2">
+              <div class="h3 mb-0">Subscribe to the podcast</div>
+              <span>New episodes every thursday and sunday</span>
+            </div>
+            <div class="d-flex align-items-center">
+              <span class="fas fa-podcast fa-3x fa-fw ml-2" aria-hidden="true" style="color: #b150e2;"></span>
+            </div>
+          </div>
+        </a>
+      </div>
+      <div class="col-md">
+        <a href="http://www.dvorak.org/blog/no-agenda-mailing-list-signup-here/">
+          <div class="d-flex justify-content-between">
+            <div class="my-2">
+              <div class="h3 mb-0">Subscribe to the newsletter</div>
+              <span>No Agenda in your mailbox</span>
+            </div>
+            <div class="d-flex align-items-center">
+              <span class="fas fa-envelope fa-3x fa-fw ml-2" aria-hidden="true" style="color: #dadada;"></span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
   <h2 class="my-3">Latest episodes</h2>
   <div class="row no-gutters my-3">
     {% for episode in latest_episodes %}
@@ -12,6 +47,37 @@
   </div>
   <div class="d-flex justify-content-end">
     <a class="btn btn-link" href="{{ path('archive') }}">View the full archive <span class="far fa-angle-right ml-1" aria-hidden="true"></span></a>
+  </div>
+
+  <div class="my-3">
+    <div class="row">
+      <div class="col-md md-separator">
+        <a href="https://noagendasocial.com/web/accounts/1">
+          <div class="d-flex justify-content-between">
+            <div class="my-2">
+              <div class="h3 mb-0">Follow Adam Curry on NA Social</div>
+              <span>@adam@noagendasocial.com</span>
+            </div>
+            <div class="d-flex align-items-center">
+              <span class="fab fa-mastodon fa-3x fa-fw ml-2" aria-hidden="true" style="color: #313543;"></span>
+            </div>
+          </div>
+        </a>
+      </div>
+      <div class="col-md">
+        <a href="https://twitter.com/THErealDVORAK">
+          <div class="d-flex justify-content-between">
+            <div class="my-2">
+              <div class="h3 mb-0">Follow John C. Dvorak on Twitter</div>
+              <span>@THErealDVORAK</span>
+            </div>
+            <div class="d-flex align-items-center">
+              <span class="fab fa-twitter fa-3x fa-fw ml-2" aria-hidden="true" style="color: #00aced;"></span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
   </div>
 
   <h2 class="my-3">Network</h2>

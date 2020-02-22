@@ -46,3 +46,9 @@ $fa-font-path : "~@fortawesome/fontawesome-free/webfonts";
   border-top-left-radius: $border-radius;
   border-top-right-radius: $border-radius;
 }
+
+@include media-breakpoint-up(md) {
+  .md-separator {
+    border-right: 1px solid #dee2e6;
+  }
+}

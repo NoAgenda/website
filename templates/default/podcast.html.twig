@@ -1,0 +1,45 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+<div class="container">
+  <div class="my-3">
+    <h2 class="mb-3">Subscribe to No Agenda</h2>
+
+    <p>The easiest way to subscribe to the podcast is to search for No Agenda in your favorite podcast app.</p>
+
+    <div class="my-2">
+      <a href="https://podcasts.apple.com/us/podcast/no-agenda/id269169796">
+        <div class="d-flex">
+          <div class="mr-3">
+            <span class="fab fa-itunes fa-3x fa-fw" aria-hidden="true" style="color: #b150e2;"></span>
+          </div>
+          <div class="d-flex align-items-center">
+            <div class="h3 mb-0">iTunes Podcasts</div>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <div class="my-2">
+      <a href="https://podcasts.google.com/?feed=aHR0cHM6Ly9mZWVkLm5hc2hvd25vdGVzLmNvbS9yc3MueG1s">
+        <div class="d-flex">
+          <div class="mr-3">
+            <span class="fab fa-google-play fa-3x fa-fw" aria-hidden="true" style="color: #1a73e8;"></span>
+          </div>
+          <div class="d-flex align-items-center">
+            <div class="h3 mb-0">Google Podcasts</div>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <hr>
+
+    <p>Or you can find the No Agenda podcast feed in the following location:
+
+    <div data-clipboard="http://feed.nashownotes.com/rss.xml">
+      <pre class="border rounded p-2 my-2"><code>http://feed.nashownotes.com/rss.xml</code></pre>
+    </div>
+  </div>
+</div>
+{% endblock %}
