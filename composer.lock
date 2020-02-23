@@ -2508,12 +2508,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:codedmonkey/onlinq-monitoring.git",
-                "reference": "771b0a07151ce5fe4b5c782a6f7381742f1cba49"
+                "reference": "5a481bdf5c82b2c28167ad2b87b8b5855cf651c1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/codedmonkey/onlinq-monitoring/zipball/771b0a07151ce5fe4b5c782a6f7381742f1cba49",
-                "reference": "771b0a07151ce5fe4b5c782a6f7381742f1cba49",
+                "url": "https://api.github.com/repos/codedmonkey/onlinq-monitoring/zipball/5a481bdf5c82b2c28167ad2b87b8b5855cf651c1",
+                "reference": "5a481bdf5c82b2c28167ad2b87b8b5855cf651c1",
                 "shasum": ""
             },
             "require": {
@@ -2568,7 +2568,7 @@
                 "source": "https://github.com/codedmonkey/onlinq-monitoring/tree/master",
                 "issues": "https://github.com/codedmonkey/onlinq-monitoring/issues"
             },
-            "time": "2020-02-20T15:55:12+00:00"
+            "time": "2020-02-23T13:35:26+00:00"
         },
         {
             "name": "onlinq/monitoring-bundle",
