@@ -281,7 +281,7 @@ function replaceUrls(inputText) {
 
   //URLs starting with "www." (without // before it, or it'd re-link the ones done above).
   replacePattern2 = /(^|[^\/])(www\.[\S]+(\b|$))/gim;
-  replacedText = replacedText.replace(replacePattern2, '$1<a href="http://$2" target="_blank">$2</a>');
+  replacedText = replacedText.replace(replacePattern2, '$1<a href="http://$2" rel="nofollow" target="_blank">$2</a>');
 
   return replacedText;
 }
