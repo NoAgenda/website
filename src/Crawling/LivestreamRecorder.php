@@ -16,7 +16,7 @@ class LivestreamRecorder
         $this->logger = new NullLogger();
     }
 
-    public function record(): void
+    public function record(bool $timeout = true): void
     {
         $time = (new \DateTime())->format('YmdHis');
         $recordingPath = sprintf('%s/livestream_recordings/recording_%s', $_SERVER['APP_STORAGE_PATH'], $time);
@@ -37,12 +37,14 @@ class LivestreamRecorder
             'DUMP_PATH' => $recordingPath,
         ]);
 
+        if ($timeout) {
+            $this->logger->debug('Finished recording, starting timeout');
+
+            sleep(14 * 60);
+        }
+
         if (!$process->isSuccessful()) {
             throw new \Exception('An error occurred while creating the recording.');
         }
-
-        $this->logger->debug('Finished recording, starting timeout');
-
-        sleep(14 * 60);
     }
 }
