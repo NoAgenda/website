@@ -33,6 +33,10 @@ class CrawlingLogger extends AbstractLogger
     public function log($level, $message, array $context = []): void
     {
         foreach ($this->loggers as $logger) {
+            if ($logger instanceof MonitoringLogger && 'debug' === $level) {
+                continue;
+            }
+
             /** @var LoggerInterface $logger */
             $logger->log($level, $message, $context);
         }
