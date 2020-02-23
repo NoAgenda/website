@@ -4,14 +4,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!--
-    {% block title '' %}
-    No Agenda Experience
-    -->
-
-    {% set page_title = block('title') == '' ? 'No Agenda Experience' : block('title') ~ ' - No Agenda Experience' %}
+    {% set page_title = page_title is not defined ? 'No Agenda Experience' : "#{page_title} - No Agenda Experience" %}
+    {% set page_description = page_description ?? null %}
 
     <title>{{ page_title }}</title>
+    {% if page_description %}<meta name="description" content="{{ page_description }}">{% endif %}
     <link rel="icon" href="{{ asset('/favicon.ico') }}">
 
     {% block stylesheets %}
