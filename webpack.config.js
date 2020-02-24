@@ -7,6 +7,13 @@ encore
   .setPublicPath('/build')
 
   .enableSassLoader()
+  .addLoader({
+    test: /\.(png|jpe?g|gif)$/i,
+    loader: 'file-loader',
+    options: {
+      name: '[name].[ext]',
+    }
+  })
 
   .cleanupOutputBeforeBuild()
   .disableSingleRuntimeChunk()

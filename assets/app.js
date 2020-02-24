@@ -14,22 +14,17 @@ import './scripts/player-transcripts';
 
 import './app.scss';
 
+import './images/placeholder.jpg';
+
 jQuery(document).ready(() => {
-  let clipboard = new Clipboard();
-  let token = new Token();
-  let playerChat = new PlayerChat();
-  let playerCorrections = new PlayerCorrections(token);
+  new Clipboard();
+  const token = new Token();
+  new PlayerChat();
+  new PlayerCorrections(token);
 
-  let playerUri = jQuery('[data-player]').data('player');
-
-  if (playerUri) {
-    // let player = new Player(playerUri, token);
-
-  }
-
-  let archiveElement = jQuery('[data-archive-container]');
+  const archiveElement = jQuery('[data-archive-container]');
 
   if (archiveElement) {
-    let archive = new Archive();
+    new Archive();
   }
 });
