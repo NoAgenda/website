@@ -4,20 +4,17 @@ namespace App;
 
 use App\Entity\Episode;
 use Colorfield\Mastodon\MastodonAPI;
-use Rudolf\OAuth2\Client\Provider\Reddit;
 use Symfony\Component\Routing\RouterInterface;
 
 class NotificationPublisher
 {
     private $mastodonApi;
-    private $redditApi;
     private $router;
 
-    public function __construct(RouterInterface $router, ?MastodonAPI $mastodonApi, ?Reddit $redditApi)
+    public function __construct(RouterInterface $router, ?MastodonAPI $mastodonApi)
     {
         $this->router = $router;
         $this->mastodonApi = $mastodonApi;
-        $this->redditApi = $redditApi;
     }
 
     public function publishEpisode(Episode $episode)
@@ -40,6 +37,7 @@ class NotificationPublisher
             ]);
         }
 
+        /*
         if ($this->redditApi) {
             $client = $this->redditApi->getHttpClient();
 
@@ -56,5 +54,6 @@ class NotificationPublisher
                 'form_params' => $message,
             ]);
         }
+        */
     }
 }

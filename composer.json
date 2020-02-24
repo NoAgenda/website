@@ -24,7 +24,6 @@
         "phergie/phergie-irc-client-react": "^3.5",
         "php-http/guzzle6-adapter": "^2.0",
         "php-http/httplug-pack": "^1.2",
-        "rtheunissen/oauth2-reddit": "^2.0",
         "sensio/framework-extra-bundle": "^5.1",
         "symfony/apache-pack": "^1.0",
         "symfony/asset": "^4.4",
@@ -51,6 +50,7 @@
     },
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^3.0",
+        "rtheunissen/oauth2-reddit": "^2.0",
         "symfony/browser-kit": "^4.4",
         "symfony/css-selector": "^4.4",
         "symfony/debug-pack": "^1.0",
