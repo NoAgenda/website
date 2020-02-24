@@ -12,14 +12,14 @@ encore
     loader: 'file-loader',
     options: {
       name: '[name].[ext]',
-    }
+    },
   })
 
   .cleanupOutputBeforeBuild()
   .disableSingleRuntimeChunk()
   .enableBuildNotifications()
   .enableSourceMaps(!encore.isProduction())
-  // .enableVersioning()
+  .enableVersioning(encore.isProduction())
 ;
 
 module.exports = encore.getWebpackConfig();
