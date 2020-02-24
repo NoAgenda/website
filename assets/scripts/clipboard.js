@@ -12,9 +12,16 @@ export default class Clipboard {
 
       if (this.copyToClipboard(text)) {
         this.showTooltip(button, 'Copied to clipboard');
-      }
-      else {
-        this.showTooltip(button, 'Copy failed');
+      } else {
+        if (button.data('simple')) {
+          this.showTooltip(button, 'Copy failed');
+        } else {
+          const clipboardModal = jQuery('#clipboardModal');
+
+          clipboardModal.find('[data-clipboard-text').html(text);
+
+          clipboardModal.modal('show');
+        }
       }
     });
   }
@@ -25,8 +32,7 @@ export default class Clipboard {
     if (window.clipboardData && window.clipboardData.setData) {
       // IE specific code path to prevent textarea being shown while dialog is visible.
       return window.clipboardData.setData('Text', text);
-    }
-    else if (document.queryCommandSupported && document.queryCommandSupported('copy')) {
+    } else if (document.queryCommandSupported && document.queryCommandSupported('copy')) {
       let textarea = document.createElement('textarea');
       textarea.textContent = text;
       textarea.style.position = 'fixed';  // Prevent scrolling to bottom of page in MS Edge.

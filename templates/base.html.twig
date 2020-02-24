@@ -17,6 +17,7 @@
   </head>
   <body data-authenticated="{{ authenticated ? 'true' : 'false' }}" {% block body_attributes '' %}>
     {% block body '' %}
+    {% include 'blocks/clipboard_modal.html.twig' %}
     {% include 'blocks/token_modal.html.twig' %}
 
     {% block scripts %}
