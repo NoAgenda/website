@@ -1,13 +1,10 @@
 @import "stylesheets/bootstrap";
+@import "stylesheets/fontawesome";
+
 @import "stylesheets/archive";
 @import "stylesheets/masthead-player";
 @import "stylesheets/interactive-player";
 
-@import "~@fortawesome/fontawesome-pro/scss/fontawesome";
-@import "~@fortawesome/fontawesome-pro/scss/solid";
-@import "~@fortawesome/fontawesome-pro/scss/brands";
-@import "~@fortawesome/fontawesome-pro/scss/light";
-@import "~@fortawesome/fontawesome-pro/scss/regular";
 @import url('https://fonts.googleapis.com/css?family=Mukta');
 
 $fa-font-path : "~@fortawesome/fontawesome-free/webfonts";
