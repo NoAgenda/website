@@ -3,7 +3,6 @@
 namespace App\Crawling;
 
 use App\Entity\Episode;
-use App\Entity\TranscriptLine;
 use App\Message\CrawlEpisodeTranscript;
 use Doctrine\ORM\EntityManagerInterface;
 use Http\Client\Common\HttpMethodsClient;
@@ -49,30 +48,23 @@ class TranscriptCrawler
 
     public function crawlEpisode(Episode $episode): void
     {
-        $transcriptLineRepository = $this->entityManager->getRepository(TranscriptLine::class);
-        $transcriptLines = $transcriptLineRepository->findByEpisode($episode);
-
-        foreach ($transcriptLines as $transcriptLine) {
-            $this->entityManager->remove($transcriptLine);
-        }
-
         if (!$episode->getTranscriptUri()) {
             throw new \Exception('No transcript URI found for episode.');
         }
 
         $rawLines = $this->crawlTranscript($episode->getTranscriptUri());
+        $lines = [];
 
         foreach ($rawLines as $rawLine) {
-            $line = new TranscriptLine();
-
-            $line->setEpisode($episode);
-            $line->setText($rawLine['text']);
-            $line->setTimestamp($rawLine['timestamp']);
-            $line->setDuration(0);
-            $line->setCrawlerOutput($rawLine);
-
-            $this->entityManager->persist($line);
+            $lines[] = [
+                'timestamp' => $rawLine['timestamp'],
+                'text' => $rawLine['text'],
+            ];
         }
+
+        $transcriptPath = sprintf('%s/transcripts/%s.json', $_SERVER['APP_STORAGE_PATH'], $episode->getCode());
+
+        file_put_contents($transcriptPath, json_encode($lines));
 
         $episode->setTranscript(true);
 

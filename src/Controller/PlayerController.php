@@ -7,7 +7,6 @@ use App\Form\EpisodePartCorrectionType;
 use App\Form\EpisodePartSuggestionType;
 use App\Repository\EpisodePartRepository;
 use App\Repository\EpisodeRepository;
-use App\Repository\TranscriptLineRepository;
 use App\Utilities;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -23,19 +22,16 @@ class PlayerController extends Controller
 
     private $episodeRepository;
     private $episodePartRepository;
-    private $transcriptLineRepository;
 
     public function __construct(
         SerializerInterface $serializer,
         EpisodeRepository $episodeRepository,
-        EpisodePartRepository $episodePartRepository,
-        TranscriptLineRepository $transcriptLineRepository
+        EpisodePartRepository $episodePartRepository
     ) {
         $this->serializer = $serializer;
 
         $this->episodeRepository = $episodeRepository;
         $this->episodePartRepository = $episodePartRepository;
-        $this->transcriptLineRepository = $transcriptLineRepository;
     }
 
     /**
@@ -61,7 +57,9 @@ class PlayerController extends Controller
             $timestamp = $transcriptTimestamp;
         }
 
-        $lines = $this->transcriptLineRepository->findByEpisode($episode);
+        if ($episode->hasTranscript()) {
+            $lines = json_decode(file_get_contents(sprintf('%s/transcripts/%s.json', $_SERVER['APP_STORAGE_PATH'], $episode->getCode())));
+        }
 
         $parts = $this->episodePartRepository->findBy(['episode' => $episode, 'enabled' => true], ['startsAt' => 'ASC']);
 
@@ -79,7 +77,7 @@ class PlayerController extends Controller
 
             'episode' => $episode,
             'parts' => $parts,
-            'transcriptLines' => $lines,
+            'transcriptLines' => $lines ?? [],
 
             'partCorrectionForm' => $partCorrectionForm->createView(),
             'partSuggestionForm' => $partSuggestionForm->createView(),
