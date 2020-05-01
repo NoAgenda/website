@@ -2,7 +2,6 @@
 
 namespace App\Crawling;
 
-use App\Entity\ChatMessage;
 use App\Entity\Episode;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerAwareTrait;
@@ -34,26 +33,9 @@ class EpisodeChatMessagesMatcher
             return;
         }
 
-        $chatMessageRepository = $this->entityManager->getRepository(ChatMessage::class);
-        $oldMessages = $chatMessageRepository->findByEpisode($episode);
+        $chatMessagesPath = sprintf('%s/chat_messages/%s.json', $_SERVER['APP_STORAGE_PATH'], $episode->getCode());
 
-        foreach ($oldMessages as $oldMessage) {
-            $this->entityManager->remove($oldMessage);
-        }
-
-        foreach ($messages as $messageDefinition) {
-            $message = new ChatMessage();
-
-            $message
-                ->setEpisode($episode)
-                ->setUsername($messageDefinition['username'])
-                ->setContents($messageDefinition['contents'])
-                ->setPostedAt($messageDefinition['postedAt'])
-                ->fromTrollRoom()
-            ;
-
-            $this->entityManager->persist($message);
-        }
+        file_put_contents($chatMessagesPath, json_encode($messages));
 
         $episode->setChatMessages(true);
 
@@ -98,10 +80,12 @@ class EpisodeChatMessagesMatcher
 
             list(, $username, $client, $ip, $contents) = $matches;
 
+            $contents = nl2br(preg_replace('/[[:cntrl:]]/', '', $contents));
+
             $messages[] = [
                 'username' => $username,
                 'contents' => $contents,
-                'postedAt' => $interval,
+                'timestamp' => $interval,
             ];
         }
 

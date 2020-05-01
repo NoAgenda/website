@@ -5,7 +5,6 @@ easy_admin:
       - { entity: 'Episode', label: 'Episodes', icon: 'podcast', default: true }
       - { entity: 'EpisodePart', label: 'Chapters', icon: 'bookmark' }
       - { entity: 'EpisodePartCorrection', label: 'Chapter corrections', icon: 'lightbulb-o' }
-      - { entity: 'ChatMessage', label: 'Chat messages', icon: 'comment' }
       - { entity: 'User', label: 'Users', icon: 'user' }
       - { label: 'Network' }
       - { entity: 'NetworkSite', label: 'Network sites', icon: 'globe' }

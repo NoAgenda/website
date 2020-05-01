@@ -5,10 +5,10 @@ namespace App\Controller;
 use App\Entity\Episode;
 use App\Form\EpisodePartCorrectionType;
 use App\Form\EpisodePartSuggestionType;
-use App\Repository\ChatMessageRepository;
 use App\Repository\EpisodePartRepository;
 use App\Repository\EpisodeRepository;
 use App\Repository\TranscriptLineRepository;
+use App\Utilities;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -23,29 +23,25 @@ class PlayerController extends Controller
 
     private $episodeRepository;
     private $episodePartRepository;
-    private $chatMessageRepository;
     private $transcriptLineRepository;
 
     public function __construct(
         SerializerInterface $serializer,
         EpisodeRepository $episodeRepository,
         EpisodePartRepository $episodePartRepository,
-        ChatMessageRepository $chatMessageRepository,
         TranscriptLineRepository $transcriptLineRepository
-    )
-    {
+    ) {
         $this->serializer = $serializer;
 
         $this->episodeRepository = $episodeRepository;
         $this->episodePartRepository = $episodePartRepository;
-        $this->chatMessageRepository = $chatMessageRepository;
         $this->transcriptLineRepository = $transcriptLineRepository;
     }
 
     /**
      * @Route("/listen", name="player_latest")
      */
-    public function latestAction(): Response
+    public function latest(): Response
     {
         $episode = $this->episodeRepository->findLatest();
 
@@ -56,21 +52,16 @@ class PlayerController extends Controller
      * @Route("/listen/{episode}", name="player")
      * @ParamConverter("episode", class="App\Entity\Episode", options={"mapping": {"episode": "code"}})
      */
-    public function playerAction(Request $request, Episode $episode): Response
+    public function player(Request $request, Episode $episode): Response
     {
-        $timestamp = static::parsePrettyTimestamp($request->query->get('t', 0));
-        $transcriptTimestamp = static::parsePrettyTimestamp($request->query->get('transcript', 0));
+        $timestamp = Utilities::parsePrettyTimestamp($request->query->get('t', 0));
+        $transcriptTimestamp = Utilities::parsePrettyTimestamp($request->query->get('transcript', 0));
 
         if ($transcriptTimestamp > 0) {
             $timestamp = $transcriptTimestamp;
         }
 
         $lines = $this->transcriptLineRepository->findByEpisode($episode);
-
-        // $messageForm = $this->createForm(ChatMessageType::class, [
-        //     'episode' => $episode->getCode(),
-        //     'postedAt' => 0,
-        // ]);
 
         $parts = $this->episodePartRepository->findBy(['episode' => $episode, 'enabled' => true], ['startsAt' => 'ASC']);
 
@@ -90,7 +81,6 @@ class PlayerController extends Controller
             'parts' => $parts,
             'transcriptLines' => $lines,
 
-            // 'chatMessageForm' => $messageForm->createView(),
             'partCorrectionForm' => $partCorrectionForm->createView(),
             'partSuggestionForm' => $partSuggestionForm->createView(),
         ]);
@@ -100,32 +90,21 @@ class PlayerController extends Controller
      * @Route("/listen/{episode}/audio", name="player_audio")
      * @ParamConverter("episode", class="App\Entity\Episode", options={"mapping": {"episode": "code"}})
      */
-    public function audioAction(Request $request, Episode $episode): Response
+    public function audio(Episode $episode): Response
     {
         $path = sprintf('%s/episode_recordings/%s.mp3', $_SERVER['APP_STORAGE_PATH'], $episode->getCode());
 
         return new BinaryFileResponse($path);
     }
 
-    public static function parsePrettyTimestamp(string $prettyTimestamp): int
+    /**
+     * @Route("/listen/{episode}/chat", name="player_chat_messages")
+     * @ParamConverter("episode", class="App\Entity\Episode", options={"mapping": {"episode": "code"}})
+     */
+    public function chatMessages(Episode $episode): Response
     {
-        if (strpos($prettyTimestamp, ':')) {
-            $components = explode(':', $prettyTimestamp);
+        $path = sprintf('%s/chat_messages/%s.json', $_SERVER['APP_STORAGE_PATH'], $episode->getCode());
 
-            if (count($components) >= 3) {
-                list($hours, $minutes, $seconds) = $components;
-            } else {
-                $hours = 0;
-                list($minutes, $seconds) = $components;
-            }
-
-            $timestamp = (int) $seconds;
-            $timestamp += (int) $minutes * 60;
-            $timestamp += (int) $hours * 60 * 60;
-
-            return $timestamp;
-        }
-
-        return (int) $prettyTimestamp;
+        return new BinaryFileResponse($path);
     }
 }

@@ -7,7 +7,7 @@ export default class PlayerChat {
     this.initialized = false;
     this.loading = true;
 
-    this.collections = {};
+    this.collection = false;
     this.messages = [];
     this.messagesToBeRendered = [];
     this.timestamp = 0;
@@ -32,6 +32,12 @@ export default class PlayerChat {
       this.player.addEventListener('audio-seek', event => this.reset(event.detail.timestamp));
       this.player.addEventListener('audio-step', event => this.step(event.detail.timestamp));
 
+      this.loading = true;
+
+      jQuery('.chat-loader').removeClass('d-none');
+      jQuery('.chat-responsive-container').addClass('d-none').removeClass('d-flex');
+
+      this.fetchMessages();
       this.reset(this.timestamp);
 
       // Set up styling
@@ -80,15 +86,6 @@ export default class PlayerChat {
 
     jQuery('.site-chat-message').remove();
 
-    let collection = Math.floor(timestamp / 1000);
-
-    if (typeof this.collections[collection] === 'undefined') {
-      this.loading = true;
-
-      jQuery('.chat-loader').removeClass('d-none');
-      jQuery('.chat-responsive-container').addClass('d-none').removeClass('d-flex');
-    }
-
     this.step(timestamp);
   }
 
@@ -111,7 +108,6 @@ export default class PlayerChat {
     let maxScrollTop = messageViewportContainer.get(0).scrollHeight - messageViewportContainer.height();
 
     // Render messages
-    this.fetchMessages(timestamp);
     this.updateMessagesToBeRendered(timestamp);
 
     if (this.messagesToBeRendered.length === 0) {
@@ -130,36 +126,18 @@ export default class PlayerChat {
     }
   }
 
-  fetchMessages(timestamp) {
+  fetchMessages() {
     let container = jQuery('[data-chat-container]');
 
-    let collection = Math.floor(timestamp / 1000);
-
-    if (typeof this.collections[collection] !== 'undefined') {
-      timestamp = timestamp + 50;
-      let futureCollection = Math.floor(timestamp / 1000);
-
-      // Check for future messages
-      if (collection !== futureCollection && typeof this.collections[futureCollection] === 'undefined') {
-        this.fetchMessages(timestamp);
-      }
-
-      return;
-    }
-
-    this.collections[collection] = true;
-
-    fetch('/chat_messages/' + container.data('episode') + '/' + collection)
+    fetch('/listen/' + container.data('episode') + '/chat')
       .then(response => response.json())
       .then(messages => {
         messages.map(message => this.messages.push(message));
 
-        if (this.loading) {
-          this.loading = false;
+        this.loading = false;
 
-          jQuery('.chat-loader').addClass('d-none');
-          jQuery('.chat-container').removeClass('d-none').addClass('d-flex');
-        }
+        jQuery('.chat-loader').addClass('d-none');
+        jQuery('.chat-container').removeClass('d-none').addClass('d-flex');
       })
     ;
   }
@@ -191,34 +169,26 @@ export default class PlayerChat {
     let template = container.data('prototype');
     let html = null;
 
-    if (message[1].substring(0, 7) === 'ACTION ') {
+    if (message.contents.substring(0, 7) === 'ACTION ') {
        html = template
-        .replace('__timestamp__', this.previousTimestamp !== message[2] ? formatTime(message[2]) : '')
+        .replace('__timestamp__', this.previousTimestamp !== message.timestamp ? formatTime(message.timestamp) : '')
         .replace('__username__', '')
-        .replace('__text__', message[0] + ' ' + message[1].substring(7))
+        .replace('__text__', message.username + ' ' + message.contents.substring(7))
       ;
     } else {
       html = template
-        .replace('__timestamp__', this.previousTimestamp !== message[2] ? formatTime(message[2]) : '')
-        .replace('__username__', message[0])
-        .replace('__text__', message[1])
+        .replace('__timestamp__', this.previousTimestamp !== message.timestamp ? formatTime(message.timestamp) : '')
+        .replace('__username__', message.username)
+        .replace('__text__', message.contents)
       ;
     }
 
     html = replaceUrls(html);
     let element = jQuery(html);
 
-    if (message[3] === 2) {
-      element.find('.site-chat-username').css('color', 'rgba(0, 123, 255, .3)');
-    }
-
-    if (message[3] === 1 && message[0] === container.data('username')) {
-      element.find('.site-chat-username').css('color', 'rgba(255, 193, 7, .3)');
-    }
-
     container.find('> :last-child').after(element);
 
-    this.previousTimestamp = message[2];
+    this.previousTimestamp = message.timestamp;
   }
 
   sortMessages(a, b) {
@@ -251,7 +221,7 @@ export default class PlayerChat {
 
       this.messages
         .filter(message => {
-          return message[2] <= timestamp;
+          return message.timestamp <= timestamp;
         })
         .sort(this.sortMessages)
         .slice(-10)
@@ -261,7 +231,7 @@ export default class PlayerChat {
 
     this.messages
       .filter(message => {
-        return message[2] > this.lastTimestamp && message[2] <= timestamp;
+        return message.timestamp > this.lastTimestamp && message.timestamp <= timestamp;
       })
       .map(message => this.messagesToBeRendered.push(message))
     ;
