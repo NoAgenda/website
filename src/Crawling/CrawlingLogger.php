@@ -33,7 +33,7 @@ class CrawlingLogger extends AbstractLogger
     public function log($level, $message, array $context = []): void
     {
         foreach ($this->loggers as $logger) {
-            if ($logger instanceof MonitoringLogger && 'debug' === $level) {
+            if ($logger instanceof MonitoringLogger && in_array($level, ['debug', 'info'])) {
                 continue;
             }
 
