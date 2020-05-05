@@ -4,7 +4,7 @@ import {formatTime, serializeTime} from './player';
 
 export default class PlayerCorrections {
   constructor(token) {
-    this.player = document.getElementById('episodePlayer');
+    this.player = document.getElementById('audioPlayer');
     this.token = token;
 
     if (this.player) {

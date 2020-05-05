@@ -43,6 +43,17 @@
   border-top-right-radius: $border-radius;
 }
 
+.fade-container {
+  opacity:    0.5;
+  background: #000;
+  width:      100%;
+  height:     100%;
+  z-index:    1001;
+  top:        0;
+  left:       0;
+  position:   fixed;
+}
+
 @include media-breakpoint-up(md) {
   .md-separator {
     border-right: 1px solid #dee2e6;

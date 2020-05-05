@@ -1,11 +1,16 @@
-import 'waud.js';
+import {formatTime, getPlayer, HTMLAudioAwareElement} from './player';
 
-import {formatTime} from './player';
+/** todo rebuild for global audio player **/
+class AudioPlayerHistoryElement extends HTMLAudioAwareElement {
+  constructor() {
+    super();
 
-class AudioPlayerHistoryElement extends HTMLElement {
+    this.onAudioLoaded = this.onAudioLoaded.bind(this);
+    this.onAudioStep = this.onAudioStep.bind(this);
+    this.onAudioSeek = this.onAudioSeek.bind(this);
+  }
+
   connectedCallback() {
-    this.player = document.getElementById(this.getAttribute('data-target'));
-
     this.timestamp = 0;
     this.duration = 0;
 
@@ -14,35 +19,45 @@ class AudioPlayerHistoryElement extends HTMLElement {
     this.sessionStart = 0;
     this.renderIndex = 0;
 
-    this.player.addEventListener('audio-loaded', () => {
-      this.duration = this.player.duration;
-    });
+    getPlayer().addEventListener('audio-loaded', this.onAudioLoaded);
+    getPlayer().addEventListener('audio-step', this.onAudioStep);
+    getPlayer().addEventListener('audio-seek', this.onAudioSeek);
+  }
 
-    this.player.addEventListener('audio-step', event => {
-      this.timestamp = event.detail.timestamp;
-    });
+  disconnectedCallback() {
+    getPlayer().removeEventListener('audio-loaded', this.onAudioLoaded);
+    getPlayer().removeEventListener('audio-step', this.onAudioStep);
+    getPlayer().removeEventListener('audio-seek', this.onAudioSeek);
+  }
 
-    this.player.addEventListener('audio-seek', event => {
-      if (this.timestamp === 0) {
-        this.sessionStart = event.detail.timestamp;
+  onAudioLoaded() {
+    this.duration = getPlayer().duration;
+  }
 
-        if (this.sessionStart > 0) {
-          this.add(this.sessionStart);
-        }
+  onAudioStep(event) {
+    this.timestamp = event.detail.timestamp;
+  }
 
-        return;
-      }
-
-      if (this.timestamp >= this.duration) {
-        return;
-      }
-
-      if ((this.sessionStart + 60) < this.timestamp) {
-        this.add(this.timestamp - 10);
-      }
-
+  onAudioSeek(event) {
+    if (this.timestamp === 0) {
       this.sessionStart = event.detail.timestamp;
-    });
+
+      if (this.sessionStart > 0) {
+        this.add(this.sessionStart);
+      }
+
+      return;
+    }
+
+    if (this.timestamp >= this.duration) {
+      return;
+    }
+
+    if ((this.sessionStart + 60) < this.timestamp) {
+      this.add(this.timestamp - 10);
+    }
+
+    this.sessionStart = event.detail.timestamp;
   }
 
   add(timestamp) {
@@ -63,7 +78,7 @@ class AudioPlayerHistoryElement extends HTMLElement {
     const button = this.querySelector(`[data-index="${this.renderIndex}"]`);
 
     button.addEventListener('click', () => {
-      this.player.seekTimestamp(timestamp);
+      getPlayer().seekTimestamp(timestamp);
     });
 
     ++this.renderIndex;

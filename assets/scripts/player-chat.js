@@ -1,6 +1,6 @@
 import jQuery from 'jquery';
 
-import {formatTime} from './player';
+import {formatTime, getPlayer} from './player';
 
 export default class PlayerChat {
   constructor() {
@@ -13,40 +13,66 @@ export default class PlayerChat {
     this.timestamp = 0;
     this.previousTimestamp = false;
     this.lastTimestamp = false;
+    this.episodeCode = false;
 
-    this.registerEventListeners();
+    this.onActivateChat = this.onActivateChat.bind(this);
+    this.onAudioSeek = this.onAudioSeek.bind(this);
+    this.onAudioStep = this.onAudioStep.bind(this);
+
+    jQuery(document).on('click', '[data-chat-activator]', this.onActivateChat);
+    jQuery('na-router').on('navigating', () => {
+      if (this.initialized) {
+        getPlayer().removeEventListener('audio-seek', this.onAudioSeek);
+        getPlayer().removeEventListener('audio-step', this.onAudioStep);
+
+        this.initialized = false;
+        this.loading = true;
+
+        this.collection = false;
+        this.messages = [];
+        this.messagesToBeRendered = [];
+        this.timestamp = 0;
+        this.previousTimestamp = false;
+        this.lastTimestamp = false;
+        this.episodeCode = false;
+      }
+    })
   }
 
-  registerEventListeners() {
-    jQuery(document).on('click', '[data-chat-activator]', (event) => {
-      event.preventDefault();
+  onActivateChat(event) {
+    event.preventDefault();
 
-      if (this.initialized) {
-        return;
-      }
+    if (this.initialized) {
+      return;
+    }
 
-      this.initialized = true;
+    this.initialized = true;
 
-      this.player = document.getElementById('episodePlayer');
+    getPlayer().addEventListener('audio-seek', this.onAudioSeek);
+    getPlayer().addEventListener('audio-step', this.onAudioStep);
 
-      this.player.addEventListener('audio-seek', event => this.reset(event.detail.timestamp));
-      this.player.addEventListener('audio-step', event => this.step(event.detail.timestamp));
+    this.loading = true;
 
-      this.loading = true;
+    jQuery('.chat-loader').removeClass('d-none');
+    jQuery('.chat-responsive-container').addClass('d-none').removeClass('d-flex');
 
-      jQuery('.chat-loader').removeClass('d-none');
-      jQuery('.chat-responsive-container').addClass('d-none').removeClass('d-flex');
+    this.fetchMessages();
+    this.reset(this.timestamp);
 
-      this.fetchMessages();
-      this.reset(this.timestamp);
+    // Set up styling
+    this.resize();
+    jQuery(window).resize(this.resize);
+    jQuery('.chat-container').resize(this.resize);
 
-      // Set up styling
-      this.resize();
-      jQuery(window).resize(this.resize);
-      jQuery('.chat-container').resize(this.resize);
+    jQuery('.player-chat-activator').removeClass('d-xl-block');
+  }
 
-      jQuery('.player-chat-activator').removeClass('d-xl-block');
-    });
+  onAudioSeek(event) {
+    this.reset(event.detail.timestamp);
+  }
+
+  onAudioStep(event) {
+    this.step(event.detail.timestamp);
   }
 
   resize() {
@@ -79,6 +105,12 @@ export default class PlayerChat {
   }
 
   reset(timestamp) {
+    const source = jQuery('#episodeSource');
+
+    if (!source.length || source[0].hash !== getPlayer().hash) {
+      return;
+    }
+
     this.timestamp = timestamp;
     this.previousTimestamp = false;
     this.lastTimestamp = false;
@@ -90,6 +122,12 @@ export default class PlayerChat {
   }
 
   step(timestamp) {
+    const source = jQuery('#episodeSource');
+
+    if (!source.length || source[0].hash !== getPlayer().hash) {
+      return;
+    }
+
     this.timestamp = timestamp;
 
     if (!this.initialized) {
@@ -129,7 +167,9 @@ export default class PlayerChat {
   fetchMessages() {
     let container = jQuery('[data-chat-container]');
 
-    fetch('/listen/' + container.data('episode') + '/chat')
+    this.episodeCode = container.data('episode');
+
+    fetch('/listen/' + this.episodeCode + '/chat')
       .then(response => response.json())
       .then(messages => {
         messages.map(message => this.messages.push(message));
@@ -138,28 +178,6 @@ export default class PlayerChat {
 
         jQuery('.chat-loader').addClass('d-none');
         jQuery('.chat-container').removeClass('d-none').addClass('d-flex');
-      })
-    ;
-  }
-
-  postMessage(data) {
-    let requestOptions = {
-      method: 'POST',
-      credentials: 'same-origin',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    };
-
-    fetch('/chat', requestOptions)
-      .then(response => response.json())
-      .then(response => {
-        if (typeof response.status === 'undefined' || response.status === 'error') {
-          alert('An error occurred while trying to post your message.');
-        }
-
-        this.renderMessage(response.message);
       })
     ;
   }

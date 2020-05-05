@@ -1,5 +1,7 @@
 import jQuery from 'jquery';
 
+import {getPlayer} from './player';
+
 let lines = null;
 let resetButton = null;
 
@@ -7,47 +9,84 @@ const activeLines = [];
 let lastActiveLine = null;
 
 jQuery(document).ready(() => {
-  const player = document.getElementById('episodePlayer');
+  const player = getPlayer();
 
-  if (!player) {
-    return;
-  }
+  const onAudioStep = event => stepTranscript(event.detail.timestamp);
 
-  const transcriptTab = jQuery('#transcript-tab');
+  jQuery('na-router').on('navigating', () => {
+    player.removeEventListener('audio-seek', onAudioStep);
+    player.removeEventListener('audio-step', onAudioStep);
 
-  lines = jQuery('.site-transcript-line');
-  resetButton = jQuery('[data-reset-transcripts]');
+    lines = null;
+    resetButton = null;
+    activeLines.splice(0, activeLines.length);
 
-  const initialTimestamp = +jQuery('body').data('transcript-timestamp');
-  if (initialTimestamp > 0) {
-    const showTabListener = () => {
-      const transcriptLine = jQuery('.site-transcript-line[data-timestamp="' + initialTimestamp + '"]');
-
-      jQuery('html,body').animate({
-        scrollTop: transcriptLine.offset().top + transcriptLine.height() + 250 - jQuery(window).height(),
-      });
-
-      transcriptTab.off('shown.bs.tab', showTabListener);
-    };
-
-    transcriptTab.on('shown.bs.tab', showTabListener);
-    transcriptTab.tab('show');
-  }
-
-  transcriptTab.on('shown.bs.tab', () => {
-    jQuery(window).scroll();
+    lastActiveLine = null;
   });
 
-  player.addEventListener('audio-seek', event => stepTranscript(event.detail.timestamp));
-  player.addEventListener('audio-step', event => stepTranscript(event.detail.timestamp));
+  const initialize = () => {
+    const transcriptTab = jQuery('#transcript-tab');
 
-  resetButton.on('click', () => {
-    jQuery('html,body').animate({
-      scrollTop: jQuery(lastActiveLine).offset().top + jQuery(lastActiveLine).height() + 250 - jQuery(window).height(),
+    lines = jQuery('.site-transcript-line');
+    resetButton = jQuery('[data-reset-transcripts]');
+
+    const initialTimestamp = +jQuery('body').data('transcript-timestamp');
+    if (initialTimestamp > 0) {
+      const showTabListener = () => {
+        const transcriptLine = jQuery('.site-transcript-line[data-timestamp="' + initialTimestamp + '"]');
+
+        jQuery('html,body').animate({
+          scrollTop: transcriptLine.offset().top + transcriptLine.height() + 250 - jQuery(window).height(),
+        });
+
+        transcriptTab.off('shown.bs.tab', showTabListener);
+      };
+
+      transcriptTab.on('shown.bs.tab', showTabListener);
+      transcriptTab.tab('show');
+    }
+
+    transcriptTab.on('shown.bs.tab', () => {
+      jQuery(window).scroll();
     });
+
+    player.addEventListener('audio-seek', onAudioStep);
+    player.addEventListener('audio-step', onAudioStep);
+
+    resetButton.on('click', () => {
+      jQuery('html,body').animate({
+        scrollTop: jQuery(lastActiveLine).offset().top + jQuery(lastActiveLine).height() + 250 - jQuery(window).height(),
+      });
+    });
+  };
+
+  jQuery('na-router').on('navigated', () => {
+    const source = jQuery('#episodeSource');
+
+    if (!source.length || source[0].hash !== getPlayer().hash) {
+      return;
+    }
+
+    initialize();
   });
+
+  getPlayer().addEventListener('track-loaded', () => {
+    const source = jQuery('#episodeSource');
+
+    if (!source.length || source[0].hash !== getPlayer().hash) {
+      return;
+    }
+
+    initialize();
+  });
+
+  initialize();
 
   jQuery(window).on('scroll', () => {
+    if (!resetButton) {
+      return;
+    }
+
     if (lastActiveLine && !lineIsOnScreen(lastActiveLine, 0)) {
       resetButton.removeClass('d-none');
     } else {

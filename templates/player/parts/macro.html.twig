@@ -1,0 +1,84 @@
+{% macro play_button(size, class, target) %}
+  <na-audio-play class="{{ class }}" data-target="{{ target|default('') }}">
+    <div class="cursor-pointer" role="button" aria-hidden="false" aria-label="Play" data-play-button>
+      <span class="fal fa-{{ size }}x fa-fw fa-play" aria-hidden="true"></span>
+    </div>
+    <div class="cursor-pointer d-none" role="button" aria-hidden="true" aria-label="Pause" data-pause-button>
+      <span class="fal fa-{{ size }}x fa-fw fa-pause" aria-hidden="true"></span>
+    </div>
+  </na-audio-play>
+{% endmacro %}
+
+{% macro seek_button(direction, seconds, class, button_class, target) %}
+  {% set icon = direction == 'forward' ? 'fa-redo-alt' : 'fa-undo-alt' %}
+  {% set label = direction == 'forward' ? "Skip #{seconds} seconds" : "Go back #{seconds} seconds" %}
+
+  <na-audio-seek
+    class="{{ class }}"
+    data-target="{{ target|default('') }}"
+    data-direction="{{ direction }}"
+    data-seconds="{{ seconds }}"
+    {% if target %}style="display: none;"{% endif %}
+  >
+    <div class="btn cursor-pointer {{ button_class }}" role="button" aria-label="{{ label }}">
+      <span class="fal {{ icon }} mr-1" aria-hidden="true"></span> {{ seconds }}s
+    </div>
+  </na-audio-seek>
+{% endmacro %}
+
+{% macro speed_button(class, button_class, target) %}
+  <na-audio-speed
+    class="{{ class }}"
+    data-target="{{ target|default('') }}"
+    {% if target %}style="display: none;"{% endif %}
+  >
+    <div class="btn cursor-pointer {{ button_class }}" role="button" aria-label="Set speed to × 1.5" data-btn>
+      <span class="fal fa-tachometer mr-1" aria-hidden="true"></span> <span data-speed>1</span>×
+    </div>
+  </na-audio-speed>
+{% endmacro %}
+
+{% macro progress_bar(big, target) %}
+  {% set class = big ? 'py-3' : 'flex-grow-1' %}
+  {% set bar_height = big ? '30' : '5' %}
+  {% set duration_color = big ? 'bg-white' : 'bg-dark' %}
+  {% set progress_color = big ? 'bg-primary' : 'bg-highlight' %}
+  {% set pointer_color = big ? 'bg-highlight' : 'bg-white' %}
+
+  <na-audio-progress
+    class="{{ class }}"
+    data-target="{{ target|default('') }}"
+    {% if target %}style="display: none;"{% endif %}
+  >
+    {% if big %}
+      <div class="position-relative d-flex justify-content-between">
+        <span aria-label="Current timestamp" data-progress>0:00</span>
+        <span aria-hidden="true">&nbsp;</span>
+        <span aria-label="End timestamp" data-duration>0:00</span>
+        <span class="position-absolute d-none" aria-hidden="true" data-seek>0:00</span>
+      </div>
+      <div class="position-relative {{ duration_color }} cursor-pointer mt-2" aria-hidden="true" style="height: 30px;" data-duration-bar>
+        <div class="position-absolute {{ progress_color }} h-100" style="width: 0;" data-progress-bar></div>
+        <div class="position-absolute {{ pointer_color }} h-100 d-none" style="width: 3px; z-index: 2;" data-pointer></div>
+      </div>
+    {% else %}
+      <div>
+        <div class="d-inline-block" style="min-width: 120px;">
+          <span aria-label="Current timestamp" data-progress>0:00</span>
+          <span aria-hidden="true" data-pointer-hide>/</span>
+          <span aria-label="End timestamp" data-duration>0:00</span>
+          <span class="d-none" aria-hidden="true" data-seek data-still>0:00</span>
+        </div>
+        <div class="d-none d-md-inline ml-4" data-title></div>
+      </div>
+      <div class="cursor-pointer" aria-hidden="true" data-duration-bar>
+        <div class="py-2">
+          <div class="position-relative {{ duration_color }}" style="height: 5px;">
+            <div class="position-absolute {{ progress_color }} h-100" style="width: 0;" data-progress-bar></div>
+            <div class="position-absolute {{ pointer_color }} h-100 d-none" style="width: 3px; z-index: 2;" data-pointer></div>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  </na-audio-progress>
+{% endmacro %}

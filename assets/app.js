@@ -8,6 +8,8 @@ import PlayerChat from './scripts/player-chat';
 import PlayerCorrections from './scripts/player-corrections';
 import Token from './scripts/token';
 
+import './components/router';
+
 import './scripts/player';
 import './scripts/player-history';
 import './scripts/player-transcripts';

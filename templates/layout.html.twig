@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+{% extends app.request.xmlHttpRequest ? 'ajax_base.html.twig' : 'base.html.twig' %}
 
 {% set navigationLinks = [
   {

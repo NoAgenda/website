@@ -89,3 +89,13 @@
     background: #f2f2f2;
   }
 }
+
+.content-column {
+  min-height: 100vh;
+  padding-bottom: 50px;
+}
+
+.chat-column {
+  min-height: calc(100vh - 50px);
+  max-height: calc(100vh - 50px);
+}

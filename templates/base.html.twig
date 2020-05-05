@@ -1,3 +1,5 @@
+{% import 'player/parts/macro.html.twig' as player %}
+
 <!doctype html>
 <html lang="en">
   <head>
@@ -12,17 +14,42 @@
     <link rel="icon" href="{{ asset('/favicon.ico') }}">
 
     {% block stylesheets %}
-    {{ encore_entry_link_tags('app') }}
+      {{ encore_entry_link_tags('app') }}
     {% endblock %}
   </head>
-  <body data-authenticated="{{ authenticated ? 'true' : 'false' }}" {% block body_attributes '' %}>
-    {% block body '' %}
+  <body data-authenticated="{{ authenticated ? 'true' : 'false' }}">
+    <na-router>
+      {% block body '' %}
+    </na-router>
+
+    <na-audio-toolbar id="stickyPlayer" style="display: none;">
+      <div class="position-fixed" style="bottom: 0; left: 0; right: 0; z-index: 1000;">
+        <div class="container">
+          <div class="bottom-holder d-md-flex p-2">
+            <div class="btn-toolbar d-flex align-items-center justify-content-center mb-2 mb-md-0">
+              {{ player.seek_button('backward', 15, 'ml-3 mr-2', 'btn-sm btn-outline-dark') }}
+              {{ player.play_button(2, 'mx-2') }}
+              {{ player.seek_button('forward', 15, 'mx-2', 'btn-sm btn-outline-dark') }}
+              {{ player.speed_button('ml-2 mr-3', 'btn-sm btn-outline-dark') }}
+            </div>
+            {{ player.progress_bar(false) }}
+          </div>
+        </div>
+      </div>
+    </na-audio-toolbar>
+
+    <div id="routerFade" class="fade-container justify-content-center align-items-center" style="display: none;">
+      <span class="fas fa-spinner fa-spin fa-5x text-light"></span>
+    </div>
+
+    <na-audio id="audioPlayer"></na-audio>
+
     {% include 'blocks/clipboard_modal.html.twig' %}
     {% include 'blocks/token_modal.html.twig' %}
 
     {% block scripts %}
-    {{ encore_entry_script_tags('app') }}
-    {% include 'blocks/analytics.html.twig' %}
+      {{ encore_entry_script_tags('app') }}
+      {% include 'blocks/analytics.html.twig' %}
     {% endblock %}
   </body>
 </html>

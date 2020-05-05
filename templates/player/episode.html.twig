@@ -1,92 +1,9 @@
 {% extends 'layout.html.twig' %}
 
-{% import _self as macro %}
+{% import 'player/parts/macro.html.twig' as macro %}
 
-{% macro play_button(size, class) %}
-<na-audio-play class="{{ class }}" data-target="episodePlayer">
-  <div class="cursor-pointer" role="button" aria-hidden="false" aria-label="Play" data-play-button>
-    <span class="fal fa-{{ size }}x fa-fw fa-play" aria-hidden="true"></span>
-  </div>
-  <div class="cursor-pointer d-none" role="button" aria-hidden="true" aria-label="Pause" data-pause-button>
-    <span class="fal fa-{{ size }}x fa-fw fa-pause" aria-hidden="true"></span>
-  </div>
-</na-audio-play>
-{% endmacro %}
-
-{% macro seek_button(direction, seconds, class, button_class) %}
-{% set icon = direction == 'forward' ? 'fa-redo-alt' : 'fa-undo-alt' %}
-{% set label = direction == 'forward' ? "Skip #{seconds} seconds" : "Go back #{seconds} seconds" %}
-
-<na-audio-seek
-  class="{{ class }}"
-  data-target="episodePlayer"
-  data-direction="{{ direction }}"
-  data-seconds="{{ seconds}}"
->
-  <div class="btn cursor-pointer {{ button_class }}" role="button" aria-label="{{ label }}">
-    <span class="fal {{ icon }} mr-1" aria-hidden="true"></span> {{ seconds }}s
-  </div>
-</na-audio-seek>
-{% endmacro %}
-
-{% macro speed_button(class, button_class) %}
-<na-audio-speed
-  class="{{ class }}"
-  data-target="episodePlayer"
->
-  <div class="btn cursor-pointer {{ button_class }}" role="button" aria-label="Set speed to × 1.5" data-btn>
-    <span class="fal fa-tachometer mr-1" aria-hidden="true"></span> <span data-speed>1</span>×
-  </div>
-</na-audio-speed>
-{% endmacro %}
-
-{% macro progress_bar(big) %}
-{% set class = big ? 'd-none d-lg-block py-3' : 'flex-grow-1' %}
-{% set bar_height = big ? '30' : '5' %}
-{% set duration_color = big ? 'bg-white' : 'bg-dark' %}
-{% set progress_color = big ? 'bg-primary' : 'bg-highlight' %}
-{% set pointer_color = big ? 'bg-highlight' : 'bg-white' %}
-
-<na-audio-progress
-  class="{{ class }}"
-  data-target="episodePlayer"
->
-  {% if big %}
-  <div class="position-relative d-flex justify-content-between">
-    <span aria-label="Current timestamp" data-progress>0:00</span>
-    <span aria-hidden="true">&nbsp;</span>
-    <span aria-label="End timestamp" data-duration>0:00</span>
-    <span class="position-absolute d-none" aria-hidden="true" data-seek>0:00</span>
-  </div>
-  <div class="position-relative {{ duration_color }} cursor-pointer mt-2" aria-hidden="true" style="height: 30px;" data-duration-bar>
-    <div class="position-absolute {{ progress_color }} h-100" style="width: 0;" data-progress-bar></div>
-    <div class="position-absolute {{ pointer_color }} h-100 d-none" style="width: 3px; z-index: 2;" data-pointer></div>
-  </div>
-  {% else %}
-  <div>
-    <div class="d-inline-block" style="min-width: 120px;">
-      <span aria-label="Current timestamp" data-progress>0:00</span>
-      <span aria-hidden="true" data-pointer-hide>/</span>
-      <span aria-label="End timestamp" data-duration>0:00</span>
-      <span class="d-none" aria-hidden="true" data-seek data-still>0:00</span>
-    </div>
-    <div class="d-none d-md-inline ml-4" data-chapter-name></div>
-  </div>
-  <div class="cursor-pointer" aria-hidden="true" data-duration-bar>
-    <div class="py-2">
-      <div class="position-relative {{ duration_color }}" style="height: 5px;">
-        <div class="position-absolute {{ progress_color }} h-100" style="width: 0;" data-progress-bar></div>
-        <div class="position-absolute {{ pointer_color }} h-100 d-none" style="width: 3px; z-index: 2;" data-pointer></div>
-      </div>
-    </div>
-  </div>
-  {% endif %}
-</na-audio-progress>
-{% endmacro %}
-
-{% set title = episode.code ~ ': ' ~ episode.name %}
-
-{% block title %}{{ title|raw }}{% endblock %}
+{% set page_title = episode.code ~ ': ' ~ episode.name %}
+{% set title = page_title %}
 
 {% set tabs = [
   {
@@ -113,25 +30,9 @@
 ] %}
 
 {% block body %}
-{{ parent() }}
+  <na-audio-source id="episodeSource" data-title="{{ title }}" data-src="{{ episode.recordingUri }}"></na-audio-source>
 
-{% include 'player/blocks/correction_modal.html.twig' %}
-{% include 'player/blocks/suggestion_modal.html.twig' %}
-{% include 'player/blocks/success_modal.html.twig' %}
-
-<na-audio
-  id="episodePlayer"
-  data-src="{{ episode.recordingUri }}"
-  data-timestamp="{{ timestamp }}"
-></na-audio>
-{% endblock %}
-
-{% block body_attributes %}
-{% apply spaceless %}
-  {% if transcriptTimestamp != 0 %}
-    data-transcript-timestamp="{{ transcriptTimestamp }}"
-  {% endif %}
-{% endapply %}
+  {{ parent() }}
 {% endblock %}
 
 {% block content %}
@@ -155,29 +56,25 @@
           </div>
         </div>
         <div class="btn-toolbar d-none d-lg-flex align-items-center justify-content-center pt-5" role="toolbar" aria-label="Player controls">
-          {{ macro.seek_button('backward', 60, 'mx-2', 'btn-sm btn-light') }}
-          {{ macro.seek_button('backward', 15, 'mx-2', 'btn-sm btn-light') }}
-          {{ macro.play_button(3, 'mx-4') }}
-          {{ macro.seek_button('forward', 15, 'mx-2', 'btn-sm btn-light') }}
-          {{ macro.seek_button('forward', 60, 'mx-2', 'btn-sm btn-light') }}
-          {{ macro.speed_button('mx-2', 'btn-sm btn-light') }}
+          {{ macro.seek_button('backward', 60, 'mx-2', 'btn-sm btn-light', 'episodeSource') }}
+          {{ macro.seek_button('backward', 15, 'mx-2', 'btn-sm btn-light', 'episodeSource') }}
+          {{ macro.play_button(3, 'mx-4', 'episodeSource') }}
+          {{ macro.seek_button('forward', 15, 'mx-2', 'btn-sm btn-light', 'episodeSource') }}
+          {{ macro.seek_button('forward', 60, 'mx-2', 'btn-sm btn-light', 'episodeSource') }}
+          {{ macro.speed_button('mx-2', 'btn-sm btn-light', 'episodeSource') }}
         </div>
       </div>
     </div>
-    <div>
-      {{ macro.progress_bar(true) }}
+    <div class="d-none d-lg-block">
+      {{ macro.progress_bar(true, 'episodeSource') }}
     </div>
   </div>
-</div>
-
-<div class="container mt-3">
-  <na-audio-history data-target="episodePlayer"></na-audio-history>
 </div>
 
 <div class="site-interactive-player container min-vh-100">
   <div class="row">
     <div class="player-main-col col-12">
-      <div class="d-flex flex-column min-vh-100">
+      <div class="content-column d-flex flex-column">
         <div class="flex-grow-0 bg-white position-sticky top-0 pt-3" role="navigation" style="z-index: 1000;">
           <ul class="player-tabs nav nav-tabs">
             {% for tab in tabs|filter(tab => tab.enabled) %}
@@ -217,21 +114,10 @@
           </div>
           {% endfor %}
         </div>
-        <div class="bottom-holder flex-grow-0 position-sticky p-2" style="bottom: 0; z-index: 1000;">
-          <div class="d-md-flex">
-            <div class="btn-toolbar d-flex align-items-center justify-content-center mb-2 mb-md-0">
-              {{ macro.seek_button('backward', 15, 'ml-3 mr-2', 'btn-sm btn-outline-dark') }}
-              {{ macro.play_button(2, 'mx-2') }}
-              {{ macro.seek_button('forward', 15, 'mx-2', 'btn-sm btn-outline-dark') }}
-              {{ macro.speed_button('ml-2 mr-3 d-lg-none', 'btn-sm btn-outline-dark') }}
-            </div>
-            {{ macro.progress_bar(false) }}
-          </div>
-        </div>
       </div>
     </div>
     <div class="player-aside-col col-xl-4 d-none">
-      <div class="d-flex flex-column min-vh-100 max-vh-100 position-sticky top-0 pt-3">
+      <div class="chat-column d-flex flex-column position-sticky top-0 pt-3">
         <div class="flex-shrink-0">
           <ul class="nav nav-tabs">
             <li class="nav-item">

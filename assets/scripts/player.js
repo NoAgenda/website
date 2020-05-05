@@ -3,14 +3,19 @@ import 'waud.js';
 
 class AudioPlayerElement extends HTMLElement {
   connectedCallback() {
-    this.src = this.getAttribute('data-src');
-    this.timestamp = +this.getAttribute('data-timestamp') || 0;
-    this.playing = false;
     this.duration = 0;
+    this.hash = false;
+    this.playerUrl = false;
+    this.playing = false;
     this.speed = 1;
+    this.src = null;
+    this.timestamp = 0;
+    this.title = null;
 
     Waud.init();
+  }
 
+  init() {
     this.sound = new WaudSound(this.src, {
       autoplay: false,
       loop: false,
@@ -27,15 +32,40 @@ class AudioPlayerElement extends HTMLElement {
         }));
       },
     });
+  }
 
-    requestAnimationFrame(this.step.bind(this));
+  load(src, title, hash, playerUrl) {
+    if (this.sound) {
+      this.sound.destroy();
+      this.sound = null;
+
+      this.playing = false;
+      this.timestamp = 0;
+
+      this.dispatchEvent(new Event('audio-pause'));
+    }
+
+    this.src = src;
+    this.title = title;
+    this.hash = hash;
+    this.playerUrl = playerUrl;
+
+    this.dispatchEvent(new CustomEvent('track-loaded', {
+      detail: {
+        title: this.title,
+        playerUrl: this.playerUrl,
+      },
+    }));
+
+    this.init();
   }
 
   play() {
-    if (this.sound.isPlaying()) {
+    if (this.playing) {
       return;
     }
 
+    this.playing = true;
     this.sound.play();
 
     const timestamp = this.sound.getTime() || 0;
@@ -44,21 +74,24 @@ class AudioPlayerElement extends HTMLElement {
       this.sound.setTime(this.timestamp);
     }
 
+    requestAnimationFrame(this.step.bind(this));
+
     this.dispatchEvent(new Event('audio-start'));
   }
 
   pause() {
-    if (!this.sound.isPlaying()) {
+    if (!this.playing) {
       return;
     }
 
+    this.playing = false;
     this.sound.pause();
 
     this.dispatchEvent(new Event('audio-pause'));
   }
 
   seekTimestamp(timestamp) {
-    if (this.sound.isPlaying()) {
+    if (this.playing) {
       this.sound.setTime(timestamp);
     } else {
       this.timestamp = timestamp;
@@ -82,7 +115,7 @@ class AudioPlayerElement extends HTMLElement {
   }
 
   step() {
-    if (this.sound.isPlaying()) {
+    if (this.sound && this.playing) {
       const timestamp = this.sound.getTime() || 0;
 
       if (this.timestamp !== timestamp) {
@@ -94,34 +127,77 @@ class AudioPlayerElement extends HTMLElement {
           },
         }));
       }
-    }
 
-    requestAnimationFrame(this.step.bind(this));
+      requestAnimationFrame(this.step.bind(this));
+    }
   }
 }
 
-class AudioPlayButtonElement extends HTMLElement {
-  connectedCallback() {
-    this.player = document.getElementById(this.getAttribute('data-target'));
+export class HTMLAudioAwareElement extends HTMLElement {
+  getSource() {
+    const targetId = this.dataset.target;
 
+    if (!targetId) {
+      return false;
+    }
+
+    return document.getElementById(targetId);
+  }
+
+  isActiveSource() {
+    return !this.getSource() || this.getSource().hash === getPlayer().hash;
+  }
+}
+
+class AudioPlayButtonElement extends HTMLAudioAwareElement {
+  constructor(props) {
+    super(props);
+
+    this.play = this.play.bind(this);
+    this.pause = this.pause.bind(this);
+    this.onStartAudio = this.onStartAudio.bind(this);
+    this.onPauseAudio = this.onPauseAudio.bind(this);
+  }
+
+  connectedCallback() {
     this.playButton = this.querySelector('[data-play-button]');
     this.pauseButton = this.querySelector('[data-pause-button]');
 
-    this.playButton.addEventListener('click', () => {
-      this.player.play();
-    });
+    this.playButton.addEventListener('click', this.play);
+    this.pauseButton.addEventListener('click', this.pause);
+    getPlayer().addEventListener('audio-start', this.onStartAudio);
+    getPlayer().addEventListener('audio-pause', this.onPauseAudio);
 
-    this.pauseButton.addEventListener('click', () => {
-      this.player.pause();
-    });
-
-    this.player.addEventListener('audio-start', () => {
+    if (this.isActiveSource() && getPlayer().playing) {
       this.updateButtons(true);
-    });
+    }
+  }
 
-    this.player.addEventListener('audio-pause', () => {
-      this.updateButtons(false);
-    });
+  disconnectedCallback() {
+    this.playButton.removeEventListener('click', this.play);
+    this.pauseButton.removeEventListener('click', this.pause);
+    getPlayer().removeEventListener('audio-start', this.onStartAudio);
+    getPlayer().removeEventListener('audio-pause', this.onPauseAudio);
+  }
+
+  play() {
+    if (!this.isActiveSource()) {
+      this.getSource().initialize();
+    }
+
+    getPlayer().play();
+  }
+
+  pause() {
+    getPlayer().pause();
+  }
+
+  onStartAudio() {
+    this.updateButtons(true);
+  }
+
+  onPauseAudio() {
+    this.updateButtons(false);
   }
 
   updateButtons(playing) {
@@ -138,191 +214,325 @@ class AudioPlayButtonElement extends HTMLElement {
   }
 }
 
-class AudioProgressButtonElement extends HTMLElement {
+class AudioProgressButtonElement extends HTMLAudioAwareElement {
+  constructor(props) {
+    super(props);
+
+    this.onTrackLoaded = this.onTrackLoaded.bind(this);
+    this.onClick = this.onClick.bind(this);
+  }
+
   connectedCallback() {
-    this.player = document.getElementById(this.getAttribute('data-target'));
+    this.diff = this.dataset.direction === 'forward' ? +this.dataset.seconds : -this.dataset.seconds;
 
-    const direction = this.getAttribute('data-direction');
-    const seconds = this.getAttribute('data-seconds');
+    getPlayer().addEventListener('track-loaded', this.onTrackLoaded);
+    this.addEventListener('click', this.onClick);
 
-    const diff = direction === 'forward' ? +seconds : -seconds;
+    this.onTrackLoaded();
+  }
 
-    this.addEventListener('click', () => {
-      this.player.seekTimestamp(this.player.timestamp + diff);
-    });
+  disconnectedCallback() {
+    getPlayer().removeEventListener('track-loaded', this.onTrackLoaded);
+    this.removeEventListener('click', this.onClick);
+  }
+
+  onTrackLoaded() {
+    if (this.isActiveSource()) {
+      this.style.display = 'block';
+    } else {
+      this.style.display = 'none';
+    }
+  }
+
+  onClick() {
+    if (this.isActiveSource()) {
+      getPlayer().seekTimestamp(getPlayer().timestamp + this.diff);
+    }
   }
 }
 
-class AudioSpeedButtonElement extends HTMLElement {
-  connectedCallback() {
-    this.player = document.getElementById(this.getAttribute('data-target'));
+class AudioSpeedButtonElement extends HTMLAudioAwareElement {
+  constructor(props) {
+    super(props);
 
     this.currentSpeed = 0;
     this.speeds = [1, 1.5, 2, 0.75, 1];
 
-    this.addEventListener('click', () => {
-      this.player.setSpeed(this.speeds[this.currentSpeed + 1]);
-    });
+    this.onTrackLoaded = this.onTrackLoaded.bind(this);
+    this.onAudioSpeedChange = this.onAudioSpeedChange.bind(this);
+    this.onClick = this.onClick.bind(this);
+  }
 
-    const button = this.querySelector('[data-btn]');
+  connectedCallback() {
+    this.button = this.querySelector('[data-btn]');
 
-    this.player.addEventListener('audio-speed', event => {
-      this.currentSpeed = this.speeds.indexOf(event.detail.speed);
+    getPlayer().addEventListener('track-loaded', this.onTrackLoaded);
+    getPlayer().addEventListener('audio-speed', this.onAudioSpeedChange);
+    this.addEventListener('click', this.onClick);
 
-      button.setAttribute('aria-label', 'Set speed to × ' + this.speeds[this.currentSpeed + 1]);
-      this.querySelector('[data-speed]').innerHTML = this.speeds[this.currentSpeed];
-    });
+    this.onTrackLoaded();
+  }
+
+  disconnectedCallback() {
+    getPlayer().removeEventListener('track-loaded', this.onTrackLoaded);
+    getPlayer().removeEventListener('audio-speed', this.onAudioSpeedChange);
+    this.removeEventListener('click', this.onClick);
+  }
+
+  onTrackLoaded() {
+    if (this.isActiveSource()) {
+      this.style.display = 'block';
+    } else {
+      this.style.display = 'none';
+    }
+  }
+
+  onAudioSpeedChange(event) {
+    this.currentSpeed = this.speeds.indexOf(event.detail.speed);
+
+    this.button.setAttribute('aria-label', 'Set speed to × ' + this.speeds[this.currentSpeed + 1]);
+    this.querySelector('[data-speed]').innerHTML = this.speeds[this.currentSpeed];
+  }
+
+  onClick() {
+    if (this.isActiveSource()) {
+      getPlayer().setSpeed(this.speeds[this.currentSpeed + 1]);
+    }
   }
 }
 
-class AudioTimestampButtonElement extends HTMLElement {
+class AudioTimestampButtonElement extends HTMLAudioAwareElement {
   connectedCallback() {
-    this.player = document.getElementById(this.getAttribute('data-target'));
+    this.addEventListener('click', this.onClick);
+  }
 
-    const seconds = this.getAttribute('data-timestamp');
+  disconnectedCallback() {
+    this.removeEventListener('click', this.onClick);
+  }
 
-    this.addEventListener('click', () => {
-      this.player.seekTimestamp(seconds);
+  onClick() {
+    if (!this.isActiveSource()) {
+      this.getSource().initialize();
+    }
 
-      if (!this.player.playing) {
-        this.player.play();
-      }
-    });
+    getPlayer().seekTimestamp(this.dataset.timestamp);
+
+    if (!getPlayer().playing) {
+      getPlayer().play();
+    }
   }
 }
 
-class AudioProgressBarElement extends HTMLElement {
-  connectedCallback() {
-    this.player = document.getElementById(this.getAttribute('data-target'));
+class AudioProgressBarElement extends HTMLAudioAwareElement {
+  constructor(props) {
+    super(props);
 
+    this.onTrackLoaded = this.onTrackLoaded.bind(this);
+    this.onAudioLoaded = this.onAudioLoaded.bind(this);
+    this.onAudioStep = this.onAudioStep.bind(this);
+    this.onClick = this.onClick.bind(this);
+    this.onMouseEnter = this.onMouseEnter.bind(this);
+    this.onMouseMove = this.onMouseMove.bind(this);
+    this.onMouseLeave = this.onMouseLeave.bind(this);
+    this.onTouchStart = this.onTouchStart.bind(this);
+    this.onTouchMove = this.onTouchMove.bind(this);
+    this.onTouchEnd = this.onTouchEnd.bind(this);
+  }
+
+  connectedCallback() {
     this.progress = this.querySelector('[data-progress]');
     this.duration = this.querySelector('[data-duration]');
     this.seek = this.querySelector('[data-seek]');
     this.progressBar = this.querySelector('[data-progress-bar]');
     this.durationBar = this.querySelector('[data-duration-bar]');
     this.pointer = this.querySelector('[data-pointer]');
+    this.playingTitle = this.querySelector('[data-title]');
 
     this.movingNewTimestamp = 0;
 
-    this.duration.innerHTML = formatTime(this.player.duration);
-    this.player.addEventListener('audio-loaded', () => {
-      this.duration.innerHTML = formatTime(this.player.duration);
-    });
+    this.duration.innerHTML = formatTime(getPlayer().duration);
 
-    this.stepListener = event => {
-      const percentage = ((event.detail.timestamp / this.player.duration) * 100) || 0;
+    getPlayer().addEventListener('track-loaded', this.onTrackLoaded);
+    getPlayer().addEventListener('audio-loaded', this.onAudioLoaded);
 
-      this.progress.innerHTML = formatTime(event.detail.timestamp);
-      this.progressBar.style.width = percentage + '%';
-    };
+    getPlayer().addEventListener('audio-step', this.onAudioStep);
+    getPlayer().addEventListener('audio-seek', this.onAudioStep);
 
-    this.player.addEventListener('audio-step', this.stepListener);
-    this.player.addEventListener('audio-seek', this.stepListener);
+    this.durationBar.addEventListener('mouseenter', this.onMouseEnter);
+    this.durationBar.addEventListener('touchstart', this.onTouchStart);
 
-    this.enterListener = pageX => {
-      this.pointer.classList.remove('d-none');
+    this.durationBar.addEventListener('mouseleave', this.onMouseLeave);
+    this.durationBar.addEventListener('touchend', this.onTouchEnd);
 
-      this.duration.classList.add('d-none');
-      this.progress.classList.add('d-none');
+    this.durationBar.addEventListener('mousemove', this.onMouseMove);
+    this.durationBar.addEventListener('touchmove', this.onMouseLeave);
 
-      this.querySelectorAll('[data-pointer-hide]').forEach(element => element.classList.add('d-none'));
+    this.durationBar.addEventListener('click', this.onClick);
+  }
 
-      this.seek.classList.remove('d-none');
+  onTrackLoaded(event) {
+    if (this.playingTitle) {
+      this.playingTitle.innerHTML = `<a href="${event.detail.playerUrl}">${event.detail.title}</a>`;
+    }
 
-      this.moveListener(pageX);
-    };
+    if (this.isActiveSource()) {
+      this.style.display = 'block';
+    } else {
+      this.style.display = 'none';
+    }
+  }
 
-    this.durationBar.addEventListener('mouseenter', event => this.enterListener(event));
-    this.durationBar.addEventListener('touchstart', event => {
-      event.preventDefault();
+  onAudioLoaded() {
+    this.duration.innerHTML = formatTime(getPlayer().duration);
+  }
 
-      const touch = event.changedTouches[0];
+  onAudioStep(event) {
+    const percentage = ((event.detail.timestamp / getPlayer().duration) * 100) || 0;
 
-      this.enterListener(touch.pageX);
-    });
+    this.progress.innerHTML = formatTime(event.detail.timestamp);
+    this.progressBar.style.width = percentage + '%';
+  }
 
-    this.leaveListener = touch => {
-      this.pointer.classList.add('d-none');
+  onClick(event) {
+    const durationBarRect = this.durationBar.getBoundingClientRect();
 
-      this.duration.classList.remove('d-none');
-      this.progress.classList.remove('d-none');
+    let distance = event.pageX - durationBarRect.left;
+    const percentage = distance / durationBarRect.width;
+    let newTimestamp = percentage * getPlayer().duration;
 
-      this.querySelectorAll('[data-pointer-hide]').forEach(element => element.classList.remove('d-none'));
+    if (newTimestamp < 0) {
+      newTimestamp = 0;
+    } else if (newTimestamp > getPlayer().duration) {
+      newTimestamp = getPlayer().duration - 1;
+    }
 
-      this.seek.classList.add('d-none');
+    getPlayer().seekTimestamp(newTimestamp);
+  }
 
-      if (touch) {
-        this.player.seekTimestamp(this.movingNewTimestamp);
-      }
-    };
+  onInputStart(pageX) {
+    this.pointer.classList.remove('d-none');
 
-    this.durationBar.addEventListener('mouseleave', () => this.leaveListener(false));
-    this.durationBar.addEventListener('touchend', () => this.leaveListener(true));
+    this.duration.classList.add('d-none');
+    this.progress.classList.add('d-none');
 
-    this.moveListener = (pageX) => {
-      const durationBarRect = this.durationBar.getBoundingClientRect();
+    this.querySelectorAll('[data-pointer-hide]').forEach(element => element.classList.add('d-none'));
 
-      let distance = pageX - durationBarRect.left;
-      const percentage = distance / durationBarRect.width;
-      let newTimestamp = percentage * this.player.duration;
+    this.seek.classList.remove('d-none');
 
-      if (newTimestamp < 0) {
-        distance = 1;
-        newTimestamp = 0;
-      } else if (newTimestamp > this.player.duration) {
-        distance = durationBarRect.width - 1;
-        newTimestamp = this.player.duration;
-      }
+    this.onInputMove(pageX);
+  }
 
-      this.pointer.style.left = (distance - 1) + 'px';
+  onInputMove(pageX) {
+    const durationBarRect = this.durationBar.getBoundingClientRect();
 
-      this.movingNewTimestamp = newTimestamp;
-      this.seek.innerHTML = formatTime(newTimestamp);
+    let distance = pageX - durationBarRect.left;
+    const percentage = distance / durationBarRect.width;
+    let newTimestamp = percentage * getPlayer().duration;
 
-      if (!this.seek.hasAttribute('data-still')) {
-        const seekRect = this.seek.getBoundingClientRect();
-        let seekLeft = distance - (seekRect.width / 2) - 1;
-        const maxSeekLeft = durationBarRect.width - seekRect.width;
+    if (newTimestamp < 0) {
+      distance = 1;
+      newTimestamp = 0;
+    } else if (newTimestamp > getPlayer().duration) {
+      distance = durationBarRect.width - 1;
+      newTimestamp = getPlayer().duration;
+    }
 
-        if (seekLeft < 0) {
-          seekLeft = 0;
-        } else if (seekLeft > maxSeekLeft) {
-          seekLeft = maxSeekLeft;
-        }
+    this.pointer.style.left = (distance - 1) + 'px';
 
-        this.seek.style.left = seekLeft + 'px';
-      }
-    };
+    this.movingNewTimestamp = newTimestamp;
+    this.seek.innerHTML = formatTime(newTimestamp);
 
-    this.durationBar.addEventListener('mousemove', event => this.moveListener(event.pageX));
-    this.durationBar.addEventListener('touchmove', event => {
-      event.preventDefault();
+    if (!this.seek.hasAttribute('data-still')) {
+      const seekRect = this.seek.getBoundingClientRect();
+      let seekLeft = distance - (seekRect.width / 2) - 1;
+      const maxSeekLeft = durationBarRect.width - seekRect.width;
 
-      const touch = event.changedTouches[0];
-
-      this.moveListener(touch.pageX);
-    });
-
-    this.durationBar.addEventListener('click', event => {
-      const durationBarRect = this.durationBar.getBoundingClientRect();
-
-      let distance = event.pageX - durationBarRect.left;
-      const percentage = distance / durationBarRect.width;
-      let newTimestamp = percentage * this.player.duration;
-
-      if (newTimestamp < 0) {
-        newTimestamp = 0;
-      } else if (newTimestamp > this.player.duration) {
-        newTimestamp = this.player.duration - 1;
+      if (seekLeft < 0) {
+        seekLeft = 0;
+      } else if (seekLeft > maxSeekLeft) {
+        seekLeft = maxSeekLeft;
       }
 
-      this.player.seekTimestamp(newTimestamp);
-    });
+      this.seek.style.left = seekLeft + 'px';
+    }
+  }
+
+  onInputEnd(touch) {
+    this.pointer.classList.add('d-none');
+
+    this.duration.classList.remove('d-none');
+    this.progress.classList.remove('d-none');
+
+    this.querySelectorAll('[data-pointer-hide]').forEach(element => element.classList.remove('d-none'));
+
+    this.seek.classList.add('d-none');
+
+    if (touch) {
+      getPlayer().seekTimestamp(this.movingNewTimestamp);
+    }
+  }
+
+  onMouseEnter(event) {
+    this.onInputStart(event.pageX);
+  }
+
+  onMouseMove(event) {
+    this.onInputMove(event.pageX);
+  }
+
+  onMouseLeave() {
+    this.onInputEnd(false);
+  }
+
+  onTouchStart(event) {
+    event.preventDefault();
+
+    const touch = event.changedTouches[0];
+
+    this.onInputStart(touch.pageX);
+  }
+
+  onTouchMove(event) {
+    event.preventDefault();
+
+    const touch = event.changedTouches[0];
+
+    this.onInputMove(touch.pageX);
+  }
+
+  onTouchEnd() {
+    this.onInputEnd(true);
+  }
+}
+
+class AudioSourceElement extends HTMLElement {
+  connectedCallback() {
+    this.hash = JSON.stringify([this.dataset.title, this.dataset.src]);
+  }
+
+  initialize() {
+    getPlayer().load(this.dataset.src, this.dataset.title, this.hash, document.location.toString());
+  }
+}
+
+class AudioToolbarElement extends HTMLElement {
+  constructor(props) {
+    super(props);
+
+    this.onLoadTrack = this.onTrackLoaded.bind(this);
+  }
+
+  connectedCallback() {
+    getPlayer().addEventListener('track-loaded', this.onTrackLoaded);
+  }
+
+  onTrackLoaded() {
+    this.style.display = 'block';
   }
 }
 
 jQuery(document).ready(() => {
-  const player = document.getElementById('episodePlayer');
+  const player = document.getElementById('audioPlayer');
 
   if (!player) {
     return;
@@ -363,22 +573,22 @@ jQuery(document).ready(() => {
     }
 
     parts.removeClass('part-highlight');
-
-    if (lastActivePart) {
-      lastActivePart.addClass('part-highlight');
-
-      if (lastActivePart.data('name')) {
-        jQuery('[data-chapter-name]').text('Now playing: ' + lastActivePart.data('name'));
-      }
-      else {
-        jQuery('[data-chapter-name]').text('');
-      }
-    }
   };
 
   player.addEventListener('audio-seek', event => updateInterface(event.detail.timestamp));
   player.addEventListener('audio-step', event => updateInterface(event.detail.timestamp));
 });
+
+let globalAudioPlayer = false;
+export function getPlayer() {
+  if (globalAudioPlayer) {
+    return globalAudioPlayer;
+  }
+
+  globalAudioPlayer = document.getElementById('audioPlayer');
+
+  return globalAudioPlayer;
+}
 
 function ariaBoolean(value) {
   return value ? 'true' : 'false';
@@ -416,3 +626,5 @@ window.customElements.define('na-audio-seek', AudioProgressButtonElement);
 window.customElements.define('na-audio-speed', AudioSpeedButtonElement);
 window.customElements.define('na-audio-timestamp', AudioTimestampButtonElement);
 window.customElements.define('na-audio-progress', AudioProgressBarElement);
+window.customElements.define('na-audio-source', AudioSourceElement);
+window.customElements.define('na-audio-toolbar', AudioToolbarElement);
