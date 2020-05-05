@@ -25,7 +25,7 @@ class NetworkSiteRepository extends AbstractRepository
 
     public function getHomepageSites()
     {
-        $results = $this->findBy(null, null, 12);
+        $results = $this->findBy(null, null, 6);
 
         return $results;
     }

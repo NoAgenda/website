@@ -38,6 +38,9 @@ php bin/console app:crawl transcripts
 # Crawl Adam's Mastodon feed for the latest bat signal
 php bin/console app:crawl bat_signal
 
+# Crawl Youtube for new Animated No Agenda videos
+php bin/console app:crawl youtube
+
 # Download an episode's cover and recording file
 php bin/console app:crawl files --episode <code>
 

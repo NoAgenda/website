@@ -10,6 +10,7 @@ use App\Crawling\EpisodeRecordingTimeMatcher;
 use App\Crawling\EpisodeShownotesCrawler;
 use App\Crawling\FeedCrawler;
 use App\Crawling\TranscriptCrawler;
+use App\Crawling\YoutubeCrawler;
 use App\Entity\Episode;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -55,6 +56,11 @@ class CrawlCommand extends Command implements ServiceSubscriberInterface
             },
             'transcripts' => function () {
                 $crawler = $this->transcriptCrawler();
+
+                $crawler->crawl();
+            },
+            'youtube' => function () {
+                $crawler = $this->youtubeCrawler();
 
                 $crawler->crawl();
             },
@@ -151,6 +157,11 @@ class CrawlCommand extends Command implements ServiceSubscriberInterface
     }
 
     private function transcriptCrawler(): TranscriptCrawler
+    {
+        return $this->container->get(__METHOD__);
+    }
+
+    private function youtubeCrawler(): YoutubeCrawler
     {
         return $this->container->get(__METHOD__);
     }

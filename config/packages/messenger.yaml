@@ -14,6 +14,7 @@ framework:
             'App\Message\CrawlEpisodeTranscript': crawler
             'App\Message\CrawlFeed': crawler
             'App\Message\CrawlTranscripts': crawler
+            'App\Message\CrawlYoutube': crawler
             'App\Message\EpisodeNotification': crawler
             'App\Message\MatchEpisodeChatMessages': crawler
             'App\Message\MatchEpisodeRecordingTime': crawler

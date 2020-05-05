@@ -11,6 +11,7 @@ use App\Message\CrawlEpisodeShownotes;
 use App\Message\CrawlEpisodeTranscript;
 use App\Message\CrawlFeed;
 use App\Message\CrawlTranscripts;
+use App\Message\CrawlYoutube;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\EasyAdminController;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\Request;
@@ -139,6 +140,7 @@ class AdminController extends EasyAdminController
                 'bat_signal' => CrawlBatSignal::class,
                 'feed' => CrawlFeed::class,
                 'transcripts' => CrawlTranscripts::class,
+                'youtube' => CrawlYoutube::class,
             ];
 
             if (isset($messages[$task])) {

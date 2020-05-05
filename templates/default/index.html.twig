@@ -51,6 +51,23 @@
     <a class="btn btn-link" href="{{ path('archive') }}">View the full archive <span class="far fa-angle-right ml-1" aria-hidden="true"></span></a>
   </div>
 
+  <h2 class="my-3">Animated No Agenda</h2>
+  <div class="row">
+    {% for video in videos %}
+      <div class="col-md-4">
+        <div class="mx-auto mb-3">
+          <a href="https://www.youtube.com/watch?v={{ video.youtubeId }}" ><img src="https://i.ytimg.com/vi/{{ video.youtubeId }}/mqdefault.jpg" alt="{{ video.title }}" class="img-fluid img-thumbnail w-100"/></a>
+          <div>
+            <a href="https://www.youtube.com/watch?v={{ video.youtubeId }}">{{ video.title|replace({'Animated No Agenda - ': ''}) }}</a>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  <div class="d-flex justify-content-end">
+    <a class="btn btn-link" href="https://www.youtube.com/channel/UCihyXCKCTKZ0H6OQRpKN5qQ/videos">Watch more Animated No Agenda videos <span class="fab fa-youtube ml-1" aria-hidden="true"></span></a>
+  </div>
+
   <div class="my-3">
     <div class="row">
       <div class="col-md md-separator">
