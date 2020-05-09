@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Crawling\Shownotes\ShownotesParserFactory;
 use App\Entity\Episode;
 use App\Form\EpisodePartCorrectionType;
 use App\Form\EpisodePartSuggestionType;
@@ -14,21 +15,20 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\SerializerInterface;
 
 class PlayerController extends Controller
 {
-    private $serializer;
+    private $shownotesParserFactory;
 
     private $episodeRepository;
     private $episodePartRepository;
 
     public function __construct(
-        SerializerInterface $serializer,
+        ShownotesParserFactory $shownotesParserFactory,
         EpisodeRepository $episodeRepository,
         EpisodePartRepository $episodePartRepository
     ) {
-        $this->serializer = $serializer;
+        $this->shownotesParserFactory = $shownotesParserFactory;
 
         $this->episodeRepository = $episodeRepository;
         $this->episodePartRepository = $episodePartRepository;
@@ -71,12 +71,15 @@ class PlayerController extends Controller
             'action' => $this->generateUrl('episode_part_suggestion'),
         ]);
 
+        $shownotes = $this->shownotesParserFactory->get($episode);
+
         return $this->render('player/episode.html.twig', [
             'timestamp' => $timestamp,
             'transcriptTimestamp' => $transcriptTimestamp,
 
             'episode' => $episode,
             'parts' => $parts,
+            'shownotes' => $shownotes,
             'transcriptLines' => $lines ?? [],
 
             'partCorrectionForm' => $partCorrectionForm->createView(),

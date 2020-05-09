@@ -39,6 +39,9 @@ easy_admin:
             property: 'published_at'
             type: 'date'
           -
+            property: 'shownotes_uri'
+            type: 'text'
+          -
             property: 'special'
             type: 'checkbox'
             label: 'Special episode'

@@ -20,7 +20,7 @@ services:
 
   App\Crawling\:
     resource: '../src/Crawling'
-    exclude: '../src/Crawling/CrawlingLogger.php'
+    exclude: '../src/Crawling/{CrawlingLogger.php,Shownotes}'
     calls:
       - ['setLogger', ['@App\Crawling\CrawlingLogger']]
 

@@ -87,6 +87,13 @@ class Episode
      *
      * @ORM\Column(type="text", nullable=true)
      */
+    private $shownotesUri;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="text", nullable=true)
+     */
     private $transcriptUri;
 
     /**
@@ -109,13 +116,6 @@ class Episode
      * @ORM\Column(type="datetime", nullable=true)
      */
     private $recordedAt;
-
-    /**
-     * @var array|null
-     *
-     * @ORM\Column(type="json", nullable=true)
-     */
-    private $shownotes;
 
     /**
      * @var array|null
@@ -242,6 +242,18 @@ class Episode
         return $this;
     }
 
+    public function getShownotesUri(): ?string
+    {
+        return $this->shownotesUri;
+    }
+
+    public function setShownotesUri(?string $uri): self
+    {
+        $this->shownotesUri = $uri;
+
+        return $this;
+    }
+
     public function getTranscriptUri(): ?string
     {
         return $this->transcriptUri;
@@ -286,18 +298,6 @@ class Episode
     public function setRecordedAt(?\DateTimeInterface $recordedAt): self
     {
         $this->recordedAt = $recordedAt;
-
-        return $this;
-    }
-
-    public function getShownotes(): ?array
-    {
-        return $this->shownotes;
-    }
-
-    public function setShownotes(?array $shownotes): self
-    {
-        $this->shownotes = $shownotes;
 
         return $this;
     }

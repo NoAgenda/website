@@ -591,6 +591,9 @@
     "twig/twig": {
         "version": "2.x-dev"
     },
+    "vipnytt/opmlparser": {
+        "version": "dev-master"
+    },
     "webmozart/assert": {
         "version": "1.3-dev"
     },

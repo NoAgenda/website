@@ -20,22 +20,17 @@
   </div>
 </div>
 
-{% if episode.shownotes %}
+{% if shownotes %}
 <div class="mb-3 px-3">
-  {% if episode.shownotes.executiveProducers|default([])|length > 0 %}
-  <p>Executive Producers: {{ episode.shownotes.executiveProducers|join(', ')|raw }}</p>
-  {% endif %}
-  {% if episode.shownotes.associateExecutiveProducers|default([])|length > 0 %}
-  <p>Associate Executive Producers: {{ episode.shownotes.associateExecutiveProducers|join(', ')|raw }}</p>
-  {% endif %}
+  {% for credit_title, credits in shownotes.credits %}
+    <p>{{ credit_title }}: {{ credits is iterable ? credits|join(', ')|raw : credits|raw }}</p>
+  {% endfor %}
+</div>
+{% endif %}
 
-  {% if episode.shownotes.coverArtist|default(null) != null %}
-  <p>Cover Art by {{ episode.shownotes.coverArtist|replace({' href=': ' target="_blank" href='})|raw }}</p>
-  {% endif %}
-
-  {% if episode.shownotes.url|default(null) != null %}
-  <a href="{{ episode.shownotes.url }}" class="btn btn-outline-primary" target="_blank">Visit the Shownotes for episode {{ episode.code }}</a>
-  {% endif %}
+{% if episode.shownotesUri %}
+<div class="mb-3 px-3">
+  <a href="{{ episode.shownotesUri }}" class="btn btn-outline-primary" target="_blank">Visit the shownotes for episode {{ episode.code }}</a>
 </div>
 {% endif %}
 

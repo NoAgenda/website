@@ -46,6 +46,7 @@
         "symfony/web-link": "^4.4",
         "symfony/webpack-encore-bundle": "^1.7",
         "symfony/yaml": "^4.4",
+        "vipnytt/opmlparser": "dev-master",
         "white-october/pagerfanta-bundle": "^1.2"
     },
     "require-dev": {
