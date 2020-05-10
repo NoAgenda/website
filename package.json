@@ -9,9 +9,9 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-pro": "^5.9.0",
-    "@symfony/webpack-encore": "^0.28.3",
+    "@symfony/webpack-encore": "^0.29.1",
     "bootstrap": "^4.1.1",
-    "file-loader": "^1.1.10",
+    "file-loader": "^6.0.0",
     "jquery": "^3.3.1",
     "node-sass": "^4.9.0",
     "popper.js": "^1.14.3",
