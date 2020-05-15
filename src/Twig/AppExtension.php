@@ -2,10 +2,7 @@
 
 namespace App\Twig;
 
-use App\Repository\UserTokenRepository;
-use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
+use App\UserTokenManager;
 use Twig\Extension\AbstractExtension;
 use Twig\Extension\GlobalsInterface;
 use Twig\TwigFilter;
@@ -13,15 +10,11 @@ use Twig\TwigFunction;
 
 class AppExtension extends AbstractExtension implements GlobalsInterface
 {
-    private $requestStack;
-    private $tokenStorage;
-    private $userTokenRepository;
+    private $userTokenManager;
 
-    public function __construct(RequestStack $requestStack, TokenStorageInterface $tokenStorage, UserTokenRepository $userTokenRepository)
+    public function __construct(UserTokenManager $userTokenManager)
     {
-        $this->requestStack = $requestStack;
-        $this->tokenStorage = $tokenStorage;
-        $this->userTokenRepository = $userTokenRepository;
+        $this->userTokenManager = $userTokenManager;
     }
 
     public function getFilters(): array
@@ -47,7 +40,7 @@ class AppExtension extends AbstractExtension implements GlobalsInterface
     public function getGlobals(): array
     {
         return [
-            'authenticated' => $this->isAuthenticated(),
+            'authenticated' => $this->userTokenManager->isAuthenticated(),
             'analytics_code' => $_SERVER['APP_ANALYTICS_CODE'] ?? false,
         ];
     }
@@ -99,30 +92,5 @@ class AppExtension extends AbstractExtension implements GlobalsInterface
         }
 
         return sprintf('%sh %sm', $hours, $minutes);
-    }
-
-    private function isAuthenticated(): bool
-    {
-        $token = $this->tokenStorage->getToken();
-
-        if ($token && $token->getUser() instanceof UserInterface) {
-            return true;
-        }
-
-        $request = $this->requestStack->getMasterRequest();
-
-        if (!$request) {
-            return false;
-        }
-
-        $string = $request->cookies->get('guest_token');
-
-        $token = $this->userTokenRepository->findOneBy(['token' => $string]);
-
-        if (!$token) {
-            return false;
-        }
-
-        return true;
     }
 }

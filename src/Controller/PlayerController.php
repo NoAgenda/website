@@ -4,9 +4,10 @@ namespace App\Controller;
 
 use App\Crawling\Shownotes\ShownotesParserFactory;
 use App\Entity\Episode;
-use App\Form\EpisodePartCorrectionType;
-use App\Form\EpisodePartSuggestionType;
-use App\Repository\EpisodePartRepository;
+use App\Entity\EpisodeChapter;
+use App\Entity\EpisodeChapterDraft;
+use App\Repository\EpisodeChapterDraftRepository;
+use App\Repository\EpisodeChapterRepository;
 use App\Repository\EpisodeRepository;
 use App\Utilities;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -18,20 +19,21 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class PlayerController extends Controller
 {
-    private $shownotesParserFactory;
-
+    private $episodeChapterDraftRepository;
+    private $episodeChapterRepository;
     private $episodeRepository;
-    private $episodePartRepository;
+    private $shownotesParserFactory;
 
     public function __construct(
         ShownotesParserFactory $shownotesParserFactory,
         EpisodeRepository $episodeRepository,
-        EpisodePartRepository $episodePartRepository
+        EpisodeChapterRepository $episodeChapterRepository,
+        EpisodeChapterDraftRepository $episodeChapterDraftRepository
     ) {
         $this->shownotesParserFactory = $shownotesParserFactory;
-
         $this->episodeRepository = $episodeRepository;
-        $this->episodePartRepository = $episodePartRepository;
+        $this->episodeChapterRepository = $episodeChapterRepository;
+        $this->episodeChapterDraftRepository = $episodeChapterDraftRepository;
     }
 
     /**
@@ -61,15 +63,16 @@ class PlayerController extends Controller
             $lines = json_decode(file_get_contents(sprintf('%s/transcripts/%s.json', $_SERVER['APP_STORAGE_PATH'], $episode->getCode())));
         }
 
-        $parts = $this->episodePartRepository->findBy(['episode' => $episode, 'enabled' => true], ['startsAt' => 'ASC']);
+        $chapters = array_merge(
+            $this->episodeChapterRepository->findByEpisode($episode),
+            $this->episodeChapterDraftRepository->findNewSuggestionsByEpisode($episode)
+        );
 
-        $partCorrectionForm = $this->createForm(EpisodePartCorrectionType::class, null, [
-            'action' => $this->generateUrl('episode_part_correction'),
-        ]);
-
-        $partSuggestionForm = $this->createForm(EpisodePartSuggestionType::class, null, [
-            'action' => $this->generateUrl('episode_part_suggestion'),
-        ]);
+        usort($chapters, function ($a, $b) {
+            /** @var EpisodeChapter|EpisodeChapterDraft $a */
+            /** @var EpisodeChapter|EpisodeChapterDraft $b */
+            return $a->getStartsAt() - $b->getStartsAt();
+        });
 
         $shownotes = $this->shownotesParserFactory->get($episode);
 
@@ -78,12 +81,9 @@ class PlayerController extends Controller
             'transcriptTimestamp' => $transcriptTimestamp,
 
             'episode' => $episode,
-            'parts' => $parts,
+            'chapters' => $chapters,
             'shownotes' => $shownotes,
             'transcriptLines' => $lines ?? [],
-
-            'partCorrectionForm' => $partCorrectionForm->createView(),
-            'partSuggestionForm' => $partSuggestionForm->createView(),
         ]);
     }
 

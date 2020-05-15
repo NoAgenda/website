@@ -3,8 +3,7 @@ easy_admin:
   design:
     menu:
       - { entity: 'Episode', label: 'Episodes', icon: 'podcast', default: true }
-      - { entity: 'EpisodePart', label: 'Chapters', icon: 'bookmark' }
-      - { entity: 'EpisodePartCorrection', label: 'Chapter corrections', icon: 'lightbulb-o' }
+      - { entity: 'EpisodeChapter', label: 'Chapters', icon: 'bookmark' }
       - { entity: 'User', label: 'Users', icon: 'user' }
       - { label: 'Network' }
       - { entity: 'NetworkSite', label: 'Network sites', icon: 'globe' }

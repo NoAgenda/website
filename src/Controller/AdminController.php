@@ -2,9 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\Episode;
-use App\Entity\EpisodePart;
-use App\Entity\EpisodePartCorrection;
 use App\Message\CrawlBatSignal;
 use App\Message\CrawlEpisodeFiles;
 use App\Message\CrawlEpisodeShownotes;
@@ -20,75 +17,6 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class AdminController extends EasyAdminController
 {
-    public function approveAllAction(): Response
-    {
-        $id = $this->request->query->get('id');
-
-        $episode = $this->em->getRepository(Episode::class)->find($id);
-        $parts = $this->em->getRepository(EpisodePart::class)->findBy([
-            'episode' => $episode,
-        ]);
-
-        foreach ($parts as $part) {
-            foreach ($part->getCorrections() as $correction) {
-                $this->approve($correction, $part);
-            }
-        }
-
-        $this->em->flush();
-
-        $this->addFlash('success', 'Corrections approved.');
-
-        return $this->redirectToRoute('easyadmin', array(
-            'action' => 'list',
-            'entity' => 'EpisodePartCorrection',
-        ));
-    }
-
-    public function approveAction(): Response
-    {
-        $id = $this->request->query->get('id');
-
-        $correction = $this->em->getRepository(EpisodePartCorrection::class)->find($id);
-        $correctionPart = $correction->getPart();
-
-        $this->approve($correction, $correctionPart);
-
-        $this->em->flush();
-
-        $this->addFlash('success', 'Correction approved.');
-
-        return $this->redirectToRoute('easyadmin', array(
-            'action' => 'show',
-            'entity' => 'EpisodePartCorrection',
-            'id' => $id,
-        ));
-    }
-
-    public function dismissAction(): Response
-    {
-        $id = $this->request->query->get('id');
-
-        $correction = $this->em->getRepository(EpisodePartCorrection::class)->find($id);
-
-        $correction
-            ->setResult(null)
-            ->setHandled(true)
-        ;
-
-        $this->em->persist($correction);
-
-        $this->em->flush();
-
-        $this->addFlash('success', 'Correction dismissed.');
-
-        return $this->redirectToRoute('easyadmin', array(
-            'action' => 'show',
-            'entity' => 'EpisodePartCorrection',
-            'id' => $id,
-        ));
-    }
-
     /**
      * @Route("/chat_logs/{date}", name="admin_chat_logs", defaults={"date"="today"})
      */
@@ -282,58 +210,5 @@ class AdminController extends EasyAdminController
         $recordingPath = sprintf('%s/livestream_recordings/recording_%s%s.asf', $_SERVER['APP_STORAGE_PATH'], $date, $time);
 
         return $this->file($recordingPath);
-    }
-
-    private function approve(EpisodePartCorrection $correction, EpisodePart $correctionPart)
-    {
-        if ($correction->getPosition() !== null) {
-            $part = (new EpisodePart())
-                ->setEpisode($correctionPart->getEpisode())
-                ->setCreator($correction->getCreator())
-                ->setName($correction->getName())
-                ->setStartsAt($correction->getStartsAt())
-            ;
-
-            $correction
-                ->setResult($part)
-                ->setHandled(true)
-            ;
-
-            $this->em->persist($correction);
-            $this->em->persist($part);
-        } elseif ($correction->getAction() !== null) {
-            switch ($correction->getAction()) {
-                case 'remove';
-                    $correctionPart
-                        ->setEnabled(false)
-                    ;
-
-                    break;
-
-                case 'name';
-                    $correctionPart
-                        ->setName($correction->getName())
-                    ;
-
-                    break;
-
-                case 'startsAt';
-                    $correctionPart
-                        ->setStartsAt($correction->getStartsAt())
-                    ;
-
-                    break;
-            }
-
-            $correction
-                ->setResult($correctionPart)
-                ->setHandled(true)
-            ;
-
-            $this->em->persist($correction);
-            $this->em->persist($correctionPart);
-        } else {
-            throw new \Exception('Invalid correction');
-        }
     }
 }

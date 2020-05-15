@@ -18,8 +18,8 @@
   }
 }
 
-.site-episode-parts {
-  .episode-actions {
+.site-episode-chapters {
+  .chapter-actions {
     min-width: 50px;
 
     @include media-breakpoint-up(md) {
@@ -27,14 +27,8 @@
     }
   }
 
-  .site-episode-correction {
-    .correction-action {
-      display: none;
-    }
-
-    &:hover .correction-action {
-      display: inline-block;
-    }
+  .chapter-highlight {
+    background: #f2f2f2;
   }
 
   .text-sm {
@@ -43,10 +37,6 @@
     @include media-breakpoint-up(md) {
       font-size: .95rem;
     }
-  }
-
-  .part-highlight {
-    background: #f2f2f2;
   }
 }
 

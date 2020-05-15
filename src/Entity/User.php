@@ -255,7 +255,25 @@ class User implements UserInterface, \Serializable
     {
         if (!in_array('ROLE_SUPER_ADMIN', $this->roles)) {
             if ($admin) {
-                $this->roles = ['ROLE_USER', 'ROLE_ADMIN'];
+                $this->roles = ['ROLE_ADMIN'];
+            } else {
+                $this->roles = ['ROLE_USER'];
+            }
+        }
+
+        return $this;
+    }
+
+    public function isMod(): bool
+    {
+        return in_array('ROLE_MOD', $this->roles) || $this->isAdmin();
+    }
+
+    public function setMod(bool $mod): self
+    {
+        if (!$this->isAdmin()) {
+            if ($mod) {
+                $this->roles = ['ROLE_MOD'];
             } else {
                 $this->roles = ['ROLE_USER'];
             }

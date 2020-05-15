@@ -150,8 +150,8 @@ export class HTMLAudioAwareElement extends HTMLElement {
 }
 
 class AudioPlayButtonElement extends HTMLAudioAwareElement {
-  constructor(props) {
-    super(props);
+  constructor() {
+    super();
 
     this.play = this.play.bind(this);
     this.pause = this.pause.bind(this);
@@ -215,8 +215,8 @@ class AudioPlayButtonElement extends HTMLAudioAwareElement {
 }
 
 class AudioProgressButtonElement extends HTMLAudioAwareElement {
-  constructor(props) {
-    super(props);
+  constructor() {
+    super();
 
     this.onTrackLoaded = this.onTrackLoaded.bind(this);
     this.onClick = this.onClick.bind(this);
@@ -252,8 +252,8 @@ class AudioProgressButtonElement extends HTMLAudioAwareElement {
 }
 
 class AudioSpeedButtonElement extends HTMLAudioAwareElement {
-  constructor(props) {
-    super(props);
+  constructor() {
+    super();
 
     this.currentSpeed = 0;
     this.speeds = [1, 1.5, 2, 0.75, 1];
@@ -324,8 +324,8 @@ class AudioTimestampButtonElement extends HTMLAudioAwareElement {
 }
 
 class AudioProgressBarElement extends HTMLAudioAwareElement {
-  constructor(props) {
-    super(props);
+  constructor() {
+    super();
 
     this.onTrackLoaded = this.onTrackLoaded.bind(this);
     this.onAudioLoaded = this.onAudioLoaded.bind(this);
@@ -368,6 +368,25 @@ class AudioProgressBarElement extends HTMLAudioAwareElement {
     this.durationBar.addEventListener('touchmove', this.onMouseLeave);
 
     this.durationBar.addEventListener('click', this.onClick);
+  }
+
+  disconnectedCallback() {
+    getPlayer().removeEventListener('track-loaded', this.onTrackLoaded);
+    getPlayer().removeEventListener('audio-loaded', this.onAudioLoaded);
+
+    getPlayer().removeEventListener('audio-step', this.onAudioStep);
+    getPlayer().removeEventListener('audio-seek', this.onAudioStep);
+
+    this.durationBar.removeEventListener('mouseenter', this.onMouseEnter);
+    this.durationBar.removeEventListener('touchstart', this.onTouchStart);
+
+    this.durationBar.removeEventListener('mouseleave', this.onMouseLeave);
+    this.durationBar.removeEventListener('touchend', this.onTouchEnd);
+
+    this.durationBar.removeEventListener('mousemove', this.onMouseMove);
+    this.durationBar.removeEventListener('touchmove', this.onMouseLeave);
+
+    this.durationBar.removeEventListener('click', this.onClick);
   }
 
   onTrackLoaded(event) {
@@ -516,10 +535,10 @@ class AudioSourceElement extends HTMLElement {
 }
 
 class AudioToolbarElement extends HTMLElement {
-  constructor(props) {
-    super(props);
+  constructor() {
+    super();
 
-    this.onLoadTrack = this.onTrackLoaded.bind(this);
+    this.onTrackLoaded = this.onTrackLoaded.bind(this);
   }
 
   connectedCallback() {
@@ -572,7 +591,7 @@ jQuery(document).ready(() => {
       }
     }
 
-    parts.removeClass('part-highlight');
+    parts.removeClass('chapter-highlight');
   };
 
   player.addEventListener('audio-seek', event => updateInterface(event.detail.timestamp));
@@ -608,16 +627,14 @@ export function formatTime(value) {
 
 export function serializeTime(value) {
   let values = value.split(':');
-  let result = false;
 
   if (values.length > 2) {
-    result = (+values[0]) * 60 * 60 + (+values[1]) * 60 + (+values[2]);
-  }
-  else if (values.length === 2) {
-    result = (+values[0]) * 60 + (+values[1]);
+    return (+values[0]) * 60 * 60 + (+values[1]) * 60 + (+values[2]);
+  } else if (values.length === 2) {
+    return (+values[0]) * 60 + (+values[1]);
   }
 
-  return result;
+  return +values[0];
 }
 
 window.customElements.define('na-audio', AudioPlayerElement);

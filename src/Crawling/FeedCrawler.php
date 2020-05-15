@@ -3,7 +3,7 @@
 namespace App\Crawling;
 
 use App\Entity\Episode;
-use App\Entity\EpisodePart;
+use App\Entity\EpisodeChapter;
 use App\Entity\User;
 use App\Message\CrawlEpisodeFiles;
 use App\Message\CrawlEpisodeShownotes;
@@ -131,16 +131,16 @@ class FeedCrawler
         }
 
         if ($new) {
-            $part = new EpisodePart();
+            $chapter = new EpisodeChapter();
 
-            $part
+            $chapter
                 ->setEpisode($episode)
                 ->setCreator($this->getDefaultUser())
                 ->setName('Start of Show')
                 ->setStartsAt(0)
             ;
 
-            $this->entityManager->persist($part);
+            $this->entityManager->persist($chapter);
 
             $notificationMessage = new EpisodeNotification($episode->getCode());
             $this->messenger->dispatch($notificationMessage);

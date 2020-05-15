@@ -1,5 +1,6 @@
 <div class="mb-3 px-3 no-select">
   {% include 'blocks/sharing.html.twig' with {title: 'No Agenda ' ~ episode.code ~ ': ' ~ episode.name, url: url('player', {episode: episode.code})} %}
+
   {% if is_granted('ROLE_ADMIN') %}
   <div class="bg-gray d-inline-block p-1 my-1 rounded">
     <span title="Administration Box">
@@ -7,9 +8,6 @@
     </span>
     <a class="cursor-pointer d-inline-block" href="{{ path('easyadmin', {entity: 'Episode', id: episode.id, action: 'edit'}) }}" target="_blank" title="Manage episode">
       <span class="fas fa-file-alt fa-fw fa-lg" aria-hidden="true"></span>
-    </a>
-    <a class="cursor-pointer d-inline-block" href="{{ path('easyadmin', {entity: 'Episode', id: episode.id, action: 'approveAll'}) }}" target="_blank" title="Approve all corrections">
-      <span class="fas fa-check-square fa-fw fa-lg text-success" aria-hidden="true"></span>
     </a>
   </div>
   {% endif %}
@@ -36,7 +34,6 @@
   {% endif %}
 </div>
 
-<div class="mt-3 mb-5">
-  <h4 class="px-3">Chapters</h4>
-  {% include 'player/blocks/parts.html.twig' %}
+<div class="my-5 px-3">
+  {% include 'player/blocks/chapters.html.twig' %}
 </div>

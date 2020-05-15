@@ -5,14 +5,16 @@ import 'popper.js';
 import Clipboard from './scripts/clipboard';
 import Archive from './scripts/archive';
 import PlayerChat from './scripts/player-chat';
-import PlayerCorrections from './scripts/player-corrections';
-import Token from './scripts/token';
 
+import './components/chapter-list';
+import './components/feedback-vote';
 import './components/router';
+import './components/timestamp-input';
 
 import './scripts/player';
 import './scripts/player-history';
 import './scripts/player-transcripts';
+import './scripts/token';
 
 import './app.scss';
 
@@ -20,9 +22,7 @@ import './images/placeholder.jpg';
 
 jQuery(document).ready(() => {
   new Clipboard();
-  const token = new Token();
   new PlayerChat();
-  new PlayerCorrections(token);
 
   const archiveElement = jQuery('[data-archive-container]');
 

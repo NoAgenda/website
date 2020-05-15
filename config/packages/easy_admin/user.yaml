@@ -10,6 +10,7 @@ easy_admin:
           - { property: 'email', type: 'email' }
           - { property: 'hidden', type: 'checkbox', label: 'Account is disabled by user' }
           - { property: 'admin', type: 'checkbox', label: 'Is administrator' }
+          - { property: 'mod', type: 'checkbox', label: 'Is moderator' }
           # - { property: 'roles', permission: 'ROLE_SUPER_ADMIN' }
       list:
         title: 'Users'
@@ -17,6 +18,7 @@ easy_admin:
           - 'username'
           - 'email'
           - { property: 'admin', type: 'boolean' }
+          - { property: 'mod', type: 'boolean' }
           - { property: 'hidden', type: 'boolean' }
       edit:
         title: 'Edit user'

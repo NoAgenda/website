@@ -3,7 +3,7 @@
 namespace App\DataFixtures;
 
 use App\Entity\Episode;
-use App\Entity\EpisodePart;
+use App\Entity\EpisodeChapter;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
@@ -38,7 +38,7 @@ class AppFixtures extends Fixture
                 ->setRecordingUri($data['recordingUri'])
             ;
 
-            $part = (new EpisodePart)
+            $part = (new EpisodeChapter)
                 ->setEpisode($episode)
                 ->setCreator($this->getReference('user-Woodstock'))
                 ->setName('Start of Show')

@@ -1,9 +1,18 @@
 import {getPlayer} from '../scripts/player';
+import tokenManager from '../scripts/token';
 
 const rootPath = `${window.location.protocol}//${window.location.host}`;
 
 class RouterElement extends HTMLElement {
+  constructor() {
+    super();
+
+    this.handleResponse = this.handleResponse.bind(this);
+    this.handleError = this.handleError.bind(this);
+  }
+
   connectedCallback() {
+    this.updateForms();
     this.updateLinks();
 
     window.history.replaceState(this.getCurrentState(), document.title, window.location);
@@ -18,6 +27,7 @@ class RouterElement extends HTMLElement {
       document.title = event.state.title;
       this.innerHTML = event.state.contents;
 
+      this.updateForms();
       this.updateLinks();
     };
   }
@@ -27,6 +37,24 @@ class RouterElement extends HTMLElement {
       title: document.title,
       contents: this.innerHTML,
     };
+  }
+
+  updateForms() {
+    const forms = this.querySelectorAll('form');
+
+    forms.forEach(form => {
+      form.addEventListener('submit', event => {
+        event.preventDefault();
+
+        if (form.hasAttribute('data-token-form') && !tokenManager.isAuthenticated()) {
+          tokenManager.createToken();
+
+          return false;
+        }
+
+        this.submit(form);
+      })
+    });
   }
 
   updateLinks() {
@@ -54,7 +82,7 @@ class RouterElement extends HTMLElement {
           this.navigate(path);
         });
       } else if (!internal && !tab) {
-        link.addEventListener('click', event => {
+        link.addEventListener('click', () => {
           if (getPlayer().playing) {
             link.setAttribute('target', '_blank');
           }
@@ -64,14 +92,6 @@ class RouterElement extends HTMLElement {
   }
 
   navigate(path) {
-    const errorHandler = error => {
-      alert('Failed to load the page. Please contact @woodstock@noagendasocial.com if this error keeps reoccurring.'); // todo error page?
-
-      console.error(error);
-
-      document.querySelector('#routerFade').style.display = 'none';
-    };
-
     document.querySelector('#routerFade').style.display = 'flex';
 
     fetch(path, {
@@ -79,25 +99,55 @@ class RouterElement extends HTMLElement {
         'X-Requested-With': 'XMLHttpRequest',
       },
     })
-      .then(response => {
-        response.json()
-          .then(data => {
-            this.dispatchEvent(new Event('navigating'));
-
-            document.title = data.title;
-            this.innerHTML = data.contents;
-
-            window.history.pushState(this.getCurrentState(), data.title, response.url);
-
-            this.updateLinks();
-
-            document.querySelector('#routerFade').style.display = 'none';
-          })
-          .catch(errorHandler)
-        ;
-      })
-      .catch(errorHandler)
+      .then(this.handleResponse)
+      .catch(this.handleError)
     ;
+  }
+
+  submit(formElement) {
+    document.querySelector('#routerFade').style.display = 'flex';
+
+    const data = new URLSearchParams(new FormData(formElement));
+
+    fetch(formElement.getAttribute('action') || document.location.toString(), {
+      'method': 'POST',
+      'headers': {
+        'X-Requested-With': 'XMLHttpRequest',
+      },
+      'body': data,
+    })
+      .then(this.handleResponse)
+      .catch(this.handleError)
+    ;
+  }
+
+  handleResponse(response) {
+    response.json()
+      .then(data => {
+        this.dispatchEvent(new Event('navigating'));
+
+        document.title = data.title;
+        this.innerHTML = data.contents;
+
+        window.scrollTo(0,0);
+
+        window.history.pushState(this.getCurrentState(), data.title, response.url);
+
+        this.updateForms();
+        this.updateLinks();
+
+        document.querySelector('#routerFade').style.display = 'none';
+      })
+      .catch(this.handleError)
+    ;
+  }
+
+  handleError(error) {
+    alert('Failed to load the page. Please contact @woodstock@noagendasocial.com if this error keeps reoccurring.'); // todo error page?
+
+    console.log(error);
+
+    document.querySelector('#routerFade').style.display = 'none';
   }
 }
 

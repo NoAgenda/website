@@ -10,25 +10,38 @@ class TimestampTransformer implements DataTransformerInterface
     public function transform($timestampAsInt)
     {
         if (!$timestampAsInt) {
-            return null;
+            return '';
         }
 
-        dump($timestampAsInt);die;
+        $hours = floor($timestampAsInt / 3600);
+        $timestampAsInt = $timestampAsInt - ($hours * 3600);
+        $minutes = floor($timestampAsInt / 60);
+        $seconds = $timestampAsInt - ($minutes * 60);
+
+        if ($minutes < 10) {
+            $minutes = '0' . $minutes;
+        }
+
+        if ($seconds < 10) {
+            $seconds = '0' . $seconds;
+        }
+
+        if ($hours > 0) {
+            return "$hours:$minutes:$seconds";
+        }
+
+        return "$minutes:$seconds";
     }
 
     public function reverseTransform($timestampAsString)
     {
         if (!$timestampAsString) {
-            return null;
-        }
-
-        if (!strpos($timestampAsString, ':')) {
-            throw new TransformationFailedException('Invalid timestamp format.');
+            $timestampAsString = '0';
         }
 
         $parts = explode(':', $timestampAsString);
 
-        if (count($parts) < 2 || count($parts) > 3) {
+        if (count($parts) > 3) {
             throw new TransformationFailedException('Invalid timestamp format.');
         }
 
@@ -44,8 +57,12 @@ class TimestampTransformer implements DataTransformerInterface
         else if (count($parts) === 2) {
             $hours = 0;
             list($minutes, $seconds) = $parts;
+        } else {
+            $hours = 0;
+            $minutes = 0;
+            list($seconds) = $parts;
         }
 
-        return ($hours * 3600) + ($minutes * 60) + $seconds;
+        return (string) (($hours * 3600) + ($minutes * 60) + $seconds);
     }
 }

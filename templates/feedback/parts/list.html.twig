@@ -1,0 +1,14 @@
+<div class="list-group">
+  {% for item in items %}
+    <a href="{{ path('player', {episode: item.entity.episode.code }) }}" class="list-group-item">
+      {% set item_creator = item.entity.creator ? item.entity.creator.username : 'A guest producer' %}
+      {% set item_description = not item.entity.chapter ? 'a new chapter' : 'an improvement to a chapter' %}
+      <div>{{ item_creator }} suggested {{ item_description }} for episode {{ item.entity.episode.code }}:</div>
+      <strong>{{ item.entity.name }}</strong>
+    </a>
+  {% else %}
+    <div class="list-group-item">
+      There are currently no new contributions.
+    </div>
+  {% endfor %}
+</div>

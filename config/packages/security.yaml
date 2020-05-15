@@ -4,7 +4,8 @@ security:
       algorithm: bcrypt
 
   role_hierarchy:
-    ROLE_ADMIN: ROLE_USER
+    ROLE_MOD: ROLE_USER
+    ROLE_ADMIN: ROLE_MOD
     ROLE_SUPER_ADMIN: [ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
 
   providers:

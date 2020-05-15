@@ -1,16 +1,18 @@
 import jQuery from 'jquery';
 
-export default class Token {
+class TokenManager {
   constructor() {
     let body = jQuery('body');
 
     this.authenticated = body.data('authenticated') === true;
 
-    this.registerEventListeners();
+    jQuery(document).ready(() => {
+      this.registerEventListeners();
+    });
   }
 
   registerEventListeners() {
-    jQuery(document).on('click', '[data-token-submit]', (event) => {
+    jQuery(document).on('click', '[data-token-submit]', event => {
       let button = jQuery(event.currentTarget);
       let error =  jQuery('[data-token-error]');
 
@@ -48,3 +50,7 @@ export default class Token {
     jQuery('#tokenModal').modal('show');
   }
 }
+
+const tokenManager = new TokenManager();
+
+export default tokenManager;

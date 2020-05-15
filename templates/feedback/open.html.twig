@@ -1,0 +1,11 @@
+{% extends 'layout.html.twig' %}
+
+{% set page_title = 'Website contributions' %}
+
+{% block content %}
+  <div class="container">
+    <h1 class="my-3">Latest website contributions</h1>
+
+    {% include 'feedback/parts/list.html.twig' %}
+  </div>
+{% endblock %}
