@@ -14,6 +14,6 @@
 {% for button in buttons %}
   {% set classes = button.active ? 'btn btn-outline-primary active mr-2' : 'btn btn-outline-primary mr-2' %}
   {% set path = button.active ? default_path : button.path %}
-  {% set name = button.active ? button.name ~ '<span class="fal fa-times ml-2" aria-hidden="true"></span>' : button.name %}
+  {% set name = button.active ? button.name ~ '<span class="fas fa-times ml-2" aria-hidden="true"></span>' : button.name %}
   <a class="{{ classes }}" href="{{ path }}">{{ name|raw }}</a>
 {% endfor %}

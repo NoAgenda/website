@@ -7,28 +7,28 @@
 {% set tabs = [
   {
     key: 'info',
-    icon: '<span class="fal fa-fw fa-info" aria-hidden="true"></span> <span class="d-md-none">' ~ episode.code ~ '</span>',
+    icon: '<span class="fas fa-fw fa-info" aria-hidden="true"></span> <span class="d-md-none">' ~ episode.code ~ '</span>',
     name: episode,
     contents: 'player/blocks/information.html.twig',
     enabled: true,
   },
   {
     key: 'shownotes',
-    icon: '<span class="fal fa-fw fa-book" aria-hidden="true"></span>',
+    icon: '<span class="fas fa-fw fa-book" aria-hidden="true"></span>',
     name: 'Shownotes',
     contents: 'player/blocks/shownotes.html.twig',
     enabled: shownotes,
   },
   {
     key: 'transcript',
-    icon: '<span class="fal fa-fw fa-list-ol" aria-hidden="true"></span>',
+    icon: '<span class="fas fa-fw fa-list-ol" aria-hidden="true"></span>',
     name: 'Transcript <span class="badge badge-secondary text-uppercase">Beta</span>',
     contents: 'player/blocks/transcript.html.twig',
     enabled: episode.transcript,
   },
   {
     key: 'chat',
-    icon: '<span class="fal fa-fw fa-smile" aria-hidden="true"></span>',
+    icon: '<span class="fas fa-fw fa-smile" aria-hidden="true"></span>',
     name: 'Troll room',
     contents: 'player/blocks/chat.html.twig',
     enabled: episode.chatMessages,
@@ -107,7 +107,7 @@
             {% if episode.chatMessages %}
             <li class="player-chat-activator nav-item ml-auto d-none d-xl-block">
               <div class="nav-link cursor-pointer" data-chat-activator>
-                <span class="fal fa-fw fa-smile" aria-hidden="true"></span> Troll room
+                <span class="far fa-fw fa-smile" aria-hidden="true"></span> Troll room
               </div>
             </li>
             {% endif %}
@@ -128,7 +128,7 @@
           <ul class="nav nav-tabs">
             <li class="nav-item">
               <div class="nav-link disabled">
-                <span class="fal fa-fw fa-smile" aria-hidden="true"></span> Troll room
+                <span class="far fa-fw fa-smile" aria-hidden="true"></span> Troll room
               </div>
             </li>
           </ul>

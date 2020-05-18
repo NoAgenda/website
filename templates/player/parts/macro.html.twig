@@ -1,10 +1,10 @@
 {% macro play_button(size, class, target) %}
   <na-audio-play class="{{ class }}" data-target="{{ target|default('') }}">
     <div class="cursor-pointer" role="button" aria-hidden="false" aria-label="Play" data-play-button>
-      <span class="fal fa-{{ size }}x fa-fw fa-play" aria-hidden="true"></span>
+      <span class="fas fa-{{ size }}x fa-fw fa-play" aria-hidden="true"></span>
     </div>
     <div class="cursor-pointer d-none" role="button" aria-hidden="true" aria-label="Pause" data-pause-button>
-      <span class="fal fa-{{ size }}x fa-fw fa-pause" aria-hidden="true"></span>
+      <span class="fas fa-{{ size }}x fa-fw fa-pause" aria-hidden="true"></span>
     </div>
   </na-audio-play>
 {% endmacro %}
@@ -21,7 +21,7 @@
     {% if target %}style="display: none;"{% endif %}
   >
     <div class="btn cursor-pointer {{ button_class }}" role="button" aria-label="{{ label }}">
-      <span class="fal {{ icon }} mr-1" aria-hidden="true"></span> {{ seconds }}s
+      <span class="fas {{ icon }} mr-1" aria-hidden="true"></span> {{ seconds }}s
     </div>
   </na-audio-seek>
 {% endmacro %}
@@ -33,7 +33,7 @@
     {% if target %}style="display: none;"{% endif %}
   >
     <div class="btn cursor-pointer {{ button_class }}" role="button" aria-label="Set speed to × 1.5" data-btn>
-      <span class="fal fa-tachometer mr-1" aria-hidden="true"></span> <span data-speed>1</span>×
+      <span class="fas fa-tachometer-alt mr-1" aria-hidden="true"></span> <span data-speed>1</span>×
     </div>
   </na-audio-speed>
 {% endmacro %}
