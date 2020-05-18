@@ -149,12 +149,6 @@
     "ocramius/proxy-manager": {
         "version": "2.2.x-dev"
     },
-    "onlinq/monitoring": {
-        "version": "1.0.0"
-    },
-    "onlinq/monitoring-bundle": {
-        "version": "1.0.0"
-    },
     "pagerfanta/pagerfanta": {
         "version": "v1.1.0"
     },

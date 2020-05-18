@@ -2,7 +2,6 @@
 
 namespace App\Crawling;
 
-use Onlinq\Monitoring\MonitoringLogger;
 use Psr\Log\AbstractLogger;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Filesystem\Filesystem;
@@ -11,10 +10,8 @@ class CrawlingLogger extends AbstractLogger
 {
     private $loggers = [];
 
-    public function __construct(MonitoringLogger $monitoringLogger)
+    public function __construct()
     {
-        $this->addLogger($monitoringLogger);
-
         $logPath = sprintf('%s/crawler_logs', $_SERVER['APP_STORAGE_PATH']);
 
         if (!is_dir($logPath)) {
@@ -33,10 +30,6 @@ class CrawlingLogger extends AbstractLogger
     public function log($level, $message, array $context = []): void
     {
         foreach ($this->loggers as $logger) {
-            if ($logger instanceof MonitoringLogger && in_array($level, ['debug', 'info'])) {
-                continue;
-            }
-
             /** @var LoggerInterface $logger */
             $logger->log($level, $message, $context);
         }

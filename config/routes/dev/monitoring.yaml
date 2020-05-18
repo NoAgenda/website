@@ -1,2 +1,0 @@
-onlinq_monitoring:
-  resource: '@OnlinqMonitoringBundle/Resources/config/routing/diagnostics.xml'

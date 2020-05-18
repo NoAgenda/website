@@ -3,10 +3,6 @@
     "type": "project",
     "license": "proprietary",
     "minimum-stability": "stable",
-    "repositories": [
-        {"type": "github", "url": "git@github.com:codedmonkey/onlinq-monitoring.git"},
-        {"type": "github", "url": "git@github.com:codedmonkey/onlinq-monitoring-bundle.git"}
-    ],
     "require": {
         "php": "^7.2",
         "ext-ctype": "*",
@@ -19,8 +15,6 @@
         "easycorp/easyadmin-bundle": "^2.1",
         "laminas/laminas-feed": "^2.10",
         "liip/imagine-bundle": "^2.1",
-        "onlinq/monitoring": "1.1.x-dev",
-        "onlinq/monitoring-bundle": "1.1.x-dev",
         "phergie/phergie-irc-client-react": "^3.5",
         "php-http/guzzle6-adapter": "^2.0",
         "php-http/httplug-pack": "^1.2",
@@ -82,8 +76,7 @@
     "scripts": {
         "auto-scripts": {
             "cache:clear": "symfony-cmd",
-            "assets:install --symlink --relative %PUBLIC_DIR%": "symfony-cmd",
-            "monitor:status --quiet --log": "symfony-cmd"
+            "assets:install --symlink --relative %PUBLIC_DIR%": "symfony-cmd"
         },
         "post-install-cmd": [
             "@auto-scripts"
