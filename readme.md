@@ -13,15 +13,41 @@ You'll also need Composer and Yarn (+ NPM) to download third-party modules.
 See `.env` for configuration options (copy to `.env.local` for local configuration).
 
 ```bash
-composer install
+# Download Composer
+curl -sS https://getcomposer.org/installer | php
+
+# Install third-party PHP dependencies
+php composer.phar install
+
+# Run scripts to setup database
 php bin/console doctrine:migrations:migrate --no-interaction
-yarn && yarn run production
+php bin/console doctrine:fixtures:load --no-interaction
+php bin/console messenger:setup-transports
+
+# Download and run build tools for assets
+php bin/console app:refresh-cover-cache
+yarn && yarn run build
 ```
 
 To start, direct the web server towards the `public/` directory.
 
 For more information on running and managing the application, see the
 [Symfony 4.4 documentation](https://symfony.com/doc/4.4/index.html).
+
+### Docker
+
+To initialize this application with Docker simple start it with Docker Compose:
+
+```bash
+# Start the Docker containers
+docker-compose up -d
+
+# Open a Terminal session inside the main Docker container
+docker exec -it noagenda_apache bash
+```
+
+After opening a Terminal session for the first time, simply run the installation
+commands inside the Docker container to get started.
 
 ## Crawling
 

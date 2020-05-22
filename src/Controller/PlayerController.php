@@ -59,8 +59,9 @@ class PlayerController extends Controller
             $timestamp = $transcriptTimestamp;
         }
 
-        if ($episode->hasTranscript()) {
-            $lines = json_decode(file_get_contents(sprintf('%s/transcripts/%s.json', $_SERVER['APP_STORAGE_PATH'], $episode->getCode())));
+        $transcriptPath = sprintf('%s/transcripts/%s.json', $_SERVER['APP_STORAGE_PATH'], $episode->getCode());
+        if ($episode->hasTranscript() && file_exists($transcriptPath)) {
+            $lines = json_decode(file_get_contents($transcriptPath));
         }
 
         $chapters = array_merge(
