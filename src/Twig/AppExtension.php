@@ -41,7 +41,6 @@ class AppExtension extends AbstractExtension implements GlobalsInterface
     {
         return [
             'authenticated' => $this->userTokenManager->isAuthenticated(),
-            'analytics_code' => $_SERVER['APP_ANALYTICS_CODE'] ?? false,
         ];
     }
 
