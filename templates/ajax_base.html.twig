@@ -4,6 +4,7 @@
 {% set output = {
   'title': page_title,
   'contents': body,
+  'authenticated': authenticated,
 } %}
 
 {{ output|json_encode|raw }}

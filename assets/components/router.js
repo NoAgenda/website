@@ -26,6 +26,7 @@ class RouterElement extends HTMLElement {
 
       document.title = event.state.title;
       this.innerHTML = event.state.contents;
+      tokenManager.authenticated = data.authenticated;
 
       this.updateForms();
       this.updateLinks();
@@ -128,6 +129,7 @@ class RouterElement extends HTMLElement {
 
         document.title = data.title;
         this.innerHTML = data.contents;
+        tokenManager.authenticated = data.authenticated;
 
         window.scrollTo(0,0);
 
