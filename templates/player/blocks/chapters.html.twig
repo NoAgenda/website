@@ -12,9 +12,11 @@
         <div class="d-flex w-100 justify-content-between">
           <div class="d-flex">
             <div class="chapter-actions text-center mr-3">
-              <div class="h5 mb-2 cursor-pointer" data-player-action="play-timestamp" data-timestamp="{{ chapter.startsAt }}">
-                <span class="fas fa-play" aria-hidden="true"></span>
-              </div>
+              <na-audio-timestamp data-target="episodeSource" data-timestamp="{{ chapter.startsAt }}">
+                <div class="h5 mb-2 cursor-pointer" role="button" title="Start playing at this position">
+                  <span class="fas fa-play" aria-hidden="true"></span>
+                </div>
+              </na-audio-timestamp>
               <span class="text-sm">{{ chapter.startsAt|prettyTimestamp }}</span>
             </div>
 
