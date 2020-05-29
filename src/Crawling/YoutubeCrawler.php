@@ -24,6 +24,10 @@ class YoutubeCrawler
 
     public function crawl(): void
     {
+        if (!$_SERVER['YOUTUBE_KEY']) {
+            return;
+        }
+
         $videoRepository = $this->entityManager->getRepository(Video::class);
 
         $videoIds = $this->fetchAnimatedNaVideos();

@@ -8,6 +8,7 @@ services:
     public: false
     bind:
       $httpClient: '@httplug.client.app'
+      $mastodonClient: '@httplug.client.mastodon'
       $shownotesClient: '@httplug.client.shownotes'
 
   App\:
@@ -27,22 +28,6 @@ services:
   App\EventListener\Doctrine\:
     resource: '../src/EventListener/Doctrine'
     tags: ['doctrine.event_subscriber']
-
-  Colorfield\Mastodon\MastodonAPI:
-    factory: 'App\ApiFactory:mastodon'
-    arguments:
-      - '%env(MASTODON_AUTHORIZATION_CODE)%'
-      - '%env(MASTODON_CLIENT_KEY)%'
-      - '%env(MASTODON_CLIENT_SECRET)%'
-      - '%env(MASTODON_ACCESS_TOKEN)%'
-
-  #Rudolf\OAuth2\Client\Provider\Reddit:
-  #  factory: 'App\ApiFactory:reddit'
-  #  arguments:
-  #    - '%env(REDDIT_CLIENT_KEY)%'
-  #    - '%env(REDDIT_CLIENT_SECRET)%'
-  #    - '%env(REDDIT_USERNAME)%'
-  #    - '%env(REDDIT_PASSWORD)%'
 
   Liip\ImagineBundle\Imagine\Filter\FilterManager: '@liip_imagine.filter.manager'
   Liip\ImagineBundle\Service\FilterService: '@liip_imagine.service.filter'

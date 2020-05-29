@@ -11,7 +11,6 @@
         "ext-json": "*",
         "ext-libxml": "*",
         "ext-simplexml": "*",
-        "colorfield/mastodon-api": "dev-master",
         "easycorp/easyadmin-bundle": "^2.1",
         "laminas/laminas-feed": "^2.10",
         "liip/imagine-bundle": "^2.1",
@@ -45,7 +44,6 @@
     },
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^3.0",
-        "rtheunissen/oauth2-reddit": "^2.0",
         "symfony/browser-kit": "^4.4",
         "symfony/css-selector": "^4.4",
         "symfony/debug-pack": "^1.0",

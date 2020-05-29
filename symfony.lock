@@ -2,9 +2,6 @@
     "clue/stream-filter": {
         "version": "v1.4.0"
     },
-    "colorfield/mastodon-api": {
-        "version": "dev-master"
-    },
     "doctrine/annotations": {
         "version": "1.0",
         "recipe": {
@@ -80,6 +77,9 @@
     "doctrine/reflection": {
         "version": "v1.0.0"
     },
+    "doctrine/sql-formatter": {
+        "version": "1.0.1"
+    },
     "easycorp/easyadmin-bundle": {
         "version": "1.17",
         "recipe": {
@@ -107,14 +107,8 @@
     "imagine/imagine": {
         "version": "v0.7.1"
     },
-    "jdorn/sql-formatter": {
-        "version": "1.3.x-dev"
-    },
     "laminas/laminas-zendframework-bridge": {
         "version": "1.0.1"
-    },
-    "league/oauth2-client": {
-        "version": "2.3.0"
     },
     "liip/imagine-bundle": {
         "version": "1.8",
@@ -151,9 +145,6 @@
     },
     "pagerfanta/pagerfanta": {
         "version": "v1.1.0"
-    },
-    "paragonie/random_compat": {
-        "version": "v2.0.17"
     },
     "phergie/phergie-irc-client-react": {
         "version": "3.5.1"
@@ -265,9 +256,6 @@
     },
     "react/stream": {
         "version": "v1.1.0"
-    },
-    "rtheunissen/oauth2-reddit": {
-        "version": "v2.0.2"
     },
     "sensio/framework-extra-bundle": {
         "version": "4.0",

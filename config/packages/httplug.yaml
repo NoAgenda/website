@@ -12,6 +12,18 @@ httplug:
       plugins:
         - 'httplug.plugin.content_length'
         - 'httplug.plugin.redirect'
+    mastodon:
+      http_methods_client: true
+      plugins:
+        - 'httplug.plugin.content_length'
+        - 'httplug.plugin.redirect'
+        - add_host:
+            host: https://noagendasocial.com
+        - add_path:
+            path: /api/v1
+        - header_defaults:
+            headers:
+              'Authorization': 'Bearer %env(MASTODON_ACCESS_TOKEN)%'
     shownotes:
       http_methods_client: true
       plugins:

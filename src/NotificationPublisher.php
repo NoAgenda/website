@@ -3,18 +3,23 @@
 namespace App;
 
 use App\Entity\Episode;
-use Colorfield\Mastodon\MastodonAPI;
+use Http\Client\Common\HttpMethodsClient;
+//use Http\Discovery\Psr17FactoryDiscovery;
+//use Http\Message\MultipartStream\MultipartStreamBuilder;
+use Liip\ImagineBundle\Service\FilterService;
 use Symfony\Component\Routing\RouterInterface;
 
 class NotificationPublisher
 {
-    private $mastodonApi;
+    private $filterService;
+    private $httpClient;
     private $router;
 
-    public function __construct(RouterInterface $router, ?MastodonAPI $mastodonApi)
+    public function __construct(RouterInterface $router, HttpMethodsClient $mastodonClient, FilterService $filterService)
     {
         $this->router = $router;
-        $this->mastodonApi = $mastodonApi;
+        $this->httpClient = $mastodonClient;
+        $this->filterService = $filterService;
     }
 
     public function publishEpisode(Episode $episode)
@@ -23,37 +28,53 @@ class NotificationPublisher
             return;
         }
 
-        $path = $this->router->generate('player', ['episode' => $episode->getCode()], RouterInterface::ABSOLUTE_URL);
-        $path = str_replace(['localhost:8033', 'localhost'], 'noagendaexperience.com', $path);
+        $code = $episode->getCode();
 
-        $title = sprintf('No Agenda Episode %s - %s', $episode->getCode(), $episode->getName());
+        $path = $this->router->generate('player', ['episode' => $code], RouterInterface::ABSOLUTE_URL);
+        $path = str_replace(['localhost:8033', 'localhost'], 'www.noagendaexperience.com', $path);
+        $path = str_replace('http://', 'https://', $path);
 
-        if ($this->mastodonApi) {
-            // todo add episode art as media file
-            // see https://docs.joinmastodon.org/methods/statuses/ and https://docs.joinmastodon.org/methods/statuses/media/
+        $title = sprintf('No Agenda Episode %s - %s', $code, $episode->getName());
 
-            $this->mastodonApi->post('/statuses', [
+        if ($_SERVER['MASTODON_ACCESS_TOKEN']) {
+            /*
+            The following code is a failed attempt at adding the episode cover to the Mastodon toot.
+            I think it's because it collides with metadata for the link to the episode player.
+            It's still here for reference purposes because it should work when not including a link in the toot.
+
+            $filename = "${code}.png";
+            $coverPath = sprintf('%s/episode_covers/%s.png', $_SERVER['APP_STORAGE_PATH'], $code);
+
+            $streamFactory = Psr17FactoryDiscovery::findStreamFactory();
+            $builder = new MultipartStreamBuilder($streamFactory);
+            $builder
+                ->addResource('file', file_get_contents($coverPath), ['filename' => $filename])
+                ->addResource('description', sprintf('Artwork for No Agenda episode %s', $code))
+            ;
+
+            $multipartStream = $builder->build();
+
+            $mediaResponse = $this->httpClient->post('/media', [
+                'Content-Type' => sprintf('multipart/form-data; boundary="%s"', $builder->getBoundary()),
+            ], $multipartStream);
+
+            if ($mediaResponse->getStatusCode() > 200) {
+                throw new \Exception('Failed to upload media to Mastodon.');
+            }
+
+            $mediaData = json_decode($mediaResponse->getBody()->getContents(), true);
+            */
+
+            $messageParameters = [
                 'status' => "$title $path",
-            ]);
-        }
-
-        /*
-        if ($this->redditApi) {
-            $client = $this->redditApi->getHttpClient();
-
-            $message = [
-                'title' => $title,
-                'url' => $path,
-                'sr' => 'trollroom',
-                'api_type' => 'json',
-                'kind' => 'link',
-                // 'resubmit' => 'true',
+                // 'media_ids' => [$mediaData['id']],
             ];
 
-            $client->request('post', 'https://oauth.reddit.com/api/submit', [
-                'form_params' => $message,
-            ]);
+            $messageResponse = $this->httpClient->post('/statuses', [], http_build_query($messageParameters));
+
+            if ($messageResponse->getStatusCode() > 200) {
+                throw new \Exception('Failed to upload episode notification to Mastodon.');
+            }
         }
-        */
     }
 }

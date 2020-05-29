@@ -3,8 +3,8 @@
 namespace App\Crawling;
 
 use App\Entity\BatSignal;
-use Colorfield\Mastodon\MastodonAPI;
 use Doctrine\ORM\EntityManagerInterface;
+use Http\Client\Common\HttpMethodsClient;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
 
@@ -12,12 +12,12 @@ class BatSignalCrawler
 {
     use LoggerAwareTrait;
 
-    private $api;
+    private $httpClient;
     private $entityManager;
 
-    public function __construct(?MastodonAPI $api, EntityManagerInterface $entityManager)
+    public function __construct(HttpMethodsClient $mastodonClient, EntityManagerInterface $entityManager)
     {
-        $this->api = $api;
+        $this->httpClient = $mastodonClient;
         $this->entityManager = $entityManager;
         $this->logger = new NullLogger();
     }
@@ -50,13 +50,21 @@ class BatSignalCrawler
 
     private function crawlBatSignal(): ?BatSignal
     {
-        if (!$this->api) {
+        if (!$_SERVER['MASTODON_ACCESS_TOKEN']) {
             $this->logger->critical('Failed to initialize Mastodon API to fetch bat signal.');
 
             return null;
         }
 
-        $entries = $this->api->get('/accounts/1/statuses');
+        $response = $this->httpClient->get('/accounts/1/statuses');
+
+        if ($response->getStatusCode() > 200) {
+            $this->logger->critical('Failed to fetch messages from No Agenda Social.');
+
+            return null;
+        }
+
+        $entries = json_decode($response->getBody()->getContents(), true);
 
         $post = false;
 
