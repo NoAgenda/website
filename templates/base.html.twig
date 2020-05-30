@@ -13,6 +13,9 @@
     {% if page_description %}<meta name="description" content="{{ page_description }}">{% endif %}
     <link rel="icon" href="{{ asset('/favicon.ico') }}">
 
+    {% block metatags %}
+    {% endblock %}
+
     {% block stylesheets %}
       {{ encore_entry_link_tags('app') }}
     {% endblock %}
