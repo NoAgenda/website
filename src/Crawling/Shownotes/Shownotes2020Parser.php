@@ -33,29 +33,41 @@ class Shownotes2020Parser implements ShownotesParserInterface
             $node['text'] = trim($node['text']);
 
             if ($node['text'] === 'Executive Producers:') {
-                foreach ($node['@outlines'] as $producerNode) {
+                foreach ($this->parseOutlines($node) as $producerNode) {
                     $credits['Executive Producers'][] = $producerNode['text'];
                 }
             } else if (substr($node['text'], 0, 20) === 'Executive Producers:') {
                 $credits['Executive Producers'] = substr($node['text'], 20);
             } else if ($node['text'] === 'Executive Producer:') {
-                foreach ($node['@outlines'] as $producerNode) {
+                foreach ($this->parseOutlines($node) as $producerNode) {
                     $credits['Executive Producers'][] = $producerNode['text'];
                 }
             } else if (substr($node['text'], 0, 19) === 'Executive Producer:') {
                 $credits['Executive Producers'] = substr($node['text'], 19);
-            } else if ($node['text'] === 'Associate Executive Producers:') {
-                foreach ($node['@outlines'] as $producerNode) {
+            } else if ($node['text'] === 'Associate Executive Producers:' || $node['text'] === 'Associate Executive Producers') {
+                foreach ($this->parseOutlines($node) as $producerNode) {
                     $credits['Associate Executive Producers'][] = $producerNode['text'];
                 }
             } else if (substr($node['text'], 0, 30) === 'Associate Executive Producers:') {
                 $credits['Associate Executive Producers'] = substr($node['text'], 30);
             } else if ($node['text'] === 'Associate Executive Producer:') {
-                foreach ($node['@outlines'] as $producerNode) {
+                foreach ($this->parseOutlines($node) as $producerNode) {
                     $credits['Associate Executive Producers'][] = $producerNode['text'];
                 }
             } else if (substr($node['text'], 0, 29) === 'Associate Executive Producer:') {
                 $credits['Associate Executive Producers'] = substr($node['text'], 29);
+            } else if ($node['text'] === 'Special Executive Producers:' || $node['text'] === 'Special Executive Producers') {
+                foreach ($this->parseOutlines($node) as $producerNode) {
+                    $credits['Special Executive Producers'][] = $producerNode['text'];
+                }
+            } else if (substr($node['text'], 0, 28) === 'Special Executive Producers:') {
+                $credits['Special Executive Producers'] = substr($node['text'], 28);
+            } else if ($node['text'] === 'Special Executive Producer:') {
+                foreach ($this->parseOutlines($node) as $producerNode) {
+                    $credits['Special Executive Producers'][] = $producerNode['text'];
+                }
+            } else if (substr($node['text'], 0, 27) === 'Special Executive Producer:') {
+                $credits['Special Executive Producers'] = substr($node['text'], 27);
             } else if (substr($node['text'], 0, 7) === 'Art By:') {
                 $credits['Cover Artist'] = substr($node['text'], 7);
             }
@@ -83,7 +95,7 @@ class Shownotes2020Parser implements ShownotesParserInterface
             $node['type'] = $node['type'] ?? 'text';
 
             if ('tabs' === $node['type']) {
-                return $node['@outlines'];
+                return $this->parseOutlines($node);
             }
         }
 
@@ -94,10 +106,19 @@ class Shownotes2020Parser implements ShownotesParserInterface
     {
         foreach ($this->getTabs() as $node) {
             if ($node['text'] === $tab) {
-                return $node['@outlines'];
+                return $this->parseOutlines($node);
             }
         }
 
         throw new \LogicException(sprintf('Invalid tab "%s" requested in shownotes for episode %s.', $tab, $this->episode->getCode()));
+    }
+
+    private function parseOutlines(?array $node): array
+    {
+        if (!isset($node['@outlines'])) {
+            return [];
+        }
+
+        return $node['@outlines'];
     }
 }

@@ -26,9 +26,9 @@ class EpisodeShownotesCrawler
     {
         libxml_use_internal_errors(true);
 
-        $frontResponse = $this->httpClient->get(sprintf('http://%s.noagendanotes.com', $episode->getCode()));
+//        $frontResponse = $this->httpClient->get(sprintf('http://%s.noagendanotes.com', $episode->getCode()));
 
-        $data['url'] = $frontResponse->getHeaderLine('Location');
+        $data['url'] = $episode->getShownotesUri();
 
         $htmlResponse = $this->httpClient->get($data['url']);
         $htmlContents = $htmlResponse->getBody()->getContents();

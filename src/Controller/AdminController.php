@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Crawling\Shownotes\ShownotesParserFactory;
+use App\Entity\Episode;
 use App\Message\CrawlBatSignal;
 use App\Message\CrawlEpisodeFiles;
 use App\Message\CrawlEpisodeShownotes;
@@ -17,6 +19,13 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class AdminController extends EasyAdminController
 {
+    private $shownotesParserFactory;
+
+    public function __construct(ShownotesParserFactory $shownotesParserFactory)
+    {
+        $this->shownotesParserFactory = $shownotesParserFactory;
+    }
+
     /**
      * @Route("/chat_logs/{date}", name="admin_chat_logs", defaults={"date"="today"})
      */
@@ -210,5 +219,34 @@ class AdminController extends EasyAdminController
         $recordingPath = sprintf('%s/livestream_recordings/recording_%s%s.asf', $_SERVER['APP_STORAGE_PATH'], $date, $time);
 
         return $this->file($recordingPath);
+    }
+
+    /**
+     * @Route("/archive/credits/{page}", name="admin_archive_credits")
+     */
+    public function archiveCreditsAction(Request $request, int $page): Response
+    {
+        $shownotes = [];
+
+        $repository = $this->getDoctrine()->getRepository(Episode::class);
+
+        $start = $page * 100;
+        $end = $start + 99;
+
+        for ($i = $start; $i <= $end; $i++) {
+            $episode = $repository->findOneByCode($i);
+
+            if ($episode) {
+                $shownote = $this->shownotesParserFactory->get($episode);
+
+                if ($shownote) {
+                    $shownotes[$episode->getCode()] = $shownote->getCredits();
+                }
+            }
+        }
+
+        return $this->render('admin/archive_credits.html.twig', [
+            'shownotes' => $shownotes,
+        ]);
     }
 }

@@ -4,7 +4,7 @@
   {% import _self as macro %}
   {% if outline['@outlines'] is defined %}
     <details class="ml-4 my-2">
-      <summary>{{ outline.text }}</summary>
+      <summary>{{ outline.text|raw }}</summary>
       {% for child_outline in outline['@outlines'] %}
         {{ macro.render_outline(child_outline) }}
       {% endfor %}
@@ -22,7 +22,7 @@
 
 {% for category in shownotes.shownotes|filter(category => category['@outlines'] is defined) %}
   <details class="mx-3 mb-3">
-    <summary>{{ category.text }}</summary>
+    <summary>{{ category.text|raw }}</summary>
     {% for outline in category['@outlines'] %}
       {{ macro.render_outline(outline) }}
     {% endfor %}
