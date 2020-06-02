@@ -368,6 +368,8 @@ class AudioProgressBarElement extends HTMLAudioAwareElement {
     this.durationBar.addEventListener('touchmove', this.onMouseLeave);
 
     this.durationBar.addEventListener('click', this.onClick);
+
+    this.onTrackLoaded();
   }
 
   disconnectedCallback() {
@@ -390,8 +392,10 @@ class AudioProgressBarElement extends HTMLAudioAwareElement {
   }
 
   onTrackLoaded(event) {
-    if (this.playingTitle) {
+    if (this.playingTitle && event) {
       this.playingTitle.innerHTML = `<a href="${event.detail.playerUrl}">${event.detail.title}</a>`;
+
+      document.querySelector('na-router').updateLinks();
     }
 
     if (this.isActiveSource()) {

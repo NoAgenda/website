@@ -30,6 +30,8 @@ class RouterElement extends HTMLElement {
 
       this.updateForms();
       this.updateLinks();
+
+      this.dispatchEvent(new Event('navigated'));
     };
   }
 
@@ -59,7 +61,11 @@ class RouterElement extends HTMLElement {
   }
 
   updateLinks() {
-    const links = this.querySelectorAll('a');
+    let links = this.querySelectorAll('a');
+
+    if (document.querySelector('na-audio-toolbar a')) {
+      links = [...links, document.querySelector('na-audio-toolbar a')];
+    }
 
     links.forEach(link => {
       const path = link.href;
@@ -139,6 +145,8 @@ class RouterElement extends HTMLElement {
         this.updateLinks();
 
         document.querySelector('#routerFade').style.display = 'none';
+
+        this.dispatchEvent(new Event('navigated'));
       })
       .catch(this.handleError)
     ;
