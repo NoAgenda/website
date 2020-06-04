@@ -39,6 +39,7 @@ class RouterElement extends HTMLElement {
     return {
       title: document.title,
       contents: this.innerHTML,
+      authenticated: tokenManager.isAuthenticated(),
     };
   }
 
