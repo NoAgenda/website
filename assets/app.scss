@@ -38,9 +38,14 @@
 }
 
 .bottom-holder {
-  background: #f2f2f2;
+  background: $tertiary;
+  color: $white;
   border-top-left-radius: $border-radius;
   border-top-right-radius: $border-radius;
+
+  a {
+    color: $white;
+  }
 }
 
 .fade-container {

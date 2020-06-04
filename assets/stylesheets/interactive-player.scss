@@ -28,7 +28,7 @@
   }
 
   .chapter-highlight {
-    background: #f2f2f2;
+    background: $info;
   }
 
   .text-sm {
@@ -76,16 +76,24 @@
   }
 
   .transcript-highlight {
-    background: #f2f2f2;
+    background: $info;
   }
 }
 
 .content-column {
   min-height: 100vh;
-  padding-bottom: 150px;
 }
 
 .chat-column {
-  min-height: calc(100vh - 50px);
-  max-height: calc(100vh - 50px);
+  min-height: 100vh;
+  max-height: 100vh;
+}
+
+na-audio-toolbar-spacer {
+  min-height: 80px;
+  display: none;
+
+  @media (max-device-width: 370px) {
+    min-height: 140px;
+  }
 }

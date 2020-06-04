@@ -60,15 +60,18 @@
         <h4>{{ episode.author }}</h4>
         <div class="btn-toolbar">
           {% if episode.duration %}
-          <div class="btn btn-sm btn-outline-light disabled mt-2 mr-2" aria-label="Duration">
-            <span class="fas fa-clock mr-1" aria-hidden="true"></span>
-            {{ episode.duration|visualTimestamp }}
-          </div>
+            <div class="btn btn-sm btn-outline-light disabled mt-2 mr-2" aria-label="Duration">
+              <span class="fas fa-clock mr-1" aria-hidden="true"></span>
+              {{ episode.duration|visualTimestamp }}
+            </div>
           {% endif %}
           <div class="btn btn-sm btn-outline-light disabled mt-2" aria-label="Publish date">
             <span class="fas fa-calendar mr-1" aria-hidden="true"></span>
             {{ episode.publishedAt|date('F jS, Y') }}
           </div>
+        </div>
+        <div class="btn-toolbar d-flex d-lg-none align-items-center justify-content-center pt-5" role="toolbar" aria-label="Player controls">
+          {{ macro.play_button(3, 'mx-4', 'episodeSource') }}
         </div>
         <div class="btn-toolbar d-none d-lg-flex align-items-center justify-content-center pt-5" role="toolbar" aria-label="Player controls">
           {{ macro.seek_button('backward', 60, 'mx-2', 'btn-sm btn-light', 'episodeSource') }}
@@ -93,42 +96,44 @@
         <div class="flex-grow-0 bg-white position-sticky top-0 pt-3" role="navigation" style="z-index: 1000;">
           <ul class="player-tabs nav nav-tabs">
             {% for tab in tabs|filter(tab => tab.enabled) %}
-            <li class="nav-item">
-              <a
-                {% set classes = ['nav-link cursor-pointer'] %}
-                {% if loop.first %}{% set classes = classes|merge(['active']) %}{% endif %}
-                {% if tab.key == 'chat' %}{% set classes = classes|merge(['d-xl-none']) %}{% endif %}
-                id="{{ tab.key }}-tab"
-                class="{{ classes|join(' ') }}"
-                href="#{{ tab.key }}"
-                role="tab"
-                data-toggle="tab"
-                aria-controls="{{ tab.key }}"
-                aria-selected="{{ loop.first ? 'true' : 'false' }}"
-                {% if tab.key == 'chat' %}data-chat-activator{% endif %}
-              >
-                {{ tab.icon|raw }}
-                <span class="d-none d-md-inline ml-1">{{ tab.name|raw }}</span>
-              </a>
-            </li>
+              <li class="nav-item">
+                <a
+                  {% set classes = ['nav-link cursor-pointer'] %}
+                  {% if loop.first %}{% set classes = classes|merge(['active']) %}{% endif %}
+                  {% if tab.key == 'chat' %}{% set classes = classes|merge(['d-xl-none']) %}{% endif %}
+                  id="{{ tab.key }}-tab"
+                  class="{{ classes|join(' ') }}"
+                  href="#{{ tab.key }}"
+                  role="tab"
+                  data-toggle="tab"
+                  aria-controls="{{ tab.key }}"
+                  aria-selected="{{ loop.first ? 'true' : 'false' }}"
+                  {% if tab.key == 'chat' %}data-chat-activator{% endif %}
+                >
+                  {{ tab.icon|raw }}
+                  <span class="d-none d-md-inline ml-1">{{ tab.name|raw }}</span>
+                </a>
+              </li>
             {% endfor %}
 
             {% if episode.chatMessages %}
-            <li class="player-chat-activator nav-item ml-auto d-none d-xl-block">
-              <div class="nav-link cursor-pointer" data-chat-activator>
-                <span class="far fa-fw fa-smile" aria-hidden="true"></span> Troll room
-              </div>
-            </li>
+              <li class="player-chat-activator nav-item ml-auto d-none d-xl-block">
+                <div class="nav-link cursor-pointer" data-chat-activator>
+                  <span class="far fa-fw fa-smile" aria-hidden="true"></span> Troll room
+                </div>
+              </li>
             {% endif %}
           </ul>
         </div>
         <div class="flex-grow-1 tab-content pt-4">
           {% for tab in tabs|filter(tab => tab.enabled) %}
-          <div class="tab-pane fade {{ loop.first ? 'active show' : '' }}" id="{{ tab.key }}" role="tabpanel" aria-labelledby="{{ tab.key }}-tab">
-            {% include tab.contents %}
-          </div>
+            <div class="tab-pane fade {{ loop.first ? 'active show' : '' }}" id="{{ tab.key }}" role="tabpanel" aria-labelledby="{{ tab.key }}-tab">
+              {% include tab.contents %}
+            </div>
           {% endfor %}
         </div>
+
+        <na-audio-toolbar-spacer></na-audio-toolbar-spacer>
       </div>
     </div>
     <div class="player-aside-col col-xl-4 d-none">
@@ -144,12 +149,12 @@
         </div>
 
         {% if episode.chatNotice %}
-        <div class="alert alert-warning alert-dismissible fade show m-0" role="alert">
-          {{ episode.chatNotice }}
-          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
+          <div class="alert alert-warning alert-dismissible fade show m-0" role="alert">
+            {{ episode.chatNotice }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
         {% endif %}
         <div class="chat-loader text-center my-4">
           <span class="fas fa-spinner fa-spin" aria-hidden="true"></span> Loading troll messages...
@@ -157,6 +162,8 @@
         <div class="chat-container flex-grow-1 ox-hidden oy-scroll my-4">
           {% include 'player/blocks/chat_container.html.twig' %}
         </div>
+
+        <na-audio-toolbar-spacer></na-audio-toolbar-spacer>
       </div>
     </div>
   </div>

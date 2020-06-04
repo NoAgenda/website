@@ -79,7 +79,7 @@ export default class PlayerChat {
     if (jQuery(window).width() >= 1200) {
       jQuery('.site-interactive-player').removeClass('container').addClass('container-fluid');
       jQuery('.player-main-col').removeClass('col-12').addClass('col-8');
-      jQuery('.player-aside-col').removeClass('d-none').addClass('.d-xl-block');
+      jQuery('.player-aside-col').removeClass('d-none').addClass('d-xl-block');
 
       let chatTab = jQuery('#chat-tabcontent');
 

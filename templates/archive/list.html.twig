@@ -12,15 +12,17 @@
 
   <div class="list-group my-3">
     {% for episode in episodes %}
-    <a class="list-group-item list-group-item-action" href="{{ path('player', {episode: episode.code}) }}">
-      <span class="float-right text-muted">
-        {{ episode.publishedAt|date('F jS, Y') }}
-      </span>
+      <a class="list-group-item list-group-item-action" href="{{ path('player', {episode: episode.code}) }}">
+        <span class="float-right text-muted">
+          {{ episode.publishedAt|date('F jS, Y') }}
+        </span>
 
-      {{ episode.code }}: {{ episode.name }}
-      {% if episode.special %}<span class="fas fa-star ml-2" aria-hidden="true"></span><span class="sr-only">(special episode)</span>{% endif %}
-    </a>
+        {{ episode.code }}: {{ episode.name }}
+        {% if episode.special %}<span class="fas fa-star ml-2" aria-hidden="true"></span><span class="sr-only">(special episode)</span>{% endif %}
+      </a>
     {% endfor %}
   </div>
+
+  <na-audio-toolbar-spacer></na-audio-toolbar-spacer>
 </div>
 {% endblock %}

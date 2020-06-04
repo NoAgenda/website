@@ -3,44 +3,46 @@
 {% set page_title = 'Archive' %}
 
 {% block content %}
-<div class="container">
-  <h1 class="my-3">Archive</h1>
+  <div class="container">
+    <h1 class="my-3">Archive</h1>
 
-  <div class="btn-toolbar my-3" role="toolbar">
-    {% include 'archive/parts/buttons.html.twig' %}
-    <div class="flex-grow-1"></div>
-    <div class="btn-group d-none d-sm-inline-flex" role="group">
-      <button type="button" class="btn btn-primary" title="List view" data-archive-layout="grid"><span class="far fa-th" aria-hidden="true"></span></button>
-      <button type="button" class="btn btn-outline-primary" title="Grid view" data-archive-layout="list"><span class="far fa-list-alt" aria-hidden="true"></span></button>
+    <div class="btn-toolbar my-3" role="toolbar">
+      {% include 'archive/parts/buttons.html.twig' %}
+      <div class="flex-grow-1"></div>
+      <div class="btn-group d-none d-sm-inline-flex" role="group">
+        <button type="button" class="btn btn-primary" title="List view" data-archive-layout="grid"><span class="far fa-th" aria-hidden="true"></span></button>
+        <button type="button" class="btn btn-outline-primary" title="Grid view" data-archive-layout="list"><span class="far fa-list-alt" aria-hidden="true"></span></button>
+      </div>
     </div>
-  </div>
 
-  <div class="row no-gutters my-3" data-archive-container>
-    {% for episode in pager.currentPageResults %}
-      <div class="col-sm-6 col-lg-3" data-archive-column>
-      {% include 'archive/parts/item.html.twig' %}
+    <div class="row no-gutters my-3" data-archive-container>
+      {% for episode in pager.currentPageResults %}
+        <div class="col-sm-6 col-lg-3" data-archive-column>
+          {% include 'archive/parts/item.html.twig' %}
+        </div>
+      {% endfor %}
     </div>
-    {% endfor %}
-  </div>
 
-  <div class="d-flex justify-content-center my-3">
-    <div class="d-md-none">
-      {{ pagerfanta(pager, 'twitter_bootstrap4', {
-        'prev_message': '<span class="fas fa-angle-left mr-2" aria-hidden="true"></span> Newer',
-        'next_message': 'Older <span class="fas fa-angle-right ml-2" aria-hidden="true"></span>',
-        'css_container_class': 'pagination m-0',
-        'omitFirstPage': true,
-        'proximity': 0,
-      }) }}
+    <div class="d-flex justify-content-center my-3">
+      <div class="d-md-none">
+        {{ pagerfanta(pager, 'twitter_bootstrap4', {
+          'prev_message': '<span class="fas fa-angle-left mr-2" aria-hidden="true"></span> Newer',
+          'next_message': 'Older <span class="fas fa-angle-right ml-2" aria-hidden="true"></span>',
+          'css_container_class': 'pagination m-0',
+          'omitFirstPage': true,
+          'proximity': 0,
+        }) }}
+      </div>
+      <div class="d-none d-md-block">
+        {{ pagerfanta(pager, 'twitter_bootstrap4', {
+          'prev_message': '<span class="fas fa-angle-left mr-2" aria-hidden="true"></span> Newer',
+          'next_message': 'Older <span class="fas fa-angle-right ml-2" aria-hidden="true"></span>',
+          'css_container_class': 'pagination m-0',
+          'omitFirstPage': true,
+        }) }}
+      </div>
     </div>
-    <div class="d-none d-md-block">
-      {{ pagerfanta(pager, 'twitter_bootstrap4', {
-        'prev_message': '<span class="fas fa-angle-left mr-2" aria-hidden="true"></span> Newer',
-        'next_message': 'Older <span class="fas fa-angle-right ml-2" aria-hidden="true"></span>',
-        'css_container_class': 'pagination m-0',
-        'omitFirstPage': true,
-      }) }}
-    </div>
+
+    <na-audio-toolbar-spacer></na-audio-toolbar-spacer>
   </div>
-</div>
 {% endblock %}

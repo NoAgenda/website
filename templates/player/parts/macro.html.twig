@@ -41,9 +41,9 @@
 {% macro progress_bar(big, target) %}
   {% set class = big ? 'py-3' : 'flex-grow-1' %}
   {% set bar_height = big ? '30' : '5' %}
-  {% set duration_color = big ? 'bg-white' : 'bg-dark' %}
-  {% set progress_color = big ? 'bg-primary' : 'bg-highlight' %}
-  {% set pointer_color = big ? 'bg-highlight' : 'bg-white' %}
+  {% set duration_color = 'bg-white' %}
+  {% set progress_color = 'bg-primary' %}
+  {% set pointer_color = 'bg-highlight' %}
 
   <na-audio-progress
     class="{{ class }}"

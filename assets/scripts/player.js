@@ -554,6 +554,30 @@ class AudioToolbarElement extends HTMLElement {
   }
 }
 
+class AudioToolbarSpacerElement extends HTMLElement {
+  constructor() {
+    super();
+
+    this.onTrackLoaded = this.onTrackLoaded.bind(this);
+  }
+
+  connectedCallback() {
+    if (getPlayer().hash) {
+      this.show();
+    } else {
+      getPlayer().addEventListener('track-loaded', this.onTrackLoaded);
+    }
+  }
+
+  onTrackLoaded() {
+    this.show();
+  }
+
+  show() {
+    this.style.display = 'block';
+  }
+}
+
 jQuery(document).ready(() => {
   const player = document.getElementById('audioPlayer');
 
@@ -649,3 +673,4 @@ window.customElements.define('na-audio-timestamp', AudioTimestampButtonElement);
 window.customElements.define('na-audio-progress', AudioProgressBarElement);
 window.customElements.define('na-audio-source', AudioSourceElement);
 window.customElements.define('na-audio-toolbar', AudioToolbarElement);
+window.customElements.define('na-audio-toolbar-spacer', AudioToolbarSpacerElement);
