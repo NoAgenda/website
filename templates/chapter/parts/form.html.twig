@@ -1,31 +1,32 @@
 <div class="row my-3">
   <div class="col-xl-5 col-lg-7 col-md-9 col-sm-12">
     {{ form_start(form, {attr: {'data-token-form': 'data-token-form'}}) }}
-    <div class="form-group">
-      <label for="episode_chapter_episode">Pick the episode:</label>
-      <input type="text" id="episode_chapter_episode" disabled="disabled" class="form-control" value="{{ episode }}">
-    </div>
-    <div class="form-group">
-      {{ form_label(form.startsAt) }}
-      <na-timestamp-input data-target="episodeSource">
-        <div class="d-flex align-items-center mb-2">
-          {{ form_widget(form.startsAt, {attr: {class: 'w-auto mr-2', placeholder: '0:00:00'}}) }}
-          <div class="btn btn-primary cursor-pointer" style="display: none;" data-retrieve>
-            Grab current player time
-          </div>
-        </div>
-        <na-audio-timestamp data-target="episodeSource" data-timestamp="{{ timestamp|default(0) }}" data-play>
-          <div class="btn btn-secondary cursor-pointer" role="button">
-            <span class="fas fa-sm fa-play" aria-hidden="true"></span>
-            <span class="ml-1">Play from this position</span>
-          </div>
-        </na-audio-timestamp>
-      </na-timestamp-input>
-    </div>
+      <div class="form-group">
+        <label for="episode_chapter_episode">Pick the episode:</label>
+        <input type="text" id="episode_chapter_episode" disabled="disabled" class="form-control" value="{{ episode }}">
+      </div>
 
-    {{ form_row(form.name) }}
+      <div class="form-group">
+        {{ form_label(form.startsAt) }}
+        <na-timestamp-input data-target="episodeSource">
+          <div class="d-md-flex align-items-center">
+            {{ form_widget(form.startsAt, {attr: {class: 'w-auto mb-2 mr-0 mr-md-2', placeholder: '0:00:00'}}) }}
+            <div class="btn btn-primary cursor-pointer mb-2" style="display: none;" data-retrieve>
+              Grab current player time
+            </div>
+          </div>
+          <na-audio-timestamp data-target="episodeSource" data-timestamp="{{ timestamp|default(0) }}" data-play>
+            <div class="btn btn-secondary cursor-pointer" role="button">
+              <span class="fas fa-sm fa-play" aria-hidden="true"></span>
+              <span class="ml-1">Play from this position</span>
+            </div>
+          </na-audio-timestamp>
+        </na-timestamp-input>
+      </div>
 
-    <input type="submit" class="btn btn-primary" value="{{ submit_label|default('Submit') }}"/>
+      {{ form_row(form.name) }}
+
+      <input type="submit" class="btn btn-primary" value="{{ submit_label|default('Submit') }}"/>
     {{ form_end(form) }}
   </div>
 </div>

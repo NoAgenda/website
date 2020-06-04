@@ -1,14 +1,41 @@
-$primary: #343a40;
+$primary: #3b3b40;
+$secondary: #81808c;
+$tertiary: #555459;
 $highlight: #e53d40;
+$info: #dfe9ed;
+
+$white: #f2f2f2;
+
 $theme-colors: (
-  "primary": $primary,
   "highlight": $highlight,
 );
 
+$body-color: #0d0d0d;
 $link-hover-color: $highlight;
 $link-hover-decoration: none;
 
 $font-family-sans-serif: Mukta;
+
+/* Color Theme Swatches in Hex */
+$Mockup-of-blank-textured-black-business-card-on-dark-wood-background-1-hex: #81808C;
+$Mockup-of-blank-textured-black-business-card-on-dark-wood-background-2-hex: #3B3B40;
+$Mockup-of-blank-textured-black-business-card-on-dark-wood-background-3-hex: #555459;
+$Mockup-of-blank-textured-black-business-card-on-dark-wood-background-4-hex: #F2F2F2;
+$Mockup-of-blank-textured-black-business-card-on-dark-wood-background-5-hex: #0D0D0D;
+
+/* Color Theme Swatches in RGBA */
+$Mockup-of-blank-textured-black-business-card-on-dark-wood-background-1-rgba: rgba(129,127,140, 1);
+$Mockup-of-blank-textured-black-business-card-on-dark-wood-background-2-rgba: rgba(59,58,63, 1);
+$Mockup-of-blank-textured-black-business-card-on-dark-wood-background-3-rgba: rgba(84,83,89, 1);
+$Mockup-of-blank-textured-black-business-card-on-dark-wood-background-4-rgba: rgba(242,242,242, 1);
+$Mockup-of-blank-textured-black-business-card-on-dark-wood-background-5-rgba: rgba(12,12,12, 1);
+
+/* Color Theme Swatches in HSLA */
+$Mockup-of-blank-textured-black-business-card-on-dark-wood-background-1-hsla: hsla(247, 5, 52, 1);
+$Mockup-of-blank-textured-black-business-card-on-dark-wood-background-2-hsla: hsla(247, 4, 24, 1);
+$Mockup-of-blank-textured-black-business-card-on-dark-wood-background-3-hsla: hsla(247, 3, 33, 1);
+$Mockup-of-blank-textured-black-business-card-on-dark-wood-background-4-hsla: hsla(0, 0, 95, 1);
+$Mockup-of-blank-textured-black-business-card-on-dark-wood-background-5-hsla: hsla(0, 0, 5, 1);
 
 @import "~bootstrap/scss/functions";
 @import "~bootstrap/scss/variables";
@@ -46,3 +73,5 @@ $font-family-sans-serif: Mukta;
 @import "~bootstrap/scss/carousel";
 @import "~bootstrap/scss/utilities";
 @import "~bootstrap/scss/print";
+
+

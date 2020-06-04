@@ -4,6 +4,8 @@
 
 {% block content %}
 <div class="container my-md-5">
+  {% include 'security/parts/notice.html.twig' %}
+
   <div class="row flex-md-row-reverse">
     <div class="col-md-6">
       {% include 'security/parts/login_form.html.twig' %}

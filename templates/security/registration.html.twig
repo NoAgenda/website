@@ -4,6 +4,8 @@
 
 {% block content %}
 <div class="container my-md-5">
+  {% include 'security/parts/notice.html.twig' %}
+
   <div class="row">
     <div class="col-md-6 border-right">
       {% include 'security/parts/registration_form.html.twig' %}

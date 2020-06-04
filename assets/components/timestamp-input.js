@@ -15,7 +15,7 @@ class TimestampInputElement extends HTMLAudioAwareElement {
     this.playButton = this.querySelector('[data-play]');
 
     if (this.isActiveSource()) {
-      this.retrieveButton.style.display = 'block';
+      this.retrieveButton.style.display = 'inline-block';
     }
 
     this.input.addEventListener('input', this.onInput);
@@ -41,7 +41,7 @@ class TimestampInputElement extends HTMLAudioAwareElement {
   }
 
   onTrackLoaded() {
-    this.retrieveButton.style.display = this.isActiveSource() ? 'block' : 'none';
+    this.retrieveButton.style.display = this.isActiveSource() ? 'inline-block' : 'none';
   }
 }
 

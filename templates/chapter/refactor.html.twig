@@ -14,7 +14,7 @@
     </div>
     <div class="card bg-info my-3">
       <div class="card-body">
-        Please check out the <a href="#" class="text-danger">guidelines</a> before suggesting an improvement.
+        Please check out the <a href="{{ path('chapter_guidelines') }}" class="text-danger">guidelines</a> before suggesting an improvement.
       </div>
     </div>
     {% include 'chapter/parts/form.html.twig' with {timestamp: draft.startsAt, submit_label: 'Submit suggestion'} %}

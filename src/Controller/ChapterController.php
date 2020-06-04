@@ -33,6 +33,14 @@ class ChapterController extends AbstractController
     }
 
     /**
+     * @Route("/guidelines/chapters", name="chapter_guidelines")
+     */
+    public function guidelines(): Response
+    {
+        return $this->render('chapter/guidelines.html.twig');
+    }
+
+    /**
      * @Route("/episode/{episode}/chapters/new", name="episode_chapter_new")
      * @ParamConverter("episode", class="App\Entity\Episode", options={"mapping": {"episode": "code"}})
      */
