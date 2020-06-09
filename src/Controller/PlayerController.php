@@ -69,7 +69,7 @@ class PlayerController extends Controller
             $this->episodeChapterDraftRepository->findNewSuggestionsByEpisode($episode)
         );
 
-        usort($chapters, function ($a, $b) {
+        uasort($chapters, function ($a, $b) {
             /** @var EpisodeChapter|EpisodeChapterDraft $a */
             /** @var EpisodeChapter|EpisodeChapterDraft $b */
             return $a->getStartsAt() - $b->getStartsAt();

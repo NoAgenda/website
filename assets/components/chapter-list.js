@@ -14,13 +14,19 @@ class ChapterListElement extends HTMLAudioAwareElement {
     this.draftsActive = true;
     this.toggleButton = this.querySelector('[data-drafts-toggle]');
 
-    this.toggleButton.addEventListener('click', this.onToggleDrafts);
     getPlayer().addEventListener('audio-step', this.onAudioStep);
+
+    if (this.toggleButton) {
+      this.toggleButton.addEventListener('click', this.onToggleDrafts);
+    }
   }
 
   disconnectedCallback() {
-    this.toggleButton.removeEventListener('click', this.onToggleDrafts);
     getPlayer().removeEventListener('audio-step', this.onAudioStep);
+
+    if (this.toggleButton) {
+      this.toggleButton.removeEventListener('click', this.onToggleDrafts);
+    }
   }
 
   onAudioStep(event) {

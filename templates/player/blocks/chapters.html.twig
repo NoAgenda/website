@@ -1,9 +1,11 @@
 <na-chapter-list data-target="episodeSource">
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h4 class="mb-0">Chapters</h4>
-    <div>
-      <div class="btn btn-outline-primary btn-sm" data-drafts-toggle>Hide suggested chapters</div>
-    </div>
+    {% if chapters|filter(chapter => chapter.draft)|length > 0 %}
+      <div>
+        <div class="btn btn-outline-primary btn-sm" data-drafts-toggle>Hide suggested chapters</div>
+      </div>
+    {% endif %}
   </div>
   <div class="site-episode-chapters list-group">
     {% for chapter in chapters %}
@@ -62,7 +64,7 @@
                       </span>
                       {% if not chapter.draft %}
                         <a class="cursor-pointer d-inline-block" href="{{ path('episode_chapter_edit', {episode: episode.code, chapter: chapter.id}) }}" title="Edit chapter">
-                          <span class="fas fa-pencil fa-fw fa-lg" aria-hidden="true"></span>
+                          <span class="fas fa-pencil-alt fa-fw fa-lg" aria-hidden="true"></span>
                         </a>
                       {% else %}
                         <a class="cursor-pointer d-inline-block" href="{{ path('episode_chapter_accept', {episode: episode.code, draft: chapter.id}) }}" title="Accept suggestion">
