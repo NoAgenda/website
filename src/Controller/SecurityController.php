@@ -6,6 +6,7 @@ use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Updates\ResetPasswordUpdater;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
@@ -232,7 +233,14 @@ class SecurityController extends Controller
 
     private function createRegistrationForm(): FormInterface
     {
-        return $this->createFormBuilder()
+        $formOptions = [
+            'constraints' => new UniqueEntity([
+                'fields' => 'username',
+            ]),
+            'data_class' => User::class,
+        ];
+
+        return $this->createFormBuilder(null, $formOptions)
             ->setAction($this->generateUrl('security_registration'))
             ->add('username', TextType::class, [
                 'required' => true,
