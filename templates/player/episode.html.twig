@@ -35,6 +35,14 @@
   },
 ] %}
 
+{% block body_attributes %}
+  {% apply spaceless %}
+    {% if transcriptTimestamp > 0 %}
+      data-transcript-timestamp="{{ transcriptTimestamp }}"
+    {% endif %}
+  {% endapply %}
+{% endblock %}
+
 {% block metatags %}
   <meta property="og:title" content="No Agenda {{ episode }}"/>
   <meta property="og:description" content="Listen to No Agenda episode {{ episode }}." />
@@ -44,10 +52,17 @@
   <meta property="og:site_name" content="No Agenda Experience"/>
 {% endblock %}
 
-{% block body %}
-  <na-audio-source id="episodeSource" data-title="{{ episode }}" data-src="{{ episode.recordingUri }}"></na-audio-source>
-
+{% block scripts %}
   {{ parent() }}
+
+  <na-audio-source
+    id="episodeSource"
+    data-title="{{ episode }}"
+    data-src="{{ episode.recordingUri }}"
+    {% if timestamp > 0 %}
+      data-start="{{ timestamp }}"
+    {% endif %}
+  ></na-audio-source>
 {% endblock %}
 
 {% block content %}

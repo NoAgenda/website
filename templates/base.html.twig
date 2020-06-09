@@ -20,7 +20,7 @@
       {{ encore_entry_link_tags('app') }}
     {% endblock %}
   </head>
-  <body data-authenticated="{{ authenticated ? 'true' : 'false' }}">
+  <body data-authenticated="{{ authenticated ? 'true' : 'false' }}" {% block body_attributes '' %}>
     <na-router>
       {% block body '' %}
     </na-router>

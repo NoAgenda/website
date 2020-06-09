@@ -531,6 +531,13 @@ class AudioProgressBarElement extends HTMLAudioAwareElement {
 class AudioSourceElement extends HTMLElement {
   connectedCallback() {
     this.hash = JSON.stringify([this.dataset.title, this.dataset.src]);
+
+    if (this.dataset.start) {
+      this.initialize();
+
+      getPlayer().timestamp = this.dataset.start;
+      getPlayer().play();
+    }
   }
 
   initialize() {
