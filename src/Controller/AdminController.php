@@ -11,6 +11,7 @@ use App\Message\CrawlEpisodeTranscript;
 use App\Message\CrawlFeed;
 use App\Message\CrawlTranscripts;
 use App\Message\CrawlYoutube;
+use App\Message\MatchEpisodeRecordingTime;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\EasyAdminController;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\Request;
@@ -85,6 +86,7 @@ class AdminController extends EasyAdminController
             }
 
             static $episodeMessages = [
+                'episode_chat' => MatchEpisodeRecordingTime::class,
                 'episode_files' => CrawlEpisodeFiles::class,
                 'episode_shownotes' => CrawlEpisodeShownotes::class,
                 'episode_transcript' => CrawlEpisodeTranscript::class,
