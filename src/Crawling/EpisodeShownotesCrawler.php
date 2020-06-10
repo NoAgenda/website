@@ -26,11 +26,12 @@ class EpisodeShownotesCrawler
     {
         libxml_use_internal_errors(true);
 
-//        $frontResponse = $this->httpClient->get(sprintf('http://%s.noagendanotes.com', $episode->getCode()));
+        $frontResponse = $this->httpClient->get(sprintf('http://%s.noagendanotes.com', $episode->getCode()));
+        $uri = $frontResponse->getHeaderLine('Location');
 
-        $data['url'] = $episode->getShownotesUri();
+        $episode->setShownotesUri($uri);
 
-        $htmlResponse = $this->httpClient->get($data['url']);
+        $htmlResponse = $this->httpClient->get($episode->getShownotesUri());
         $htmlContents = $htmlResponse->getBody()->getContents();
 
         $htmlDom = new \DOMDocument();
@@ -38,15 +39,13 @@ class EpisodeShownotesCrawler
 
         $htmlXpath = new \DOMXPath($htmlDom);
 
-        $url = $htmlXpath->query('.//link[@title="OPML"]')->item(0)->getAttribute('href');
+        $opmlUri = $htmlXpath->query('.//link[@title="OPML"]')->item(0)->getAttribute('href');
 
-        $response = $this->httpClient->get($url);
+        $response = $this->httpClient->get($opmlUri);
         $contents = $response->getBody()->getContents();
 
         $shownotesPath = sprintf('%s/shownotes/%s.xml', $_SERVER['APP_STORAGE_PATH'], $episode->getCode());
         file_put_contents($shownotesPath, $contents);
-
-        $episode->setShownotesUri($data['url']);
 
         $this->entityManager->persist($episode);
     }
