@@ -53,8 +53,6 @@
 {% endblock %}
 
 {% block scripts %}
-  {{ parent() }}
-
   <na-audio-source
     id="episodeSource"
     data-title="{{ episode }}"
@@ -63,6 +61,8 @@
       data-start="{{ timestamp }}"
     {% endif %}
   ></na-audio-source>
+
+  {{ parent() }}
 {% endblock %}
 
 {% block content %}

@@ -1,9 +1,9 @@
 {% extends 'layout.html.twig' %}
 
 {% block scripts %}
-  {{ parent() }}
-
   <na-audio-source id="episodeSource" data-title="{{ episode }}" data-src="{{ episode.recordingUri }}"></na-audio-source>
+
+  {{ parent() }}
 {% endblock %}
 
 {% block content %}
