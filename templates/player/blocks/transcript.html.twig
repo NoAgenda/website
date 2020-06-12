@@ -11,7 +11,7 @@
           class="cursor-pointer d-none d-md-inline"
           role="button"
           title="Copy link for transcript to clipboard"
-          data-clipboard="{{ url('player', {episode: episode.code, transcript: line.timestamp|prettyTimestamp}) }}"
+          data-clipboard-text="{{ url('player', {episode: episode.code, transcript: line.timestamp|prettyTimestamp}) }}"
         >
           <span class="fas fa-sm fa-link fa-fw ml-2" aria-hidden="true"></span>
         </span>

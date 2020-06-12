@@ -2,7 +2,6 @@ import 'bootstrap';
 import jQuery from 'jquery';
 import 'popper.js';
 
-import Clipboard from './scripts/clipboard';
 import Archive from './scripts/archive';
 import PlayerChat from './scripts/player-chat';
 
@@ -11,6 +10,7 @@ import './components/feedback-vote';
 import './components/router';
 import './components/timestamp-input';
 
+import './scripts/clipboard';
 import './scripts/player';
 import './scripts/player-history';
 import './scripts/player-transcripts';
@@ -21,7 +21,6 @@ import './app.scss';
 import './images/placeholder.jpg';
 
 jQuery(document).ready(() => {
-  new Clipboard();
   new PlayerChat();
 
   const archiveElement = jQuery('[data-archive-container]');

@@ -23,11 +23,8 @@
   <div
     class="cursor-pointer d-inline-block"
     title="Copy link to clipboard"
-    data-clipboard="{{ url }}"
-    {% if dynamic is defined and dynamic %}
-    data-player-data="timer-attribute"
-    data-player-attribute="data-clipboard"
-    {% endif %}
+    data-clipboard-text="{{ url }}"
+    {% if dynamic is defined and dynamic %}data-player-data="timer-attribute" data-player-attribute="data-clipboard-text"{% endif %}
   >
     <span class="fas fa-link fa-fw" aria-hidden="true"></span>
   </div>
