@@ -38,19 +38,20 @@
   </na-audio-speed>
 {% endmacro %}
 
-{% macro progress_bar(big, target) %}
-  {% set class = big ? 'py-3' : 'flex-grow-1' %}
-  {% set bar_height = big ? '30' : '5' %}
-  {% set duration_color = 'bg-white' %}
-  {% set progress_color = 'bg-primary' %}
-  {% set pointer_color = 'bg-highlight' %}
+{% macro progress_bar(size, target) %}
+  {% set class = size == 'big' ? 'py-3' : 'flex-grow-1' %}
+  {% set class = size == 'mini' ? "#{class} mt-4" : class %}
+  {% set bar_height = size == 'big' ? '30' : '5' %}
+  {% set duration_color = size == 'mini' ? 'bg-primary' : 'bg-white' %}
+  {% set progress_color = size == 'mini' ? 'bg-highlight' : 'bg-primary' %}
+  {% set pointer_color = 'bg-warning' %}
 
   <na-audio-progress
     class="{{ class }}"
     data-target="{{ target|default('') }}"
     {% if target %}style="display: none;"{% endif %}
   >
-    {% if big %}
+    {% if size == 'big' %}
       <div class="position-relative d-flex justify-content-between">
         <span aria-label="Current timestamp" data-progress>0:00</span>
         <span aria-hidden="true">&nbsp;</span>
@@ -61,7 +62,7 @@
         <div class="position-absolute {{ progress_color }} h-100" style="width: 0;" data-progress-bar></div>
         <div class="position-absolute {{ pointer_color }} h-100 d-none" style="width: 3px; z-index: 2;" data-pointer></div>
       </div>
-    {% else %}
+    {% elseif size == 'small' %}
       <div>
         <div class="d-inline-block" style="min-width: 120px;">
           <span aria-label="Current timestamp" data-progress>0:00</span>
@@ -78,6 +79,20 @@
             <div class="position-absolute {{ pointer_color }} h-100 d-none" style="width: 3px; z-index: 2;" data-pointer></div>
           </div>
         </div>
+      </div>
+    {% elseif size == 'mini' %}
+      <div class="d-flex">
+        <div aria-label="Current timestamp" style="min-width: 35px;" data-progress>0:00</div>
+        <span class="d-none" aria-hidden="true" style="min-width: 35px;" data-seek data-still>0:00</span>
+        <div class="cursor-pointer flex-grow-1 mx-3" aria-hidden="true" data-duration-bar>
+          <div class="py-2">
+            <div class="position-relative {{ duration_color }}" style="height: 5px;">
+              <div class="position-absolute {{ progress_color }} h-100" style="width: 0;" data-progress-bar></div>
+              <div class="position-absolute {{ pointer_color }} h-100 d-none" style="width: 3px; z-index: 2;" data-pointer></div>
+            </div>
+          </div>
+        </div>
+        <div aria-label="End timestamp" style="min-width: 35px;" data-duration="keep">0:00</div>
       </div>
     {% endif %}
   </na-audio-progress>

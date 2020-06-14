@@ -31,6 +31,17 @@ class AudioPlayerElement extends HTMLElement {
           },
         }));
       },
+      onend: () => {
+        this.playing = false;
+        this.timestamp = 0;
+
+        this.dispatchEvent(new CustomEvent('audio-step', {
+          detail: {
+            timestamp: 0,
+          },
+        }));
+        this.dispatchEvent(new Event('audio-pause'));
+      }
     });
   }
 
@@ -135,17 +146,31 @@ class AudioPlayerElement extends HTMLElement {
 
 export class HTMLAudioAwareElement extends HTMLElement {
   getSource() {
+    if (this.source) {
+      return this.source;
+    }
+
     const targetId = this.dataset.target;
 
     if (!targetId) {
       return false;
     }
 
-    return document.getElementById(targetId);
+    this.source = document.getElementById(targetId);
+
+    return this.source;
   }
 
   isActiveSource() {
-    return !this.getSource() || this.getSource().hash === getPlayer().hash;
+    return !this.getSource() || this.getSource().hash === this.getPlayer().hash;
+  }
+
+  getPlayer() {
+    if (this.getSource() && this.getSource().clip) {
+      return this.getSource().getPlayer();
+    } else {
+      return getPlayer();
+    }
   }
 }
 
@@ -157,6 +182,7 @@ class AudioPlayButtonElement extends HTMLAudioAwareElement {
     this.pause = this.pause.bind(this);
     this.onStartAudio = this.onStartAudio.bind(this);
     this.onPauseAudio = this.onPauseAudio.bind(this);
+    this.onStartGlobalAudio = this.onStartGlobalAudio.bind(this);
   }
 
   connectedCallback() {
@@ -165,10 +191,10 @@ class AudioPlayButtonElement extends HTMLAudioAwareElement {
 
     this.playButton.addEventListener('click', this.play);
     this.pauseButton.addEventListener('click', this.pause);
-    getPlayer().addEventListener('audio-start', this.onStartAudio);
-    getPlayer().addEventListener('audio-pause', this.onPauseAudio);
+    this.getPlayer().addEventListener('audio-start', this.onStartAudio);
+    this.getPlayer().addEventListener('audio-pause', this.onPauseAudio);
 
-    if (this.isActiveSource() && getPlayer().playing) {
+    if (this.isActiveSource() && this.getPlayer().playing) {
       this.updateButtons(true);
     }
   }
@@ -176,8 +202,8 @@ class AudioPlayButtonElement extends HTMLAudioAwareElement {
   disconnectedCallback() {
     this.playButton.removeEventListener('click', this.play);
     this.pauseButton.removeEventListener('click', this.pause);
-    getPlayer().removeEventListener('audio-start', this.onStartAudio);
-    getPlayer().removeEventListener('audio-pause', this.onPauseAudio);
+    this.getPlayer().removeEventListener('audio-start', this.onStartAudio);
+    this.getPlayer().removeEventListener('audio-pause', this.onPauseAudio);
   }
 
   play() {
@@ -185,19 +211,39 @@ class AudioPlayButtonElement extends HTMLAudioAwareElement {
       this.getSource().initialize();
     }
 
-    getPlayer().play();
+    if (this.getSource().clip) {
+      if (getPlayer().playing) {
+        getPlayer().pause();
+      }
+
+      getPlayer().addEventListener('audio-start', this.onStartGlobalAudio);
+    }
+
+    this.getPlayer().play();
   }
 
   pause() {
-    getPlayer().pause();
+    if (this.isActiveSource()) {
+      this.getPlayer().pause();
+    }
   }
 
   onStartAudio() {
-    this.updateButtons(true);
+    if (this.isActiveSource()) {
+      this.updateButtons(true);
+    }
   }
 
   onPauseAudio() {
-    this.updateButtons(false);
+    if (this.isActiveSource()) {
+      this.updateButtons(false);
+    }
+  }
+
+  onStartGlobalAudio() {
+    this.getPlayer().pause();
+
+    getPlayer().removeEventListener('audio-start', this.onStartGlobalAudio);
   }
 
   updateButtons(playing) {
@@ -225,14 +271,14 @@ class AudioProgressButtonElement extends HTMLAudioAwareElement {
   connectedCallback() {
     this.diff = this.dataset.direction === 'forward' ? +this.dataset.seconds : -this.dataset.seconds;
 
-    getPlayer().addEventListener('track-loaded', this.onTrackLoaded);
+    this.getPlayer().addEventListener('track-loaded', this.onTrackLoaded);
     this.addEventListener('click', this.onClick);
 
     this.onTrackLoaded();
   }
 
   disconnectedCallback() {
-    getPlayer().removeEventListener('track-loaded', this.onTrackLoaded);
+    this.getPlayer().removeEventListener('track-loaded', this.onTrackLoaded);
     this.removeEventListener('click', this.onClick);
   }
 
@@ -246,7 +292,7 @@ class AudioProgressButtonElement extends HTMLAudioAwareElement {
 
   onClick() {
     if (this.isActiveSource()) {
-      getPlayer().seekTimestamp(getPlayer().timestamp + this.diff);
+      this.getPlayer().seekTimestamp(this.getPlayer().timestamp + this.diff);
     }
   }
 }
@@ -266,16 +312,16 @@ class AudioSpeedButtonElement extends HTMLAudioAwareElement {
   connectedCallback() {
     this.button = this.querySelector('[data-btn]');
 
-    getPlayer().addEventListener('track-loaded', this.onTrackLoaded);
-    getPlayer().addEventListener('audio-speed', this.onAudioSpeedChange);
+    this.getPlayer().addEventListener('track-loaded', this.onTrackLoaded);
+    this.getPlayer().addEventListener('audio-speed', this.onAudioSpeedChange);
     this.addEventListener('click', this.onClick);
 
     this.onTrackLoaded();
   }
 
   disconnectedCallback() {
-    getPlayer().removeEventListener('track-loaded', this.onTrackLoaded);
-    getPlayer().removeEventListener('audio-speed', this.onAudioSpeedChange);
+    this.getPlayer().removeEventListener('track-loaded', this.onTrackLoaded);
+    this.getPlayer().removeEventListener('audio-speed', this.onAudioSpeedChange);
     this.removeEventListener('click', this.onClick);
   }
 
@@ -296,7 +342,7 @@ class AudioSpeedButtonElement extends HTMLAudioAwareElement {
 
   onClick() {
     if (this.isActiveSource()) {
-      getPlayer().setSpeed(this.speeds[this.currentSpeed + 1]);
+      this.getPlayer().setSpeed(this.speeds[this.currentSpeed + 1]);
     }
   }
 }
@@ -315,10 +361,10 @@ class AudioTimestampButtonElement extends HTMLAudioAwareElement {
       this.getSource().initialize();
     }
 
-    getPlayer().seekTimestamp(this.dataset.timestamp);
+    this.getPlayer().seekTimestamp(this.dataset.timestamp);
 
-    if (!getPlayer().playing) {
-      getPlayer().play();
+    if (!this.getPlayer().playing) {
+      this.getPlayer().play();
     }
   }
 }
@@ -350,13 +396,13 @@ class AudioProgressBarElement extends HTMLAudioAwareElement {
 
     this.movingNewTimestamp = 0;
 
-    this.duration.innerHTML = formatTime(getPlayer().duration);
+    this.duration.innerHTML = formatTime(this.getPlayer().duration);
 
-    getPlayer().addEventListener('track-loaded', this.onTrackLoaded);
-    getPlayer().addEventListener('audio-loaded', this.onAudioLoaded);
+    this.getPlayer().addEventListener('track-loaded', this.onTrackLoaded);
+    this.getPlayer().addEventListener('audio-loaded', this.onAudioLoaded);
 
-    getPlayer().addEventListener('audio-step', this.onAudioStep);
-    getPlayer().addEventListener('audio-seek', this.onAudioStep);
+    this.getPlayer().addEventListener('audio-step', this.onAudioStep);
+    this.getPlayer().addEventListener('audio-seek', this.onAudioStep);
 
     this.durationBar.addEventListener('mouseenter', this.onMouseEnter);
     this.durationBar.addEventListener('touchstart', this.onTouchStart);
@@ -373,11 +419,11 @@ class AudioProgressBarElement extends HTMLAudioAwareElement {
   }
 
   disconnectedCallback() {
-    getPlayer().removeEventListener('track-loaded', this.onTrackLoaded);
-    getPlayer().removeEventListener('audio-loaded', this.onAudioLoaded);
+    this.getPlayer().removeEventListener('track-loaded', this.onTrackLoaded);
+    this.getPlayer().removeEventListener('audio-loaded', this.onAudioLoaded);
 
-    getPlayer().removeEventListener('audio-step', this.onAudioStep);
-    getPlayer().removeEventListener('audio-seek', this.onAudioStep);
+    this.getPlayer().removeEventListener('audio-step', this.onAudioStep);
+    this.getPlayer().removeEventListener('audio-seek', this.onAudioStep);
 
     this.durationBar.removeEventListener('mouseenter', this.onMouseEnter);
     this.durationBar.removeEventListener('touchstart', this.onTouchStart);
@@ -406,11 +452,11 @@ class AudioProgressBarElement extends HTMLAudioAwareElement {
   }
 
   onAudioLoaded() {
-    this.duration.innerHTML = formatTime(getPlayer().duration);
+    this.duration.innerHTML = formatTime(this.getPlayer().duration);
   }
 
   onAudioStep(event) {
-    const percentage = ((event.detail.timestamp / getPlayer().duration) * 100) || 0;
+    const percentage = ((event.detail.timestamp / this.getPlayer().duration) * 100) || 0;
 
     this.progress.innerHTML = formatTime(event.detail.timestamp);
     this.progressBar.style.width = percentage + '%';
@@ -421,22 +467,24 @@ class AudioProgressBarElement extends HTMLAudioAwareElement {
 
     let distance = event.pageX - durationBarRect.left;
     const percentage = distance / durationBarRect.width;
-    let newTimestamp = percentage * getPlayer().duration;
+    let newTimestamp = percentage * this.getPlayer().duration;
 
     if (newTimestamp < 0) {
       newTimestamp = 0;
-    } else if (newTimestamp > getPlayer().duration) {
-      newTimestamp = getPlayer().duration - 1;
+    } else if (newTimestamp > this.getPlayer().duration) {
+      newTimestamp = this.getPlayer().duration - 1;
     }
 
-    getPlayer().seekTimestamp(newTimestamp);
+    this.getPlayer().seekTimestamp(newTimestamp);
   }
 
   onInputStart(pageX) {
     this.pointer.classList.remove('d-none');
 
-    this.duration.classList.add('d-none');
     this.progress.classList.add('d-none');
+    if (this.duration.dataset.duration !== 'keep') {
+      this.duration.classList.add('d-none');
+    }
 
     this.querySelectorAll('[data-pointer-hide]').forEach(element => element.classList.add('d-none'));
 
@@ -450,14 +498,14 @@ class AudioProgressBarElement extends HTMLAudioAwareElement {
 
     let distance = pageX - durationBarRect.left;
     const percentage = distance / durationBarRect.width;
-    let newTimestamp = percentage * getPlayer().duration;
+    let newTimestamp = percentage * this.getPlayer().duration;
 
     if (newTimestamp < 0) {
       distance = 1;
       newTimestamp = 0;
-    } else if (newTimestamp > getPlayer().duration) {
+    } else if (newTimestamp > this.getPlayer().duration) {
       distance = durationBarRect.width - 1;
-      newTimestamp = getPlayer().duration;
+      newTimestamp = this.getPlayer().duration;
     }
 
     this.pointer.style.left = (distance - 1) + 'px';
@@ -483,15 +531,17 @@ class AudioProgressBarElement extends HTMLAudioAwareElement {
   onInputEnd(touch) {
     this.pointer.classList.add('d-none');
 
-    this.duration.classList.remove('d-none');
     this.progress.classList.remove('d-none');
+    if (this.duration.dataset.duration !== 'keep') {
+      this.duration.classList.remove('d-none');
+    }
 
     this.querySelectorAll('[data-pointer-hide]').forEach(element => element.classList.remove('d-none'));
 
     this.seek.classList.add('d-none');
 
     if (touch) {
-      getPlayer().seekTimestamp(this.movingNewTimestamp);
+      this.getPlayer().seekTimestamp(this.movingNewTimestamp);
     }
   }
 
@@ -530,18 +580,39 @@ class AudioProgressBarElement extends HTMLAudioAwareElement {
 
 class AudioSourceElement extends HTMLElement {
   connectedCallback() {
+    this.clip = typeof this.dataset.clip !== 'undefined';
     this.hash = JSON.stringify([this.dataset.title, this.dataset.src]);
 
     if (this.dataset.start) {
       this.initialize();
 
-      getPlayer().timestamp = this.dataset.start;
-      getPlayer().play();
+      this.getPlayer().timestamp = this.dataset.start;
+      this.getPlayer().play();
     }
   }
 
+  disconnectedCallback() {
+    if (this.player) {
+      document.body.removeChild(this.player);
+    }
+  }
+
+  getPlayer() {
+    if (this.player) {
+      return this.player;
+    }
+
+    this.player = new AudioPlayerElement();
+
+    document.body.appendChild(this.player);
+
+    return this.player;
+  }
+
   initialize() {
-    getPlayer().load(this.dataset.src, this.dataset.title, this.hash, document.location.toString());
+    const player = this.clip ? this.getPlayer() : getPlayer();
+
+    player.load(this.dataset.src, this.dataset.title, this.hash, document.location.toString());
   }
 }
 
@@ -673,11 +744,11 @@ export function serializeTime(value) {
 }
 
 window.customElements.define('na-audio', AudioPlayerElement);
+window.customElements.define('na-audio-source', AudioSourceElement);
 window.customElements.define('na-audio-play', AudioPlayButtonElement);
 window.customElements.define('na-audio-seek', AudioProgressButtonElement);
 window.customElements.define('na-audio-speed', AudioSpeedButtonElement);
 window.customElements.define('na-audio-timestamp', AudioTimestampButtonElement);
 window.customElements.define('na-audio-progress', AudioProgressBarElement);
-window.customElements.define('na-audio-source', AudioSourceElement);
 window.customElements.define('na-audio-toolbar', AudioToolbarElement);
 window.customElements.define('na-audio-toolbar-spacer', AudioToolbarSpacerElement);

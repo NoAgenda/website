@@ -5,7 +5,7 @@ namespace App\Crawling\Shownotes;
 use App\Entity\Episode;
 use vipnytt\OPMLParser;
 
-class Shownotes2020Parser implements ShownotesParserInterface
+class Shownotes612Parser implements ShownotesParserInterface
 {
     private $episode;
     private $contents;
@@ -89,6 +89,49 @@ class Shownotes2020Parser implements ShownotesParserInterface
         return $this->getTab('Shownotes');
     }
 
+    public function getClips(): array
+    {
+        $clipsTab = null;
+
+        foreach ($this->getTabs() as $node) {
+            if ($node['text'] === 'Clips and Docs') {
+                $clipsTab = $this->parseOutlines($node);
+            } else if ($node['text'] === 'Clips and Stuff') {
+                $clipsTab = $this->parseOutlines($node);
+            }
+        }
+
+        if (!$clipsTab) {
+            return [];
+        }
+
+        $clipsNode = null;
+
+        $clips = [];
+
+        foreach ($clipsTab as $collectionNode) {
+            $category = $collectionNode['text'];
+
+            foreach ($this->parseOutlines($collectionNode) as $node) {
+                $clip = $this->parseClipNode($node);
+
+                if ($clip) {
+                    $clips[$category][] = $clip;
+                }
+
+                foreach ($this->parseOutlines($node) as $childNode) {
+                    $childClip = $this->parseClipNode($childNode);
+
+                    if ($childClip) {
+                        $clips[$category][] = $childClip;
+                    }
+                }
+            }
+        }
+
+        return $clips;
+    }
+
     private function getTabs(): array
     {
         foreach ($this->contents['body'] as $node) {
@@ -120,5 +163,42 @@ class Shownotes2020Parser implements ShownotesParserInterface
         }
 
         return $node['@outlines'];
+    }
+
+    private function parseClipNode(array $node): ?array
+    {
+        $type = $node['type'] ?? (isset($node['url']) ? 'link' : 'text');
+        $title = trim(strip_tags($node['text']));
+
+        if ($type === 'link' && preg_match('/^.*\.(mp3|mp4|m4a|3gp|ogg|wma|webm)$/i', $title)) {
+            $type = 'audio';
+        }
+
+        if ($type === 'image' && $title == '') {
+            $title = 'Image';
+        }
+
+        if ($type === 'text' && $title == '') {
+            if (str_contains($node['text'], '<img')) {
+                $matches = array();
+                preg_match('/src="([^"]+)"/', $node['text'], $matches);
+
+                if (isset($matches[1])) {
+                    return [
+                        'type' => 'image',
+                        'title' => 'Image',
+                        'uri' => $matches[1],
+                    ];
+                }
+            }
+
+            return null;
+        }
+
+        return [
+            'type' => $type,
+            'title' => $title,
+            'uri' => $node['url'] ?? false,
+        ];
     }
 }

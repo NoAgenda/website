@@ -11,7 +11,7 @@ class ShownotesParserFactory
     public function __construct()
     {
         $this->parsers = [
-            Shownotes2020Parser::class,
+            Shownotes612Parser::class,
         ];
     }
 

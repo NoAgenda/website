@@ -11,4 +11,5 @@ interface ShownotesParserInterface
 
     public function getCredits(): array;
     public function getShownotes(): array;
+    public function getClips(): array;
 }

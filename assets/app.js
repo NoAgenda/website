@@ -7,6 +7,7 @@ import PlayerChat from './scripts/player-chat';
 
 import './components/chapter-list';
 import './components/feedback-vote';
+import './components/progressive-image';
 import './components/router';
 import './components/timestamp-input';
 

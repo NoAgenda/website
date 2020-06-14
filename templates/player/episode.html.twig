@@ -20,6 +20,13 @@
     enabled: shownotes,
   },
   {
+    key: 'clips',
+    icon: '<span class="fas fa-fw fa-headphones" aria-hidden="true"></span>',
+    name: 'Clips & Documents',
+    contents: 'player/blocks/clips.html.twig',
+    enabled: shownotes,
+  },
+  {
     key: 'transcript',
     icon: '<span class="fas fa-fw fa-list-ol" aria-hidden="true"></span>',
     name: 'Transcript <span class="badge badge-secondary text-uppercase">Beta</span>',
@@ -99,7 +106,7 @@
       </div>
     </div>
     <div class="d-none d-lg-block">
-      {{ macro.progress_bar(true, 'episodeSource') }}
+      {{ macro.progress_bar('big', 'episodeSource') }}
     </div>
   </div>
 </div>
