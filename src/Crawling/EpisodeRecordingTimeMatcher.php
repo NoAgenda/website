@@ -55,7 +55,7 @@ class EpisodeRecordingTimeMatcher
 
         $this->splitRecording($episode);
 
-        $recordedAt = $this->matchRecordings($signal);
+        $recordedAt = $this->matchRecordings($episode, $signal);
 
         $this->logger->info(sprintf('Matched episode recording time: %s', $recordedAt->format('Y-m-d H:i:s')));
 
@@ -67,14 +67,14 @@ class EpisodeRecordingTimeMatcher
         $this->messenger->dispatch($matchChatMessagesMessage);
     }
 
-    private function matchRecordings(BatSignal $signal): \DateTime
+    private function matchRecordings(Episode $episode, BatSignal $signal): \DateTime
     {
         $sourcePath = sprintf('%s/episode_parts', $_SERVER['APP_STORAGE_PATH']);
 
         $sourceFiles = Finder::create()
             ->files()
             ->in($sourcePath)
-            ->name(sprintf('%s_*.mp3', $signal->getCode()))
+            ->name(sprintf('%s_*.mp3', $episode->getCode()))
         ;
 
         $liveFiles = $this->getLivestreamRecordings($signal);
