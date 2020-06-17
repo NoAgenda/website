@@ -41,6 +41,22 @@
 }
 
 .site-transcript-lines {
+  .site-transcript-line {
+    &:hover {
+      @include media-breakpoint-down(sm) {
+        .transcript-focus {
+          display: block;
+        }
+      }
+
+      @include media-breakpoint-up(md) {
+        .transcript-focus-md {
+          display: inline-block;
+        }
+      }
+    }
+  }
+
   .transcript-action {
     width: 55px;
 
@@ -61,18 +77,10 @@
         font-size: 1rem;
       }
     }
-
-    .transcript-focus {
-      display: none;
-    }
   }
 
-  .site-transcript-line {
-    &:hover {
-      .transcript-focus {
-        display: inline-block;
-      }
-    }
+  .transcript-focus, .transcript-focus-md {
+    display: none;
   }
 
   .transcript-highlight {
