@@ -584,10 +584,11 @@ class AudioSourceElement extends HTMLElement {
     this.hash = JSON.stringify([this.dataset.title, this.dataset.src]);
 
     if (this.dataset.start) {
-      this.initialize();
+      window.addEventListener('DOMContentLoaded', () => {
+        this.initialize();
 
-      this.getPlayer().timestamp = this.dataset.start;
-      this.getPlayer().play();
+        getPlayer().seekTimestamp(this.dataset.start);
+      });
     }
   }
 
