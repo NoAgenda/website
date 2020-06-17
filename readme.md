@@ -36,18 +36,22 @@ For more information on running and managing the application, see the
 
 ### Docker
 
-To initialize this application with Docker simple start it with Docker Compose:
+To initialize this application with Docker, simply start it with Docker Compose:
 
 ```bash
 # Start the Docker containers
 docker-compose up -d
 
-# Open a Terminal session inside the main Docker container
-docker exec -it noagenda_apache bash
+# Run the setup script inside the main Docker container, only required on first boot
+docker exec noagenda_apache bin/setup.bash
 ```
 
-After opening a Terminal session for the first time, simply run the installation
-commands inside the Docker container to get started.
+The application should now be running on http://localhost:8033
+
+To start a Terminal session inside the main Docker container, run:
+```bash
+docker exec -it noagenda_apache bash
+```
 
 ## Crawling
 
