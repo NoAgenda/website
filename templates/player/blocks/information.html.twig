@@ -27,8 +27,6 @@
 {% endif %}
 
 <div class="mb-3 px-3">
-  <a href="https://noagendaartgenerator.com/episode/{{ episode.code }}" class="btn btn-outline-primary mr-1" target="_blank">View submitted artwork for episode {{ episode.code }}</a>
-
   {% if episode.shownotesUri %}
   <a href="{{ episode.shownotesUri }}" class="btn btn-outline-primary" target="_blank">Visit the shownotes for episode {{ episode.code }}</a>
   {% endif %}
