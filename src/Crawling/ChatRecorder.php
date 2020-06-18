@@ -58,7 +58,9 @@ class ChatRecorder
                 return;
             }
 
-            $messageText = preg_replace('/[[:cntrl:]]/', '', $message['message']);
+            $messageText = $message['message'];
+            $messageText = preg_replace('/[[:cntrl:]]/', '', $messageText);
+            $messageText = mb_convert_encoding($messageText, 'UTF-8', 'UTF-8');
 
             $log = sprintf('%s >>> %s', (new \DateTime())->format('Y-m-d H:i:s'), $messageText);
 

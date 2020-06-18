@@ -35,7 +35,15 @@ class EpisodeChatMessagesMatcher
 
         $chatMessagesPath = sprintf('%s/chat_messages/%s.json', $_SERVER['APP_STORAGE_PATH'], $episode->getCode());
 
-        file_put_contents($chatMessagesPath, json_encode($messages));
+        $output = json_encode($messages);
+
+        if (json_last_error()) {
+            $this->logger->critical(sprintf('Failed to save chat messages for episode %s: %s.', $episode->getCode(), json_last_error_msg()));
+
+            return;
+        }
+
+        file_put_contents($chatMessagesPath, $output);
 
         $episode->setChatMessages(true);
 
@@ -80,11 +88,9 @@ class EpisodeChatMessagesMatcher
 
             list(, $username, $client, $ip, $contents) = $matches;
 
-            $contents = nl2br(preg_replace('/[[:cntrl:]]/', '', $contents));
-
             $messages[] = [
                 'username' => $username,
-                'contents' => $contents,
+                'contents' => nl2br($contents),
                 'timestamp' => $interval,
             ];
         }
