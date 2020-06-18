@@ -411,7 +411,7 @@ class AudioProgressBarElement extends HTMLAudioAwareElement {
     this.durationBar.addEventListener('touchend', this.onTouchEnd);
 
     this.durationBar.addEventListener('mousemove', this.onMouseMove);
-    this.durationBar.addEventListener('touchmove', this.onMouseLeave);
+    this.durationBar.addEventListener('touchmove', this.onTouchMove);
 
     this.durationBar.addEventListener('click', this.onClick);
 
