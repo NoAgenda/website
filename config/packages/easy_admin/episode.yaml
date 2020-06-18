@@ -64,9 +64,11 @@ easy_admin:
           -
             property: 'cover_uri'
             type: 'text'
+            type_options: { required: true }
           -
             property: 'recording_uri'
             type: 'text'
+            type_options: { required: true }
           -
             property: 'recorded_at'
             type: 'datetime'
