@@ -1,9 +1,11 @@
-<div class="alert alert-warning alert-dismissible fade show m-0" role="alert">
-  {{ episode.chatNotice }}
-  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-    <span aria-hidden="true">&times;</span>
-  </button>
-</div>
+{% if episode.chatNotice %}
+  <div class="alert alert-warning alert-dismissible fade show" role="alert">
+    {{ episode.chatNotice }}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+{% endif %}
 
 <div class="chat-loader text-center">
   <span class="fas fa-spinner fa-spin" aria-hidden="true"></span> Loading troll messages...
