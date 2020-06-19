@@ -1,5 +1,20 @@
 {% import 'player/parts/macro.html.twig' as macro %}
 
+<div class="d-none" data-chrome-notice>
+  <div class="alert alert-warning alert-dismissible fade show" role="alert">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+
+    Hello Chrome user!<br>
+
+    Because Chrome is a safe browser, you might need to accept a certificate
+    before you can play any of the clips. Privacy is not guaranteed.<br><br>
+
+    <a href="https://adam.curry.com/enc/1541711865.5_na1084-art-big.png" target="_blank">Click to show the certificate</a>
+  </div>
+</div>
+
 {% set category_index = 0 %}
 {% for category_name, category in shownotes.clips %}
   {% set category_index = category_index + 1 %}

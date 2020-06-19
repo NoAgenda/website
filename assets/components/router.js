@@ -1,3 +1,5 @@
+import jQuery from 'jquery';
+
 import {getPlayer} from '../scripts/player';
 import tokenManager from '../scripts/token';
 
@@ -14,6 +16,7 @@ class RouterElement extends HTMLElement {
   connectedCallback() {
     this.updateForms();
     this.updateLinks();
+    this.updateBullshit();
 
     window.history.replaceState(this.getCurrentState(), document.title, window.location);
 
@@ -30,6 +33,7 @@ class RouterElement extends HTMLElement {
 
       this.updateForms();
       this.updateLinks();
+      this.updateBullshit();
 
       this.dispatchEvent(new Event('navigated'));
     };
@@ -99,6 +103,25 @@ class RouterElement extends HTMLElement {
     });
   }
 
+  updateBullshit() {
+    const isChrome = /chrome/.test(window.navigator.userAgent.toLowerCase());
+
+    console.log(isChrome);
+    console.log(window.localStorage.getItem('chrome-notice-hidden'));
+
+    if (isChrome && !window.localStorage.getItem('chrome-notice-hidden')) {
+      document.querySelectorAll('[data-chrome-notice]').forEach(notice => {
+        const alert = notice.querySelector('.alert');
+
+        notice.classList.remove('d-none');
+
+        jQuery(alert).on('closed.bs.alert', function () {
+          window.localStorage.setItem('chrome-notice-hidden', true);
+        });
+      })
+    }
+  }
+
   navigate(path) {
     document.querySelector('#routerFade').style.display = 'flex';
 
@@ -144,6 +167,7 @@ class RouterElement extends HTMLElement {
 
         this.updateForms();
         this.updateLinks();
+        this.updateBullshit();
 
         document.querySelector('#routerFade').style.display = 'none';
 
