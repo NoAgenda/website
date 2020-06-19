@@ -86,7 +86,13 @@ class Shownotes612Parser implements ShownotesParserInterface
 
     public function getShownotes(): array
     {
-        return $this->getTab('Shownotes');
+        foreach ($this->getTabs() as $node) {
+            if ($node['text'] === 'Shownotes') {
+                return $this->parseOutlines($node);
+            }
+        }
+
+        return [];
     }
 
     public function getClips(): array
@@ -145,7 +151,7 @@ class Shownotes612Parser implements ShownotesParserInterface
         throw new \LogicException(sprintf('Unable to find tabs in shownotes for episode %s.', $this->episode->getCode()));
     }
 
-    private function getTab(string $tab): array
+    private function getTab(string $tab, $canBeEmpty = false): array
     {
         foreach ($this->getTabs() as $node) {
             if ($node['text'] === $tab) {
