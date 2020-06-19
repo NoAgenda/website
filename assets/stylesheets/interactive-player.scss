@@ -101,7 +101,7 @@ na-audio-toolbar-spacer {
   min-height: 80px;
   display: none;
 
-  @media (max-device-width: 370px) {
+  @include media-breakpoint-down(sm) {
     min-height: 140px;
   }
 }
