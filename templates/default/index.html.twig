@@ -1,13 +1,9 @@
 {% extends 'layout.html.twig' %}
 
-{% set page_description = 'The unofficial #1 source for all things No Agenda, a twice weekly podcast about politics by Adam Curry & John C. Dvorak.' %}
+{% set page_description = 'No Agenda, a twice weekly podcast about politics by Adam Curry & John C. Dvorak.' %}
 
 {% block content %}
 <div class="container">
-  <p class="my-3">
-    {{ page_description }}
-  </p>
-
   <h2 class="my-3">Latest episodes</h2>
   <div class="row no-gutters my-3">
     {% for episode in latest_episodes %}
