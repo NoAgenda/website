@@ -1,6 +1,7 @@
 import jQuery from 'jquery';
 
 import Archive from '../scripts/archive';
+import {initializeMastodonButtons} from '../scripts/mastodon';
 import {getPlayer} from '../scripts/player';
 import tokenManager from '../scripts/token';
 
@@ -112,11 +113,11 @@ class RouterElement extends HTMLElement {
       this.archive = new Archive();
     }
 
+    // Mastodon buttons
+    initializeMastodonButtons();
+
     // Chrome notice
     const isChrome = /chrome/.test(window.navigator.userAgent.toLowerCase());
-
-    console.log(isChrome);
-    console.log(window.localStorage.getItem('chrome-notice-hidden'));
 
     if (isChrome && !window.localStorage.getItem('chrome-notice-hidden')) {
       document.querySelectorAll('[data-chrome-notice]').forEach(notice => {

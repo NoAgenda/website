@@ -8,12 +8,14 @@
   >
     <span class="fab fa-facebook-square fa-fw fa-lg text-facebook" aria-hidden="true"></span>
   </a>
-  <a
-    class="cursor-pointer d-inline-block" title="Share on Mastodon" href="https://www.addtoany.com/add_to/mastodon?linkurl={{ url }} {{ title }}&site=noagendasocial.com" target="_blank"
-    {% if dynamic is defined and dynamic %}data-player-data="timer-attribute" data-player-attribute="href"{% endif %}
+  <div
+    class="mastodon-share-button cursor-pointer d-inline-block"
+    data-target="{{ url }}"
+    data-name="{{ title }}"
+    {% if dynamic is defined and dynamic %}data-player-data="timer-attribute" data-player-attribute="data-target"{% endif %}
   >
     <span class="fab fa-mastodon fa-fw fa-lg text-mastodon" aria-hidden="true"></span>
-  </a>
+  </div>
   <a
     class="cursor-pointer d-inline-block" title="Share on Twitter" href="https://twitter.com/intent/tweet?text={{ title }} {{ url }}" target="_blank"
     {% if dynamic is defined and dynamic %}data-player-data="timer-attribute" data-player-attribute="href"{% endif %}

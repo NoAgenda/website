@@ -11,6 +11,7 @@ import './components/router';
 import './components/timestamp-input';
 
 import './scripts/clipboard';
+import {initializeMastodonModal} from './scripts/mastodon';
 import './scripts/player';
 import './scripts/player-history';
 import './scripts/player-transcripts';
@@ -21,5 +22,7 @@ import './app.scss';
 import './images/placeholder.jpg';
 
 jQuery(document).ready(() => {
+  initializeMastodonModal();
+
   new PlayerChat();
 });
