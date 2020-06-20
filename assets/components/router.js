@@ -1,5 +1,6 @@
 import jQuery from 'jquery';
 
+import Archive from '../scripts/archive';
 import {getPlayer} from '../scripts/player';
 import tokenManager from '../scripts/token';
 
@@ -91,7 +92,7 @@ class RouterElement extends HTMLElement {
         link.addEventListener('click', event => {
           event.preventDefault();
 
-          this.navigate(path);
+          this.navigate(link.href);
         });
       } else if (!internal && !tab) {
         link.addEventListener('click', () => {
@@ -104,6 +105,14 @@ class RouterElement extends HTMLElement {
   }
 
   updateBullshit() {
+    // Archive
+    const archiveElement = jQuery('[data-archive-container]');
+
+    if (archiveElement) {
+      this.archive = new Archive();
+    }
+
+    // Chrome notice
     const isChrome = /chrome/.test(window.navigator.userAgent.toLowerCase());
 
     console.log(isChrome);
@@ -124,6 +133,9 @@ class RouterElement extends HTMLElement {
 
   navigate(path) {
     document.querySelector('#routerFade').style.display = 'flex';
+
+    // Save path to variable to send over fragment to handleResponse method
+    this.nextPath = path;
 
     fetch(path, {
       'headers': {
@@ -163,7 +175,7 @@ class RouterElement extends HTMLElement {
 
         window.scrollTo(0,0);
 
-        window.history.pushState(this.getCurrentState(), data.title, response.url);
+        window.history.pushState(this.getCurrentState(), data.title, this.nextPath);
 
         this.updateForms();
         this.updateLinks();
