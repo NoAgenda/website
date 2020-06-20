@@ -1,5 +1,8 @@
 {% extends app.request.xmlHttpRequest ? 'ajax_base.html.twig' : 'base.html.twig' %}
 
+{% block metatags %}
+{% endblock %}
+
 {% set navigationLinks = [
   {
     href: path('player_latest'),

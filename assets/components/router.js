@@ -173,6 +173,13 @@ class RouterElement extends HTMLElement {
         this.innerHTML = data.contents;
         tokenManager.authenticated = data.authenticated;
 
+        document.querySelectorAll('[data-page-meta]').forEach(metaElement => metaElement.remove());
+
+        if (data.meta) {
+          // Adding data to the head between page loads results in rendering bugs
+          // document.querySelector('head').innerHTML += data.meta;
+        }
+
         window.scrollTo(0,0);
 
         window.history.pushState(this.getCurrentState(), data.title, this.nextPath);
