@@ -51,12 +51,12 @@
 {% endblock %}
 
 {% block metatags %}
-  <meta property="og:title" content="No Agenda {{ episode }}"/>
-  <meta property="og:description" content="Listen to No Agenda episode {{ episode }}." />
-  <meta property="og:type" content="website"/>
-  <meta property="og:url" content="{{ url('player', {episode: episode.code}) }}"/>
-  <meta property="og:image" content="{{ asset(episode.code ~ '.png')|imagine_filter('cover_large') }}"/>
-  <meta property="og:site_name" content="No Agenda"/>
+  <meta property="og:title" content="No Agenda {{ episode }}" data-page-meta/>
+  <meta property="og:description" content="Listen to No Agenda episode {{ episode }}." data-page-meta/>
+  <meta property="og:type" content="website" data-page-meta/>
+  <meta property="og:url" content="{{ url('player', {episode: episode.code}) }}" data-page-meta/>
+  <meta property="og:image" content="{{ asset(episode.code ~ '.png')|imagine_filter('cover_large') }}" data-page-meta/>
+  <meta property="og:site_name" content="No Agenda" data-page-meta/>
 {% endblock %}
 
 {% block body %}

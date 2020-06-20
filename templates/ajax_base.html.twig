@@ -1,8 +1,10 @@
 {% set page_title = page_title is not defined ? 'No Agenda' : "#{page_title} - No Agenda" %}
 {% set body = block('body') %}
+{% set metatags = block('metatags') %}
 
 {% set output = {
   'title': page_title,
+  'meta': metatags,
   'contents': body,
   'authenticated': authenticated,
 } %}
