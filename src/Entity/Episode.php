@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -18,6 +20,13 @@ class Episode
      * @ORM\Column(type="integer")
      */
     private $id;
+
+    /**
+     * @var Collection
+     *
+     * @ORM\OneToMany(targetEntity="EpisodeChapter", mappedBy="episode")
+     */
+    private $chapters;
 
     /**
      * @var string
@@ -124,6 +133,11 @@ class Episode
      */
     private $crawlerOutput;
 
+    public function __construct()
+    {
+        $this->chapters = new ArrayCollection();
+    }
+
     public function __toString(): string
     {
         return sprintf('%s: %s', $this->getCode(), $this->getName());
@@ -132,6 +146,39 @@ class Episode
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    /**
+     * @return Collection|FeedbackVote[]
+     */
+    public function getChapters(): Collection
+    {
+        return $this->chapters;
+    }
+
+    public function addChapter(EpisodeChapter $chapter): self
+    {
+        if (!$this->chapters->contains($chapter)) {
+            $this->chapters[] = $chapter;
+
+            $chapter->setEpisode($this);
+        }
+
+        return $this;
+    }
+
+    public function removeChapter(EpisodeChapter $chapter): self
+    {
+        if ($this->chapters->contains($chapter)) {
+            $this->chapters->removeElement($chapter);
+
+            // set the owning side to null (unless already changed)
+            if ($chapter->getEpisode() === $this) {
+                $chapter->setEpisode(null);
+            }
+        }
+
+        return $this;
     }
 
     public function getCode(): ?string

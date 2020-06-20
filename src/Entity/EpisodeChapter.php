@@ -25,7 +25,7 @@ class EpisodeChapter
     /**
      * @var Episode
      *
-     * @ORM\ManyToOne(targetEntity="Episode")
+     * @ORM\ManyToOne(targetEntity="Episode", inversedBy="chapters")
      * @ORM\JoinColumn(nullable=false)
      */
     private $episode;
@@ -57,7 +57,7 @@ class EpisodeChapter
         return $this->episode;
     }
 
-    public function setEpisode(Episode $episode): self
+    public function setEpisode(?Episode $episode): self
     {
         $this->episode = $episode;
 
