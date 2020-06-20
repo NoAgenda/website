@@ -4,6 +4,8 @@ namespace App\Repository;
 
 use App\Entity\Episode;
 use Doctrine\Persistence\ManagerRegistry;
+use Pagerfanta\Pagerfanta;
+use function Doctrine\ORM\QueryBuilder;
 
 /**
  * @method Episode|null find($id, $lockMode = null, $lockVersion = null)
@@ -38,6 +40,33 @@ class EpisodeRepository extends AbstractRepository
         }
 
         return $episodes;
+    }
+
+    public function paginateEpisodes($page = 1): Pagerfanta
+    {
+        $builder = $this->createQueryBuilder('episode');
+
+        $builder
+            ->select('episode', 'chapter')
+            ->leftJoin('episode.chapters', 'chapter')
+            ->orderBy('episode.publishedAt', 'desc')
+        ;
+
+        return $this->createPaginator($builder->getQuery(), $page);
+    }
+
+    public function paginateSpecialEpisodes($page = 1): Pagerfanta
+    {
+        $builder = $this->createQueryBuilder('episode');
+
+        $builder
+            ->select('episode', 'chapter')
+            ->where($builder->expr()->eq('episode.special', true))
+            ->leftJoin('episode.chapters', 'chapter')
+            ->orderBy('episode.publishedAt', 'desc')
+        ;
+
+        return $this->createPaginator($builder->getQuery(), $page);
     }
 
     public function getHomepageEpisodes()
