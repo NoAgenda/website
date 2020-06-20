@@ -31,7 +31,7 @@ class NotificationPublisher
         $code = $episode->getCode();
 
         $path = $this->router->generate('player', ['episode' => $code], RouterInterface::ABSOLUTE_URL);
-        $path = str_replace(['localhost:8033', 'localhost'], 'www.noagendaexperience.com', $path);
+        $path = str_replace(['localhost:8033', 'localhost'], 'www.noagendashow.net', $path);
         $path = str_replace('http://', 'https://', $path);
 
         $title = sprintf('No Agenda Episode %s - %s', $code, $episode->getName());
