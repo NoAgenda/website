@@ -1,0 +1,26 @@
+<div id="mastodonModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Share on Mastodon</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="msb-address">Enter your instance's address</label>
+          <input type="text" class="form-control" id="msb-address" placeholder="https://noagendasocial.com">
+        </div>
+        <div class="form-check">
+          <input type="checkbox" class="form-check-input" id="msb-memorize-instance">
+          <label class="form-check-label" for="msb-memorize-instance">Memorize my instance</label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button id="msb-share" type="button" class="btn btn-primary">Share</button>
+      </div>
+    </div>
+  </div>
+</div>
