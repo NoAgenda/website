@@ -19,5 +19,9 @@
     "sass-loader": "^7.0.1",
     "waud.js": "^1.0.3",
     "webpack-notifier": "^1.6.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.2",
+    "jest": "^26.1.0"
   }
 }
