@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "@types/jest": "^26.0.2",
+    "babel-jest": "^26.1.0",
     "jest": "^26.1.0"
   }
 }
