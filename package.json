@@ -5,7 +5,9 @@
     "serve": "encore dev-server",
     "build": "encore dev",
     "watch": "encore dev --watch",
-    "production": "encore production"
+    "production": "encore production",
+    "test": "jest --clearCache && jest",
+    "test-watch": "jest --clearCache && jest --watch"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.9.0",
