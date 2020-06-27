@@ -56,10 +56,10 @@
     {% for video in videos %}
       <div class="col-md-4">
         <div class="mx-auto mb-3">
-          <a href="https://www.youtube.com/watch?v={{ video.youtubeId }}" ><img src="https://i.ytimg.com/vi/{{ video.youtubeId }}/mqdefault.jpg" alt="{{ video.title }}" class="img-fluid img-thumbnail w-100"/></a>
-          <div>
-            <a href="https://www.youtube.com/watch?v={{ video.youtubeId }}">{{ video.title|replace({'Animated No Agenda - ': ''}) }}</a>
-          </div>
+          <a href="https://www.youtube.com/watch?v={{ video.youtubeId }}" >
+            <img src="https://i.ytimg.com/vi/{{ video.youtubeId }}/mqdefault.jpg" alt="{{ video.title }}" class="img-fluid img-thumbnail w-100"/>
+            <span class="h5 d-block mt-2">{{ video.title|replace({'Animated No Agenda - ': ''}) }}</span>
+          </a>
         </div>
       </div>
     {% endfor %}
