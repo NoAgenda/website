@@ -34,7 +34,7 @@ class EpisodeChapterDraft
     /**
      * @var EpisodeChapter|null
      *
-     * @ORM\ManyToOne(targetEntity="EpisodeChapter")
+     * @ORM\ManyToOne(targetEntity="EpisodeChapter", inversedBy="drafts")
      * @ORM\JoinColumn(nullable=true)
      */
     private $chapter;

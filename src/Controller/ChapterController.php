@@ -8,7 +8,6 @@ use App\Entity\EpisodeChapterDraft;
 use App\Entity\FeedbackItem;
 use App\Entity\FeedbackVote;
 use App\Form\EpisodeChapterType;
-use App\Repository\EpisodeRepository;
 use App\UserTokenManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -22,14 +21,12 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 class ChapterController extends AbstractController
 {
     private $entityManager;
-    private $episodeRepository;
     private $userTokenManager;
 
-    public function __construct(UserTokenManager $userTokenManager, EntityManagerInterface $entityManager, EpisodeRepository $episodeRepository)
+    public function __construct(UserTokenManager $userTokenManager, EntityManagerInterface $entityManager)
     {
         $this->userTokenManager = $userTokenManager;
         $this->entityManager = $entityManager;
-        $this->episodeRepository = $episodeRepository;
     }
 
     /**
@@ -155,6 +152,20 @@ class ChapterController extends AbstractController
     }
 
     /**
+     * @Route("/episode/{episode}/chapters/{chapter}/delete", name="episode_chapter_delete")
+     * @ParamConverter("episode", class="App\Entity\Episode", options={"mapping": {"episode": "code"}})
+     */
+    public function delete(Episode $episode, EpisodeChapter $chapter): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_MOD');
+
+        $this->entityManager->remove($chapter);
+        $this->entityManager->flush();
+
+        return $this->redirectToRoute('player', ['episode' => $episode->getCode()]);
+    }
+
+    /**
      * @Route("/episode/{episode}/draft/{draft}/accept", name="episode_chapter_accept")
      * @ParamConverter("episode", class="App\Entity\Episode", options={"mapping": {"episode": "code"}})
      */
@@ -162,25 +173,26 @@ class ChapterController extends AbstractController
     {
         $this->denyAccessUnlessGranted('ROLE_MOD');
 
-        $draft->setAccepted(true);
+        $this->doAcceptDraft($draft);
 
-        $chapter = $draft->getChapter();
+        $this->entityManager->flush();
 
-        if (!$chapter) {
-            $chapter = new EpisodeChapter();
+        return $this->redirectToRoute('player', ['episode' => $episode->getCode()]);
+    }
 
-            $draft->setChapter($chapter);
-            $chapter->setEpisode($draft->getEpisode());
+    /**
+     * @Route("/episode/{episode}/accept_all", name="episode_chapter_accept_all")
+     * @ParamConverter("episode", class="App\Entity\Episode", options={"mapping": {"episode": "code"}})
+     */
+    public function acceptAll(Episode $episode): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_MOD');
+
+        $drafts = $this->entityManager->getRepository(EpisodeChapterDraft::class)->findNewSuggestionsByEpisode($episode);
+
+        foreach ($drafts as $draft) {
+            $this->doAcceptDraft($draft);
         }
-
-        $chapter->setEpisode($draft->getEpisode());
-        $chapter->setName($draft->getName());
-        $chapter->setDescription($draft->getDescription());
-        $chapter->setStartsAt($draft->getStartsAt());
-        $chapter->setDuration($draft->getDuration());
-
-        $this->entityManager->persist($chapter);
-        $this->entityManager->persist($draft);
 
         $this->entityManager->flush();
 
@@ -232,5 +244,28 @@ class ChapterController extends AbstractController
         $this->entityManager->flush();
 
         return JsonResponse::create();
+    }
+
+    private function doAcceptDraft(EpisodeChapterDraft $draft): void
+    {
+        $draft->setAccepted(true);
+
+        $chapter = $draft->getChapter();
+
+        if (!$chapter) {
+            $chapter = new EpisodeChapter();
+
+            $draft->setChapter($chapter);
+            $chapter->setEpisode($draft->getEpisode());
+        }
+
+        $chapter->setEpisode($draft->getEpisode());
+        $chapter->setName($draft->getName());
+        $chapter->setDescription($draft->getDescription());
+        $chapter->setStartsAt($draft->getStartsAt());
+        $chapter->setDuration($draft->getDuration());
+
+        $this->entityManager->persist($chapter);
+        $this->entityManager->persist($draft);
     }
 }

@@ -66,6 +66,9 @@
                         <a class="cursor-pointer d-inline-block" href="{{ path('episode_chapter_edit', {episode: episode.code, chapter: chapter.id}) }}" title="Edit chapter">
                           <span class="fas fa-pencil-alt fa-fw fa-lg" aria-hidden="true"></span>
                         </a>
+                        <a class="cursor-pointer d-inline-block" href="{{ path('episode_chapter_delete', {episode: episode.code, chapter: chapter.id}) }}" title="Delete chapter">
+                          <span class="fas fa-trash fa-fw fa-lg" aria-hidden="true"></span>
+                        </a>
                       {% else %}
                         <a class="cursor-pointer d-inline-block" href="{{ path('episode_chapter_accept', {episode: episode.code, draft: chapter.id}) }}" title="Accept suggestion">
                           <span class="fas fa-check fa-fw fa-lg text-success" aria-hidden="true"></span>
