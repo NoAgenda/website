@@ -31,7 +31,7 @@ class RouterElement extends HTMLElement {
 
       document.title = event.state.title;
       this.innerHTML = event.state.contents;
-      tokenManager.authenticated = data.authenticated;
+      tokenManager.authenticated = event.state.authenticated;
 
       this.updateForms();
       this.updateLinks();
@@ -135,9 +135,6 @@ class RouterElement extends HTMLElement {
   navigate(path) {
     document.querySelector('#routerFade').style.display = 'flex';
 
-    // Save path to variable to send over fragment to handleResponse method
-    this.nextPath = path;
-
     fetch(path, {
       'headers': {
         'X-Requested-With': 'XMLHttpRequest',
@@ -183,7 +180,7 @@ class RouterElement extends HTMLElement {
 
         window.scrollTo(0,0);
 
-        window.history.pushState(this.getCurrentState(), data.title, this.nextPath);
+        window.history.pushState(this.getCurrentState(), data.title, data.path);
 
         this.updateForms();
         this.updateLinks();
