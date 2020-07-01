@@ -53,6 +53,17 @@ To start a Terminal session inside the main Docker container, run:
 docker exec -it noagenda_apache bash
 ```
 
+## Testing
+To run the JavaScript unit tests run:
+```bash
+npm run test
+```
+
+You can also have the test run automatically when a file changes while developing by running:
+```bash
+npm run test-watch
+```
+
 ## Crawling
 
 Crawling can be done in one of two ways: by manual execution or through the 

@@ -5,7 +5,9 @@
     "serve": "encore dev-server",
     "build": "encore dev",
     "watch": "encore dev --watch",
-    "production": "encore production"
+    "production": "encore production",
+    "test": "jest --clearCache && jest",
+    "test-watch": "jest --clearCache && jest --watch"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.9.0",
@@ -19,5 +21,10 @@
     "sass-loader": "^7.0.1",
     "waud.js": "^1.0.3",
     "webpack-notifier": "^1.6.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.2",
+    "babel-jest": "^26.1.0",
+    "jest": "^26.1.0"
   }
 }
