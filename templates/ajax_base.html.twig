@@ -3,8 +3,6 @@
 {% set metatags = block('metatags') %}
 {% set request_path = path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) %}
 
-{% dump  %}
-
 {% set output = {
   'path': request_path,
   'title': page_title,
