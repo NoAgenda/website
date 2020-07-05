@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 // Stolen from https://github.com/Aly-ve/Mastodon-share-button
 
@@ -24,7 +24,7 @@ function msbShareButtonAction(name, target) {
 
   msbInstanceAddress = msbGetCookie('instance-address')
   if (msbInstanceAddress.length > 0) {
-    window.open(`${msbInstanceAddress}/share?text=${name}%20${target}`, `__blank`)
+    window.open(`${msbInstanceAddress}/share?text=${name}%20${target}`, '__blank')
   }
   else {
     if (msbConfig && msbConfig.openModal && msbConfig.addressFieldSelector) {
@@ -59,7 +59,7 @@ function msbOnShare(_name, _target) {
         }
       }
 
-      window.open(`${msbInstanceAddress}/share?text=${name}%20${target}`, `__blank`)
+      window.open(`${msbInstanceAddress}/share?text=${name}%20${target}`, '__blank')
       if (msbConfig && msbConfig.openModal && msbConfig.closeModal) {
         msbConfig.closeModal()
       }
@@ -68,7 +68,7 @@ function msbOnShare(_name, _target) {
 }
 
 function msbGetCookie(cname) {
-  var name = cname + "=";
+  var name = cname + '=';
   var ca = document.cookie.split(';');
   for(var i = 0; i < ca.length; i++) {
     var c = ca[i];
@@ -79,7 +79,7 @@ function msbGetCookie(cname) {
       return c.substring(name.length, c.length);
     }
   }
-  return "";
+  return '';
 }
 
 function msbSetCookie(name, value, days) {

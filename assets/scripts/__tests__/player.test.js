@@ -1,5 +1,5 @@
-import "jquery"
-import * as helpers from "../player"
+import 'jquery'
+import * as helpers from '../player'
 
 
 describe('player', () => {
@@ -15,24 +15,24 @@ describe('player', () => {
     describe('formatTime', () => {
       describe('no hours', () => {
         test('seconds less than 10', () => {
-          expect(helpers.formatTime(600)).toEqual("10:00")
+          expect(helpers.formatTime(600)).toEqual('10:00')
         })
         test('seconds greater than 10', () => {
-          expect(helpers.formatTime(633)).toEqual("10:33")
+          expect(helpers.formatTime(633)).toEqual('10:33')
         })
       })
       describe('has hours', () => {
         test('seconds less than 10', () => {
-          expect(helpers.formatTime(3600)).toEqual("1:00:00")
+          expect(helpers.formatTime(3600)).toEqual('1:00:00')
         })
         test('seconds greater than 10', () => {
-          expect(helpers.formatTime(3633)).toEqual("1:00:33")
+          expect(helpers.formatTime(3633)).toEqual('1:00:33')
         })
         test('minutes less than 10', () => {
-          expect(helpers.formatTime(3660)).toEqual("1:01:00")
+          expect(helpers.formatTime(3660)).toEqual('1:01:00')
         })
         test('minutes greater than 10', () => {
-          expect(helpers.formatTime(7113)).toEqual("1:58:33")
+          expect(helpers.formatTime(7113)).toEqual('1:58:33')
         })
       })
     })
