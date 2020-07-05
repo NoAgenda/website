@@ -5,10 +5,10 @@
 import $ from 'jquery';
 
 const msbConfig = {
-  openModal: function () {
+  openModal: function() {
     $('#mastodonModal').modal('show');
   },
-  closeModal: function () {
+  closeModal: function() {
     $('#mastodonModal').modal('hide');
   },
   addressFieldSelector: '#msb-address',

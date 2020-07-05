@@ -125,7 +125,7 @@ class RouterElement extends HTMLElement {
 
         notice.classList.remove('d-none');
 
-        jQuery(alert).on('closed.bs.alert', function () {
+        jQuery(alert).on('closed.bs.alert', function() {
           window.localStorage.setItem('chrome-notice-hidden', true);
         });
       });
