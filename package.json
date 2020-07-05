@@ -25,6 +25,8 @@
   "devDependencies": {
     "@types/jest": "^26.0.2",
     "babel-jest": "^26.1.0",
+    "eslint": "^7.4.0",
+    "eslint-plugin-jest": "^23.18.0",
     "jest": "^26.1.0"
   }
 }
