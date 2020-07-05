@@ -16,26 +16,26 @@ const msbConfig = {
   memorizeFieldId: 'msb-memorize-instance',
 };
 
-const COOKIE_NAME = 'instance-address'
-const URL_REGEX = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([\/\w .-]*)*\/?$/
+const COOKIE_NAME = 'instance-address';
+const URL_REGEX = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([\/\w .-]*)*\/?$/;
 
 function msbShareButtonAction(name, target) {
-  let msbInstanceAddress = ''
+  let msbInstanceAddress = '';
 
-  msbInstanceAddress = msbGetCookie('instance-address')
+  msbInstanceAddress = msbGetCookie('instance-address');
   if (msbInstanceAddress.length > 0) {
-    window.open(`${msbInstanceAddress}/share?text=${name}%20${target}`, '__blank')
+    window.open(`${msbInstanceAddress}/share?text=${name}%20${target}`, '__blank');
   }
   else {
     if (msbConfig && msbConfig.openModal && msbConfig.addressFieldSelector) {
 
       if (document.querySelector(msbConfig.buttonModalSelector)) {
-        let bms = document.querySelector(msbConfig.buttonModalSelector)
-        bms.data = { target, name }
-        bms.addEventListener('click', () => msbOnShare(), false)
+        let bms = document.querySelector(msbConfig.buttonModalSelector);
+        bms.data = { target, name };
+        bms.addEventListener('click', () => msbOnShare(), false);
 
       }
-      msbConfig.openModal(name, target)
+      msbConfig.openModal(name, target);
     }
   }
 }
@@ -43,9 +43,9 @@ function msbShareButtonAction(name, target) {
 function msbOnShare(_name, _target) {
   if (msbConfig && msbConfig.addressFieldSelector && msbConfig.buttonModalSelector) {
 
-    let name = !!_name ? _name : document.querySelector(msbConfig.buttonModalSelector).data.name
-    let target = !!_target ? _target : document.querySelector(msbConfig.buttonModalSelector).data.target
-    let msbInstanceAddress = document.querySelector(`${msbConfig.addressFieldSelector}`).value
+    let name = !!_name ? _name : document.querySelector(msbConfig.buttonModalSelector).data.name;
+    let target = !!_target ? _target : document.querySelector(msbConfig.buttonModalSelector).data.target;
+    let msbInstanceAddress = document.querySelector(`${msbConfig.addressFieldSelector}`).value;
 
     if (!msbInstanceAddress) {
       msbInstanceAddress = 'https://noagendasocial.com';
@@ -53,15 +53,15 @@ function msbOnShare(_name, _target) {
 
     if (msbInstanceAddress.match(URL_REGEX)) {
       if (msbConfig.memorizeFieldId) {
-        let msbMemorizeIsChecked = document.querySelector(`#${msbConfig.memorizeFieldId}`).checked
+        let msbMemorizeIsChecked = document.querySelector(`#${msbConfig.memorizeFieldId}`).checked;
         if (msbConfig.memorizeFieldId && !msbGetCookie(COOKIE_NAME).length > 0 && msbMemorizeIsChecked) {
           msbSetCookie(COOKIE_NAME, msbInstanceAddress, 7);
         }
       }
 
-      window.open(`${msbInstanceAddress}/share?text=${name}%20${target}`, '__blank')
+      window.open(`${msbInstanceAddress}/share?text=${name}%20${target}`, '__blank');
       if (msbConfig && msbConfig.openModal && msbConfig.closeModal) {
-        msbConfig.closeModal()
+        msbConfig.closeModal();
       }
     }
   }
@@ -83,39 +83,39 @@ function msbGetCookie(cname) {
 }
 
 function msbSetCookie(name, value, days) {
-  let d = new Date()
-  d.setTime(d.getTime() + days*86400000)
-  let expires = 'expires=' + d.toUTCString()
-  document.cookie = `${name}=${value}; ${expires}; path=/`
+  let d = new Date();
+  d.setTime(d.getTime() + days*86400000);
+  let expires = 'expires=' + d.toUTCString();
+  document.cookie = `${name}=${value}; ${expires}; path=/`;
 }
 
 export const initializeMastodonModal = () => {
   $('#mastodonModal').on('shown.bs.modal', function() {
     $('#msb-address').focus();
   });
-}
+};
 
 export const initializeMastodonButtons = () => {
-  let msbButtons = document.querySelectorAll('.mastodon-share-button')
+  let msbButtons = document.querySelectorAll('.mastodon-share-button');
 
   for(let i = 0; i < msbButtons.length; i++) {
     (function(j) {
-      let msbName = msbButtons[j].dataset.name
+      let msbName = msbButtons[j].dataset.name;
 
       // Replace hashtab by html code
-      msbName = msbName.replace(/#/g, '%23')
+      msbName = msbName.replace(/#/g, '%23');
 
       /**
        * Set the listener in each button
        */
-      msbButtons[j].addEventListener('click', () => { msbShareButtonAction(msbName, msbButtons[j].dataset.target) }, true)
+      msbButtons[j].addEventListener('click', () => { msbShareButtonAction(msbName, msbButtons[j].dataset.target); }, true);
 
-    })(i)
+    })(i);
   }
-}
+};
 
 function msbI18n() {
-  let language = navigator.language || navigator.userLanguage
+  let language = navigator.language || navigator.userLanguage;
   let publish = {
     'ar': 'بوّق',
     'bg': 'Раздумай',
@@ -147,15 +147,15 @@ function msbI18n() {
     'zh-HK': '發文',
     'zh-TW': '貼掉',
     'default': 'Toot'
-  }
+  };
 
-  let text = null
+  let text = null;
   try {
-    text = publish[language]
+    text = publish[language];
   }
   catch (error) {
-    text = publish.default
+    text = publish.default;
   }
 
-  return text
+  return text;
 }
