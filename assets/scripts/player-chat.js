@@ -188,7 +188,7 @@ export default class PlayerChat {
     let html = null;
 
     if (message.contents.substring(0, 7) === 'ACTION ') {
-       html = template
+      html = template
         .replace('__timestamp__', this.previousTimestamp !== message.timestamp ? formatTime(message.timestamp) : '')
         .replace('__username__', '')
         .replace('__text__', message.username + ' ' + message.contents.substring(7))
