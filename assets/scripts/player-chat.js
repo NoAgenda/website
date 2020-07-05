@@ -36,7 +36,7 @@ export default class PlayerChat {
         this.lastTimestamp = false;
         this.episodeCode = false;
       }
-    })
+    });
   }
 
   onActivateChat(event) {

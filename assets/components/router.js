@@ -63,7 +63,7 @@ class RouterElement extends HTMLElement {
         }
 
         this.submit(form);
-      })
+      });
     });
   }
 
@@ -128,7 +128,7 @@ class RouterElement extends HTMLElement {
         jQuery(alert).on('closed.bs.alert', function () {
           window.localStorage.setItem('chrome-notice-hidden', true);
         });
-      })
+      });
     }
   }
 
