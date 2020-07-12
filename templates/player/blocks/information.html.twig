@@ -34,6 +34,10 @@
 {% endif %}
 
 <div class="mb-3 px-3">
+  <a href="{{ episode.recordingUri }}" class="btn btn-outline-primary d-block d-sm-inline-block" target="_blank" download>
+    <span class="fas fa-cloud-download-alt fa-fw mr-1" aria-hidden="true"></span>
+    Download episode (mp3)
+  </a>
   {% if episode.shownotesUri %}
     <a href="{{ episode.shownotesUri }}" class="btn btn-outline-primary d-block d-sm-inline-block" target="_blank">Visit the shownotes for episode {{ episode.code }}</a>
   {% endif %}
