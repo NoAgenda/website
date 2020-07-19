@@ -32,7 +32,7 @@ class CrawlCommand extends Command implements ServiceSubscriberInterface
     {
         $this
             ->setDescription('Execute a crawling command')
-            ->addArgument('data', InputArgument::REQUIRED, 'The type of data to crawl: feed, bat_signal, transcripts, files, shownotes, transcript, recording_time, chat_messages')
+            ->addArgument('data', InputArgument::REQUIRED, 'The type of data to crawl: feed, bat_signal, transcripts, files, shownotes, transcript, recording_time, chat_messages, youtube')
             ->addOption('episode', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'The episode code to crawling')
         ;
     }
