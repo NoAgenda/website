@@ -19,7 +19,8 @@ import './scripts/token';
 
 import './app.scss';
 
-import './images/placeholder.jpg';
+import './images/placeholder_large.jpg';
+import './images/placeholder_small.jpg';
 
 jQuery(document).ready(() => {
   initializeMastodonModal();

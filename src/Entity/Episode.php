@@ -78,9 +78,9 @@ class Episode
     private $publishedAt;
 
     /**
-     * @var string
+     * @var string|null
      *
-     * @ORM\Column(type="text")
+     * @ORM\Column(type="text", nullable=true)
      */
     private $coverUri;
 
@@ -270,7 +270,7 @@ class Episode
         return $this->coverUri;
     }
 
-    public function setCoverUri(string $uri): self
+    public function setCoverUri(?string $uri): self
     {
         $this->coverUri = $uri;
 

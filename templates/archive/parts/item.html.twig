@@ -1,7 +1,7 @@
 <a class="archive-item" href="{{ path('player', {episode: episode.code}) }}">
   {% set body_class = featured is defined and featured ? 'archive-item-body featured' : 'archive-item-body' %}
   <div class="{{ body_class }}">
-    <img src="{{ asset(episode.code ~ '.png')|imagine_filter('cover_small') }}" alt="Art for episode {{ episode.code }}">
+    <img src="{{ episode|episodeCover('small') }}" alt="Art for episode {{ episode.code }}">
     <div class="archive-item-text">
       <h6>{{ episode.code }}</h6>
       <h4>{{ episode.name }}</h4>

@@ -39,6 +39,10 @@ class RefreshCoverCacheCommand extends Command
         $episodes = $this->entityManager->getRepository(Episode::class)->findAll();
 
         foreach ($episodes as $episode) {
+            if (!$episode->getCoverUri()) {
+                continue;
+            }
+
             $this->resolveCoverCache($episode->getCode());
         }
 

@@ -55,7 +55,7 @@
   <meta property="og:description" content="Listen to No Agenda episode {{ episode }}." data-page-meta/>
   <meta property="og:type" content="website" data-page-meta/>
   <meta property="og:url" content="{{ url('player', {episode: episode.code}) }}" data-page-meta/>
-  <meta property="og:image" content="{{ asset(episode.code ~ '.png')|imagine_filter('cover_large') }}" data-page-meta/>
+  <meta property="og:image" content="{{ episode|episodeCover('large') }}" data-page-meta/>
   <meta property="og:site_name" content="No Agenda" data-page-meta/>
 {% endblock %}
 
@@ -76,7 +76,7 @@
 <div class="site-masthead-player">
   <div class="container">
     <div class="d-sm-flex">
-      <img class="masthead-cover img-fluid" src="{{ asset(episode.code ~ '.png')|imagine_filter('cover_large') }}" alt="Art for episode {{ episode.code }}">
+      <img class="masthead-cover img-fluid" src="{{ episode|episodeCover('large') }}" alt="Art for episode {{ episode.code }}">
       <div class="flex-grow-1 pb-3 pb-sm-0 pt-2 pt-sm-0 m-sm-3 m-md-4 m-lg-5">
         <h1>{{ episode }}</h1>
         <h4>{{ episode.author }}</h4>
