@@ -1,4 +1,4 @@
-{% extends app.request.xmlHttpRequest ? 'ajax_base.html.twig' : 'base.html.twig' %}
+{% extends app.request.headers.get('X-Requested-With') == 'NoAgendaRequest' ? 'ajax_base.html.twig' : 'base.html.twig' %}
 
 {% block metatags %}
 {% endblock %}

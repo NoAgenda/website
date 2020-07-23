@@ -23,6 +23,7 @@ class RouterElement extends HTMLElement {
     window.history.replaceState(this.getCurrentState(), document.title, window.location);
 
     window.onpopstate = event => {
+
       if (!event.state) {
         return;
       }
@@ -135,9 +136,9 @@ class RouterElement extends HTMLElement {
   navigate(path) {
     document.querySelector('#routerFade').style.display = 'flex';
 
-    fetch(path, {
+    fetch(path.indexOf('?') !== -1 ? `${path}&ajax` : `${path}?ajax`, {
       'headers': {
-        'X-Requested-With': 'XMLHttpRequest',
+        'X-Requested-With': 'NoAgendaRequest',
       },
     })
       .then(this.handleResponse)
@@ -149,11 +150,16 @@ class RouterElement extends HTMLElement {
     document.querySelector('#routerFade').style.display = 'flex';
 
     const data = new URLSearchParams(new FormData(formElement));
+    let path = formElement.getAttribute('action');
 
-    fetch(formElement.getAttribute('action') || document.location.toString(), {
+    if (!path) {
+      path = document.location.toString();
+    }
+
+    fetch(path.indexOf('?') !== -1 ? `${path}&ajax` : `${path}?ajax`, {
       'method': 'POST',
       'headers': {
-        'X-Requested-With': 'XMLHttpRequest',
+        'X-Requested-With': 'NoAgendaRequest',
       },
       'body': data,
     })
