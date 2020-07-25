@@ -136,6 +136,8 @@ class RouterElement extends HTMLElement {
   navigate(path) {
     document.querySelector('#routerFade').style.display = 'flex';
 
+    this.nextPath = path;
+
     path = this.convertPath(path);
 
     fetch(path, {
@@ -157,6 +159,8 @@ class RouterElement extends HTMLElement {
     if (!path) {
       path = document.location.toString();
     }
+
+    this.nextPath = path;
 
     path = this.convertPath(path);
 
@@ -209,7 +213,36 @@ class RouterElement extends HTMLElement {
   }
 
   handleError(error) {
-    alert('Failed to load the page. Please contact @woodstock@noagendasocial.com if this error keeps reoccurring.'); // todo error page?
+    this.querySelector('[data-content]').innerHTML = `
+      <div class="container">
+        <div class="my-5">
+          <h3>Oops, we weren't able to load this page.</h3>
+          <p>
+            Make sure you're still connected to the internet. Information about your 
+            request was automatically logged for review if the problem was caused by a server issue.<br>
+            If the problem persists, feel free to contact our resident Dude Named Ben on
+            <a href="https://twitter.com/coded_monkey" title="coded_monkey on Twitter">Twitter (@coded_monkey)</a> or
+            <a href="https://noagendasocial.com/@woodstock" title="Woodstock on NA Social (Mastodon)">NA Social (@woodstock)</a>
+            for help.
+          </p>
+          <p>
+            <a href="#" class="btn-link" onclick="window.history.back();">Go back to the previous page</a>
+          </p>
+          <p>
+            <a href="/" class="btn-link">Go to the homepage</a>
+          </p>
+          <p>
+            <a href="#" class="btn-link" onclick="window.location.reload();">Try reloading the page (player will stop playing)</a>
+          </p>
+        </div>
+
+        <na-audio-toolbar-spacer></na-audio-toolbar-spacer>
+      </div>
+    `;
+
+    window.history.pushState(this.getCurrentState(), 'Failed to load the page - No Agenda', this.nextPath);
+
+    this.updateLinks();
 
     console.log(error);
 
