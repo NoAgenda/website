@@ -5,6 +5,7 @@
 
 {% set output = {
   'path': request_path,
+  'fragment': app.request.query.get('_fragment'),
   'title': page_title,
   'meta': metatags,
   'contents': body,

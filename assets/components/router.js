@@ -136,7 +136,9 @@ class RouterElement extends HTMLElement {
   navigate(path) {
     document.querySelector('#routerFade').style.display = 'flex';
 
-    fetch(path.indexOf('?') !== -1 ? `${path}&ajax` : `${path}?ajax`, {
+    path = this.convertPath(path);
+
+    fetch(path, {
       'headers': {
         'X-Requested-With': 'NoAgendaRequest',
       },
@@ -156,7 +158,9 @@ class RouterElement extends HTMLElement {
       path = document.location.toString();
     }
 
-    fetch(path.indexOf('?') !== -1 ? `${path}&ajax` : `${path}?ajax`, {
+    path = this.convertPath(path);
+
+    fetch(path, {
       'method': 'POST',
       'headers': {
         'X-Requested-With': 'NoAgendaRequest',
@@ -188,6 +192,10 @@ class RouterElement extends HTMLElement {
 
         window.history.pushState(this.getCurrentState(), data.title, data.path);
 
+        if (data.fragment) {
+          window.location.hash = data.fragment;
+        }
+
         this.updateForms();
         this.updateLinks();
         this.updateBullshit();
@@ -206,6 +214,19 @@ class RouterElement extends HTMLElement {
     console.log(error);
 
     document.querySelector('#routerFade').style.display = 'none';
+  }
+
+  convertPath(path) {
+    const hash = path.indexOf('#') !== -1 ? path.substr(path.indexOf('#') + 1) : null;
+
+    if (hash) {
+      path = path.substr(0, path.indexOf('#'));
+      path = path.indexOf('?') !== -1 ? `${path}&_fragment=${hash}` : `${path}?_fragment=${hash}`;
+    }
+
+    path = path.indexOf('?') !== -1 ? `${path}&ajax` : `${path}?ajax`;
+
+    return path;
   }
 }
 
