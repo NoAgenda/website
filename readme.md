@@ -1,6 +1,6 @@
-# No Agenda Experience
+# No Agenda
 
-The source code of [noagendaexperience.com](https://www.noagendaexperience.com),
+The source code of [noagendashow.net](https://www.noagendashow.net),
 a [Symfony](https://symfony.com/) application.
 
 ## Installation

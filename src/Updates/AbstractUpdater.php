@@ -31,12 +31,12 @@ abstract class AbstractUpdater implements ServiceSubscriberInterface
 
     public function getAuthorEmail(): string
     {
-        return $_SERVER['MAILER_FROM'] ?? 'notifications@noagendaexperience.com';
+        return $_SERVER['MAILER_FROM'];
     }
 
     public function getAuthorName(): string
     {
-        return $_SERVER['MAILER_FROM_AUTHOR'] ?? 'No Agenda Experience';
+        return $_SERVER['MAILER_FROM_AUTHOR'];
     }
 
     public function generateUrl(string $route, array $parameters = []): string
