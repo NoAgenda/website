@@ -21,7 +21,7 @@
 {% endmacro %}
 
 {% for category in shownotes.shownotes|filter(category => category['@outlines'] is defined) %}
-  <details class="mx-3 mb-3">
+  <details class="mb-3">
     <summary>{{ category.text|raw }}</summary>
     {% for outline in category['@outlines'] %}
       {{ macro.render_outline(outline) }}
