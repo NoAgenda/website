@@ -1,6 +1,8 @@
 import jQuery from 'jquery';
 import 'waud.js';
 
+import {getProxyUrl} from './proxy';
+
 class AudioPlayerElement extends HTMLElement {
   connectedCallback() {
     this.duration = 0;
@@ -56,7 +58,7 @@ class AudioPlayerElement extends HTMLElement {
       this.dispatchEvent(new Event('audio-pause'));
     }
 
-    this.src = src;
+    this.src = getProxyUrl(src);
     this.title = title;
     this.hash = hash;
     this.playerUrl = playerUrl;

@@ -1,3 +1,5 @@
+import {getProxyUrl} from '../scripts/proxy';
+
 class ProgressiveImageElement extends HTMLElement {
   constructor() {
     super();
@@ -14,7 +16,7 @@ class ProgressiveImageElement extends HTMLElement {
   }
 
   onClick() {
-    const src = this.getAttribute('src');
+    const src = getProxyUrl(this.getAttribute('src'));
     const alt = this.getAttribute('alt');
 
     this.innerHTML = `<img src="${src}" alt="${alt}"/>`;
