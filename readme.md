@@ -1,5 +1,7 @@
 # No Agenda
 
+<img src="https://circleci.com/gh/codedmonkey/noagenda.svg?style=shield" alt="CircleCI status">
+
 The source code of [noagendashow.net](https://www.noagendashow.net),
 a [Symfony](https://symfony.com/) application.
 
