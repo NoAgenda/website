@@ -116,21 +116,6 @@ class RouterElement extends HTMLElement {
 
     // Mastodon buttons
     initializeMastodonButtons();
-
-    // Chrome notice
-    const isChrome = /chrome/.test(window.navigator.userAgent.toLowerCase());
-
-    if (isChrome && !window.localStorage.getItem('chrome-notice-hidden')) {
-      document.querySelectorAll('[data-chrome-notice]').forEach(notice => {
-        const alert = notice.querySelector('.alert');
-
-        notice.classList.remove('d-none');
-
-        jQuery(alert).on('closed.bs.alert', function () {
-          window.localStorage.setItem('chrome-notice-hidden', true);
-        });
-      })
-    }
   }
 
   navigate(path) {
