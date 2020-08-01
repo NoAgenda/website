@@ -23,7 +23,6 @@ class RouterElement extends HTMLElement {
     window.history.replaceState(this.getCurrentState(), document.title, window.location);
 
     window.onpopstate = event => {
-
       if (!event.state) {
         return;
       }
@@ -64,7 +63,7 @@ class RouterElement extends HTMLElement {
         }
 
         this.submit(form);
-      })
+      });
     });
   }
 
