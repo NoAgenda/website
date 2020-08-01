@@ -1,0 +1,20 @@
+version: v1.0
+name: No Agenda
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu1804
+blocks:
+  - name: Test
+    task:
+      jobs:
+        - name: Test
+          commands:
+            - checkout
+            - sem-version node 12
+            - cache restore
+            - npm install yarn
+            - yarn install
+            - cache store
+            - yarn build --if-present
+            - yarn test
