@@ -11,6 +11,12 @@ describe('player', () => {
       test('input is hours minutes and seconds', () => {
         expect(helpers.serializeTime('1:3:00')).toEqual(3780);
       });
+      test('input is seconds', () => {
+        expect(helpers.serializeTime(':30')).toEqual(30);
+      });
+      test('input is seconds without colon', () => {
+        expect(helpers.serializeTime('20')).toEqual(20);
+      })
     });
     describe('formatTime', () => {
       describe('no hours', () => {
