@@ -1,10 +1,7 @@
 #!/usr/bin/env bash
 
-# Download Composer
-curl -sS https://getcomposer.org/installer | php
-
 # Install third-party PHP dependencies
-php composer.phar install
+composer install
 
 # Run scripts to setup database
 php bin/console doctrine:migrations:migrate --no-interaction
