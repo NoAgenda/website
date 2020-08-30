@@ -32,18 +32,9 @@ jQuery(document).ready(() => {
 
     const initialTimestamp = +jQuery('body').data('transcript-timestamp');
     if (initialTimestamp > 0) {
-      const showTabListener = () => {
-        const transcriptLine = jQuery('.site-transcript-line[data-timestamp="' + initialTimestamp + '"]');
+      const initialTranscriptLine = jQuery('.site-transcript-line[data-timestamp="' + initialTimestamp + '"]');
 
-        jQuery('html,body').animate({
-          scrollTop: transcriptLine.offset().top + transcriptLine.height() + 250 - jQuery(window).height(),
-        });
-
-        transcriptTab.off('shown.bs.tab', showTabListener);
-      };
-
-      transcriptTab.on('shown.bs.tab', showTabListener);
-      transcriptTab.tab('show');
+      scrollToTranscriptLine(initialTranscriptLine);
     }
 
     transcriptTab.on('shown.bs.tab', () => {
@@ -140,4 +131,19 @@ function lineIsOnScreen(element, bottomOffset) {
   const viewportBottom = viewportTop + jQuery(window).height() - bottomOffset;
 
   return elementTop > viewportTop && elementBottom < viewportBottom;
+}
+
+export function scrollToTranscriptLine(transcriptLine) {
+  const transcriptTab = jQuery('#transcript-tab');
+
+  const showTabListener = () => {
+    jQuery('html,body').animate({
+      scrollTop: transcriptLine.offset().top + transcriptLine.height() + 250 - jQuery(window).height(),
+    });
+
+    transcriptTab.off('shown.bs.tab', showTabListener);
+  };
+
+  transcriptTab.on('shown.bs.tab', showTabListener);
+  transcriptTab.tab('show');
 }

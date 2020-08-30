@@ -32,6 +32,13 @@
 
 .no-select { user-select: none; -moz-user-select: none; }
 
+details {
+  summary {
+    border: 1px solid $secondary;
+    padding: map_get($spacers, 2) $spacer,
+  }
+}
+
 .position-sticky.position-sticky {
   position: -webkit-sticky !important;
   position: sticky !important;

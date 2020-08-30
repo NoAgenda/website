@@ -20,11 +20,13 @@
   {% endif %}
 {% endmacro %}
 
-{% for category in shownotes.shownotes|filter(category => category['@outlines'] is defined) %}
-  <details class="mb-3">
-    <summary>{{ category.text|raw }}</summary>
-    {% for outline in category['@outlines'] %}
-      {{ macro.render_outline(outline) }}
-    {% endfor %}
-  </details>
-{% endfor %}
+<div data-episode-shownotes>
+  {% for category in shownotes.shownotes|filter(category => category['@outlines'] is defined) %}
+    <details class="mb-3">
+      <summary>{{ category.text|raw }}</summary>
+      {% for outline in category['@outlines'] %}
+        {{ macro.render_outline(outline) }}
+      {% endfor %}
+    </details>
+  {% endfor %}
+</div>
