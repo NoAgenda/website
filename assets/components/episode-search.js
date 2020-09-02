@@ -29,9 +29,13 @@ class EpisodeSearchElement extends HTMLElement {
   }
 
   onClear() {
-    this.input.value = '';
+    return new Promise(resolve => {
+      this.input.value = '';
 
-    this.onInputChange({target: {value: ''}});
+      this.onInputChange({target: {value: ''}});
+
+      resolve();
+    });
   }
 
   onInputChange(event) {
@@ -105,7 +109,7 @@ class EpisodeSearchElement extends HTMLElement {
     const ranges = calculateLineRanges(transcriptLineMatches);
 
     ranges.forEach(([start, end]) => {
-      const originalLines = transcriptLines.slice(start, end);
+      const originalLines = transcriptLines.slice(start, end + 1);
       const linesToRender = originalLines.map(node => node.cloneNode(true));
 
       linesToRender.forEach(line => {
@@ -142,9 +146,11 @@ class EpisodeSearchElement extends HTMLElement {
       `;
       transcriptScrollLink.setAttribute('role', 'button');
       transcriptScrollLink.addEventListener('click', () => {
-        this.onClear();
-
-        scrollToTranscriptLine(jQuery(originalLines[0]));
+        this.onClear()
+          .then(() => {
+            scrollToTranscriptLine(jQuery(originalLines[originalLines.length - 1]));
+          })
+        ;
       });
 
       renderSection.appendChild(transcriptScrollLink);
@@ -182,14 +188,13 @@ function inputToRegex(input) {
   return input;
 }
 
-function calculateLineRanges(matches) {
-  matches = [...matches];
-
+export function calculateLineRanges(matches) {
+  const parts = [...matches];
   const ranges = [];
 
-  let startLineIndex = matches.shift();
+  let startLineIndex = parts.shift();
 
-  while (matches.length > 0) {
+  do {
     let start = startLineIndex - 3;
     let end = startLineIndex;
 
@@ -197,20 +202,20 @@ function calculateLineRanges(matches) {
       start = 0;
     }
 
-    let nextLineIndex = matches.shift();
+    let nextLineIndex = parts.shift();
 
     while (nextLineIndex - end < 9) {
       end = nextLineIndex;
 
-      nextLineIndex = matches.shift();
+      nextLineIndex = parts.shift();
     }
 
-    end = end + 4;
+    end = end + 3;
 
     ranges.push([start, end]);
 
     startLineIndex = nextLineIndex;
-  }
+  } while (startLineIndex);
 
   return ranges;
 }

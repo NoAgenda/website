@@ -137,7 +137,7 @@ export function scrollToTranscriptLine(transcriptLine) {
   const transcriptTab = jQuery('#transcript-tab');
 
   const showTabListener = () => {
-    jQuery('html,body').animate({
+    jQuery([document.documentElement, document.body]).animate({
       scrollTop: transcriptLine.offset().top + transcriptLine.height() + 250 - jQuery(window).height(),
     });
 
