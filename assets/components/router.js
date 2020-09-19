@@ -118,7 +118,7 @@ class RouterElement extends HTMLElement {
   }
 
   navigate(path) {
-    document.querySelector('#routerFade').style.display = 'flex';
+    document.querySelector('#routerLoader').style.display = 'block';
 
     this.nextPath = path;
 
@@ -135,7 +135,7 @@ class RouterElement extends HTMLElement {
   }
 
   submit(formElement) {
-    document.querySelector('#routerFade').style.display = 'flex';
+    document.querySelector('#routerLoader').style.display = 'block';
 
     const data = new URLSearchParams(new FormData(formElement));
     let path = formElement.getAttribute('action');
@@ -188,7 +188,7 @@ class RouterElement extends HTMLElement {
         this.updateLinks();
         this.updateBullshit();
 
-        document.querySelector('#routerFade').style.display = 'none';
+        document.querySelector('#routerLoader').style.display = 'none';
 
         this.dispatchEvent(new Event('navigated'));
       })
@@ -230,7 +230,7 @@ class RouterElement extends HTMLElement {
 
     console.log(error);
 
-    document.querySelector('#routerFade').style.display = 'none';
+    document.querySelector('#routerLoader').style.display = 'none';
   }
 
   convertPath(path) {

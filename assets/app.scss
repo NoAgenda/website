@@ -55,15 +55,38 @@ details {
   }
 }
 
-.fade-container {
-  opacity:    0.3;
-  background: #000;
-  width:      100%;
-  height:     100%;
-  z-index:    1001;
-  top:        0;
-  left:       0;
-  position:   fixed;
+.loading-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  overflow: hidden;
+  z-index: 2000;
+
+  span {
+    display: block;
+    height: 100%;
+  }
+
+  .progress {
+    background-color: $highlight;
+    box-shadow: $box-shadow-sm;
+    -webkit-animation: progressBar 3s ease-in-out;
+    -webkit-animation-fill-mode:both;
+    -moz-animation: progressBar 3s ease-in-out;
+    -moz-animation-fill-mode:both;
+  }
+}
+
+@-webkit-keyframes progressBar {
+  0% { width: 0; }
+  100% { width: 100%; }
+}
+
+@-moz-keyframes progressBar {
+  0% { width: 0; }
+  100% { width: 100%; }
 }
 
 @include media-breakpoint-up(md) {
