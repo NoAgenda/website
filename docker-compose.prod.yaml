@@ -7,8 +7,10 @@ services:
       target: noagenda_app
     restart: unless-stopped
     tty: true
+    ports:
+      - "80:80"
     volumes:
-      - ./:/srv/www
+      - public_media:/srv/www/public/media
     networks:
       - http
       - database
@@ -17,9 +19,8 @@ services:
     build:
       context: .
       target: noagenda_assets
+    restart: no
     tty: true
-    volumes:
-      - ./:/srv/www
 
   database:
     build:
@@ -30,10 +31,6 @@ services:
       MYSQL_DATABASE: noagenda
       MYSQL_USER: dudenamedben
       MYSQL_PASSWORD: dudettenamedbernadette
-    depends_on:
-      - app
-    ports:
-      - "8034:3306"
     volumes:
       - database_data:/var/lib/mysql
       - ./docker/mysql/my.cnf:/etc/mysql/my.cnf
@@ -48,11 +45,8 @@ services:
     depends_on:
       - app
       - assets
-    ports:
-      - "8033:80"
     volumes:
-      - ./:/srv/www
-      - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
+      - public_media:/srv/www/public/media
     networks:
       - http
 
@@ -62,4 +56,6 @@ networks:
 
 volumes:
   database_data:
+    driver: local
+  public_media:
     driver: local

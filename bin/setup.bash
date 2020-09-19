@@ -10,4 +10,3 @@ php bin/console messenger:setup-transports
 
 # Download and run build tools for assets
 php bin/console app:refresh-cover-cache
-yarn && yarn run build
