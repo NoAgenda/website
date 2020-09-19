@@ -39,6 +39,12 @@ details {
   }
 }
 
+na-chapter-list .list-group-item-action {
+  &:hover, &:active {
+    color: inherit;
+  }
+}
+
 .position-sticky.position-sticky {
   position: -webkit-sticky !important;
   position: sticky !important;

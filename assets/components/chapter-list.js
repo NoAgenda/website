@@ -1,3 +1,5 @@
+import jQuery from 'jquery';
+
 import {getPlayer, HTMLAudioAwareElement} from '../scripts/player';
 
 class ChapterListElement extends HTMLAudioAwareElement {
@@ -19,6 +21,20 @@ class ChapterListElement extends HTMLAudioAwareElement {
     if (this.toggleButton) {
       this.toggleButton.addEventListener('click', this.onToggleDrafts);
     }
+    
+    this.querySelectorAll('[data-chapter]').forEach(chapterElement => {
+      chapterElement.addEventListener('click', event => {
+        if (event.target.closest('na-audio-timestamp') !== null) {
+          return;
+        }
+
+        const collapse = chapterElement.querySelector('.collapse');
+
+        if (!collapse.classList.contains('show')) {
+          jQuery(collapse).collapse('show');
+        }
+      });
+    });
   }
 
   disconnectedCallback() {
