@@ -62,6 +62,16 @@ class RouterElement extends HTMLElement {
           return false;
         }
 
+        const submitButton = form.querySelector('[type="submit"]');
+
+        const icon = document.createElement('span');
+        icon.classList.add('fas', 'fa-spinner', 'fa-spin', 'ml-2');
+        icon.setAttribute('aria-hidden', 'true');
+        icon.setAttribute('data-na-loader', 'data-na-loader');
+
+        submitButton.setAttribute('disabled', 'disabled');
+        submitButton.appendChild(icon);
+
         this.submit(form);
       });
     });
