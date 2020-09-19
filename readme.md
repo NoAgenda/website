@@ -34,7 +34,14 @@ docker exec -it noagenda_app_1 bash
 ```
 
 ## Testing
-To run the JavaScript unit tests run:
+### PHP
+To execute the PHP/Symfony unit tests run:
+```bash
+php bin/phpunit
+```
+
+### JavaScript
+To execute the JavaScript unit tests run:
 ```bash
 docker exec -t noagenda_assets_1 yarn run test
 ```
