@@ -59,12 +59,12 @@ docker exec -it noagenda_apache bash
 ## Testing
 To run the JavaScript unit tests run:
 ```bash
-npm run test
+yarn run test
 ```
 
 You can also have the test run automatically when a file changes while developing by running:
 ```bash
-npm run test-watch
+yarn run test-watch
 ```
 
 ## Crawling
@@ -113,7 +113,13 @@ See the [Symfony Messenger documentation](https://symfony.com/doc/4.4/messenger.
 for details.
 
 ```bash
-php bin/console app:enqueue
+# Add a job to the queue
+php bin/console app:enqueue bat_signal
+php bin/console app:enqueue feed
+php bin/console app:enqueue transcripts
+php bin/console app:enqueue youtube
+
+# Run the queue
 php bin/console messenger:consume crawler
 ```
 
