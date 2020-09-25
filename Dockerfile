@@ -3,7 +3,8 @@ FROM php:7.2-fpm AS noagenda_app
 WORKDIR /srv/www
 
 # Install additional packages
-RUN apt-get update; apt-get install -y \
+RUN apt-get update; apt-get install --no-install-recommends -y \
+    libmagickwand-dev \
     supervisor \
     ffmpeg mplayer python-pip; \
     pip install numpy; \
@@ -11,9 +12,7 @@ RUN apt-get update; apt-get install -y \
     pip install audio-offset-finder
 
 # Enable extensions
-RUN apt-get update; apt-get install -y \
-    libmagickwand-dev --no-install-recommends; \
-    pecl install imagick; \
+RUN pecl install imagick; \
 	docker-php-ext-enable imagick; \
     docker-php-ext-install pdo_mysql zip
 
