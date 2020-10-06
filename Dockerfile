@@ -4,9 +4,12 @@ WORKDIR /srv/www
 
 # Install additional packages
 RUN apt-get update; apt-get install --no-install-recommends -y \
+    acl \
     libmagickwand-dev \
     supervisor \
-    ffmpeg mplayer python-pip; \
+    ffmpeg mplayer
+
+RUN apt-get update; apt-get install -y python-pip; \
     pip install numpy; \
     pip install scikits.talkbox; \
     pip install audio-offset-finder
@@ -41,9 +44,11 @@ RUN composer install --prefer-dist --no-autoloader --no-scripts --no-progress --
 EXPOSE 9000
 
 # Set up entrypoint
-COPY docker/entrypoint.sh docker/
-RUN chmod +x docker/entrypoint.sh
-CMD ["/srv/www/docker/entrypoint.sh"]
+COPY docker/entrypoint.sh /usr/local/bin/docker-entrypoint
+RUN chmod +x /usr/local/bin/docker-entrypoint
+
+ENTRYPOINT ["docker-entrypoint"]
+CMD ["php-fpm"]
 
 FROM node:12.0-alpine AS noagenda_assets
 
@@ -72,7 +77,7 @@ ENV MYSQL_PASSWORD=${MYSQL_PASSWORD}
 ENV MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
 
 # Copy MySQL configuration
-COPY docker/mysql/my.cnf /etc/mysql/my.cnf
+COPY docker/mysql/my.cnf /etc/my.cnf
 
 FROM nginx:alpine AS noagenda_http
 

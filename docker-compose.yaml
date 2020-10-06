@@ -36,7 +36,7 @@ services:
       - "8034:3306"
     volumes:
       - database_data:/var/lib/mysql
-      - ./docker/mysql/my.cnf:/etc/mysql/my.cnf
+      - ./docker/mysql/my.cnf:/etc/my.cnf
     networks:
       - database
 
