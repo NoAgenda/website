@@ -1,4 +1,5 @@
 #!/bin/bash
+
 set -e
 
 if [ "$1" = 'php-fpm' ] || [ "$1" = 'bin/console' ]; then
@@ -13,6 +14,14 @@ if [ "$1" = 'php-fpm' ] || [ "$1" = 'bin/console' ]; then
     composer clear-cache
     composer dump-autoload --classmap-authoritative
 	fi
+
+  >&2 echo "Waiting for database to be ready..."
+	until bin/console doctrine:query:sql "select 1" >/dev/null 2>&1; do
+		sleep 1
+	done
+
+  bin/console doctrine:migrations:migrate --no-interaction
+  bin/console messenger:setup-transports
 fi
 
 exec docker-php-entrypoint "$@"

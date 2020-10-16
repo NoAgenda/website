@@ -7,20 +7,41 @@ services:
       target: noagenda_app
     restart: unless-stopped
     tty: true
-    ports:
-      - "80:80"
     volumes:
       - public_media:/srv/www/public/media
     networks:
-      - http
       - database
+      - http
+      - php
 
-  assets:
+  chat_recorder:
     build:
       context: .
-      target: noagenda_assets
-    restart: no
+      target: noagenda_app
+    restart: unless-stopped
     tty: true
+    entrypoint: ["app-php-entrypoint"]
+    command: ["bin/console", "app:record", "chat"]
+    depends_on:
+      - app
+    networks:
+      - php
+
+  crawler:
+    build:
+      context: .
+      target: noagenda_app
+    restart: unless-stopped
+    tty: true
+    entrypoint: ["app-php-entrypoint"]
+    command: ["bin/console", "messenger:consume", "crawler", "--sleep", "60", "--time-limit", "3600"]
+    depends_on:
+      - app
+    volumes:
+      - public_media:/srv/www/public/media
+    networks:
+      - database
+      - php
 
   database:
     build:
@@ -31,9 +52,10 @@ services:
       MYSQL_DATABASE: noagenda
       MYSQL_USER: dudenamedben
       MYSQL_PASSWORD: dudettenamedbernadette
+    depends_on:
+      - app
     volumes:
       - database_data:/var/lib/mysql
-      - ./docker/mysql/my.cnf:/etc/mysql/my.cnf
     networks:
       - database
 
@@ -42,17 +64,32 @@ services:
       context: .
       target: noagenda_http
     restart: unless-stopped
+    ports:
+      - "80:80"
     depends_on:
       - app
-      - assets
     volumes:
       - public_media:/srv/www/public/media
     networks:
       - http
 
+  livestream_recorder:
+    build:
+      context: .
+      target: noagenda_app
+    restart: unless-stopped
+    tty: true
+    entrypoint: ["app-php-entrypoint"]
+    command: ["bin/console", "app:record", "livestream"]
+    depends_on:
+      - app
+    networks:
+      - php
+
 networks:
   database:
   http:
+  php:
 
 volumes:
   database_data:

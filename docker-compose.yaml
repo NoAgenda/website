@@ -9,17 +9,58 @@ services:
     tty: true
     volumes:
       - ./:/srv/www
+      - public_media:/srv/www/public/media
+      - var_data:/srv/www/var
     networks:
-      - http
+      - assets
       - database
+      - http
+      - php
 
   assets:
     build:
       context: .
       target: noagenda_assets
+    restart: unless-stopped
     tty: true
     volumes:
       - ./:/srv/www
+    networks:
+      - assets
+
+  chat_recorder:
+    build:
+      context: .
+      target: noagenda_app
+    restart: unless-stopped
+    tty: true
+    entrypoint: ["app-php-entrypoint"]
+    command: ["bin/console", "app:record", "chat"]
+    depends_on:
+      - app
+    volumes:
+      - ./:/srv/www
+      - var_data:/srv/www/var
+    networks:
+      - php
+
+  crawler:
+    build:
+      context: .
+      target: noagenda_app
+    restart: unless-stopped
+    tty: true
+    entrypoint: ["app-php-entrypoint"]
+    command: ["bin/console", "messenger:consume", "crawler", "--sleep", "60", "--time-limit", "3600"]
+    depends_on:
+      - app
+    volumes:
+      - ./:/srv/www
+      - public_media:/srv/www/public/media
+      - var_data:/srv/www/var
+    networks:
+      - database
+      - php
 
   database:
     build:
@@ -36,7 +77,6 @@ services:
       - "8034:3306"
     volumes:
       - database_data:/var/lib/mysql
-      - ./docker/mysql/my.cnf:/etc/my.cnf
     networks:
       - database
 
@@ -52,14 +92,37 @@ services:
       - "8033:80"
     volumes:
       - ./:/srv/www
+      - public_media:/srv/www/public/media
       - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
     networks:
       - http
 
+  livestream_recorder:
+    build:
+      context: .
+      target: noagenda_app
+    restart: unless-stopped
+    tty: true
+    entrypoint: ["app-php-entrypoint"]
+    command: ["bin/console", "app:record", "livestream"]
+    depends_on:
+      - app
+    volumes:
+      - ./:/srv/www
+      - var_data:/srv/www/var
+    networks:
+      - php
+
 networks:
+  assets:
   database:
   http:
+  php:
 
 volumes:
   database_data:
+    driver: local
+  public_media:
+    driver: local
+  var_data:
     driver: local

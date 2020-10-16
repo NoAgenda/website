@@ -4,9 +4,7 @@ WORKDIR /srv/www
 
 # Install additional packages
 RUN apt-get update; apt-get install --no-install-recommends -y \
-    acl \
-    libmagickwand-dev \
-    supervisor \
+    acl libmagickwand-dev netcat unzip \
     ffmpeg mplayer
 
 RUN apt-get update; apt-get install -y python-pip; \
@@ -43,11 +41,14 @@ RUN composer install --prefer-dist --no-autoloader --no-scripts --no-progress --
 # Expose port 9000
 EXPOSE 9000
 
-# Set up entrypoint
-COPY docker/entrypoint.sh /usr/local/bin/docker-entrypoint
-RUN chmod +x /usr/local/bin/docker-entrypoint
+# Set up entrypoints
+COPY docker/app-entrypoint.bash /usr/local/bin/app-entrypoint
+RUN chmod +x /usr/local/bin/app-entrypoint
 
-ENTRYPOINT ["docker-entrypoint"]
+COPY docker/php-entrypoint.bash /usr/local/bin/app-php-entrypoint
+RUN chmod +x /usr/local/bin/app-php-entrypoint
+
+ENTRYPOINT ["app-entrypoint"]
 CMD ["php-fpm"]
 
 FROM node:12.0-alpine AS noagenda_assets
@@ -64,6 +65,13 @@ COPY webpack.config.js .babelrc ./
 COPY assets assets/
 RUN yarn run production
 
+# Set up entrypoint
+COPY docker/assets-entrypoint.sh /usr/local/bin/docker-entrypoint
+RUN chmod +x /usr/local/bin/docker-entrypoint
+
+ENTRYPOINT ["docker-entrypoint"]
+CMD ["yarn", "run", "watch"]
+
 FROM mysql:8.0 AS noagenda_database
 
 ARG MYSQL_DATABASE
@@ -78,6 +86,7 @@ ENV MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
 
 # Copy MySQL configuration
 COPY docker/mysql/my.cnf /etc/my.cnf
+RUN chmod 0755 /etc/my.cnf
 
 FROM nginx:alpine AS noagenda_http
 
