@@ -72,22 +72,6 @@ RUN chmod +x /usr/local/bin/docker-entrypoint
 ENTRYPOINT ["docker-entrypoint"]
 CMD ["yarn", "run", "watch"]
 
-FROM mysql:8.0 AS noagenda_database
-
-ARG MYSQL_DATABASE
-ARG MYSQL_USER
-ARG MYSQL_PASSWORD
-ARG MYSQL_ROOT_PASSWORD
-
-ENV MYSQL_DATABASE=${MYSQL_DATABASE}
-ENV MYSQL_USER=${MYSQL_USER}
-ENV MYSQL_PASSWORD=${MYSQL_PASSWORD}
-ENV MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-
-# Copy MySQL configuration
-COPY docker/mysql/my.cnf /etc/my.cnf
-RUN chmod 0755 /etc/my.cnf
-
 FROM nginx:alpine AS noagenda_http
 
 WORKDIR /srv/www
