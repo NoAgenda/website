@@ -1,37 +1,37 @@
 security:
-  encoders:
-    App\Entity\User:
-      algorithm: bcrypt
+    encoders:
+        App\Entity\User:
+            algorithm: bcrypt
 
-  role_hierarchy:
-    ROLE_MOD: ROLE_USER
-    ROLE_ADMIN: ROLE_MOD
-    ROLE_SUPER_ADMIN: [ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
+    role_hierarchy:
+        ROLE_MOD: ROLE_USER
+        ROLE_ADMIN: ROLE_MOD
+        ROLE_SUPER_ADMIN: [ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
 
-  providers:
-    db_users:
-      entity:
-        class: App\Entity\User
-        property: username
+    providers:
+        db_users:
+            entity:
+                class: App\Entity\User
+                property: username
 
-  firewalls:
-    dev:
-      pattern: ^/(_(monitor|profiler|wdt)|css|images|js)/
-      security: false
-    main:
-      anonymous: ~
-      http_basic: ~
-      form_login:
-        login_path: security_login
-        check_path: security_login
-      logout:
-        path: security_logout
-        target: homepage
-      remember_me:
-        secret: '%kernel.secret%'
-        lifetime: 2419200 # 4 weeks in seconds
-        path: /
+    firewalls:
+        dev:
+            pattern: ^/(_(monitor|profiler|wdt)|css|images|js)/
+            security: false
+        main:
+            anonymous: ~
+            http_basic: ~
+            form_login:
+                login_path: security_login
+                check_path: security_login
+            logout:
+                path: security_logout
+                target: homepage
+            remember_me:
+                secret: '%kernel.secret%'
+                lifetime: 2419200 # 4 weeks in seconds
+                path: /
 
-  access_control:
-    - { path: ^/admin, roles: ROLE_ADMIN }
-    - { path: ^/account, roles: ROLE_USER }
+    access_control:
+        - { path: ^/admin, roles: ROLE_ADMIN }
+        - { path: ^/account, roles: ROLE_USER }

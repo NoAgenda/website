@@ -2,56 +2,56 @@
 
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    {% set page_title = page_title is not defined ? 'No Agenda' : "#{page_title} - No Agenda" %}
-    {% set page_description = page_description ?? null %}
+        {% set page_title = page_title is not defined ? 'No Agenda' : "#{page_title} - No Agenda" %}
+        {% set page_description = page_description ?? null %}
 
-    <title>{{ page_title }}</title>
-    {% if page_description %}<meta name="description" content="{{ page_description }}">{% endif %}
-    <link rel="icon" href="{{ asset('/favicon.ico') }}">
+        <title>{{ page_title }}</title>
+        {% if page_description %}<meta name="description" content="{{ page_description }}">{% endif %}
+        <link rel="icon" href="{{ asset('/favicon.ico') }}">
 
-    {% block metatags %}
-    {% endblock %}
+        {% block metatags %}
+        {% endblock %}
 
-    {% block stylesheets %}
-      {{ encore_entry_link_tags('app') }}
-    {% endblock %}
-  </head>
-  <body data-authenticated="{{ authenticated ? 'true' : 'false' }}" {% block body_attributes '' %}>
-    <na-router>
-      {% block body '' %}
-    </na-router>
+        {% block stylesheets %}
+            {{ encore_entry_link_tags('app') }}
+        {% endblock %}
+    </head>
+    <body data-authenticated="{{ authenticated ? 'true' : 'false' }}" {% block body_attributes '' %}>
+        <na-router>
+            {% block body '' %}
+        </na-router>
 
-    <na-audio-toolbar id="stickyPlayer" style="display: none;">
-      <div class="position-fixed" style="bottom: 0; left: 0; right: 0; z-index: 1002;">
-        <div class="container">
-          <div class="bottom-holder d-md-flex p-2">
-            <div class="btn-toolbar d-flex align-items-center justify-content-center mb-2 mb-md-0">
-              {{ player.seek_button('backward', 15, 'ml-3 mr-2', 'btn-sm btn-light') }}
-              {{ player.play_button(2, 'mx-2') }}
-              {{ player.seek_button('forward', 15, 'mx-2', 'btn-sm btn-light') }}
-              {{ player.speed_button('ml-2 mr-3', 'btn-sm btn-light') }}
+        <na-audio-toolbar id="stickyPlayer" style="display: none;">
+            <div class="position-fixed" style="bottom: 0; left: 0; right: 0; z-index: 1002;">
+                <div class="container">
+                    <div class="bottom-holder d-md-flex p-2">
+                        <div class="btn-toolbar d-flex align-items-center justify-content-center mb-2 mb-md-0">
+                            {{ player.seek_button('backward', 15, 'ml-3 mr-2', 'btn-sm btn-light') }}
+                            {{ player.play_button(2, 'mx-2') }}
+                            {{ player.seek_button('forward', 15, 'mx-2', 'btn-sm btn-light') }}
+                            {{ player.speed_button('ml-2 mr-3', 'btn-sm btn-light') }}
+                        </div>
+                        {{ player.progress_bar('small') }}
+                    </div>
+                </div>
             </div>
-            {{ player.progress_bar('small') }}
-          </div>
+        </na-audio-toolbar>
+
+        <div id="routerLoader" class="loading-bar" style="display: none;">
+            <span style="width: 80%;"><span class="progress"></span></span>
         </div>
-      </div>
-    </na-audio-toolbar>
 
-    <div id="routerLoader" class="loading-bar" style="display: none;">
-      <span style="width: 80%;"><span class="progress"></span></span>
-    </div>
+        <na-audio id="audioPlayer"></na-audio>
 
-    <na-audio id="audioPlayer"></na-audio>
+        {% include 'blocks/token_modal.html.twig' %}
+        {% include 'blocks/mastodon_modal.html.twig' %}
 
-    {% include 'blocks/token_modal.html.twig' %}
-    {% include 'blocks/mastodon_modal.html.twig' %}
-
-    {% block scripts %}
-      {{ encore_entry_script_tags('app') }}
-    {% endblock %}
-  </body>
+        {% block scripts %}
+            {{ encore_entry_script_tags('app') }}
+        {% endblock %}
+    </body>
 </html>

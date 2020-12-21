@@ -1,33 +1,35 @@
 parameters:
-  locale: 'en'
 
 services:
-  _defaults:
-    autowire: true
-    autoconfigure: true
-    public: false
-    bind:
-      $httpClient: '@httplug.client.app'
-      $mastodonClient: '@httplug.client.mastodon'
-      $shownotesClient: '@httplug.client.shownotes'
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        bind:
+          $httpClient: '@httplug.client.app'
+          $mastodonClient: '@httplug.client.mastodon'
+          $shownotesClient: '@httplug.client.shownotes'
 
-  App\:
-    resource: '../src/*'
-    exclude: '../src/{DependencyInjection,Entity,Migrations,Tests,Kernel.php}'
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+            - '../src/Tests/'
 
-  App\Controller\:
-    resource: '../src/Controller'
-    tags: ['controller.service_arguments']
+    App\Controller\:
+        resource: '../src/Controller'
+        tags: ['controller.service_arguments']
 
-  App\Crawling\:
-    resource: '../src/Crawling'
-    exclude: '../src/Crawling/{CrawlingLogger.php,Shownotes}'
-    calls:
-      - ['setLogger', ['@App\Crawling\CrawlingLogger']]
+    App\Crawling\:
+        resource: '../src/Crawling'
+        exclude: '../src/Crawling/{CrawlingLogger.php,Shownotes}'
+        calls:
+            - ['setLogger', ['@App\Crawling\CrawlingLogger']]
 
-  App\EventListener\Doctrine\:
-    resource: '../src/EventListener/Doctrine'
-    tags: ['doctrine.event_subscriber']
+    App\EventListener\Doctrine\:
+        resource: '../src/EventListener/Doctrine'
+        tags: ['doctrine.event_subscriber']
 
-  Liip\ImagineBundle\Imagine\Filter\FilterManager: '@liip_imagine.filter.manager'
-  Liip\ImagineBundle\Service\FilterService: '@liip_imagine.service.filter'
+    Liip\ImagineBundle\Imagine\Filter\FilterManager: '@liip_imagine.filter.manager'
+    Liip\ImagineBundle\Service\FilterService: '@liip_imagine.service.filter'

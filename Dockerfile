@@ -1,10 +1,10 @@
-FROM php:7.2-fpm AS noagenda_app
+FROM php:7.4-fpm AS noagenda_app
 
 WORKDIR /srv/www
 
 # Install additional packages
 RUN apt-get update; apt-get install --no-install-recommends -y \
-    acl libmagickwand-dev netcat unzip \
+    acl libmagickwand-dev libzip-dev netcat unzip \
     ffmpeg mplayer
 
 RUN apt-get update; apt-get install -y python-pip; \
