@@ -20,6 +20,7 @@ import './scripts/token';
 
 import './app.scss';
 
+import './images/logo.png';
 import './images/placeholder_large.jpg';
 import './images/placeholder_small.jpg';
 

@@ -1,4 +1,4 @@
-<div class="list-group">
+<div class="list-group list-group-flush">
   {% for item in items %}
     <a href="{{ path('player', {episode: item.entity.episode.code }) }}" class="list-group-item list-group-item-action">
       {% set item_creator = item.entity.creator ? item.entity.creator.username : 'A guest producer' %}

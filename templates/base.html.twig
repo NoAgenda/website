@@ -21,6 +21,10 @@
         {% endblock %}
     </head>
     <body data-authenticated="{{ authenticated ? 'true' : 'false' }}" {% block body_attributes '' %}>
+        <div id="routerLoader" class="loading-bar">
+            <span style="width: 90%;"><span class="progress"></span></span>
+        </div>
+
         <na-router>
             {% block body '' %}
         </na-router>
@@ -31,7 +35,7 @@
                     <div class="bottom-holder d-md-flex p-2">
                         <div class="btn-toolbar d-flex align-items-center justify-content-center mb-2 mb-md-0">
                             {{ player.seek_button('backward', 15, 'ml-3 mr-2', 'btn-sm btn-light') }}
-                            {{ player.play_button(2, 'mx-2') }}
+                            {{ player.play_button(2, 'text-tertiary mx-2') }}
                             {{ player.seek_button('forward', 15, 'mx-2', 'btn-sm btn-light') }}
                             {{ player.speed_button('ml-2 mr-3', 'btn-sm btn-light') }}
                         </div>
@@ -40,10 +44,6 @@
                 </div>
             </div>
         </na-audio-toolbar>
-
-        <div id="routerLoader" class="loading-bar" style="display: none;">
-            <span style="width: 80%;"><span class="progress"></span></span>
-        </div>
 
         <na-audio id="audioPlayer"></na-audio>
 

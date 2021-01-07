@@ -5,36 +5,39 @@
 @import "stylesheets/masthead-player";
 @import "stylesheets/interactive-player";
 
-@import url('https://fonts.googleapis.com/css?family=Mukta');
+@import url('https://fonts.googleapis.com/css2?family=Mukta');
 
-.navbar {
-  z-index: 1000;
+body {
+  min-height: 100vh;
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.1) inset;
 }
 
-.bg-gray { background: #c5c5c5; }
+.section-dark {
+  background: $tertiary;
+  color: $white;
 
-.cursor-pointer { cursor: pointer; }
+  h1, h2, h3, h4, h5, h6,
+  .h1, .h2, .h3, .h4, .h5, .h6 {
+    color: $white;
+  }
 
-.ox-hidden { overflow-x: hidden; }
-.oy-scroll { overflow-y: scroll; }
+  a {
+    color: $white;
 
-.text-sm { font-size: .95rem; }
+    &:hover, &:active {
+      color: $link-hover-color;
 
-.text-facebook { color: #0d6aad; }
-.text-itunes { color: #b150e2; }
-.text-mastodon { color: rgb(40, 44, 55); }
-.text-twitter { color: #00a7d0; }
-
-.top-0 { top: 0; }
-
-.min-vh-100 { min-height: 100vh; }
-.max-vh-100 { max-height: 100vh; }
-
-.no-select { user-select: none; -moz-user-select: none; }
+      h1, h2, h3, h4, h5, h6,
+      .h1, .h2, .h3, .h4, .h5, .h6 {
+        color: $link-hover-color;
+      }
+    }
+  }
+}
 
 details {
   summary {
-    border: 1px solid $secondary;
+    border: 1px solid $separator-color;
     padding: map_get($spacers, 2) $spacer,
   }
 }
@@ -45,24 +48,28 @@ na-chapter-list .list-group-item-action {
   }
 }
 
-.position-sticky.position-sticky {
-  position: -webkit-sticky !important;
-  position: sticky !important;
-}
-
 .bottom-holder {
-  background: $tertiary;
-  color: $white;
+  background: $secondary;
   border-top-left-radius: .25rem;
   border-top-right-radius: .25rem;
+  box-shadow: 0 0 2px rgba(119, 119, 119, 0.5);
+}
 
-  a {
-    color: $white;
+.action-box {
+  display: inline-block;
+  margin: map-get($spacers, 1) 0;
+  padding: map-get($spacers, 1);
+  background: $secondary;
+  box-shadow: 0 0 2px rgba(119, 119, 119, 0.5);
+
+  &+ .action-box {
+    margin-left: map-get($spacers, 2);
   }
 }
 
 .loading-bar {
-  position: absolute;
+  display: none;
+  position: sticky;
   top: 0;
   left: 0;
   right: 0;
@@ -97,6 +104,6 @@ na-chapter-list .list-group-item-action {
 
 @include media-breakpoint-up(md) {
   .md-separator {
-    border-right: 1px solid #dee2e6;
+    border-right: 1px solid $separator-color;
   }
 }

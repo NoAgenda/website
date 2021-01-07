@@ -2,7 +2,7 @@
   {% include 'blocks/sharing.html.twig' with {title: 'No Agenda ' ~ episode.code ~ ': ' ~ episode.name, url: url('player', {episode: episode.code})} %}
 
   {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MOD') %}
-  <div class="bg-gray d-inline-block p-1 my-1 rounded">
+  <div class="action-box rounded">
     <span title="Administration Box">
       <span class="fas fa-cog fa-fw fa-lg" aria-hidden="true"></span>
     </span>
