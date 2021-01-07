@@ -10,6 +10,7 @@ use App\Repository\EpisodeChapterDraftRepository;
 use App\Repository\EpisodeChapterRepository;
 use App\Repository\EpisodeRepository;
 use App\Utilities;
+use Benlipp\SrtParser\Parser as SrtParser;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -59,9 +60,19 @@ class PlayerController extends Controller
             $timestamp = $transcriptTimestamp;
         }
 
-        $transcriptPath = sprintf('%s/transcripts/%s.json', $_SERVER['APP_STORAGE_PATH'], $episode->getCode());
-        if ($episode->hasTranscript() && file_exists($transcriptPath)) {
-            $lines = json_decode(file_get_contents($transcriptPath));
+        if ($episode->hasTranscript()) {
+            $transcriptPath = sprintf('%s/episode_transcripts/%s.srt', $_SERVER['APP_STORAGE_PATH'], $episode->getCode());
+
+            if (file_exists($transcriptPath)) {
+                $lines = (new SrtParser())->loadString(file_get_contents($transcriptPath))->parse();
+                dump($lines);
+            }
+        } else if ($episode->hasBetaTranscript()) {
+            $transcriptPath = sprintf('%s/transcripts/%s.json', $_SERVER['APP_STORAGE_PATH'], $episode->getCode());
+
+            if (file_exists($transcriptPath)) {
+                $lines = json_decode(file_get_contents($transcriptPath));
+            }
         }
 
         $chapters = array_merge(

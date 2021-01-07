@@ -7,6 +7,7 @@ use App\Entity\EpisodeChapter;
 use App\Entity\User;
 use App\Message\CrawlEpisodeFiles;
 use App\Message\CrawlEpisodeShownotes;
+use App\Message\CrawlEpisodeTranscript;
 use App\Message\EpisodeNotification;
 use App\Message\MatchEpisodeRecordingTime;
 use Doctrine\ORM\EntityManagerInterface;
@@ -18,7 +19,9 @@ use Laminas\Feed\Reader\Extension\Podcast\Feed as PodcastFeed;
 use Laminas\Feed\Reader\Reader;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
+use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Messenger\Stamp\DelayStamp;
 
 class FeedCrawler
 {
@@ -57,36 +60,27 @@ class FeedCrawler
 
         Reader::registerExtension('Podcast');
 
-        /** @var RssFeed $rssFeed */
-        $rssFeed = Reader::importString($source);
-        /** @var PodcastFeed $podcastFeed */
-        $podcastFeed = $rssFeed->getExtension('Podcast');
+        /** @var RssFeed|PodcastFeed $feed */
+        $feed = Reader::importString($source);
 
         // Parse feed attributes
-        $podcastFeed->getXpath();
+        $feed->getXpath();
 
-        /** @var RssEntry $rssItem */
-        foreach ($rssFeed as $rssItem) {
-            /** @var PodcastEntry $podcastItem */
-            $podcastItem = $rssItem->getExtension('Podcast');
-
-            preg_match('/^(\d+): "(.*)"$/', $rssItem->getTitle(), $matches);
+        /** @var RssEntry|PodcastEntry $feedItem */
+        foreach ($feed as $feedItem) {
+            preg_match('/^(\d+): "(.*)"$/', $feedItem->getTitle(), $matches);
             list(, $code, $name) = $matches;
 
-            $xpath = $podcastItem->getXpath();
-            $cover = $xpath->evaluate('string(' . $podcastItem->getXpathPrefix() . '/itunes:image/@href)');
-
-            /** @var object $enclosure */
-            $enclosure = $rssItem->getEnclosure();
-            $recording = $enclosure->url;
+            $xpath = $feedItem->getXpath();
 
             $entries[] = [
                 'code' => $code,
                 'name' => $name,
-                'author' => $podcastItem->getCastAuthor(),
-                'coverUri' => $cover,
-                'recordingUri' => $recording,
-                'publishedAt' => $rssItem->getDateCreated(),
+                'author' => $feedItem->getCastAuthor(),
+                'coverUri' => $feedItem->getItunesImage(),
+                'recordingUri' => $feedItem->getEnclosure()->url,
+                'publishedAt' => $feedItem->getDateCreated(),
+                'transcriptUri' => $xpath->evaluate('string(' . $feedItem->getXpathPrefix() . '/podcast:transcript/@url)'),
             ];
         }
 
@@ -118,6 +112,7 @@ class FeedCrawler
                 ->setPublishedAt($entry['publishedAt'])
                 ->setCoverUri($entry['coverUri'])
                 ->setRecordingUri($entry['recordingUri'])
+                ->setTranscriptUri($entry['transcriptUri'])
                 ->setCrawlerOutput($entry)
             ;
 
@@ -128,6 +123,14 @@ class FeedCrawler
 
             $crawlShownotesMessage = new CrawlEpisodeShownotes($episode->getCode());
             $this->messenger->dispatch($crawlShownotesMessage);
+
+            $crawlTranscriptMessage = new CrawlEpisodeTranscript($episode->getCode());
+            if ($new) {
+                $crawlTranscriptMessage = new Envelope($crawlTranscriptMessage, [
+                    new DelayStamp(1000 * 60 * 60 * 8), // Delay 8 hours
+                ]);
+            }
+            $this->messenger->dispatch($crawlTranscriptMessage);
         }
 
         if ($new) {

@@ -40,10 +40,6 @@ class EpisodeFilesCrawler
             ]);
         }
 
-        if ($this->putContents($episode->getCoverUri(), $coverPath)) {
-            $this->resolveCoverCache($episode->getCode());
-        }
-
         if ($this->putContents($episode->getRecordingUri(), $recordingPath)) {
             $recordingDuration = $this->fetchRecordingDuration($recordingPath);
 
@@ -51,10 +47,37 @@ class EpisodeFilesCrawler
                 $this->logger->warning("Unable to retrieve recording duration of file ${recordingPath}.");
             } else {
                 $episode->setDuration($recordingDuration);
-
-                $this->entityManager->persist($episode);
             }
         }
+
+        if ($episode->getCoverUri()) {
+            if ($this->putContents($episode->getCoverUri(), $coverPath)) {
+                $episode->setCover(true);
+                $this->resolveCoverCache($episode->getCode());
+            }
+        }
+
+        $this->entityManager->persist($episode);
+    }
+
+    public function crawlTranscript(Episode $episode): void
+    {
+        $transcriptPath = sprintf('%s/episode_transcripts/%s.srt', $_SERVER['APP_STORAGE_PATH'], $episode->getCode());
+
+        if (!is_dir(dirname($transcriptPath))) {
+            $filesystem = new Filesystem();
+            $filesystem->mkdir([
+                dirname($transcriptPath),
+            ]);
+        }
+
+        if ($episode->getTranscriptUri()) {
+            if ($this->putContents($episode->getTranscriptUri(), $transcriptPath)) {
+                $episode->setTranscript(true);
+            }
+        }
+
+        $this->entityManager->persist($episode);
     }
 
     private function putContents(string $source, string $target): bool
