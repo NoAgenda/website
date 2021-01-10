@@ -67,6 +67,7 @@
     {% if timestamp > 0 %}
       data-start="{{ timestamp }}"
     {% endif %}
+    data-episode="{{ episode.code }}"
   ></na-audio-source>
 
   {{ parent() }}
@@ -76,7 +77,13 @@
 <div class="site-masthead-player section-dark">
   <div class="container">
     <div class="d-sm-flex">
-      <img class="masthead-cover img-fluid" src="{{ episode|episodeCover('large') }}" alt="Art for episode {{ episode.code }}">
+      <div class="masthead-cover">
+        <octopod-cover
+          image="{{ episode|episodeCover('large') }}"
+          chapters="https://studio.hypercatcher.com/chapters/podcast/http:feed.nashownotes.comrss.xml/episode/http:{{ episode.code }}.noagendanotes.com"
+          episode="{{ episode.code }}"
+        ></octopod-cover>
+      </div>
       <div class="flex-grow-1 pb-3 pb-sm-0 pt-2 pt-sm-0 m-sm-3 m-md-4 m-lg-5">
         <h1>{{ episode }}</h1>
         <h4>{{ episode.author }}</h4>

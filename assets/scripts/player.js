@@ -6,6 +6,7 @@ import {getProxyUrl} from './proxy';
 class AudioPlayerElement extends HTMLElement {
   connectedCallback() {
     this.duration = 0;
+    this.episode = null;
     this.hash = false;
     this.playerUrl = false;
     this.playing = false;
@@ -15,6 +16,16 @@ class AudioPlayerElement extends HTMLElement {
     this.title = null;
 
     Waud.init();
+
+    this.addEventListener('audio-step', () => {
+      if (this.episode) {
+        const cover = document.querySelector(`octopod-cover[episode="${this.episode}"]`);
+
+        if (cover) {
+          cover.currentTime = this.timestamp;
+        }
+      }
+    });
   }
 
   init() {
@@ -47,7 +58,7 @@ class AudioPlayerElement extends HTMLElement {
     });
   }
 
-  load(src, title, hash, playerUrl) {
+  load(src, title, hash, playerUrl, episode) {
     if (this.sound) {
       this.sound.destroy();
       this.sound = null;
@@ -62,11 +73,13 @@ class AudioPlayerElement extends HTMLElement {
     this.title = title;
     this.hash = hash;
     this.playerUrl = playerUrl;
+    this.episode = episode;
 
     this.dispatchEvent(new CustomEvent('track-loaded', {
       detail: {
         title: this.title,
         playerUrl: this.playerUrl,
+        episode: this.episode,
       },
     }));
 
@@ -615,7 +628,7 @@ class AudioSourceElement extends HTMLElement {
   initialize() {
     const player = this.clip ? this.getPlayer() : getPlayer();
 
-    player.load(this.dataset.src, this.dataset.title, this.hash, document.location.toString());
+    player.load(this.dataset.src, this.dataset.title, this.hash, document.location.toString(), this.dataset.episode);
   }
 }
 

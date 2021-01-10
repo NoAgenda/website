@@ -2,6 +2,8 @@ import 'bootstrap';
 import jQuery from 'jquery';
 import 'popper.js';
 
+import '@octopodcasting/player';
+
 import PlayerChat from './scripts/player-chat';
 
 import './components/chapter-list';
