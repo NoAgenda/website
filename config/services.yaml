@@ -18,17 +18,17 @@ services:
             - '../src/Tests/'
 
     App\Controller\:
-        resource: '../src/Controller'
+        resource: '../src/Controller/'
         tags: ['controller.service_arguments']
 
     App\Crawling\:
-        resource: '../src/Crawling'
+        resource: '../src/Crawling/'
         exclude: '../src/Crawling/{CrawlingLogger.php,Shownotes}'
         calls:
             - ['setLogger', ['@App\Crawling\CrawlingLogger']]
 
     App\EventListener\Doctrine\:
-        resource: '../src/EventListener/Doctrine'
+        resource: '../src/EventListener/Doctrine/'
         tags: ['doctrine.event_subscriber']
 
     Liip\ImagineBundle\Imagine\Filter\FilterManager: '@liip_imagine.filter.manager'

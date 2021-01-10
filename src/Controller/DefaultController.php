@@ -6,11 +6,11 @@ use App\Repository\EpisodeRepository;
 use App\Repository\FeedbackItemRepository;
 use App\Repository\NetworkSiteRepository;
 use App\Repository\VideoRepository;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class DefaultController extends Controller
+class DefaultController extends AbstractController
 {
     private $episodeRepository;
     private $feedbackItemRepository;

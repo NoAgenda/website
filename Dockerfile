@@ -4,7 +4,7 @@ WORKDIR /srv/www
 
 # Install additional packages
 RUN apt-get update; apt-get install --no-install-recommends -y \
-    acl libmagickwand-dev libzip-dev netcat unzip \
+    acl git libmagickwand-dev libzip-dev netcat unzip \
     ffmpeg mplayer
 
 RUN apt-get update; apt-get install -y python-pip; \
@@ -15,11 +15,11 @@ RUN apt-get update; apt-get install -y python-pip; \
 # Enable extensions
 RUN pecl install imagick; \
 	docker-php-ext-enable imagick; \
-    docker-php-ext-install pdo_mysql zip
+    docker-php-ext-install intl pdo_mysql zip
 
 # Install Composer
 ENV COMPOSER_ALLOW_SUPERUSER=1
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Copy application directory contents
 COPY .env ./

@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
@@ -19,7 +19,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 /**
  * @Route("/account", name="account_")
  */
-class AccountController extends Controller
+class AccountController extends AbstractController
 {
     private $passwordEncoder;
     private $entityManager;

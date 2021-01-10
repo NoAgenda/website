@@ -7,7 +7,7 @@ use App\Repository\UserRepository;
 use App\Updates\ResetPasswordUpdater;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
@@ -25,7 +25,7 @@ use Symfony\Component\Validator\Constraints\Length;
 /**
  * @Route("", name="security_")
  */
-class SecurityController extends Controller
+class SecurityController extends AbstractController
 {
     private $authChecker;
     private $passwordEncoder;

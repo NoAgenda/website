@@ -11,6 +11,7 @@
         "ext-json": "*",
         "ext-libxml": "*",
         "ext-simplexml": "*",
+        "babdev/pagerfanta-bundle": "^2.8",
         "benlipp/srt-parser": "^1.1",
         "easycorp/easyadmin-bundle": "^2.1",
         "laminas/laminas-feed": "^2.10",
@@ -20,38 +21,35 @@
         "php-http/httplug-pack": "^1.2",
         "sensio/framework-extra-bundle": "^5.1",
         "symfony/apache-pack": "^1.0",
-        "symfony/asset": "^4.4",
-        "symfony/console": "^4.4",
-        "symfony/dotenv": "^4.4",
-        "symfony/expression-language": "^4.4",
+        "symfony/asset": "^5.2",
+        "symfony/console": "^5.2",
+        "symfony/dotenv": "^5.2",
+        "symfony/expression-language": "^5.2",
         "symfony/flex": "^1.0",
-        "symfony/form": "^4.4",
-        "symfony/framework-bundle": "^4.4",
+        "symfony/form": "^5.2",
+        "symfony/framework-bundle": "^5.2",
         "symfony/maker-bundle": "^1.14",
-        "symfony/messenger": "^4.4",
+        "symfony/messenger": "^5.2",
         "symfony/monolog-bundle": "^3.1",
         "symfony/orm-pack": "^1.0",
-        "symfony/polyfill-php73": "*",
-        "symfony/polyfill-php74": "*",
         "symfony/polyfill-php80": "*",
-        "symfony/process": "^4.4",
-        "symfony/security-bundle": "^4.4",
+        "symfony/process": "^5.2",
+        "symfony/security-bundle": "^5.2",
         "symfony/serializer-pack": "^1.0",
         "symfony/swiftmailer-bundle": "^3.1",
-        "symfony/twig-bundle": "^4.4",
-        "symfony/validator": "^4.4",
-        "symfony/web-link": "^4.4",
+        "symfony/twig-bundle": "^5.2",
+        "symfony/validator": "^5.2",
+        "symfony/web-link": "^5.2",
         "symfony/webpack-encore-bundle": "^1.7",
-        "symfony/yaml": "^4.4",
-        "vipnytt/opmlparser": "dev-master",
-        "white-october/pagerfanta-bundle": "^1.2"
+        "symfony/yaml": "^5.2",
+        "vipnytt/opmlparser": "dev-master"
     },
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^3.0",
-        "symfony/browser-kit": "^4.4",
-        "symfony/css-selector": "^4.4",
+        "symfony/browser-kit": "^5.2",
+        "symfony/css-selector": "^5.2",
         "symfony/debug-pack": "^1.0",
-        "symfony/phpunit-bridge": "^4.4",
+        "symfony/phpunit-bridge": "^5.2",
         "symfony/profiler-pack": "^1.0"
     },
     "config": {
@@ -94,7 +92,7 @@
     "extra": {
         "symfony": {
             "allow-contrib": false,
-            "require": "^4.4"
+            "require": "^5.2"
         }
     }
 }

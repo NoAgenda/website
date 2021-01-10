@@ -12,13 +12,13 @@ use App\Repository\EpisodeRepository;
 use App\Utilities;
 use Benlipp\SrtParser\Parser as SrtParser;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class PlayerController extends Controller
+class PlayerController extends AbstractController
 {
     private $episodeChapterDraftRepository;
     private $episodeChapterRepository;

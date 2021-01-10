@@ -4,12 +4,12 @@ namespace App\Controller;
 
 use App\RemoteFileResponse;
 use Http\Client\Common\HttpMethodsClient;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
-class ProxyController extends Controller
+class ProxyController extends AbstractController
 {
     private $domains = [
         'adam' => 'adam.curry.com',

@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Entity\UserToken;
 use App\Repository\UserTokenRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,7 +16,7 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 /**
  * @Route("", name="token_")
  */
-class TokenController extends Controller
+class TokenController extends AbstractController
 {
     private $authChecker;
     private $entityManager;
