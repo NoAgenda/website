@@ -10,7 +10,7 @@
     {% include 'archive/parts/buttons.html.twig' %}
   </div>
 
-  <div class="list-group my-3">
+  <div class="list-group mt-3 pb-3">
     {% for episode in episodes %}
       <a class="list-group-item list-group-item-action" href="{{ path('player', {episode: episode.code}) }}">
         <span class="float-right text-muted">

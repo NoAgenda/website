@@ -1,0 +1,4 @@
+/bin/.phpunit/
+/node_modules/
+/var/
+/vendor/

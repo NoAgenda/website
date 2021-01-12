@@ -29,9 +29,9 @@
   {
     key: 'transcript',
     icon: '<span class="fas fa-fw fa-list-ol" aria-hidden="true"></span>',
-    name: 'Transcript <span class="badge badge-secondary text-uppercase">Beta</span>',
+    name: 'Transcript ' ~ (not episode.transcript ? '<span class="badge badge-secondary text-uppercase">Beta</span>' : ''),
     contents: 'player/blocks/transcript.html.twig',
-    enabled: episode.transcript,
+    enabled: episode.transcript or episode.betaTranscript,
   },
   {
     key: 'chat',
@@ -67,16 +67,23 @@
     {% if timestamp > 0 %}
       data-start="{{ timestamp }}"
     {% endif %}
+    data-episode="{{ episode.code }}"
   ></na-audio-source>
 
   {{ parent() }}
 {% endblock %}
 
 {% block content %}
-<div class="site-masthead-player">
+<div class="site-masthead-player section-dark">
   <div class="container">
     <div class="d-sm-flex">
-      <img class="masthead-cover img-fluid" src="{{ episode|episodeCover('large') }}" alt="Art for episode {{ episode.code }}">
+      <div class="masthead-cover">
+        <octopod-cover
+          image="{{ episode|episodeCover('large') }}"
+          chapters="https://studio.hypercatcher.com/chapters/podcast/http:feed.nashownotes.comrss.xml/episode/http:{{ episode.code }}.noagendanotes.com"
+          episode="{{ episode.code }}"
+        ></octopod-cover>
+      </div>
       <div class="flex-grow-1 pb-3 pb-sm-0 pt-2 pt-sm-0 m-sm-3 m-md-4 m-lg-5">
         <h1>{{ episode }}</h1>
         <h4>{{ episode.author }}</h4>
@@ -117,11 +124,17 @@
       <div class="content-column d-flex flex-column">
         <na-episode-search>
           <div class="d-flex align-items-center pt-3">
-            <span class="fas fa-search fa-2x mr-3" aria-hidden="true"></span>
             <div class="input-group">
-              <input class="form-control form-control-lg" type="text" aria-label="Search through episode data" data-episode-search/>
+              <div class="input-group-prepend">
+                <span class="input-group-text bg-input">
+                  <span class="fas fa-search" aria-hidden="true"></span>
+                </span>
+              </div>
+              <input class="search form-control form-control-lg border-left-0" type="text" aria-label="Search through episode data" data-episode-search/>
               <div class="input-group-append">
-                <button class="btn btn-outline-secondary" type="button" aria-label="Clear search box" style="display: none;" data-episode-search-clear><span class="fas fa-times" aria-hidden="true"></span></button>
+                <button class="btn btn-primary" type="button" aria-label="Clear search box" style="display: none;" data-episode-search-clear>
+                  <span class="fas fa-times" aria-hidden="true"></span>
+                </button>
               </div>
             </div>
           </div>
@@ -137,7 +150,7 @@
           </div>
         </na-episode-search>
         <div class="flex-column" style="display: flex;" data-episode-contents>
-          <div class="flex-grow-0 bg-white position-sticky top-0 py-3" role="navigation" style="z-index: 1000;">
+          <div class="flex-grow-0 position-sticky top-0 py-3" role="navigation" style="z-index: 1000;">
             <ul class="player-tabs nav nav-pills">
               {% for tab in tabs|filter(tab => tab.enabled) %}
                 <li class="nav-item">
@@ -188,6 +201,12 @@
             <li class="nav-item">
               <div class="nav-link disabled">
                 <span class="far fa-fw fa-smile" aria-hidden="true"></span> Troll room
+              </div>
+            </li>
+
+            <li class="nav-item" data-hide-chat-column>
+              <div class="nav-link cursor-pointer">
+                <span class="fas fa-times" aria-hidden="true"></span>
               </div>
             </li>
           </ul>

@@ -3,152 +3,166 @@
 {% set page_description = 'No Agenda, a twice weekly podcast about politics by Adam Curry & John C. Dvorak.' %}
 
 {% block content %}
-<div class="container">
-  <p class="my-3">
-    No Agenda, a show where former VJ Adam Curry and columnist John C. Dvorak, two experts from the media industry,
-    have a conversation about politics. Twice a week they deconstruct the news cycle and give insights into the narrative
-    of the mainstream media, political campaigns and the government.
-  </p>
+  <div class="container">
+    <p class="my-3">
+      No Agenda, a show where former VJ Adam Curry and columnist John C. Dvorak, two experts from the media industry,
+      have a conversation about politics. Twice a week they deconstruct the news cycle and give insights into the narrative
+      of the mainstream media, political campaigns and the government.
+    </p>
 
-  {#
-  <p class="my-3">
-    This show is run by thousands of producers that contribute value to the show by sending our hosts insightful information,
-    <a href="https://noagendaartgenerator.com/">making show art</a>, <a href="http://noagendameetups.com/">organizing meetups</a>
-    or <a href="http://dvorak.org/na">donating</a>.
-  </p>
-  #}
+    {#
+    <p class="my-3">
+      This show is run by thousands of producers that contribute value to the show by sending our hosts insightful information,
+      <a href="https://noagendaartgenerator.com/">making show art</a>, <a href="http://noagendameetups.com/">organizing meetups</a>
+      or <a href="http://dvorak.org/na">donating</a>.
+    </p>
+    #}
 
-  <div class="my-3">
-    <div class="row">
-      <div class="col-md md-separator">
-        <a href="{{ path('podcast') }}">
-          <div class="d-flex justify-content-between">
-            <div class="my-2">
-              <div class="h3 mb-0">Subscribe to the podcast</div>
-              <span>New episodes every thursday and sunday</span>
+    <div class="my-3">
+      <div class="row">
+        <div class="col-md md-separator">
+          <a href="{{ path('podcast') }}">
+            <div class="d-flex justify-content-between">
+              <div class="my-2">
+                <div class="h3 mb-0">Subscribe to the podcast</div>
+                <span>New episodes every thursday and sunday</span>
+              </div>
+              <div class="d-flex align-items-center">
+                <span class="fas fa-podcast fa-3x fa-fw ml-2 text-itunes" aria-hidden="true"></span>
+              </div>
             </div>
-            <div class="d-flex align-items-center">
-              <span class="fas fa-podcast fa-3x fa-fw ml-2 text-itunes" aria-hidden="true"></span>
+          </a>
+        </div>
+        <div class="col-md">
+          <a href="http://www.dvorak.org/blog/no-agenda-mailing-list-signup-here/" target="_blank">
+            <div class="d-flex justify-content-between">
+              <div class="my-2">
+                <div class="h3 mb-0">Subscribe to the newsletter</div>
+                <span>No Agenda in your mailbox</span>
+              </div>
+              <div class="d-flex align-items-center">
+                <span class="fas fa-envelope fa-3x fa-fw ml-2" aria-hidden="true" style="color: #dadada;"></span>
+              </div>
             </div>
-          </div>
-        </a>
-      </div>
-      <div class="col-md">
-        <a href="http://www.dvorak.org/blog/no-agenda-mailing-list-signup-here/" target="_blank">
-          <div class="d-flex justify-content-between">
-            <div class="my-2">
-              <div class="h3 mb-0">Subscribe to the newsletter</div>
-              <span>No Agenda in your mailbox</span>
-            </div>
-            <div class="d-flex align-items-center">
-              <span class="fas fa-envelope fa-3x fa-fw ml-2" aria-hidden="true" style="color: #dadada;"></span>
-            </div>
-          </div>
-        </a>
-      </div>
-    </div>
-  </div>
-
-  <h2 class="my-3">Latest episodes</h2>
-  <div class="row no-gutters my-3">
-    {% for episode in latest_episodes %}
-    <div class="col-sm-6 col-lg-3">
-      {% include 'archive/parts/item.html.twig' %}
-    </div>
-    {% endfor %}
-  </div>
-  <div class="d-flex justify-content-end">
-    <a class="btn btn-sm btn-secondary" href="{{ path('archive') }}">View the full archive <span class="fas fa-angle-right ml-1" aria-hidden="true"></span></a>
-  </div>
-
-  <h2 class="my-3">Animated No Agenda</h2>
-  <div class="row">
-    {% for video in videos %}
-      <div class="col-md-4">
-        <div class="mx-auto mb-3">
-          <a href="https://www.youtube.com/watch?v={{ video.youtubeId }}" >
-            <img src="https://i.ytimg.com/vi/{{ video.youtubeId }}/mqdefault.jpg" alt="{{ video.title }}" class="img-fluid img-thumbnail w-100"/>
-            <span class="h5 d-block mt-2">{{ video.title|replace({'Animated No Agenda - ': ''}) }}</span>
           </a>
         </div>
       </div>
-    {% endfor %}
+    </div>
   </div>
-  <div class="d-flex justify-content-end">
-    <a class="btn btn-sm btn-secondary" href="https://www.youtube.com/channel/UCihyXCKCTKZ0H6OQRpKN5qQ/videos">Watch more Animated No Agenda videos <span class="fab fa-youtube ml-1" aria-hidden="true"></span></a>
-  </div>
-
-  <div class="my-3">
-    <div class="row">
-      <div class="col-md md-separator">
-        <a href="https://noagendasocial.com/@adam" target="_blank">
-          <div class="d-flex justify-content-between">
-            <div class="my-2">
-              <div class="h3 mb-0">Follow Adam Curry on NA Social</div>
-              <span>@adam@noagendasocial.com</span>
-            </div>
-            <div class="d-flex align-items-center">
-              <span class="fab fa-mastodon fa-3x fa-fw ml-2 text-mastodon" aria-hidden="true"></span>
-            </div>
+  <div class="section-dark py-3">
+    <div class="container">
+      <h2 class="mb-3">Latest episodes</h2>
+      <div class="row mt-3">
+        {% for episode in latest_episodes %}
+          <div class="col-sm-6 col-lg-3">
+            {% include 'archive/parts/item.html.twig' %}
           </div>
-        </a>
+        {% endfor %}
       </div>
-      <div class="col-md">
-        <a href="https://twitter.com/THErealDVORAK" target="_blank">
-          <div class="d-flex justify-content-between">
-            <div class="my-2">
-              <div class="h3 mb-0">Follow John C. Dvorak on Twitter</div>
-              <span>@THErealDVORAK</span>
-            </div>
-            <div class="d-flex align-items-center">
-              <span class="fab fa-twitter fa-3x fa-fw ml-2 text-twitter" aria-hidden="true"></span>
-            </div>
-          </div>
+      <div class="d-flex justify-content-end">
+        <a class="btn btn-link" href="{{ path('archive') }}">
+          View the full archive <span class="fas fa-angle-right ml-1" aria-hidden="true"></span>
         </a>
       </div>
     </div>
   </div>
-
-  <h2 class="my-3">Network</h2>
-  <div class="my-3">
+  <div class="container">
+    <h2 class="my-3">Animated No Agenda</h2>
     <div class="row">
-      {% for site in network_sites %}
-        {% include 'network/site.html.twig' %}
+      {% for video in videos %}
+        <div class="col-md-4">
+          <a class="archive-item" href="https://www.youtube.com/watch?v={{ video.youtubeId }}">
+            <div class="archive-item-body">
+              <img src="https://i.ytimg.com/vi/{{ video.youtubeId }}/mqdefault.jpg" alt="{{ video.title }}" class="img-fluid w-100"/>
+              <div class="archive-item-text">
+                <div class="h4">{{ video.title|replace({'Animated No Agenda - ': ''}) }}</div>
+              </div>
+            </div>
+          </a>
+        </div>
       {% endfor %}
     </div>
-    {#
-    Concept of network sites table
-    {% if network_sites|length > 6 %}
-      <div class="table-responsive">
-        <table class="table">
-          {% for site in network_sites|slice(6, 6) %}
-            <tr>
-              <td><a href="{{ site.uri }}">{{ site.name }}</a></td>
-              <td class="text-muted">{{ site.description }}</td>
-            </tr>
-          {% endfor %}
-        </table>
+    <div class="d-flex justify-content-end">
+      <a class="btn btn-link" href="https://www.youtube.com/channel/UCihyXCKCTKZ0H6OQRpKN5qQ/videos">
+        Watch more Animated No Agenda videos <span class="fab fa-youtube ml-1" aria-hidden="true"></span>
+      </a>
+    </div>
+
+    <div class="my-3">
+      <div class="row">
+        <div class="col-md md-separator">
+          <a href="https://noagendasocial.com/@adam" target="_blank">
+            <div class="d-flex justify-content-between">
+              <div class="my-2">
+                <div class="h3 mb-0">Follow Adam Curry on NA Social</div>
+                <span>@adam@noagendasocial.com</span>
+              </div>
+              <div class="d-flex align-items-center">
+                <span class="fab fa-mastodon fa-3x fa-fw ml-2 text-mastodon" aria-hidden="true"></span>
+              </div>
+            </div>
+          </a>
+        </div>
+        <div class="col-md">
+          <a href="https://twitter.com/THErealDVORAK" target="_blank">
+            <div class="d-flex justify-content-between">
+              <div class="my-2">
+                <div class="h3 mb-0">Follow John C. Dvorak on Twitter</div>
+                <span>@THErealDVORAK</span>
+              </div>
+              <div class="d-flex align-items-center">
+                <span class="fab fa-twitter fa-3x fa-fw ml-2 text-twitter" aria-hidden="true"></span>
+              </div>
+            </div>
+          </a>
+        </div>
       </div>
-    {% endif %}
-    #}
-  </div>
-  <div class="d-flex justify-content-end">
-    <a class="btn btn-sm btn-secondary" href="{{ path('network') }}">View the entire network <span class="fas fa-angle-right ml-1" aria-hidden="true"></span></a>
-  </div>
+    </div>
 
-  <h2 class="my-3">Website contributions</h2>
-  <div class="my-3">
-    {% include 'feedback/parts/list.html.twig' with {items: feedback_items} %}
-  </div>
-  <div class="d-flex justify-content-end">
-    <a class="btn btn-sm btn-secondary" href="{{ path('contributions_open') }}">View more website contributions <span class="fas fa-angle-right ml-1" aria-hidden="true"></span></a>
-  </div>
+    <h2 class="my-3">Community Network</h2>
+    <div class="my-3">
+      <div class="row">
+        {% for site in network_sites %}
+          {% include 'network/site.html.twig' %}
+        {% endfor %}
+      </div>
+      {#
+      Concept of network sites table
+      {% if network_sites|length > 6 %}
+        <div class="table-responsive">
+          <table class="table">
+            {% for site in network_sites|slice(6, 6) %}
+              <tr>
+                <td><a href="{{ site.uri }}">{{ site.name }}</a></td>
+                <td class="text-muted">{{ site.description }}</td>
+              </tr>
+            {% endfor %}
+          </table>
+        </div>
+      {% endif %}
+      #}
+    </div>
+    <div class="d-flex justify-content-end">
+      <a class="btn btn-link" href="{{ path('network') }}">
+        View more network sites <span class="fas fa-angle-right ml-1" aria-hidden="true"></span>
+      </a>
+    </div>
 
-  <div class="text-right my-3">
-    <a href="https://github.com/codedmonkey/noagenda">Source code</a>.
-    Built with ☕ by <a href="https://noagendasocial.com/@woodstock">@woodstock@noagendasocial.com</a>.
-  </div>
+    <h2 class="my-3">Website contributions</h2>
+    <div class="my-3">
+      {% include 'feedback/parts/list.html.twig' with {items: feedback_items} %}
+    </div>
+    <div class="d-flex justify-content-end">
+      <a class="btn btn-link" href="{{ path('contributions_open') }}">
+        View more website contributions <span class="fas fa-angle-right ml-1" aria-hidden="true"></span>
+      </a>
+    </div>
 
-  <na-audio-toolbar-spacer></na-audio-toolbar-spacer>
-</div>
+    <div class="text-right mt-3 pb-3">
+      <a href="https://github.com/codedmonkey/noagenda">Source code</a>.
+      Built with ☕ by <a href="https://noagendasocial.com/@woodstock">@woodstock@noagendasocial.com</a>.
+    </div>
+
+    <na-audio-toolbar-spacer></na-audio-toolbar-spacer>
+  </div>
 {% endblock %}

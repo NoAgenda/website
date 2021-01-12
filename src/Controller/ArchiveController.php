@@ -2,14 +2,13 @@
 
 namespace App\Controller;
 
-use App\Criteria\SpecialEpisodes;
 use App\Repository\EpisodeRepository;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class ArchiveController extends Controller
+class ArchiveController extends AbstractController
 {
     private $episodeRepository;
 

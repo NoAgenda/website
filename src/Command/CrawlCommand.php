@@ -9,7 +9,6 @@ use App\Crawling\EpisodeFilesCrawler;
 use App\Crawling\EpisodeRecordingTimeMatcher;
 use App\Crawling\EpisodeShownotesCrawler;
 use App\Crawling\FeedCrawler;
-use App\Crawling\TranscriptCrawler;
 use App\Crawling\YoutubeCrawler;
 use App\Entity\Episode;
 use Doctrine\ORM\EntityManagerInterface;
@@ -32,7 +31,7 @@ class CrawlCommand extends Command implements ServiceSubscriberInterface
     {
         $this
             ->setDescription('Execute a crawling command')
-            ->addArgument('data', InputArgument::REQUIRED, 'The type of data to crawl: feed, bat_signal, transcripts, files, shownotes, transcript, recording_time, chat_messages, youtube')
+            ->addArgument('data', InputArgument::REQUIRED, 'The type of data to crawl: feed, bat_signal, files, shownotes, recording_time, chat_messages, youtube')
             ->addOption('episode', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'The episode code to crawling')
         ;
     }
@@ -51,11 +50,6 @@ class CrawlCommand extends Command implements ServiceSubscriberInterface
             },
             'feed' => function () {
                 $crawler = $this->feedCrawler();
-
-                $crawler->crawl();
-            },
-            'transcripts' => function () {
-                $crawler = $this->transcriptCrawler();
 
                 $crawler->crawl();
             },
@@ -78,11 +72,10 @@ class CrawlCommand extends Command implements ServiceSubscriberInterface
                 $crawler->crawl($episode);
             },
             'transcript' => function (Episode $episode) {
-                $crawler = $this->transcriptCrawler();
+                $crawler = $this->filesCrawler();
 
-                $crawler->crawlEpisode($episode);
+                $crawler->crawlTranscript($episode);
             },
-
             'chat_messages' => function (Episode $episode) {
                 $matcher = $this->chatMessagesMatcher();
 
@@ -152,11 +145,6 @@ class CrawlCommand extends Command implements ServiceSubscriberInterface
     }
 
     private function signalCrawler(): BatSignalCrawler
-    {
-        return $this->container->get(__METHOD__);
-    }
-
-    private function transcriptCrawler(): TranscriptCrawler
     {
         return $this->container->get(__METHOD__);
     }

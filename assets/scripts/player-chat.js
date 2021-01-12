@@ -16,16 +16,19 @@ export default class PlayerChat {
     this.episodeCode = false;
 
     this.onActivateChat = this.onActivateChat.bind(this);
+    this.onHideChat = this.onHideChat.bind(this);
     this.onAudioSeek = this.onAudioSeek.bind(this);
     this.onAudioStep = this.onAudioStep.bind(this);
 
     jQuery(document).on('click', '[data-chat-activator]', this.onActivateChat);
+    jQuery(document).on('click', '[data-hide-chat-column]', this.onHideChat);
     jQuery('na-router').on('navigating', () => {
       if (this.initialized) {
         getPlayer().removeEventListener('audio-seek', this.onAudioSeek);
         getPlayer().removeEventListener('audio-step', this.onAudioStep);
 
         this.initialized = false;
+        this.hidden = false;
         this.loading = true;
 
         this.collection = false;
@@ -43,6 +46,12 @@ export default class PlayerChat {
     event.preventDefault();
 
     if (this.initialized) {
+      if (this.hidden) {
+        this.hidden = false;
+
+        this.resize();
+      }
+
       return;
     }
 
@@ -63,8 +72,14 @@ export default class PlayerChat {
     this.resize();
     jQuery(window).resize(this.resize);
     jQuery('.chat-container').resize(this.resize);
+  }
 
-    jQuery('.player-chat-activator').removeClass('d-xl-block');
+  onHideChat(event) {
+    event.preventDefault();
+
+    this.hidden = true;
+
+    this.resize();
   }
 
   onAudioSeek(event) {
@@ -76,6 +91,20 @@ export default class PlayerChat {
   }
 
   resize() {
+    if (this.hidden) {
+      jQuery('.player-chat-activator').addClass('d-xl-block');
+
+      if (jQuery(window).width() >= 1200) {
+        jQuery('.site-interactive-player').addClass('container').removeClass('container-fluid');
+        jQuery('.player-main-col').addClass('col-12').removeClass('col-8');
+        jQuery('.player-aside-col').addClass('d-none').removeClass('d-xl-block');
+      }
+
+      return;
+    }
+
+    jQuery('.player-chat-activator').removeClass('d-xl-block');
+
     if (jQuery(window).width() >= 1200) {
       jQuery('.site-interactive-player').removeClass('container').addClass('container-fluid');
       jQuery('.player-main-col').removeClass('col-12').addClass('col-8');

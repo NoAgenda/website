@@ -4,7 +4,6 @@ namespace App\Command;
 
 use App\Message\CrawlBatSignal;
 use App\Message\CrawlFeed;
-use App\Message\CrawlTranscripts;
 use App\Message\CrawlYoutube;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -29,7 +28,7 @@ class EnqueueCommand extends Command
     {
         $this
             ->setDescription('Queues crawling jobs')
-            ->addArgument('data', InputArgument::REQUIRED, 'The type of job to enqueue: bat_signal, feed, transcripts, youtube')
+            ->addArgument('data', InputArgument::REQUIRED, 'The type of job to enqueue: bat_signal, feed, youtube')
         ;
     }
 
@@ -40,7 +39,6 @@ class EnqueueCommand extends Command
         $messages = [
             'bat_signal' => new CrawlBatSignal(),
             'feed' => new CrawlFeed(),
-            'transcripts' => new CrawlTranscripts(),
             'youtube' => new CrawlYoutube(),
         ];
 

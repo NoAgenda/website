@@ -5,16 +5,15 @@
 {% set tasks = {
   feed: 'Crawl RSS-feed',
   bat_signal: 'Crawl Mastodon for bat signal',
-  transcripts: 'Crawl new transcripts',
   youtube: 'Crawl new Animated No Agenda videos',
 } %}
 
 {% set episode_tasks = {
   episode_time: 'Match episode recording time and chat messages',
   episode_chat: 'Match chat messages with existing recording time',
-  episode_files: 'Download episode files (cover + mp3)',
-  episode_shownotes: 'Crawl episode shownotes',
-  episode_transcript: 'Crawl episode transcript',
+  episode_files: 'Download episode files (mp3, cover)',
+  episode_shownotes: 'Download episode shownotes',
+  episode_transcript: 'Download episode transcript',
 } %}
 
 {% block main %}

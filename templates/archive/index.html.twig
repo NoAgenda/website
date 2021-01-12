@@ -15,7 +15,7 @@
       </div>
     </div>
 
-    <div class="row no-gutters my-3" data-archive-container>
+    <div class="row mt-3" data-archive-container>
       {% for episode in pager.currentPageResults %}
         <div class="col-sm-6 col-lg-3" data-archive-column>
           {% include 'archive/parts/item.html.twig' %}
@@ -23,7 +23,7 @@
       {% endfor %}
     </div>
 
-    <div class="d-flex justify-content-center my-3">
+    <div class="d-flex justify-content-center mt-3 pb-3">
       <div class="d-md-none">
         {{ pagerfanta(pager, 'twitter_bootstrap4', {
           'prev_message': '<span class="fas fa-angle-left mr-2" aria-hidden="true"></span> Newer',

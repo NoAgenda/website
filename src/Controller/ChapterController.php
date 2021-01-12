@@ -9,12 +9,15 @@ use App\Entity\FeedbackItem;
 use App\Entity\FeedbackVote;
 use App\Form\EpisodeChapterType;
 use App\UserTokenManager;
+use App\Utilities;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Notifier\Notification\Notification;
+use Symfony\Component\Notifier\NotifierInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
@@ -22,11 +25,13 @@ class ChapterController extends AbstractController
 {
     private $entityManager;
     private $userTokenManager;
+    private NotifierInterface $notifier;
 
-    public function __construct(UserTokenManager $userTokenManager, EntityManagerInterface $entityManager)
+    public function __construct(UserTokenManager $userTokenManager, EntityManagerInterface $entityManager, NotifierInterface $notifier)
     {
         $this->userTokenManager = $userTokenManager;
         $this->entityManager = $entityManager;
+        $this->notifier = $notifier;
     }
 
     /**
@@ -69,7 +74,20 @@ class ChapterController extends AbstractController
             $this->entityManager->persist($feedbackItem);
             $this->entityManager->flush();
 
-            return $this->redirectToRoute('player', ['episode' => $episode->getCode()]);
+            $notification = new Notification(sprintf('New suggestion by %s on #%s: "%s" at %s',
+                $draft->getCreator() ? $draft->getCreator() : 'Anon.',
+                $episode->getCode(),
+                $draft->getName(),
+                Utilities::prettyTimestamp($draft->getStartsAt()),
+            ));
+
+            try {
+                $this->notifier->send($notification);
+            } catch (\Exception $exception) {
+                // Ignore Slack exceptions
+            }
+
+            return $this->redirectToReferral();
         }
 
         return $this->render('chapter/new.html.twig', [
@@ -115,7 +133,20 @@ class ChapterController extends AbstractController
             $this->entityManager->persist($feedbackItem);
             $this->entityManager->flush();
 
-            return $this->redirectToRoute('player', ['episode' => $episode->getCode()]);
+            $notification = new Notification(sprintf('Improved suggestion by %s on #%s: "%s" at %s',
+                $draft->getCreator() ? $draft->getCreator() : 'Anon.',
+                $episode->getCode(),
+                $draft->getName(),
+                Utilities::prettyTimestamp($draft->getStartsAt()),
+            ));
+
+            try {
+                $this->notifier->send($notification);
+            } catch (\Exception $exception) {
+                // Ignore Slack exceptions
+            }
+
+            return $this->redirectToReferral();
         }
 
         return $this->render('chapter/refactor.html.twig', [
@@ -141,7 +172,7 @@ class ChapterController extends AbstractController
             $this->entityManager->persist($chapter);
             $this->entityManager->flush();
 
-            return $this->redirectToRoute('player', ['episode' => $episode->getCode()]);
+            return $this->redirectToReferral();
         }
 
         return $this->render('chapter/edit.html.twig', [
@@ -162,7 +193,7 @@ class ChapterController extends AbstractController
         $this->entityManager->remove($chapter);
         $this->entityManager->flush();
 
-        return $this->redirectToRoute('player', ['episode' => $episode->getCode()]);
+        return $this->redirectToReferral();
     }
 
     /**
@@ -177,7 +208,7 @@ class ChapterController extends AbstractController
 
         $this->entityManager->flush();
 
-        return $this->redirectToRoute('player', ['episode' => $episode->getCode()]);
+        return $this->redirectToReferral();
     }
 
     /**
@@ -196,7 +227,7 @@ class ChapterController extends AbstractController
 
         $this->entityManager->flush();
 
-        return $this->redirectToRoute('player', ['episode' => $episode->getCode()]);
+        return $this->redirectToReferral();
     }
 
     /**
@@ -213,7 +244,7 @@ class ChapterController extends AbstractController
 
         $this->entityManager->flush();
 
-        return $this->redirectToRoute('player', ['episode' => $episode->getCode()]);
+        return $this->redirectToReferral();
     }
 
     /**
@@ -267,5 +298,17 @@ class ChapterController extends AbstractController
 
         $this->entityManager->persist($chapter);
         $this->entityManager->persist($draft);
+    }
+
+    private function redirectToReferral(): Response
+    {
+        $request = $this->get('request_stack')->getCurrentRequest();
+        $referral = $request->query->get('referral', 'episode');
+
+        if ($referral === 'mod') {
+            return $this->redirectToRoute('contributions_manage');
+        } else {
+            return $this->redirectToRoute('player', ['episode' => $request->attributes->get('episode')->getCode()]);
+        }
     }
 }

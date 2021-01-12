@@ -42,8 +42,8 @@
   {% set class = size == 'big' ? 'py-3' : 'flex-grow-1' %}
   {% set class = size == 'mini' ? "#{class} mt-4" : class %}
   {% set bar_height = size == 'big' ? '30' : '5' %}
-  {% set duration_color = size == 'mini' ? 'bg-primary' : 'bg-white' %}
-  {% set progress_color = size == 'mini' ? 'bg-highlight' : 'bg-primary' %}
+  {% set duration_color = size == 'mini' ? 'bg-secondary' : 'bg-white' %}
+  {% set progress_color = size == 'mini' ? 'bg-primary' : (size == 'big' ? 'bg-primary' : 'bg-tertiary') %}
   {% set pointer_color = 'bg-warning' %}
 
   <na-audio-progress

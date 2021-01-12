@@ -52,23 +52,37 @@ class Episode
     /**
      * @var bool
      *
-     * @ORM\Column(type="boolean", nullable=true)
+     * @ORM\Column(type="boolean")
+     */
+    private $cover = false;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(type="boolean")
      */
     private $special = false;
 
     /**
      * @var bool
      *
-     * @ORM\Column(type="boolean", nullable=true)
+     * @ORM\Column(type="boolean")
      */
     private $chatMessages = false;
 
     /**
      * @var bool
      *
-     * @ORM\Column(type="boolean", nullable=true)
+     * @ORM\Column(type="boolean")
      */
     private $transcript = false;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(type="boolean")
+     */
+    private $betaTranscript = false;
 
     /**
      * @var \DateTimeInterface
@@ -217,6 +231,18 @@ class Episode
         return $this;
     }
 
+    public function hasCover(): bool
+    {
+        return $this->cover;
+    }
+
+    public function setCover(bool $cover): self
+    {
+        $this->cover = $cover;
+
+        return $this;
+    }
+
     public function isSpecial(): bool
     {
         return $this->special;
@@ -249,6 +275,18 @@ class Episode
     public function setTranscript(bool $transcript): self
     {
         $this->transcript = $transcript;
+
+        return $this;
+    }
+
+    public function hasBetaTranscript(): bool
+    {
+        return $this->betaTranscript;
+    }
+
+    public function setBetaTranscript(bool $betaTranscript): self
+    {
+        $this->betaTranscript = $betaTranscript;
 
         return $this;
     }

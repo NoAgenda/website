@@ -22,12 +22,6 @@
     active: false,
     external: true,
   },
-  {
-    href: 'http://dvorak.org/na',
-    title: 'Donate',
-    active: false,
-    external: true,
-  },
 ] %}
 
 {% set authenticationLinks = [] %}
@@ -46,6 +40,14 @@
       active: false,
     }]) %}
   {% endif %}
+
+  {% if is_granted('ROLE_MOD') %}
+    {% set authenticationLinks = authenticationLinks|merge([{
+      path: 'contributions_manage',
+      title: 'Manage contributions',
+      active: app.request.attributes.get('_route') == 'contributions_manage',
+    }]) %}
+  {% endif %}
 {% else %}
   {% set authenticationLinks = authenticationLinks|merge([{
     path: 'security_login',
@@ -55,14 +57,17 @@
 {% endif %}
 
 {% block body %}
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+<nav class="navbar navbar-expand-lg navbar-light">
   <div class="container">
-    <a class="navbar-brand" href="{{ path('homepage') }}">No Agenda</a>
+    <a class="navbar-brand" href="{{ path('homepage') }}">
+      <img src="{{ asset('build/logo.png') }}">
+      No Agenda
+    </a>
     <button class="navbar-toggler border-0" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="fas fa-bars" aria-hidden="true"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav mr-auto">
+      <ul class="navbar-nav">
         {% for link in navigationLinks %}
         {% set classes = link.active ? 'nav-item active' : 'nav-item' %}
         <li class="{{ classes }}">
@@ -78,6 +83,9 @@
         </li>
         {% endfor %}
       </ul>
+      <div class="navbar-nav ml-lg-3 my-2 my-lg-0 mr-auto">
+        <a href="http://dvorak.org/na" class="btn btn-block btn-lg-inline btn-danger">Donate</a>
+      </div>
       <ul class="navbar-nav">
         {% for link in authenticationLinks|reverse %}
         {% set classes = link.active ? 'nav-item active' : 'nav-item' %}

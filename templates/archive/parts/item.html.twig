@@ -3,7 +3,7 @@
   <div class="{{ body_class }}">
     <img src="{{ episode|episodeCover('small') }}" alt="Art for episode {{ episode.code }}">
     <div class="archive-item-text">
-      <h6>{{ episode.code }}</h6>
+      <div class="h6">{{ episode.code }}</div>
       <h4>{{ episode.name }}</h4>
       <div class="meta">
         {{ episode.publishedAt|date('F jS, Y') }}

@@ -1,9 +1,16 @@
 .archive-item {
   color: $body-color;
 
+  &:hover, &:active {
+    color: $link-hover-color;
+
+    h4, .h6 {
+      color: $link-hover-color;
+    }
+  }
+
   .archive-item-body {
-    border-radius: $border-radius;
-    padding: map-get($spacers, 3);
+    margin-bottom: $spacer;
 
     img {
       @extend .img-fluid;
@@ -13,18 +20,12 @@
   .archive-item-text {
     padding-top: map-get($spacers, 2);
 
-    h4, h6 {
+    h4, .h6 {
       margin: 0;
     }
 
     .list-meta {
       display: none;
-    }
-  }
-
-  &:hover {
-    .archive-item-body {
-      background: $info;
     }
   }
 }
@@ -34,6 +35,7 @@
     .archive-item-body {
       display: flex;
       flex-direction: row;
+      margin-bottom: 0;
       padding: 0;
 
       img {

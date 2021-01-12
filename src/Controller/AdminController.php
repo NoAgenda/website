@@ -9,7 +9,6 @@ use App\Message\CrawlEpisodeFiles;
 use App\Message\CrawlEpisodeShownotes;
 use App\Message\CrawlEpisodeTranscript;
 use App\Message\CrawlFeed;
-use App\Message\CrawlTranscripts;
 use App\Message\CrawlYoutube;
 use App\Message\MatchEpisodeChatMessages;
 use App\Message\MatchEpisodeRecordingTime;
@@ -78,7 +77,6 @@ class AdminController extends EasyAdminController
             static $messages = [
                 'bat_signal' => CrawlBatSignal::class,
                 'feed' => CrawlFeed::class,
-                'transcripts' => CrawlTranscripts::class,
                 'youtube' => CrawlYoutube::class,
             ];
 
