@@ -40,6 +40,14 @@
       active: false,
     }]) %}
   {% endif %}
+
+  {% if is_granted('ROLE_MOD') %}
+    {% set authenticationLinks = authenticationLinks|merge([{
+      path: 'contributions_manage',
+      title: 'Manage contributions',
+      active: app.request.attributes.get('_route') == 'contributions_manage',
+    }]) %}
+  {% endif %}
 {% else %}
   {% set authenticationLinks = authenticationLinks|merge([{
     path: 'security_login',

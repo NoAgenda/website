@@ -30,4 +30,18 @@ class FeedbackController extends AbstractController
             'items' => $openFeedbackItems,
         ]);
     }
+
+    /**
+     * @Route("/contributions/manage", name="contributions_manage")
+     */
+    public function manage(): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_MOD');
+
+        $openFeedbackItems = $this->feedbackItemRepository->findOpenFeedbackItems(null);
+
+        return $this->render('feedback/manage.html.twig', [
+            'items' => $openFeedbackItems,
+        ]);
+    }
 }
