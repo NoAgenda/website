@@ -1132,7 +1132,7 @@
     "@types/yargs" "^15.0.0"
     chalk "^4.0.0"
 
-"@octopodcasting/player@^0.2.0":
+"@octopodcasting/player@^0.2.1":
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/@octopodcasting/player/-/player-0.2.1.tgz#4b07b663e996d0370398ddc244a1e3155fdb0ed2"
   integrity sha512-KPnHnDD8dQry5G6UGdIyyyTroEj37+A5qNRjovhskQBepIuiopToRSlbJw/vjLWXpOe6oAjR9OarYNvUUJdsFA==
