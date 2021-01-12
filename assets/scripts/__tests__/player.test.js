@@ -1,6 +1,4 @@
-import 'jquery';
 import * as helpers from '../player';
-
 
 describe('player', () => {
   describe('helpers', () => {
