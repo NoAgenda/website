@@ -27,7 +27,7 @@ class EpisodeShownotesCrawler
         libxml_use_internal_errors(true);
 
         $frontResponse = $this->httpClient->get(sprintf('http://%s.noagendanotes.com', $episode->getCode()));
-        $uri = $frontResponse->getHeaderLine('Location');
+        $uri = str_replace('symfony://', '', $frontResponse->getBody()->getMetadata('uri'));
 
         $episode->setShownotesUri($uri);
 
