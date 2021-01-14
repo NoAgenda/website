@@ -4,7 +4,7 @@ WORKDIR /srv/www
 
 # Install additional packages
 RUN apt-get update; apt-get install --no-install-recommends -y \
-    acl git libmagickwand-dev libzip-dev netcat unzip \
+    acl git libmagickwand-dev libzip-dev netcat procps unzip \
     ffmpeg mplayer
 
 RUN apt-get update; apt-get install -y python-pip; \
