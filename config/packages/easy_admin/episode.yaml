@@ -72,7 +72,10 @@ easy_admin:
           -
             property: 'recorded_at'
             type: 'datetime'
-            type_options: { widget: 'single_text', format: 'yyyy-MM-dd HH:mm:ss' }
+            type_options:
+              widget: 'single_text'
+              format: 'yyyy-MM-dd HH:mm:ss'
+              html5: false
           -
             property: 'transcript_uri'
             type: 'text'
