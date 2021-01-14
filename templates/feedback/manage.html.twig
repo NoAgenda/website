@@ -22,7 +22,7 @@
             {% set episode = chapter.episode %}
 
             {% set chapter_creator = chapter.creator is not null ? chapter.creator : chapter.creatorToken %}
-            {% set chapter_votes = feedback_vote_count(chapter.feedbackItem.votes) %}
+            {% set chapter_votes = feedback_vote_count(item.votes ?? []) %}
 
             <div class="mr-3">
               {% set support_flavor_text = chapter_votes.supported == 1 ? 'producer agrees with this suggestion' : 'producers agree with this suggestion' %}
