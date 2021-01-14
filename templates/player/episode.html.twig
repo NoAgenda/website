@@ -80,7 +80,9 @@
       <div class="masthead-cover">
         <octopod-cover
           image="{{ episode|episodeCover('large') }}"
-          chapters="https://studio.hypercatcher.com/chapters/podcast/http:feed.nashownotes.comrss.xml/episode/http:{{ episode.code }}.noagendanotes.com"
+          {% if episode.code >= 1289 %}
+            chapters="https://studio.hypercatcher.com/chapters/podcast/http:feed.nashownotes.comrss.xml/episode/http:{{ episode.code }}.noagendanotes.com"
+          {% endif %}
           episode="{{ episode.code }}"
         ></octopod-cover>
       </div>
