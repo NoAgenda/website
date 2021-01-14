@@ -65,7 +65,6 @@ class PlayerController extends AbstractController
 
             if (file_exists($transcriptPath)) {
                 $lines = (new SrtParser())->loadString(file_get_contents($transcriptPath))->parse();
-                dump($lines);
             }
         } else if ($episode->hasBetaTranscript()) {
             $transcriptPath = sprintf('%s/transcripts/%s.json', $_SERVER['APP_STORAGE_PATH'], $episode->getCode());

@@ -17,6 +17,16 @@ class AudioPlayerElement extends HTMLElement {
 
     Waud.init();
 
+    this.addEventListener('audio-seek', () => {
+      if (this.episode) {
+        const cover = document.querySelector(`octopod-cover[episode="${this.episode}"]`);
+
+        if (cover) {
+          cover.currentTime = this.timestamp;
+        }
+      }
+    });
+
     this.addEventListener('audio-step', () => {
       if (this.episode) {
         const cover = document.querySelector(`octopod-cover[episode="${this.episode}"]`);

@@ -127,7 +127,7 @@ class FeedCrawler
             $crawlTranscriptMessage = new CrawlEpisodeTranscript($episode->getCode());
             if ($new) {
                 $crawlTranscriptMessage = new Envelope($crawlTranscriptMessage, [
-                    new DelayStamp(1000 * 60 * 60 * 8), // Delay 8 hours
+                    new DelayStamp(1000 * 60 * 60 * 16), // Delay 16 hours
                 ]);
             }
             $this->messenger->dispatch($crawlTranscriptMessage);
