@@ -110,6 +110,13 @@ services:
     networks:
       - php
 
+  mail:
+    image: mailhog/mailhog
+    ports:
+      - "8035:8025"
+    networks:
+      - php
+
 networks:
   assets:
   database:
