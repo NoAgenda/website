@@ -85,19 +85,12 @@ na-chapter-list .list-group-item-action {
   .progress {
     background-color: $highlight;
     box-shadow: $box-shadow-sm;
-    -webkit-animation: progressBar 3s ease-in-out;
-    -webkit-animation-fill-mode:both;
-    -moz-animation: progressBar 3s ease-in-out;
-    -moz-animation-fill-mode:both;
+    animation: progressBar 3s ease-in-out;
+    animation-fill-mode: both;
   }
 }
 
-@-webkit-keyframes progressBar {
-  0% { width: 0; }
-  100% { width: 100%; }
-}
-
-@-moz-keyframes progressBar {
+@keyframes progressBar {
   0% { width: 0; }
   100% { width: 100%; }
 }
