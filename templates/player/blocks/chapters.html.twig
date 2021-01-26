@@ -25,11 +25,11 @@
             <div>
               <h5 class="{{ text_classes }}">
                 {% if not chapter.draft %}
-                  {{ chapter.name }}
+                  {{ chapter.name ? chapter.name : ('<em>Untitled</em>'|raw) }}
                 {% else %}
                   <span class="fas fa-lightbulb mr-1" aria-hidden="true" title="This is a suggested chapter"></span>
                   <span class="sr-only">Suggested chapter:</span>
-                  {{ chapter.name }}
+                  {{ chapter.name ? chapter.name : ('<em>Untitled</em>'|raw) }}
                 {% endif %}
               </h5>
 
