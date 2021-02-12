@@ -80,7 +80,7 @@ class FeedCrawler
                 'coverUri' => $feedItem->getItunesImage(),
                 'recordingUri' => $feedItem->getEnclosure()->url,
                 'publishedAt' => $feedItem->getDateCreated(),
-                'transcriptUri' => $xpath->evaluate('string(' . $feedItem->getXpathPrefix() . '/podcast:transcript/@url)'),
+                //'transcriptUri' => $xpath->evaluate('string(' . $feedItem->getXpathPrefix() . '/podcast:transcript/@url)'),
             ];
         }
 
@@ -112,9 +112,16 @@ class FeedCrawler
                 ->setPublishedAt($entry['publishedAt'])
                 ->setCoverUri($entry['coverUri'])
                 ->setRecordingUri($entry['recordingUri'])
-                ->setTranscriptUri($entry['transcriptUri'])
+                //->setTranscriptUri($entry['transcriptUri'])
                 ->setCrawlerOutput($entry)
             ;
+
+            if ($episode->getPublishedAt() > new \DateTime('2021-01-01')) {
+                $transcriptFilename = basename($entry['recordingUri']);
+                $transcriptFilename = str_replace('.mp3', '.srt', $transcriptFilename);
+
+                $episode->setTranscriptUri(sprintf('http://natranscript.online/opml/%s', $transcriptFilename));
+            }
 
             $this->entityManager->persist($episode);
 
@@ -124,13 +131,15 @@ class FeedCrawler
             $crawlShownotesMessage = new CrawlEpisodeShownotes($episode->getCode());
             $this->messenger->dispatch($crawlShownotesMessage);
 
-            $crawlTranscriptMessage = new CrawlEpisodeTranscript($episode->getCode());
-            if ($new) {
-                $crawlTranscriptMessage = new Envelope($crawlTranscriptMessage, [
-                    new DelayStamp(1000 * 60 * 60 * 16), // Delay 16 hours
-                ]);
+            if ($episode->getTranscriptUri()) {
+                $crawlTranscriptMessage = new CrawlEpisodeTranscript($episode->getCode());
+                if ($new) {
+                    $crawlTranscriptMessage = new Envelope($crawlTranscriptMessage, [
+                        new DelayStamp(1000 * 60 * 60 * 16), // Delay 16 hours
+                    ]);
+                }
+                $this->messenger->dispatch($crawlTranscriptMessage);
             }
-            $this->messenger->dispatch($crawlTranscriptMessage);
         }
 
         if ($new) {
