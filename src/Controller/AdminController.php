@@ -16,15 +16,18 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\EasyAdminController;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 class AdminController extends EasyAdminController
 {
+    private $messenger;
     private $shownotesParserFactory;
 
-    public function __construct(ShownotesParserFactory $shownotesParserFactory)
+    public function __construct(ShownotesParserFactory $shownotesParserFactory, MessageBusInterface $crawlerBus)
     {
         $this->shownotesParserFactory = $shownotesParserFactory;
+        $this->messenger = $crawlerBus;
     }
 
     /**
@@ -98,9 +101,9 @@ class AdminController extends EasyAdminController
 
             if ($message) {
                 /** @var object $message */
-                $this->dispatchMessage($message);
+                $this->messenger->dispatch($message);
 
-                $this->addFlash('success', 'Scheduled task: ' . get_class($message));
+                $this->addFlash('success', 'Scheduled job: ' . get_class($message));
 
                 return $this->redirectToRoute('admin_crawler', ['date' => $date]);
             }

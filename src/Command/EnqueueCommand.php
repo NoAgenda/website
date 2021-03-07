@@ -17,11 +17,11 @@ class EnqueueCommand extends Command
 
     private $messenger;
 
-    public function __construct(string $name = null, MessageBusInterface $messenger)
+    public function __construct(string $name = null, MessageBusInterface $crawlerBus)
     {
         parent::__construct($name);
 
-        $this->messenger = $messenger;
+        $this->messenger = $crawlerBus;
     }
 
     protected function configure(): void

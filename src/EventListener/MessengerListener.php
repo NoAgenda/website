@@ -41,6 +41,6 @@ class MessengerListener implements EventSubscriberInterface
 
     public function onFailedToHandleMessage(WorkerMessageFailedEvent $event): void
     {
-        $this->logger->info(sprintf('Job failed: %s', get_class($event->getEnvelope()->getMessage())));
+        $this->logger->error(sprintf('Job failed: %s', get_class($event->getEnvelope()->getMessage())));
     }
 }

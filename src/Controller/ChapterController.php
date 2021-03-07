@@ -79,7 +79,7 @@ class ChapterController extends AbstractController
                 $episode->getCode(),
                 $draft->getName(),
                 Utilities::prettyTimestamp($draft->getStartsAt()),
-            ));
+            ), ['chat/slack_feedback']);
 
             try {
                 $this->notifier->send($notification);
@@ -138,7 +138,7 @@ class ChapterController extends AbstractController
                 $episode->getCode(),
                 $draft->getName(),
                 Utilities::prettyTimestamp($draft->getStartsAt()),
-            ));
+            ), ['chat/slack_feedback']);
 
             try {
                 $this->notifier->send($notification);

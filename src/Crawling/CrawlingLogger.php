@@ -5,13 +5,19 @@ namespace App\Crawling;
 use Psr\Log\AbstractLogger;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Notifier\Notification\Notification;
+use Symfony\Component\Notifier\NotifierInterface;
 
 class CrawlingLogger extends AbstractLogger
 {
+    private $notifier;
+
     private $loggers = [];
 
-    public function __construct()
+    public function __construct(NotifierInterface $notifier)
     {
+        $this->notifier = $notifier;
+
         $logPath = sprintf('%s/crawler_logs', $_SERVER['APP_STORAGE_PATH']);
 
         if (!is_dir($logPath)) {
@@ -38,6 +44,11 @@ class CrawlingLogger extends AbstractLogger
 
         if ('debug' !== $level) {
             file_put_contents($this->getLogPath(), $log . "\n", FILE_APPEND | LOCK_EX);
+        }
+
+        if (in_array($level, ['emergency', 'alert', 'critical', 'error', 'warning'])) {
+            $notification = new Notification($message, ['chat/slack_default']);
+            $this->notifier->send($notification);
         }
     }
 

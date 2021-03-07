@@ -11,6 +11,8 @@ use Psr\Log\NullLogger;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Notifier\Notification\Notification;
+use Symfony\Component\Notifier\NotifierInterface;
 use Symfony\Component\Process\Process;
 
 class EpisodeRecordingTimeMatcher
@@ -19,11 +21,13 @@ class EpisodeRecordingTimeMatcher
 
     private $entityManager;
     private $messenger;
+    private $notifier;
 
-    public function __construct(EntityManagerInterface $entityManager, MessageBusInterface $messenger)
+    public function __construct(EntityManagerInterface $entityManager, MessageBusInterface $crawlerBus, NotifierInterface $notifier)
     {
         $this->entityManager = $entityManager;
-        $this->messenger = $messenger;
+        $this->messenger = $crawlerBus;
+        $this->notifier = $notifier;
         $this->logger = new NullLogger();
     }
 
@@ -177,7 +181,14 @@ class EpisodeRecordingTimeMatcher
             $listing[] = sprintf('%s: %s', $key, implode(', ', $matches));
         }
 
-        $this->logger->info('Recording matrix dump: ' . "\n" . implode($listing, "\n"));
+        $matrixOutput = implode("\n", $listing);
+        $this->logger->info('Recording matrix dump: ' . "\n" . $matrixOutput);
+
+        $notification = new Notification(
+            sprintf("Episode %s live stream matcher matrix:\n%s", $episode->getCode(), $matrixOutput),
+            ['chat/slack_default']
+        );
+        $this->notifier->send($notification);
 
         return new \DateTime(array_key_first($recordingMatrix));
     }

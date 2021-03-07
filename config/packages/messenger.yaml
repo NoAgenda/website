@@ -7,7 +7,7 @@ framework:
             # https://symfony.com/doc/current/messenger.html#transport-configuration
             # async: '%env(MESSENGER_TRANSPORT_DSN)%'
             # failed: 'doctrine://default?queue_name=failed'
-            # sync: 'sync://'
+            sync: 'sync://'
             crawler: 'doctrine://default?queue_name=crawler'
 
         routing:
@@ -21,8 +21,9 @@ framework:
             'App\Message\MatchEpisodeChatMessages': crawler
             'App\Message\MatchEpisodeRecordingTime': crawler
 
-        default_bus: crawler_bus
+        default_bus: default_bus
         buses:
+            default_bus: ~
             crawler_bus:
                 middleware:
                     -

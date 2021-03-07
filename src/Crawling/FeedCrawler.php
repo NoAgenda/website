@@ -31,11 +31,11 @@ class FeedCrawler
     private $httpClient;
     private $messenger;
 
-    public function __construct(HttpMethodsClient $httpClient, EntityManagerInterface $entityManager, MessageBusInterface $messenger)
+    public function __construct(HttpMethodsClient $httpClient, EntityManagerInterface $entityManager, MessageBusInterface $crawlerBus)
     {
         $this->httpClient = $httpClient;
         $this->entityManager = $entityManager;
-        $this->messenger = $messenger;
+        $this->messenger = $crawlerBus;
         $this->logger = new NullLogger();
     }
 
