@@ -116,6 +116,7 @@ class FeedCrawler
                 ->setCrawlerOutput($entry)
             ;
 
+            // Use transcripts provided by @clogwog@noagendasocial.com
             if ($episode->getPublishedAt() > new \DateTime('2021-01-01')) {
                 $transcriptFilename = basename($entry['recordingUri']);
                 $transcriptFilename = str_replace('.mp3', '.srt', $transcriptFilename);
@@ -135,7 +136,7 @@ class FeedCrawler
                 $crawlTranscriptMessage = new CrawlEpisodeTranscript($episode->getCode());
                 if ($new) {
                     $crawlTranscriptMessage = new Envelope($crawlTranscriptMessage, [
-                        new DelayStamp(1000 * 60 * 60 * 16), // Delay 16 hours
+                        new DelayStamp(1000 * 60 * 60 * 32), // Delay 32 hours
                     ]);
                 }
                 $this->messenger->dispatch($crawlTranscriptMessage);
