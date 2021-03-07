@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Episode;
+use App\Message\CrawlBatSignal;
 use App\Message\CrawlEpisodeTranscript;
 use App\Message\CrawlFeed;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -31,6 +32,7 @@ class ApiController extends AbstractController
             return new Response('Invalid token: ' . $token, 400);
         }
 
+        $this->messenger->dispatch(new CrawlBatSignal());
         $this->messenger->dispatch(new CrawlFeed());
 
         return new Response('OK');
