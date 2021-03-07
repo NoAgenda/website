@@ -11,7 +11,7 @@ use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @Route("/api", name="account_")
+ * @Route("/api", name="api_")
  */
 class ApiController extends AbstractController
 {
@@ -23,7 +23,7 @@ class ApiController extends AbstractController
     }
 
     /**
-     * @Route("/crawl_feed/{token}", name="api_crawl_feed")
+     * @Route("/crawl_feed/{token}", name="crawl_feed")
      */
     public function crawlFeed(string $token): Response
     {
@@ -37,9 +37,9 @@ class ApiController extends AbstractController
     }
 
     /**
-     * @Route("/crawl_transcripts/{token}/{episode}", name="api_crawl_transcripts", defaults={"episode"=""})
+     * @Route("/crawl_transcript/{token}/{episode}", name="crawl_transcript", defaults={"episode"=""})
      */
-    public function crawlTranscripts(string $episode, string $token): Response
+    public function crawlTranscript(string $episode, string $token): Response
     {
         if ($token !== $_SERVER['API_SECURITY_TOKEN']) {
             return new Response('Invalid token: ' . $token, 400);
