@@ -15,7 +15,7 @@ class ResetPasswordUpdater extends AbstractUpdater
 
         $contents = $this->renderTemplate('emails/reset_password.html.twig', [
             'user' => $user,
-            'remote_address' => $_SERVER['REMOTE_ADDR'] ?? false,
+            'remote_address' => $this->locator->get('request_stack')->getCurrentRequest()->getClientIp(),
             'activation_url' => $this->generateUrl('security_reset_password', ['token' => $user->getActivationToken()])
         ]);
 

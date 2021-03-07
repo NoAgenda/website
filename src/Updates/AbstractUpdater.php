@@ -4,6 +4,7 @@ namespace App\Updates;
 
 use Psr\Container\ContainerInterface;
 use Symfony\Component\DependencyInjection\ServiceLocator;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Contracts\Service\ServiceSubscriberInterface;
@@ -15,6 +16,7 @@ abstract class AbstractUpdater implements ServiceSubscriberInterface
     {
         return [
             'mailer' => \Swift_Mailer::class,
+            'request_stack' => RequestStack::class,
             'router' => RouterInterface::class,
             'twig' => Environment::class,
         ];
