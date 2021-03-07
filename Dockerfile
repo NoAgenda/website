@@ -1,3 +1,24 @@
+FROM node:12.0-alpine AS noagenda_assets
+
+WORKDIR /srv/www
+
+# Install dependencies
+COPY package.json yarn.lock ./
+RUN yarn install; \
+	yarn cache clean
+
+# Compile assets
+COPY webpack.config.js .babelrc ./
+COPY assets assets/
+RUN yarn run production
+
+# Set up entrypoint
+COPY docker/assets-entrypoint.sh /usr/local/bin/docker-entrypoint
+RUN chmod +x /usr/local/bin/docker-entrypoint
+
+ENTRYPOINT ["docker-entrypoint"]
+CMD ["yarn", "run", "watch"]
+
 FROM php:7.4-fpm AS noagenda_app
 
 WORKDIR /srv/www
@@ -32,6 +53,8 @@ COPY src src/
 COPY templates templates/
 COPY translations translations/
 
+COPY --from=noagenda_assets /srv/www/public public/
+
 # Run Composer commands
 RUN composer install --prefer-dist --no-autoloader --no-scripts --no-progress --no-suggest; \
     composer clear-cache; \
@@ -52,27 +75,6 @@ RUN chmod +x /usr/local/bin/app-php-entrypoint
 ENTRYPOINT ["app-entrypoint"]
 CMD ["php-fpm"]
 
-FROM node:12.0-alpine AS noagenda_assets
-
-WORKDIR /srv/www
-
-# Install dependencies
-COPY package.json yarn.lock ./
-RUN yarn install; \
-	yarn cache clean
-
-# Compile assets
-COPY webpack.config.js .babelrc ./
-COPY assets assets/
-RUN yarn run production
-
-# Set up entrypoint
-COPY docker/assets-entrypoint.sh /usr/local/bin/docker-entrypoint
-RUN chmod +x /usr/local/bin/docker-entrypoint
-
-ENTRYPOINT ["docker-entrypoint"]
-CMD ["yarn", "run", "watch"]
-
 FROM nginx:alpine AS noagenda_http
 
 WORKDIR /srv/www
@@ -82,4 +84,3 @@ COPY docker/nginx/conf.d/app.conf /etc/nginx/conf.d/app.conf
 
 # Copy application directory contents
 COPY --from=noagenda_app /srv/www/public public/
-COPY --from=noagenda_assets /srv/www/public public/

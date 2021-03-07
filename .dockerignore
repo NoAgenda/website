@@ -1,4 +1,7 @@
 /bin/.phpunit/
 /node_modules/
+/public/build/
+/public/bundles/
+/public/media/
 /var/
 /vendor/
