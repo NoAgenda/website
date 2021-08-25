@@ -20,7 +20,7 @@ class CoverExtension extends AbstractExtension
 
     public function episodeCover(Environment $environment, Episode $episode, string $size = 'small')
     {
-        if ($episode->getCoverUri()) {
+        if ($episode->hasCover()) {
             /** @var FilterExtension $filterExtension */
             $filterExtension = $environment->getExtension(FilterExtension::class);
 

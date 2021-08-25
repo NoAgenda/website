@@ -191,6 +191,9 @@
     "ocramius/package-versions": {
         "version": "1.4.2"
     },
+    "octopodcasting/podcast-bundle": {
+        "version": "dev-master"
+    },
     "pagerfanta/pagerfanta": {
         "version": "v2.5.1"
     },

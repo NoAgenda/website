@@ -5,12 +5,13 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Octopod\PodcastBundle\Entity\Episode as BaseEpisode;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\EpisodeRepository")
  * @ORM\Table(name="na_episode")
  */
-class Episode
+class Episode extends BaseEpisode
 {
     /**
      * @var int
@@ -41,13 +42,6 @@ class Episode
      * @ORM\Column(type="string", length=255)
      */
     private $name;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(type="string", length=255)
-     */
-    private $author;
 
     /**
      * @var bool
@@ -85,39 +79,11 @@ class Episode
     private $betaTranscript = false;
 
     /**
-     * @var \DateTimeInterface
-     *
-     * @ORM\Column(type="date")
-     */
-    private $publishedAt;
-
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(type="text", nullable=true)
-     */
-    private $coverUri;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(type="text")
-     */
-    private $recordingUri;
-
-    /**
      * @var string
      *
      * @ORM\Column(type="text", nullable=true)
      */
-    private $shownotesUri;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(type="text", nullable=true)
-     */
-    private $transcriptUri;
+    private $shownotesUrl;
 
     /**
      * @var string|null
@@ -127,25 +93,11 @@ class Episode
     private $chatNotice;
 
     /**
-     * @var int|null
-     *
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $duration;
-
-    /**
      * @var \DateTimeInterface|null
      *
      * @ORM\Column(type="datetime", nullable=true)
      */
     private $recordedAt;
-
-    /**
-     * @var array|null
-     *
-     * @ORM\Column(type="array", nullable=true)
-     */
-    private $crawlerOutput;
 
     public function __construct()
     {
@@ -219,18 +171,6 @@ class Episode
         return $this;
     }
 
-    public function getAuthor(): ?string
-    {
-        return $this->author;
-    }
-
-    public function setAuthor(string $author): self
-    {
-        $this->author = $author;
-
-        return $this;
-    }
-
     public function hasCover(): bool
     {
         return $this->cover;
@@ -291,62 +231,14 @@ class Episode
         return $this;
     }
 
-    public function getPublishedAt(): ?\DateTimeInterface
+    public function getShownotesUrl(): ?string
     {
-        return $this->publishedAt;
+        return $this->shownotesUrl;
     }
 
-    public function setPublishedAt(\DateTimeInterface $publishedAt): self
+    public function setShownotesUrl(?string $uri): self
     {
-        $this->publishedAt = $publishedAt;
-
-        return $this;
-    }
-
-    public function getCoverUri(): ?string
-    {
-        return $this->coverUri;
-    }
-
-    public function setCoverUri(?string $uri): self
-    {
-        $this->coverUri = $uri;
-
-        return $this;
-    }
-
-    public function getRecordingUri(): ?string
-    {
-        return $this->recordingUri;
-    }
-
-    public function setRecordingUri(string $uri): self
-    {
-        $this->recordingUri = $uri;
-
-        return $this;
-    }
-
-    public function getShownotesUri(): ?string
-    {
-        return $this->shownotesUri;
-    }
-
-    public function setShownotesUri(?string $uri): self
-    {
-        $this->shownotesUri = $uri;
-
-        return $this;
-    }
-
-    public function getTranscriptUri(): ?string
-    {
-        return $this->transcriptUri;
-    }
-
-    public function setTranscriptUri(?string $uri): self
-    {
-        $this->transcriptUri = $uri;
+        $this->shownotesUrl = $uri;
 
         return $this;
     }
@@ -363,18 +255,6 @@ class Episode
         return $this;
     }
 
-    public function getDuration(): ?int
-    {
-        return $this->duration;
-    }
-
-    public function setDuration(?int $duration): self
-    {
-        $this->duration = $duration;
-
-        return $this;
-    }
-
     public function getRecordedAt(): ?\DateTimeInterface
     {
         return $this->recordedAt;
@@ -383,18 +263,6 @@ class Episode
     public function setRecordedAt(?\DateTimeInterface $recordedAt): self
     {
         $this->recordedAt = $recordedAt;
-
-        return $this;
-    }
-
-    public function getCrawlerOutput(): ?array
-    {
-        return $this->crawlerOutput;
-    }
-
-    public function setCrawlerOutput(?array $crawlerOutput): self
-    {
-        $this->crawlerOutput = $crawlerOutput;
 
         return $this;
     }

@@ -1,7 +1,7 @@
 {% extends 'layout.html.twig' %}
 
 {% block body %}
-  <na-audio-source id="episodeSource" data-title="{{ episode }}" data-src="{{ episode.recordingUri }}"></na-audio-source>
+  <na-audio-source id="episodeSource" data-title="{{ episode }}" data-src="{{ episode.enclosureUrl }}"></na-audio-source>
 
   {{ parent() }}
 {% endblock %}

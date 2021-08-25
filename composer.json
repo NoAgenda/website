@@ -1,5 +1,6 @@
 {
     "name": "codedmonkey/noagenda",
+    "description": "Website for the No Agenda podcast",
     "type": "project",
     "license": "proprietary",
     "minimum-stability": "stable",
@@ -16,6 +17,7 @@
         "easycorp/easyadmin-bundle": "^2.1",
         "laminas/laminas-feed": "^2.10",
         "liip/imagine-bundle": "^2.1",
+        "octopodcasting/podcast-bundle": "dev-master",
         "phergie/phergie-irc-client-react": "^3.5",
         "php-http/guzzle6-adapter": "^2.0",
         "php-http/httplug-pack": "^1.2",
