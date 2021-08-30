@@ -1,6 +1,7 @@
 {
+    "name": "noagenda-website",
     "private": true,
-    "license": "UNLICENSED",
+    "license": "MIT",
     "scripts": {
         "serve": "encore dev-server",
         "build": "encore dev",

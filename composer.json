@@ -1,7 +1,7 @@
 {
     "name": "codedmonkey/noagenda",
     "type": "project",
-    "license": "proprietary",
+    "license": "MIT",
     "minimum-stability": "stable",
     "require": {
         "php": "^7.4",
