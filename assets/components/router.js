@@ -101,9 +101,12 @@ class RouterElement extends HTMLElement {
 
       if (internal && !tab) {
         link.addEventListener('click', event => {
-          event.preventDefault();
+          if (!event.ctrlKey && !event.metaKey) {
+            // Only if we didn't Ctrl + click or Cmd + click
+            event.preventDefault();
 
-          this.navigate(link.href);
+            this.navigate(link.href);
+          }
         });
       } else if (!internal && !tab) {
         link.addEventListener('click', () => {
