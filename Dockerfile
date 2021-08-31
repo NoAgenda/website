@@ -19,7 +19,7 @@ RUN chmod +x /usr/local/bin/docker-entrypoint
 ENTRYPOINT ["docker-entrypoint"]
 CMD ["yarn", "run", "watch"]
 
-FROM php:7.4-fpm AS noagenda_app
+FROM php:8.0-fpm AS noagenda_app
 
 WORKDIR /srv/www
 
@@ -28,10 +28,8 @@ RUN apt-get update; apt-get install --no-install-recommends -y \
     acl git libmagickwand-dev libzip-dev netcat procps unzip \
     ffmpeg mplayer
 
-RUN apt-get update; apt-get install -y python-pip; \
-    pip install numpy; \
-    pip install scikits.talkbox; \
-    pip install audio-offset-finder
+RUN apt-get update; apt-get install -y python3-pip; \
+    pip install --user git+https://github.com/abramhindle/audio-offset-finder.git
 
 # Enable extensions
 RUN pecl install imagick; \
@@ -56,7 +54,7 @@ COPY translations translations/
 COPY --from=noagenda_assets /srv/www/public public/
 
 # Run Composer commands
-RUN composer install --prefer-dist --no-autoloader --no-scripts --no-progress --no-suggest; \
+RUN composer install --prefer-dist --no-autoloader --no-progress --no-scripts; \
     composer clear-cache; \
     composer dump-autoload --classmap-authoritative; \
     mkdir -p var/cache var/log; \
