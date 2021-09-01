@@ -1,7 +1,7 @@
 # No Agenda
 
-<img src="https://circleci.com/gh/codedmonkey/noagenda.svg?style=shield" alt="CircleCI status">
-<img src="https://codedmonkey.semaphoreci.com/badges/noagenda/branches/develop.svg" alt="Semaphore status">
+<img src="https://circleci.com/gh/NoAgenda/website.svg?style=shield" alt="CircleCI status">
+<img src="https://noagenda.semaphoreci.com/badges/website/branches/develop.svg" alt="Semaphore status">
 
 The source code of [noagendashow.net](https://www.noagendashow.net),
 a [Symfony](https://symfony.com/) application.
