@@ -5,10 +5,10 @@
 import $ from 'jquery';
 
 const msbConfig = {
-  openModal: function() {
+  openModal: () => {
     $('#mastodonModal').modal('show');
   },
-  closeModal: function() {
+  closeModal: () => {
     $('#mastodonModal').modal('hide');
   },
   addressFieldSelector: '#msb-address',
@@ -90,7 +90,7 @@ function msbSetCookie(name, value, days) {
 }
 
 export const initializeMastodonModal = () => {
-  $('#mastodonModal').on('shown.bs.modal', function() {
+  $('#mastodonModal').on('shown.bs.modal', () => {
     $('#msb-address').focus();
   });
 };

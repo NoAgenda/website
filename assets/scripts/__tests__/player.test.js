@@ -14,7 +14,7 @@ describe('player', () => {
       });
       test('input is seconds without colon', () => {
         expect(helpers.serializeTime('20')).toEqual(20);
-      })
+      });
     });
     describe('formatTime', () => {
       describe('no hours', () => {
