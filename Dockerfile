@@ -1,23 +1,23 @@
-FROM node:12.0-alpine AS noagenda_assets
+FROM node:16.8-alpine AS noagenda_assets
 
 WORKDIR /srv/www
 
 # Install dependencies
-COPY package.json yarn.lock ./
-RUN yarn install; \
-	yarn cache clean
+COPY package.json package-lock.json ./
+RUN npm install; \
+	npm cache clean --force
 
 # Compile assets
 COPY webpack.config.js .babelrc ./
 COPY assets assets/
-RUN yarn run production
+RUN npm run production
 
 # Set up entrypoint
 COPY docker/assets-entrypoint.sh /usr/local/bin/docker-entrypoint
 RUN chmod +x /usr/local/bin/docker-entrypoint
 
 ENTRYPOINT ["docker-entrypoint"]
-CMD ["yarn", "run", "watch"]
+CMD ["npm", "run", "watch"]
 
 FROM php:8.0-fpm AS noagenda_app
 

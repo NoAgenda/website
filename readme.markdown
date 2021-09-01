@@ -43,12 +43,12 @@ php bin/phpunit
 ### JavaScript
 To execute the JavaScript unit tests run:
 ```bash
-docker exec -t noagenda_assets_1 yarn run test
+docker exec -t noagenda_assets_1 npm run test
 ```
 
 You can also have the test run automatically when a file changes while developing by running:
 ```bash
-docker exec -t noagenda_assets_1 yarn run test-watch
+docker exec -t noagenda_assets_1 npm run test-watch
 ```
 
 ## Crawling

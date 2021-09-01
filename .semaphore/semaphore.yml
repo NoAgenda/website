@@ -3,7 +3,7 @@ name: No Agenda
 agent:
   machine:
     type: e1-standard-2
-    os_image: ubuntu1804
+    os_image: ubuntu2004
 blocks:
   - name: No Agenda
     task:
@@ -11,10 +11,8 @@ blocks:
         - name: JavaScript Unit Tests
           commands:
             - checkout
-            - sem-version node 12
+            - sem-version node 16
             - cache restore
-            - npm install yarn
-            - yarn install
             - cache store
-            - yarn build --if-present
-            - yarn test
+            - npm run build --if-present
+            - npm run test

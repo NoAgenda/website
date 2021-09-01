@@ -21,15 +21,15 @@
         "popper.js": "^1.14.3",
         "regenerator-runtime": "^0.13.2",
         "sass": "^1.38.2",
-        "sass-loader": "12.0.0",
+        "sass-loader": "^12.0.0",
         "waud.js": "^1.0.3",
         "webpack-notifier": "^1.6.0"
     },
     "devDependencies": {
-        "@types/jest": "^26.0.2",
-        "babel-jest": "^26.1.0",
+        "@types/jest": "^27.0.1",
+        "babel-jest": "^27.1.0",
         "eslint": "^7.4.0",
-        "eslint-plugin-jest": "^23.18.0",
-        "jest": "^26.1.0"
+        "eslint-plugin-jest": "^24.4.0",
+        "jest": "^27.1.0"
     }
 }
