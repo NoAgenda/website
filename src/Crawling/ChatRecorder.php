@@ -18,6 +18,7 @@ class ChatRecorder
     public function __construct()
     {
         $this->logger = new NullLogger();
+        $this->lastUpdated = new \DateTime();
     }
 
     public function record(): void
@@ -62,9 +63,19 @@ class ChatRecorder
             $messageText = preg_replace('/[[:cntrl:]]/', '', $messageText);
             $messageText = mb_convert_encoding($messageText, 'UTF-8', 'UTF-8');
 
-            $log = sprintf('%s >>> %s', (new \DateTime())->format('Y-m-d H:i:s'), $messageText);
+            $this->lastUpdated = $lastUpdated = new \DateTime();
+
+            $log = sprintf('%s >>> %s', $lastUpdated->format('Y-m-d H:i:s'), $messageText);
 
             file_put_contents($this->getLogPath(), $log . "\n", FILE_APPEND | LOCK_EX);
+        });
+
+        $client->on('irc.tick', function () {
+            $stallTime = (new \DateTime())->sub(new \DateInterval('PT15M'));
+
+            if ($this->lastUpdated < $stallTime) {
+                exit();
+            }
         });
 
         $client->run($connection);
