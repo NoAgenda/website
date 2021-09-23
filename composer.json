@@ -42,7 +42,6 @@
         "symfony/messenger": "^5.2",
         "symfony/monolog-bundle": "^3.1",
         "symfony/notifier": "^5.2",
-        "symfony/polyfill-php80": "*",
         "symfony/process": "^5.2",
         "symfony/property-access": "^5.2",
         "symfony/property-info": "^5.2",
