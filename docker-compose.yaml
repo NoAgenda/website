@@ -5,7 +5,7 @@ services:
     build:
       context: .
       target: noagenda_app
-    image: codedmonkey/noagenda_app
+    image: codedmonkey/noagenda_app:latest
     restart: unless-stopped
     tty: true
     volumes:
@@ -22,7 +22,7 @@ services:
     build:
       context: .
       target: noagenda_assets
-    image: codedmonkey/noagenda_assets
+    image: codedmonkey/noagenda_assets:latest
     restart: unless-stopped
     tty: true
     volumes:
@@ -31,7 +31,7 @@ services:
       - assets
 
   chat_recorder:
-    image: codedmonkey/noagenda_app
+    image: codedmonkey/noagenda_app:latest
     restart: unless-stopped
     tty: true
     entrypoint: ["app-php-entrypoint"]
@@ -45,7 +45,7 @@ services:
       - php
 
   crawler:
-    image: codedmonkey/noagenda_app
+    image: codedmonkey/noagenda_app:latest
     restart: unless-stopped
     tty: true
     entrypoint: ["app-php-entrypoint"]
@@ -81,7 +81,7 @@ services:
     build:
       context: .
       target: noagenda_http
-    image: codedmonkey/noagenda_http
+    image: codedmonkey/noagenda_http:latest
     restart: unless-stopped
     depends_on:
       - app
@@ -96,7 +96,7 @@ services:
       - http
 
   livestream_recorder:
-    image: codedmonkey/noagenda_app
+    image: codedmonkey/noagenda_app:latest
     restart: unless-stopped
     tty: true
     entrypoint: ["app-php-entrypoint"]
