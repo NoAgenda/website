@@ -24,4 +24,6 @@ if [ "$1" = 'php-fpm' ] || [ "$1" = 'bin/console' ]; then
   bin/console messenger:setup-transports
 fi
 
+echo "Ready to serve requests"
+
 exec docker-php-entrypoint "$@"

@@ -8,10 +8,14 @@ services:
     image: codedmonkey/noagenda_app:latest
     restart: unless-stopped
     tty: true
+    #entrypoint: docker-php-entrypoint
+    #command: php-fpm
+    depends_on:
+      - database
     volumes:
       - ./:/srv/www
+      - app_var:/srv/www/var
       - public_media:/srv/www/public/media
-      - var_data:/srv/www/var
     networks:
       - assets
       - database
@@ -34,13 +38,13 @@ services:
     image: codedmonkey/noagenda_app:latest
     restart: unless-stopped
     tty: true
-    entrypoint: ["app-php-entrypoint"]
-    command: ["bin/console", "app:record", "chat"]
+    entrypoint: app-php-entrypoint
+    command: bin/console app:record
     depends_on:
       - app
     volumes:
       - ./:/srv/www
-      - var_data:/srv/www/var
+      - chat_recorder_var:/srv/www/var
     networks:
       - php
 
@@ -48,14 +52,14 @@ services:
     image: codedmonkey/noagenda_app:latest
     restart: unless-stopped
     tty: true
-    entrypoint: ["app-php-entrypoint"]
-    command: ["bin/console", "messenger:consume", "crawler", "--sleep", "60", "--time-limit", "3600"]
+    entrypoint: app-php-entrypoint
+    command: bin/console messenger:consume crawler --sleep 60 --time-limit 3600
     depends_on:
       - app
     volumes:
       - ./:/srv/www
+      - crawler_var:/srv/www/var
       - public_media:/srv/www/public/media
-      - var_data:/srv/www/var
     networks:
       - database
       - php
@@ -68,8 +72,6 @@ services:
       MYSQL_DATABASE: noagenda
       MYSQL_USER: dudenamedben
       MYSQL_PASSWORD: dudettenamedbernadette
-    depends_on:
-      - app
     ports:
       - "8034:3306"
     volumes:
@@ -90,8 +92,8 @@ services:
       - "8033:80"
     volumes:
       - ./:/srv/www
-      - public_media:/srv/www/public/media
       - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
+      - public_media:/srv/www/public/media
     networks:
       - http
 
@@ -99,18 +101,19 @@ services:
     image: codedmonkey/noagenda_app:latest
     restart: unless-stopped
     tty: true
-    entrypoint: ["app-php-entrypoint"]
-    command: ["bin/console", "app:record", "livestream"]
+    entrypoint: app-php-entrypoint
+    command: bin/console app:record livestream
     depends_on:
       - app
     volumes:
       - ./:/srv/www
-      - var_data:/srv/www/var
+      - livestream_recorder_var:/srv/www/var
     networks:
       - php
 
   mail:
     image: mailhog/mailhog
+    restart: unless-stopped
     ports:
       - "8035:8025"
     networks:
@@ -123,9 +126,15 @@ networks:
   php:
 
 volumes:
+  app_var:
+    driver: local
+  chat_recorder_var:
+    driver: local
+  crawler_var:
+    driver: local
   database_data:
     driver: local
-  public_media:
+  livestream_recorder_var:
     driver: local
-  var_data:
+  public_media:
     driver: local

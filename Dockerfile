@@ -23,18 +23,31 @@ FROM php:8.0-fpm AS noagenda_app
 
 WORKDIR /srv/www
 
-# Install additional packages
-RUN apt-get update; apt-get install --no-install-recommends -y \
-    acl git libmagickwand-dev libzip-dev netcat procps unzip \
-    ffmpeg mplayer
+# Install build & runtime dependencies
+RUN apt-get update; \
+    apt-get install --no-install-recommends -y acl git netcat
 
-RUN apt-get update; apt-get install -y python3-pip; \
+# Install media utilities
+RUN apt-get update; \
+    apt-get install --no-install-recommends -y ffmpeg mplayer; \
+    apt-get install -y python3-pip; \
     pip install --user git+https://github.com/abramhindle/audio-offset-finder.git
 
-# Enable extensions
-RUN pecl install imagick; \
-	docker-php-ext-enable imagick; \
-    docker-php-ext-install intl pdo_mysql zip
+# Install PHP extensions
+RUN apt-get update; \
+    apt-get install --no-install-recommends -y libmagickwand-dev; \
+    pecl install imagick; \
+	docker-php-ext-enable imagick
+
+RUN apt-get update; \
+    apt-get install --no-install-recommends -y libicu-dev; \
+    docker-php-ext-install intl
+
+RUN docker-php-ext-install pdo_mysql
+
+RUN apt-get update; \
+    apt-get install --no-install-recommends -y libzip-dev unzip; \
+	docker-php-ext-install zip
 
 # Install Composer
 ENV COMPOSER_ALLOW_SUPERUSER=1
