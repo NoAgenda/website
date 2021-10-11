@@ -35,7 +35,7 @@ class EpisodeRepository extends AbstractRepository
     {
         $episodes = [];
 
-        foreach ($this->findBy(null, null, 16 + 4) as $episode) {
+        foreach ($this->findBy(null, null, 32) as $episode) {
             $episodes[$episode->getCode()] = $episode;
         }
 
