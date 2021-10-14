@@ -32,6 +32,6 @@ class CoverExtension extends AbstractExtension
         /** @var AssetExtension $assetExtension */
         $assetExtension = $environment->getExtension(AssetExtension::class);
 
-        return $assetExtension->getAssetUrl("build/placeholder_$size.jpg");
+        return $assetExtension->getAssetUrl("build/images/placeholder_$size.jpg");
     }
 }
