@@ -2,6 +2,9 @@ FROM node:16.8-alpine AS noagenda_assets
 
 WORKDIR /srv/www
 
+ENV FPM_HOST=app
+ENV FPM_PORT=9000
+
 # Install dependencies
 COPY package.json package-lock.json ./
 RUN npm install; \
@@ -22,6 +25,9 @@ CMD ["npm", "run", "watch"]
 FROM php:8.0-fpm AS noagenda_app
 
 WORKDIR /srv/www
+
+ENV FPM_HOST=app
+ENV FPM_PORT=9000
 
 # Install build & runtime dependencies
 RUN apt-get update; \
@@ -90,8 +96,11 @@ FROM nginx:alpine AS noagenda_http
 
 WORKDIR /srv/www
 
+ENV FPM_HOST=app
+ENV FPM_PORT=9000
+
 # Copy Nginx configuration
-COPY docker/nginx/conf.d/app.conf /etc/nginx/conf.d/app.conf
+COPY docker/nginx/app.conf.template /etc/nginx/templates/
 
 # Copy application directory contents
 COPY --from=noagenda_app /srv/www/public public/

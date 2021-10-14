@@ -39,7 +39,7 @@ services:
     restart: unless-stopped
     tty: true
     entrypoint: app-php-entrypoint
-    command: bin/console app:record
+    command: bin/console app:record chat
     depends_on:
       - app
     volumes:
@@ -92,7 +92,7 @@ services:
       - "8033:80"
     volumes:
       - ./:/srv/www
-      - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
+      - ./docker/nginx/app.conf.template:/etc/nginx/templates/app.conf.template
       - public_media:/srv/www/public/media
     networks:
       - http
@@ -126,6 +126,8 @@ networks:
   php:
 
 volumes:
+  database_data:
+    driver: local
   public_media:
     driver: local
   var_data:
