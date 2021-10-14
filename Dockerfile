@@ -31,7 +31,7 @@ ENV FPM_PORT=9000
 
 # Install build & runtime dependencies
 RUN apt-get update; \
-    apt-get install --no-install-recommends -y acl git netcat
+    apt-get install --no-install-recommends -y acl git netcat procps
 
 # Install media utilities
 RUN apt-get update; \
