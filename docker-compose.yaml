@@ -14,8 +14,8 @@ services:
       - database
     volumes:
       - ./:/srv/www
-      - app_var:/srv/www/var
       - public_media:/srv/www/public/media
+      - var_data:/srv/www/var
     networks:
       - assets
       - database
@@ -44,7 +44,7 @@ services:
       - app
     volumes:
       - ./:/srv/www
-      - chat_recorder_var:/srv/www/var
+      - var_data:/srv/www/var
     networks:
       - php
 
@@ -58,8 +58,8 @@ services:
       - app
     volumes:
       - ./:/srv/www
-      - crawler_var:/srv/www/var
       - public_media:/srv/www/public/media
+      - var_data:/srv/www/var
     networks:
       - database
       - php
@@ -107,7 +107,7 @@ services:
       - app
     volumes:
       - ./:/srv/www
-      - livestream_recorder_var:/srv/www/var
+      - var_data:/srv/www/var
     networks:
       - php
 
@@ -126,15 +126,7 @@ networks:
   php:
 
 volumes:
-  app_var:
-    driver: local
-  chat_recorder_var:
-    driver: local
-  crawler_var:
-    driver: local
-  database_data:
-    driver: local
-  livestream_recorder_var:
-    driver: local
   public_media:
+    driver: local
+  var_data:
     driver: local
