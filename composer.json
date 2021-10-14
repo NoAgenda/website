@@ -3,6 +3,9 @@
     "type": "project",
     "license": "MIT",
     "minimum-stability": "stable",
+    "repositories": [
+        {"type": "git", "url": "https://github.com/sjdiego/phergie-irc-parser.git"}
+    ],
     "require": {
         "php": ">=8.0",
         "ext-ctype": "*",
@@ -22,6 +25,7 @@
         "laminas/laminas-feed": "^2.10",
         "liip/imagine-bundle": "^2.1",
         "nyholm/psr7": "^1.1",
+        "phergie/phergie-irc-parser": "dev-master as 2.3.1",
         "phergie/phergie-irc-client-react": "^3.5",
         "php-http/curl-client": "^2.0",
         "php-http/discovery": "^1.6",
