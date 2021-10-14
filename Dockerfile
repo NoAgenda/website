@@ -101,6 +101,7 @@ ENV FPM_PORT=9000
 
 # Copy Nginx configuration
 COPY docker/nginx/app.conf.template /etc/nginx/templates/
+RUN rm /etc/nginx/conf.d/default.conf
 
 # Copy application directory contents
 COPY --from=noagenda_app /srv/www/public public/
