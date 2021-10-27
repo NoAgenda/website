@@ -84,10 +84,10 @@ class EpisodeFilesCrawler
     {
         $this->logger->debug("Downloading $source");
 
-        $stream = fopen($source, 'r');
-
-        if (!$stream) {
-            $this->logger->warning("Failed to download $source: " . error_get_last());
+        try {
+            $stream = fopen($source, 'r');
+        } catch (\Exception $exception) {
+            $this->logger->warning("Failed to download $source: " . $exception->getMessage());
 
             return false;
         }
