@@ -55,6 +55,8 @@ class ChatRecorder
                 return;
             }
 
+            $this->lastUpdated = $lastUpdated = new \DateTime();
+
             if (!strpos($message['message'], 'PRIVMSG #NoAgenda')) {
                 return;
             }
@@ -62,8 +64,6 @@ class ChatRecorder
             $messageText = $message['message'];
             $messageText = preg_replace('/[[:cntrl:]]/', '', $messageText);
             $messageText = mb_convert_encoding($messageText, 'UTF-8', 'UTF-8');
-
-            $this->lastUpdated = $lastUpdated = new \DateTime();
 
             $log = sprintf('%s >>> %s', $lastUpdated->format('Y-m-d H:i:s'), $messageText);
 
