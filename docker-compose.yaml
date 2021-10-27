@@ -119,16 +119,13 @@ services:
     networks:
       - php
 
+volumes:
+  database_data:
+  public_media:
+  var_data:
+
 networks:
   assets:
   database:
   http:
   php:
-
-volumes:
-  database_data:
-    driver: local
-  public_media:
-    driver: local
-  var_data:
-    driver: local
