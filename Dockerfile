@@ -29,7 +29,7 @@ WORKDIR /srv/www
 ENV FPM_HOST=app
 ENV FPM_PORT=9000
 
-# Install build & runtime dependencies
+# Install persistent & runtime dependencies
 RUN apt-get update; \
     apt-get install --no-install-recommends -y acl git netcat procps
 
@@ -76,7 +76,7 @@ COPY --from=noagenda_assets /srv/www/public public/
 RUN composer install --prefer-dist --no-autoloader --no-progress --no-scripts; \
     composer clear-cache; \
     composer dump-autoload --classmap-authoritative; \
-    mkdir -p var/cache var/log; \
+    mkdir -p var/cache var/log public/media; \
     composer run-script post-install-cmd
 
 # Expose port 9000
