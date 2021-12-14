@@ -107,14 +107,12 @@ class FeedbackExtension extends AbstractExtension
         $results = [
             'supported' => 0,
             'rejected' => 0,
+            'all' => 0,
         ];
 
         foreach ($votes as $vote) {
-            if ($vote->getSupported()) {
-                $results['supported']++;
-            } else if ($vote->getRejected()) {
-                $results['rejected']++;
-            }
+            $results[$vote->getSupported() ? 'supported' : 'rejected']++;
+            $results['all']++;
         }
 
         return $results;

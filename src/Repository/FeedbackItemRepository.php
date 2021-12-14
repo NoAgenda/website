@@ -22,14 +22,27 @@ class FeedbackItemRepository extends ServiceEntityRepository
     /**
      * @return FeedbackItem[]
      */
-    public function findOpenFeedbackItems($limit)
+    public function findOpenFeedbackItems($limit): array
     {
-        $openFeedbackItems = $this->findBy(['accepted' => 0, 'rejected' => 0], ['createdAt' => 'desc'], $limit);
+        return $this->findUnresolvedItems($limit);
+    }
 
-        foreach ($openFeedbackItems as $feedbackItem) {
+    /**
+     * @return FeedbackItem[]
+     */
+    public function findUnresolvedItems($limit): array
+    {
+        $unresolvedItems = $this->findBy(['accepted' => 0, 'rejected' => 0], ['createdAt' => 'desc'], $limit);
+
+        foreach ($unresolvedItems as $feedbackItem) {
             $feedbackItem->setEntity($this->getEntityManager()->find($feedbackItem->getEntityName(), $feedbackItem->getEntityId()));
         }
 
-        return $openFeedbackItems;
+        return $unresolvedItems;
+    }
+
+    public function countUnresolvedItems(): int
+    {
+        return $this->count(['accepted' => 0, 'rejected' => 0]);
     }
 }

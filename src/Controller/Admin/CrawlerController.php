@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Admin;
 
 use App\Crawling\Shownotes\ShownotesParserFactory;
 use App\Entity\Episode;
@@ -12,14 +12,14 @@ use App\Message\CrawlFeed;
 use App\Message\CrawlYoutube;
 use App\Message\MatchEpisodeChatMessages;
 use App\Message\MatchEpisodeRecordingTime;
-use EasyCorp\Bundle\EasyAdminBundle\Controller\EasyAdminController;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
-class AdminController extends EasyAdminController
+class CrawlerController extends AbstractController
 {
     private $messenger;
     private $shownotesParserFactory;
@@ -66,9 +66,7 @@ class AdminController extends EasyAdminController
         ]);
     }
 
-    /**
-     * @Route("/crawler/{date}", name="admin_crawler", defaults={"date"="today"})
-     */
+    #[Route('/crawler/{date}', name: 'admin_crawler', defaults: ['date' => 'today'])]
     public function crawlerAction(Request $request, string $date): Response
     {
         if ('POST' === $request->getMethod()) {

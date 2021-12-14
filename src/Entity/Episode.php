@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Crawling\Shownotes\ShownotesParserFactory;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -397,5 +398,10 @@ class Episode
         $this->crawlerOutput = $crawlerOutput;
 
         return $this;
+    }
+
+    public function hasShownotes(): bool
+    {
+        return file_exists(ShownotesParserFactory::getShownotesPath($this));
     }
 }

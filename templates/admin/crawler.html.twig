@@ -1,6 +1,4 @@
-{% extends '@EasyAdmin/default/layout.html.twig' %}
-
-{% block content_title %}Crawler{% endblock %}
+{% extends '@EasyAdmin/page/content.html.twig' %}
 
 {% set tasks = {
   feed: 'Crawl RSS-feed',
@@ -16,11 +14,11 @@
   episode_transcript: 'Download episode transcript',
 } %}
 
+{% block content_title %}Crawler{% endblock %}
 {% block main %}
-<div class="m-3">
   <div class="mb-3">
     {% for task, task_description in tasks %}
-    <form method="post" class="border-bottom">
+    <form method="post" class="border-bottom p-2">
       <div class="d-flex justify-content-between">
         <div class="d-flex flex-column justify-content-center">{{ task_description }}</div>
         <div>
@@ -31,12 +29,12 @@
     </form>
     {% endfor %}
     {% for task, task_description in episode_tasks %}
-    <form method="post" class="border-bottom">
+    <form method="post" class="border-bottom p-2">
       <div class="d-flex justify-content-between">
         <div class="d-flex flex-column justify-content-center">{{ task_description }}</div>
         <div class="d-flex">
           <input type="hidden" name="task" value="{{ task }}"/>
-          <input type="text" name="code" class="form-control mr-2" autocomplete="off" style="width: 100px;"/>
+          <input type="text" name="code" class="form-control me-2" autocomplete="off" style="width: 100px;"/>
           <button type="submit" class="btn btn-primary" style="width: 80px;">Run</button>
         </div>
       </div>
@@ -58,5 +56,4 @@
   <hr>
 
   <div>{{ logs|nl2br }}</div>
-</div>
 {% endblock %}

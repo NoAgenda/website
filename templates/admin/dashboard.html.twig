@@ -1,0 +1,76 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% set utilities = {
+  'Analytics': 'https://analytics.codedmonkey.com/index.php?module=CoreHome&action=index&date=yesterday&period=day&idSite=2',
+  'Error Monitoring': 'https://sentry.io/organizations/noagenda/issues/?project=6004526',
+} %}
+
+{% block content_title ea.dashboardTitle|raw %}
+{% block main %}
+  <div class="d-md-flex justify-content-between">
+    <div class="mb-3">
+      <a class="btn btn-primary {# mb-1 #}" href="#">Crawl Feed</a>
+    </div>
+
+    <div class="mb-3">
+      {% apply spaceless %}
+        {% for name, uri in utilities %}
+          <a class="btn btn-secondary {# mb-1 #} {{ not loop.last ? 'me-1' }}" href="{{ uri }}" target="_blank">{{ name }}</a>
+        {% endfor %}
+      {% endapply %}
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6">
+      <div class="row">
+        <div class="col-6 col-xl-4">
+          <div class="bg-light text-center p-3">
+            <div class="h1">{{ unresolved_feedback_count }}</div>
+            <span>Open contributions</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card rounded-0">
+        <div class="card-header">Latest Episodes</div>
+        <div class="list-group list-group-flush">
+          {% for episode in latest_episodes %}
+            {% set episode_url = ea_url()
+              .setController('App\\Controller\\Admin\\EpisodeCrudController')
+              .setAction('show')
+              .setEntityId(episode.id)
+            %}
+            <a class="list-group-item list-group-item-action d-flex justify-content-between" href="{{ episode_url }}">
+              <span>{{ episode }}</span>
+              <div class="d-flex">
+                <div class="text-{{ episode.shownotes ? 'success' : 'danger' }} px-1 me-1" data-bs-toggle="tooltip" title="{{ episode.shownotes ? 'Shownotes' : 'No Shownotes' }}">
+                  <span class="fas fa-file fa-fw" aria-hidden="true"></span>
+                </div>
+                <div class="text-{{ episode.transcript ? 'success' : 'danger' }} px-1 me-1" data-bs-toggle="tooltip" title="{{ episode.shownotes ? 'Transcript' : 'No Transcript' }}">
+                  <span class="fas fa-list fa-fw" aria-hidden="true"></span>
+                </div>
+                <div class="text-{{ episode.chatMessages ? 'success' : 'danger' }} px-1" data-bs-toggle="tooltip" title="{{ episode.shownotes ? 'Chat Archive' : 'No Chat Archive' }}">
+                  <span class="fas fa-comment fa-fw" aria-hidden="true"></span>
+                </div>
+              </div>
+            </a>
+          {% endfor %}
+          {% set episodes_url = ea_url().setController('App\\Controller\\Admin\\EpisodeCrudController') %}
+          <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" href="{{ episodes_url }}">
+            <span>All Episodes</span>
+            <span class="fas fa-chevron-right me-1 fa-fw" aria-hidden="true"></span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block head_javascript %}
+  {{ parent() }}
+  <script type="text/javascript">
+    {% include 'admin/script.js.twig' %}
+  </script>
+{% endblock %}

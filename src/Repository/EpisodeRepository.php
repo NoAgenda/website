@@ -5,7 +5,6 @@ namespace App\Repository;
 use App\Entity\Episode;
 use Doctrine\Persistence\ManagerRegistry;
 use Pagerfanta\Pagerfanta;
-use function Doctrine\ORM\QueryBuilder;
 
 /**
  * @method Episode|null find($id, $lockMode = null, $lockVersion = null)
@@ -26,11 +25,7 @@ class EpisodeRepository extends AbstractRepository
         parent::__construct($registry, Episode::class);
     }
 
-    public function findLatest(): Episode
-    {
-        return $this->findOneBy();
-    }
-
+    /** @return Episode[] */
     public function findFeedEpisodes(): array
     {
         $episodes = [];
@@ -40,6 +35,28 @@ class EpisodeRepository extends AbstractRepository
         }
 
         return $episodes;
+    }
+
+    public function findLatest(): Episode
+    {
+        return $this->findLatestEpisode();
+    }
+
+    public function findLatestEpisode(): Episode
+    {
+        return $this->findOneBy();
+    }
+
+    /** @return Episode[] */
+    public function findLatestEpisodes(int $count = 4): array
+    {
+        return $this->findBy(null, null, $count);
+    }
+
+    /** @return Episode[] */
+    public function getHomepageEpisodes(): array
+    {
+        return $this->findLatestEpisodes();
     }
 
     public function paginateEpisodes($page = 1): Pagerfanta
@@ -67,10 +84,5 @@ class EpisodeRepository extends AbstractRepository
         ;
 
         return $this->createPaginator($builder->getQuery(), $page);
-    }
-
-    public function getHomepageEpisodes()
-    {
-        return $this->findBy(null, null, 4);
     }
 }
