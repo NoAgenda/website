@@ -12,6 +12,7 @@ use App\Message\CrawlFeed;
 use App\Message\CrawlYoutube;
 use App\Message\MatchEpisodeChatMessages;
 use App\Message\MatchEpisodeRecordingTime;
+use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,13 +22,15 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class CrawlerController extends AbstractController
 {
+    private AdminUrlGenerator $adminUrlGenerator;
     private $messenger;
     private $shownotesParserFactory;
 
-    public function __construct(ShownotesParserFactory $shownotesParserFactory, MessageBusInterface $crawlerBus)
+    public function __construct(ShownotesParserFactory $shownotesParserFactory, MessageBusInterface $crawlerBus, AdminUrlGenerator $adminUrlGenerator)
     {
         $this->shownotesParserFactory = $shownotesParserFactory;
         $this->messenger = $crawlerBus;
+        $this->adminUrlGenerator = $adminUrlGenerator;
     }
 
     /**
@@ -103,7 +106,12 @@ class CrawlerController extends AbstractController
 
                 $this->addFlash('success', 'Scheduled job: ' . get_class($message));
 
-                return $this->redirectToRoute('admin_crawler', ['date' => $date]);
+                $url = $this->adminUrlGenerator
+                    ->setRoute('admin_crawler', ['date' => $date])
+                    ->generateUrl()
+                ;
+
+                return $this->redirect($url);
             }
         }
 
