@@ -8,7 +8,7 @@ framework:
             # async: '%env(MESSENGER_TRANSPORT_DSN)%'
             # failed: 'doctrine://default?queue_name=failed'
             # sync: 'sync://'
-            crawler: 'doctrine://default?queue_name=crawler'
+            crawler: 'amqp://guest:guest@rabbitmq:5672/%2f/messages'
 
         routing:
             'App\Message\CrawlBatSignal': crawler

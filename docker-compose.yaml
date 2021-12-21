@@ -119,6 +119,14 @@ services:
     networks:
       - php
 
+  rabbitmq:
+    image: rabbitmq:3.9-management
+    restart: unless-stopped
+    ports:
+      - "8036:15672"
+    networks:
+      - php
+
 volumes:
   database_data:
   public_media:

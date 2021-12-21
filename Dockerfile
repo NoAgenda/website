@@ -41,6 +41,12 @@ RUN apt-get update; \
 
 # Install PHP extensions
 RUN apt-get update; \
+    apt-get install --no-install-recommends -y librabbitmq-dev; \
+    docker-php-ext-install bcmath sockets; \
+    pecl install amqp; \
+    docker-php-ext-enable amqp
+
+RUN apt-get update; \
     apt-get install --no-install-recommends -y libmagickwand-dev; \
     pecl install imagick; \
 	docker-php-ext-enable imagick
