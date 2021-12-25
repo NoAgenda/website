@@ -38,7 +38,7 @@ class ClearCommand extends Command
     {
         $finder = Finder::create()
             ->files()
-            ->date('< now - 30 days')
+            ->date('< now - 90 days')
             ->in(implode('/', [$_SERVER['APP_STORAGE_PATH'], $path]))
         ;
 
