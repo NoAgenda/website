@@ -8,6 +8,14 @@ if [ "$1" = 'php-fpm' ] || [ "$1" = 'bin/console' ]; then
 	setfacl -R -m u:www-data:rwX -m u:"$(whoami)":rwX var public/media
 	setfacl -dR -m u:www-data:rwX -m u:"$(whoami)":rwX var public/media
 
+	if [ ! -z "$APP_STORAGE_PATH" ]; then
+	  mkdir -p $APP_STORAGE_PATH/chat_logs $APP_STORAGE_PATH/chat_messages $APP_STORAGE_PATH/crawler_logs
+	  mkdir -p $APP_STORAGE_PATH/episode_covers $APP_STORAGE_PATH/episode_parts $APP_STORAGE_PATH/episode_recordings
+	  mkdir -p $APP_STORAGE_PATH/livestream_recordings $APP_STORAGE_PATH/shownotes $APP_STORAGE_PATH/transcripts
+
+	  setfacl -dR -m u:www-data:rwX -m u:"$(whoami)":rwX $APP_STORAGE_PATH
+	fi
+
 	if [ "$APP_ENV" != 'prod' ]; then
     composer install --prefer-dist --no-autoloader --no-progress --no-scripts --no-interaction
     composer clear-cache
