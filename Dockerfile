@@ -26,6 +26,8 @@ FROM php:8.0-fpm AS noagenda_app
 
 WORKDIR /srv/www
 
+ARG GITHUB_TOKEN
+
 ENV FPM_HOST=app
 ENV FPM_PORT=9000
 
@@ -37,7 +39,7 @@ RUN apt-get update; \
 RUN apt-get update; \
     apt-get install --no-install-recommends -y ffmpeg mplayer; \
     apt-get install -y python3-pip; \
-    pip install --user git+https://github.com/abramhindle/audio-offset-finder.git
+    pip install --user git+https://$GITHUB_TOKEN@github.com/abramhindle/audio-offset-finder.git
 
 # Install PHP extensions
 RUN apt-get update; \
@@ -58,6 +60,7 @@ RUN apt-get update; \
 # Install Composer
 ENV COMPOSER_ALLOW_SUPERUSER=1
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+RUN if [ ! -z "$GITHUB_TOKEN" ]; then composer config --global github-oauth.github.com $GITHUB_TOKEN; fi
 
 # Copy application directory contents
 COPY .env ./

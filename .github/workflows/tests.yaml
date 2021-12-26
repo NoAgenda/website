@@ -12,7 +12,7 @@ jobs:
         uses: actions/checkout@v2
       -
         name: Build Docker Images
-        run: docker-compose build
+        run: docker-compose build --build-arg GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
       -
         name: Run JavaScript Tests
         run: docker run --entrypoint docker-entrypoint.sh ghcr.io/noagenda/website/assets:local npm run test

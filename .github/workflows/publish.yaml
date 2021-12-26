@@ -33,5 +33,5 @@ jobs:
         name: Build and Push Images
         run: |
           export APP_TAG=${{ steps.extract-branch.outputs.APP_TAG }}
-          docker-compose build
+          docker-compose build --build-arg GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
           docker-compose push
