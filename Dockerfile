@@ -11,7 +11,7 @@ RUN npm install; \
 	npm cache clean --force
 
 # Compile assets
-COPY webpack.config.js .babelrc ./
+COPY .babelrc jest.config.js webpack.config.js ./
 COPY assets assets/
 RUN npm run production
 
