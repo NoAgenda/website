@@ -13,6 +13,7 @@ if [ "$1" = 'php-fpm' ] || [ "$1" = 'bin/console' ]; then
 	  mkdir -p $APP_STORAGE_PATH/episode_covers $APP_STORAGE_PATH/episode_parts $APP_STORAGE_PATH/episode_recordings
 	  mkdir -p $APP_STORAGE_PATH/livestream_recordings $APP_STORAGE_PATH/shownotes $APP_STORAGE_PATH/transcripts
 
+	  setfacl -R -m u:www-data:rwX -m u:"$(whoami)":rwX $APP_STORAGE_PATH
 	  setfacl -dR -m u:www-data:rwX -m u:"$(whoami)":rwX $APP_STORAGE_PATH
 	fi
 
