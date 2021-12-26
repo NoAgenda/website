@@ -6,6 +6,7 @@ jobs:
   build-images:
     name: Build Docker images
     runs-on: ubuntu-latest
+    if: github.repository_owner == 'noagenda'
     steps:
       -
         name: Checkout
