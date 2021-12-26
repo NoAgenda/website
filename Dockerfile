@@ -80,6 +80,8 @@ RUN composer install --prefer-dist --no-autoloader --no-progress --no-scripts; \
     composer clear-cache; \
     composer dump-autoload --classmap-authoritative; \
     mkdir -p var/cache var/log public/media; \
+    chmod +x bin/console; \
+    chmod +x bin/phpunit; \
     composer run-script post-install-cmd
 
 # Expose port 9000
