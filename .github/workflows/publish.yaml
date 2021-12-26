@@ -1,10 +1,10 @@
-name: CI
+name: Publish Project
 
 on: push
 
 jobs:
-  build-images:
-    name: Build Docker images
+  publish-images:
+    name: Publish Docker Images
     runs-on: ubuntu-latest
     if: github.repository_owner == 'noagenda'
     steps:
@@ -19,7 +19,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       -
-        name: Extract branch name
+        name: Extract Branch Name
         shell: bash
         run: |
           APP_TAG=${GITHUB_REF#refs/heads/}
@@ -30,7 +30,7 @@ jobs:
           fi
         id: extract-branch
       -
-        name: Build and push images
+        name: Build and Push Images
         run: |
           export APP_TAG=${{ steps.extract-branch.outputs.APP_TAG }}
           docker-compose build
