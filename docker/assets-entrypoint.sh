@@ -11,4 +11,4 @@ if [ "$1" = 'node' ] || [ "$1" = 'npm' ]; then
   done
 fi
 
-exec "$@"
+exec docker-entrypoint.sh "$@"

@@ -15,7 +15,7 @@ jobs:
         run: docker-compose build
       -
         name: Run JavaScript Tests
-        run: docker-compose run assets npm run test
+        run: docker run --entrypoint docker-entrypoint.sh ghcr.io/noagenda/website/assets:local npm run test
       -
         name: Run PHP Tests
-        run: docker-compose run app bin/phpunit
+        run: docker run ghcr.io/noagenda/website/app:local bin/phpunit
