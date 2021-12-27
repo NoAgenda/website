@@ -11,7 +11,7 @@ RUN npm install; \
 	npm cache clean --force
 
 # Compile assets
-COPY .babelrc jest.config.js webpack.config.js ./
+COPY .babelrc .eslintrc.json jest.config.js webpack.config.js ./
 COPY assets assets/
 RUN npm run production
 
@@ -63,14 +63,17 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 RUN if [ ! -z "$GITHUB_TOKEN" ]; then composer config --global github-oauth.github.com $GITHUB_TOKEN; fi
 
 # Copy application directory contents
-COPY .env ./
+COPY license.markdown readme.markdown ./
 COPY composer.json composer.lock symfony.lock ./
+COPY .env ./
+COPY .env.test phpunit.xml.dist ./
 COPY bin bin/
 COPY config config/
 COPY migrations migrations/
 COPY public public/
 COPY src src/
 COPY templates templates/
+COPY tests tests/
 COPY translations translations/
 
 COPY --from=noagenda_assets /srv/www/public public/

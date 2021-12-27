@@ -15,7 +15,7 @@ jobs:
         run: docker-compose build --build-arg GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
       -
         name: Run JavaScript Tests
-        run: docker run --entrypoint docker-entrypoint.sh ghcr.io/noagenda/website/assets:local npm run test
+        run: docker run --entrypoint docker-entrypoint.sh ghcr.io/noagenda/website/assets:local npm run build && npm run test
       -
         name: Run PHP Tests
         run: docker run ghcr.io/noagenda/website/app:local bin/phpunit
