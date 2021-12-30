@@ -16,7 +16,7 @@ jobs:
         shell: bash
         run: |
           APP_TAG=${GITHUB_REF#refs/heads/}
-          if [[ "APP_TAG" == 'master' ]]; then
+          if [[ "$APP_TAG" == 'master' ]]; then
             echo '::set-output name=APP_TAG::latest'
           else
             echo "::set-output name=APP_TAG::$APP_TAG"
