@@ -20,9 +20,9 @@ if [ "$1" = 'php-fpm' ] || [ "$1" = 'bin/console' ]; then
 
   if [ "$APP_ENV" != 'prod' ]; then
     composer install --prefer-dist --no-autoloader --no-progress --no-scripts --no-interaction
-    composer clear-cache
-    composer dump-autoload --classmap-authoritative
-    composer run-script post-install-cmd
+    composer clear-cache --no-interaction
+    composer dump-autoload --classmap-authoritative --no-interaction
+    composer run-script post-install-cmd --no-interaction
   fi
 
   >&2 echo "Waiting for database to be ready..."
