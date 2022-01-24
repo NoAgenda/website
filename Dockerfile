@@ -41,6 +41,8 @@ RUN apt-get update; \
     apt-get install -y python3-pip; \
     pip install --user git+https://$GITHUB_TOKEN@github.com/abramhindle/audio-offset-finder.git
 
+ENV PATH="/root/.local/bin:${PATH}"
+
 # Install PHP extensions
 RUN apt-get update; \
     apt-get install --no-install-recommends -y libmagickwand-dev; \
