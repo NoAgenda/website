@@ -404,4 +404,14 @@ class Episode
     {
         return file_exists(ShownotesParserFactory::getShownotesPath($this));
     }
+
+    public function getChatMessagesPath(): string
+    {
+        return sprintf('%s/chat_messages/%s.json', $_SERVER['APP_STORAGE_PATH'], $this->code);
+    }
+
+    public function getChatMessagesExist(): bool
+    {
+        return file_exists($this->getChatMessagesPath());
+    }
 }

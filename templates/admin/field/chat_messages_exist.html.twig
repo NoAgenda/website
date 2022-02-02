@@ -1,0 +1,19 @@
+{# @var ea \EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext #}
+{# @var field \EasyCorp\Bundle\EasyAdminBundle\Dto\FieldDto #}
+{# @var entity \EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto #}
+{% trans_default_domain 'EasyAdminBundle' %}
+
+{% set chat_messages_url = ea_url().setAction('chatMessages').generateUrl() %}
+{% set match_chat_messages_url = ea_url().setAction('matchChatMessages').generateUrl() %}
+
+<div class="d-flex align-items-center" style="gap: 1em; padding: .2em 0;">
+  {% include '@EasyAdmin/crud/field/boolean.html.twig' %}
+
+  {% if field.value %}
+    <a class="btn btn-secondary" href="{{ chat_messages_url }}" data-bs-toggle="tooltip" title="View Chat Archive"><span class="fas fa-eye fa-fw" aria-hidden="true"></span></a>
+  {% endif %}
+
+  {% if entity.instance.recordedAt %}
+    <a class="btn btn-secondary" href="{{ match_chat_messages_url }}" data-bs-toggle="tooltip" title="Match Chat Archive"><span class="fas fa-sync fa-fw" aria-hidden="true"></span></a>
+  {% endif %}
+</div>

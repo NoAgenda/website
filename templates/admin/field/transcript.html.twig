@@ -1,0 +1,20 @@
+{# @var ea \EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext #}
+{# @var field \EasyCorp\Bundle\EasyAdminBundle\Dto\FieldDto #}
+{# @var entity \EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto #}
+{% trans_default_domain 'EasyAdminBundle' %}
+
+{% set transcript_url = ea_url().setAction('transcript').generateUrl() %}
+{% set crawl_transcript_url = ea_url().setAction('crawlTranscript').generateUrl() %}
+{% set clear_transcript_url = ea_url().setAction('clearTranscript').generateUrl() %}
+
+<div class="d-flex align-items-center" style="gap: 1em; padding: .2em 0;">
+  {% include '@EasyAdmin/crud/field/boolean.html.twig' %}
+
+  {% if field.value == true %}
+    <a class="btn btn-secondary" href="{{ transcript_url }}" title="View Transcript" data-bs-toggle="tooltip"><span class="fas fa-eye fa-fw" aria-hidden="true"></span></a>
+  {% endif %}
+
+  {% if entity.instance.transcriptUri %}
+    <a class="btn btn-secondary" href="{{ crawl_transcript_url }}" title="Crawl Transcript" data-bs-toggle="tooltip"><span class="fas fa-sync fa-fw" aria-hidden="true"></span></a>
+  {% endif %}
+</div>

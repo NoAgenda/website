@@ -3,9 +3,12 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Episode;
+use App\Message\MatchEpisodeChatMessages;
+use App\Message\MatchEpisodeRecordingTime;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
@@ -14,9 +17,18 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\UrlField;
+use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 class EpisodeCrudController extends AbstractCrudController
 {
+    public function __construct(
+        private MessageBusInterface $messenger,
+        private AdminUrlGenerator $adminUrlGenerator
+    ) { }
+
     public static function getEntityFqcn(): string
     {
         return Episode::class;
@@ -26,15 +38,23 @@ class EpisodeCrudController extends AbstractCrudController
     {
         return $crud
             ->setEntityLabelInPlural('Episodes')
-            ->showEntityActionsAsDropdown(false)
             ->setDefaultSort(['publishedAt' => 'DESC'])
+            ->showEntityActionsInlined()
         ;
     }
 
     public function configureActions(Actions $actions): Actions
     {
+        $episodeUrl = Action::new('player', 'Go To Episode', 'fas fa-external-link-alt')
+            ->linkToRoute('player', function (Episode $episode): array {
+                return ['episode' => $episode->getCode()];
+            })
+            ->setHtmlAttributes(['target' => '_blank'])
+        ;
+
         return $actions
             ->add(Crud::PAGE_INDEX, Action::DETAIL)
+            ->add(Crud::PAGE_DETAIL, $episodeUrl)
         ;
     }
 
@@ -55,35 +75,129 @@ class EpisodeCrudController extends AbstractCrudController
             yield IntegerField::new('duration');
         }
 
-        yield DateField::new('publishedAt');
-
-        if (!$isIndex) {
-            yield TextField::new('shownotesUri');
-        }
-
+        yield DateField::new('publishedAt')
+            ->renderAsText()
+        ;
         yield BooleanField::new('special', $isIndex ? 'Special' : 'Special Episode')
             ->renderAsSwitch(!$isIndex)
         ;
 
         if (!$isIndex) {
-            yield BooleanField::new('chatMessages', 'Episode has an archive of the live chat');
-            yield BooleanField::new('transcript', 'Episode has a transcript');
-            yield TextField::new('chatNotice');
-
-            yield FormField::addPanel('Crawler data')
+            yield FormField::addPanel('Crawler')
                 ->setIcon('fas fa-bug')
                 ->setHelp('Data used for crawling and processing metadata related to the show.')
             ;
 
-            yield TextField::new('coverUri');
-            yield TextField::new('recordingUri');
+            yield UrlField::new('recordingUri');
             yield DateTimeField::new('recordedAt')
                 ->renderAsText()
                 ->setFormTypeOptions([
                     'format' => 'yyyy-MM-dd HH:mm:ss',
                 ])
+                ->setTemplatePath('admin/field/recorded_at.html.twig')
             ;
-            yield TextField::new('transcriptUri');
+            yield UrlField::new('coverUri');
+            yield UrlField::new('shownotesUri');
+
+            yield FormField::addPanel('Transcript')
+                ->setIcon('fas fa-bars')
+                ->setHelp('Data used for crawling and processing metadata related to the transcript.')
+            ;
+
+            yield BooleanField::new('transcript')
+                ->setHelp('Episode has a transcript')
+                ->setTemplatePath('admin/field/transcript.html.twig')
+            ;
+            yield UrlField::new('transcriptUri');
+
+            yield FormField::addPanel('Live Chat')
+                ->setIcon('fas fa-comments')
+                ->setHelp('Data used for crawling and processing metadata related to live chat logs.')
+            ;
+
+            if (Crud::PAGE_DETAIL === $pageName) {
+                yield BooleanField::new('chatMessagesExist')
+                    ->setHelp('Episode has an archive of the live chat')
+                    ->setTemplatePath('admin/field/chat_messages_exist.html.twig')
+                ;
+            }
+
+            yield BooleanField::new('chatMessages')
+                ->setHelp('Chat archive is visible on the website')
+            ;
+            yield TextField::new('chatNotice')
+                ->setHelp('Message displayed above the chat archive in case of a problem, like being out of sync for a few minutes.')
+            ;
         }
+    }
+
+    public function chatMessages(AdminContext $context): Response
+    {
+        $episode = $context->getEntity()->getInstance();
+
+        if (!$episode->getChatMessagesExist()) {
+            return $this->render('admin/error.html.twig', [
+                'error' => sprintf('The chat archive for episode "%s" could not be found.', $episode),
+            ]);
+        }
+
+        $chatMessages = json_decode(file_get_contents($episode->getChatMessagesPath()));
+
+        return $this->render('admin/episode/chat_messages.html.twig', [
+            'episode' => $episode,
+            'chat_messages' => $chatMessages,
+        ]);
+    }
+
+    public function transcript(AdminContext $context): Response
+    {
+        $episode = $context->getEntity()->getInstance();
+
+        if (!$episode->hasTranscript()) {
+            return $this->render('admin/error.html.twig', [
+                'error' => sprintf('The transcript for episode "%s" could not be found.', $episode),
+            ]);
+        }
+
+        return $this->render('admin/episode/transcript.html.twig', [
+            'episode' => $episode,
+            'transcript' => null,
+        ]);
+    }
+
+    public function matchChatMessages(AdminContext $context): Response
+    {
+        $episode = $context->getEntity()->getInstance();
+
+        $message = new MatchEpisodeChatMessages($episode->getCode());
+
+        $this->messenger->dispatch($message);
+
+        $this->addFlash('success', 'Job queued');
+
+        return $this->redirect($this->adminUrlGenerator
+            ->setController(self::class)
+            ->setAction('detail')
+            ->setEntityId($episode->getId())
+            ->generateUrl()
+        );
+    }
+
+    public function matchRecordingTime(AdminContext $context): Response
+    {
+        $episode = $context->getEntity()->getInstance();
+
+        $message = new MatchEpisodeRecordingTime($episode->getCode());
+
+        $this->messenger->dispatch($message);
+
+        $this->addFlash('success', 'Job queued');
+
+        return $this->redirect($this->adminUrlGenerator
+            ->setController(self::class)
+            ->setAction('detail')
+            ->setEntityId($episode->getId())
+            ->generateUrl()
+        );
     }
 }

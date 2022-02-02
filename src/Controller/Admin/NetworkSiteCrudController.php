@@ -21,7 +21,9 @@ class NetworkSiteCrudController extends AbstractCrudController
     {
         return $crud
             ->setPageTitle(Crud::PAGE_INDEX, 'Network Sites')
-            ->setSearchFields(['id', 'name', 'icon', 'description', 'uri', 'displayUri', 'priority']);
+            ->setSearchFields(['id', 'name', 'icon', 'description', 'uri', 'displayUri', 'priority'])
+            ->showEntityActionsInlined()
+        ;
     }
 
     public function configureFields(string $pageName): iterable

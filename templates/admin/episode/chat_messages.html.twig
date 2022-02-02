@@ -1,0 +1,24 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block content_title %}Chat Archive - {{ episode }}{% endblock %}
+
+{% set episode_url = ea_url()
+  .setController('App\\Controller\\Admin\\EpisodeCrudController')
+  .setAction('detail')
+  .setEntityId(episode.id)
+  .generateUrl()
+%}
+
+{% block main %}
+  <a href="{{ episode_url }}"><h4>< {{ episode }}</h4></a>
+
+  <table>
+    {% for chat_message in chat_messages %}
+      <tr>
+        <td>{{ chat_message.username }}</td>
+        <td>{{ chat_message.timestamp|prettyTimestamp }}</td>
+        <td>{{ chat_message.contents }}</td>
+      </tr>
+    {% endfor %}
+  </table>
+{% endblock %}

@@ -3,9 +3,13 @@ EpisodePartCorrection: Chapter Correction
 EpisodePartCorrectionVote: Chapter Correction Vote
 NetworkSite: Network Site
 
+Chat Messages: Chat Archive
+Chat Messages Exist: Chat Archive Exists
 Cover Uri: Cover URL
-Recording Uri: Recording URL
 Display Uri: Display URL
+Published At: Publishing Date
+Recorded At: Recording Time
+Recording Uri: Recording URL
 Shownotes Uri: Shownotes URL
 Transcript Uri: Transcript URL
 Uri: URL

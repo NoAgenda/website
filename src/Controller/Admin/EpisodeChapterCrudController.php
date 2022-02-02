@@ -22,7 +22,7 @@ class EpisodeChapterCrudController extends AbstractCrudController
         return $crud
             ->setEntityLabelInPlural('Chapters')
             ->setEntityLabelInSingular('Chapter')
-            ->showEntityActionsAsDropdown(false)
+            ->showEntityActionsInlined()
         ;
     }
 

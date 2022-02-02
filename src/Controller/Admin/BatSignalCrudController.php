@@ -20,7 +20,7 @@ class BatSignalCrudController extends AbstractCrudController
         return $crud
             ->setEntityLabelInPlural('Bat Signals')
             ->setEntityLabelInSingular('Bat Signal')
-            ->showEntityActionsAsDropdown(false)
+            ->showEntityActionsInlined()
         ;
     }
 

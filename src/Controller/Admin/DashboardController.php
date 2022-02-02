@@ -24,7 +24,7 @@ class DashboardController extends AbstractDashboardController
     public function configureDashboard(): Dashboard
     {
         return Dashboard::new()
-            ->setTitle('No Agenda Show Administration Panel')
+            ->setTitle('No Agenda Show Website Console')
         ;
     }
 

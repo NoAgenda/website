@@ -33,19 +33,19 @@
     active: app.request.attributes.get('_route') starts with 'account_',
   }]) %}
 
-  {% if is_granted('ROLE_ADMIN') %}
-    {% set authenticationLinks = authenticationLinks|merge([{
-      path: 'admin',
-      title: 'Administration Panel',
-      active: false,
-    }]) %}
-  {% endif %}
-
   {% if is_granted('ROLE_MOD') %}
     {% set authenticationLinks = authenticationLinks|merge([{
       path: 'contributions_manage',
-      title: 'Manage contributions',
+      title: 'Contributions',
       active: app.request.attributes.get('_route') == 'contributions_manage',
+    }]) %}
+  {% endif %}
+
+  {% if is_granted('ROLE_ADMIN') %}
+    {% set authenticationLinks = authenticationLinks|merge([{
+      path: 'admin',
+      title: 'Console',
+      active: false,
     }]) %}
   {% endif %}
 {% else %}

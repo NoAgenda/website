@@ -20,7 +20,7 @@ class UserCrudController extends AbstractCrudController
     {
         return $crud
             ->setEntityLabelInPlural('Users')
-            ->showEntityActionsAsDropdown(false)
+            ->showEntityActionsInlined()
         ;
     }
 
