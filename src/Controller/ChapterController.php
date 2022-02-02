@@ -216,6 +216,24 @@ class ChapterController extends AbstractController
     }
 
     /**
+     * @Route("/episode/{episode}/draft/{draft}/acceptEdit", name="episode_chapter_accept_edit")
+     * @ParamConverter("episode", class="App\Entity\Episode", options={"mapping": {"episode": "code"}})
+     */
+    public function acceptEdit(Episode $episode, EpisodeChapterDraft $draft): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_MOD');
+
+        $this->doAcceptDraft($draft);
+
+        $this->entityManager->flush();
+
+        return $this->redirectToRoute('episode_chapter_edit', [
+            'episode' => $episode->getCode(),
+            'chapter' => $draft->getChapter()->getId(),
+        ]);
+    }
+
+    /**
      * @Route("/episode/{episode}/accept_all", name="episode_chapter_accept_all")
      * @ParamConverter("episode", class="App\Entity\Episode", options={"mapping": {"episode": "code"}})
      */

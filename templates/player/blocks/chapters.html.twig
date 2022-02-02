@@ -73,6 +73,9 @@
                         <a class="cursor-pointer d-inline-block" href="{{ path('episode_chapter_accept', {episode: episode.code, draft: chapter.id}) }}" title="Accept suggestion">
                           <span class="fas fa-check fa-fw fa-lg text-success" aria-hidden="true"></span>
                         </a>
+                        <a class="cursor-pointer d-inline-block" href="{{ path('episode_chapter_accept_edit', {episode: episode.code, draft: chapter.id}) }}" title="Accept and edit suggestion">
+                          <span class="fas fa-pencil-alt fa-fw fa-lg text-success" aria-hidden="true"></span>
+                        </a>
                         <a class="cursor-pointer d-inline-block" href="{{ path('episode_chapter_reject', {episode: episode.code, draft: chapter.id}) }}" title="Reject suggestion">
                           <span class="fas fa-times fa-fw fa-lg text-danger" aria-hidden="true"></span>
                         </a>
