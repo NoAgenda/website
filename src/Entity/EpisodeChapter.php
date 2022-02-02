@@ -40,7 +40,7 @@ class EpisodeChapter
     private $createdAt;
 
     /**
-     * @ORM\OneToMany(targetEntity="EpisodeChapterDraft", mappedBy="chapter", cascade={"remove"})
+     * @ORM\OneToMany(targetEntity="EpisodeChapterDraft", mappedBy="chapter")
      */
     private $drafts;
 
