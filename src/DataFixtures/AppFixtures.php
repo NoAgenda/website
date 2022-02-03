@@ -42,6 +42,7 @@ class AppFixtures extends Fixture
                 ->setTranscriptUri($data['transcriptUri'])
                 ->setChatMessages(true)
                 ->setTranscript(true)
+                ->setTranscriptType('beta')
             ;
 
             $chapter = (new EpisodeChapter())

@@ -31,7 +31,7 @@
     icon: '<span class="fas fa-fw fa-list-ol" aria-hidden="true"></span>',
     name: 'Transcript ' ~ (not episode.transcript ? '<span class="badge badge-secondary text-uppercase">Beta</span>' : ''),
     contents: 'player/blocks/transcript.html.twig',
-    enabled: episode.transcript or episode.betaTranscript,
+    enabled: episode.transcript,
   },
   {
     key: 'chat',

@@ -79,11 +79,11 @@ class Episode
     private $transcript = false;
 
     /**
-     * @var bool
+     * @var string
      *
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="text", length=16)
      */
-    private $betaTranscript = false;
+    private $transcriptType;
 
     /**
      * @var \DateTimeInterface
@@ -280,14 +280,14 @@ class Episode
         return $this;
     }
 
-    public function hasBetaTranscript(): bool
+    public function getTranscriptType(): ?string
     {
-        return $this->betaTranscript;
+        return $this->transcriptType;
     }
 
-    public function setBetaTranscript(bool $betaTranscript): self
+    public function setTranscriptType(?string $transcriptType): self
     {
-        $this->betaTranscript = $betaTranscript;
+        $this->transcriptType = $transcriptType;
 
         return $this;
     }
@@ -413,5 +413,22 @@ class Episode
     public function getChatMessagesExist(): bool
     {
         return file_exists($this->getChatMessagesPath());
+    }
+
+    public function getTranscriptPath(): string
+    {
+        $jsonPath = sprintf('%s/transcripts/%s.json', $_SERVER['APP_STORAGE_PATH'], $this->code);
+        $srtPath = sprintf('%s/transcripts/%s.srt', $_SERVER['APP_STORAGE_PATH'], $this->code);
+
+        if (file_exists($jsonPath)) {
+            return $jsonPath;
+        }
+
+        return $srtPath;
+    }
+
+    public function getTranscriptExists(): bool
+    {
+        return file_exists($this->getTranscriptPath());
     }
 }

@@ -11,6 +11,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
@@ -61,6 +62,7 @@ class EpisodeCrudController extends AbstractCrudController
     public function configureFields(string $pageName): iterable
     {
         $isIndex = Crud::PAGE_INDEX === $pageName;
+        $isDetail = Crud::PAGE_DETAIL === $pageName;
 
         yield TextField::new('code', $isIndex ? 'No.' : 'Episode No.');
 
@@ -104,18 +106,31 @@ class EpisodeCrudController extends AbstractCrudController
                 ->setHelp('Data used for crawling and processing metadata related to the transcript.')
             ;
 
+            if ($isDetail) {
+                yield BooleanField::new('transcriptExists')
+                    ->setHelp('Episode has a transcript')
+                    ->setTemplatePath('admin/field/transcript_exists.html.twig')
+                ;
+            }
+
             yield BooleanField::new('transcript')
-                ->setHelp('Episode has a transcript')
-                ->setTemplatePath('admin/field/transcript.html.twig')
+                ->setHelp('Transcript is visible on the website')
             ;
             yield UrlField::new('transcriptUri');
+            yield ChoiceField::new('transcriptType')
+                ->setChoices([
+                    'Podcasting 2.0' => 'podcast20',
+                    'Legacy' => 'legacy',
+                    'Beta' => 'beta',
+                ])
+            ;
 
             yield FormField::addPanel('Live Chat')
                 ->setIcon('fas fa-comments')
                 ->setHelp('Data used for crawling and processing metadata related to live chat logs.')
             ;
 
-            if (Crud::PAGE_DETAIL === $pageName) {
+            if ($isDetail) {
                 yield BooleanField::new('chatMessagesExist')
                     ->setHelp('Episode has an archive of the live chat')
                     ->setTemplatePath('admin/field/chat_messages_exist.html.twig')
