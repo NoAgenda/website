@@ -80,7 +80,8 @@ class FeedCrawler
                 'coverUri' => $feedItem->getItunesImage(),
                 'recordingUri' => $feedItem->getEnclosure()->url,
                 'publishedAt' => $feedItem->getDateCreated(),
-                //'transcriptUri' => $xpath->evaluate('string(' . $feedItem->getXpathPrefix() . '/podcast:transcript/@url)'),
+                'transcriptUri' => $xpath->evaluate('string(' . $feedItem->getXpathPrefix() . '/podcast:transcript/@url)'),
+                'transcriptType' => 'srt',
             ];
         }
 
@@ -112,17 +113,10 @@ class FeedCrawler
                 ->setPublishedAt($entry['publishedAt'])
                 ->setCoverUri($entry['coverUri'])
                 ->setRecordingUri($entry['recordingUri'])
-                //->setTranscriptUri($entry['transcriptUri'])
+                ->setTranscriptUri($entry['transcriptUri'])
+                ->setTranscriptType('srt')
                 ->setCrawlerOutput($entry)
             ;
-
-            // Use transcripts provided by @clogwog@noagendasocial.com
-            if ($episode->getPublishedAt() > new \DateTime('2021-01-01')) {
-                $transcriptFilename = basename($entry['recordingUri']);
-                $transcriptFilename = str_replace('.mp3', '.srt', $transcriptFilename);
-
-                $episode->setTranscriptUri(sprintf('http://natranscript.online/opml/%s', $transcriptFilename));
-            }
 
             $this->entityManager->persist($episode);
 

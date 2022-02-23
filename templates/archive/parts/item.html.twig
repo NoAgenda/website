@@ -18,24 +18,24 @@
           <span class="far fa-calendar mr-1" aria-hidden="true"></span>
           {{ episode.publishedAt|date('F jS, Y') }}
         </span>
-        <span class="text-nowrap" aria-label="Publish date">
+        <span class="text-nowrap" aria-label="Chapters">
           <span class="fas fa-book mr-1" aria-hidden="true"></span>
           {{ episode.chapters|length }} {% if episode.chapters|length > 1 %}chapters{% else %}chapter{% endif %}
         </span>
         {% if episode.special %}
-        <span class="text-nowrap">
+        <span class="text-nowrap" aria-label="Special episode">
           <span class="fas fa-star mr-1" aria-hidden="true"></span>
           Special
         </span>
         {% endif %}
-        {% if episode.transcript or episode.betaTranscript %}
-        <span class="text-nowrap">
+        {% if episode.transcript %}
+        <span class="text-nowrap" aria-label="Transcripts are available">
           <span class="fas fa-list mr-1" aria-hidden="true"></span>
           Transcript
         </span>
         {% endif %}
         {% if episode.chatMessages %}
-        <span class="text-nowrap">
+        <span class="text-nowrap" aria-label="Archive of live chat available">
           <span class="far fa-smile mr-1" aria-hidden="true"></span>
           Troll Room
         </span>

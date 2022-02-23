@@ -3,6 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Episode;
+use App\Message\CrawlEpisodeTranscript;
 use App\Message\MatchEpisodeChatMessages;
 use App\Message\MatchEpisodeRecordingTime;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
@@ -119,9 +120,8 @@ class EpisodeCrudController extends AbstractCrudController
             yield UrlField::new('transcriptUri');
             yield ChoiceField::new('transcriptType')
                 ->setChoices([
-                    'Podcasting 2.0' => 'podcast20',
-                    'Legacy' => 'legacy',
-                    'Beta' => 'beta',
+                    'SRT' => 'srt',
+                    'JSON' => 'json',
                 ])
             ;
 
@@ -174,10 +174,34 @@ class EpisodeCrudController extends AbstractCrudController
             ]);
         }
 
+        $contents = file_get_contents($episode->getTranscriptPath());
+
+        if ('json' === $episode->getTranscriptType()) {
+            $contents = json_encode(json_decode($contents), JSON_PRETTY_PRINT);
+        }
+
         return $this->render('admin/episode/transcript.html.twig', [
             'episode' => $episode,
-            'transcript' => null,
+            'contents' => $contents,
         ]);
+    }
+
+    public function crawlTranscript(AdminContext $context): Response
+    {
+        $episode = $context->getEntity()->getInstance();
+
+        $message = new CrawlEpisodeTranscript($episode->getCode());
+
+        $this->messenger->dispatch($message);
+
+        $this->addFlash('success', 'Job queued');
+
+        return $this->redirect($this->adminUrlGenerator
+            ->setController(self::class)
+            ->setAction('detail')
+            ->setEntityId($episode->getId())
+            ->generateUrl()
+        );
     }
 
     public function matchChatMessages(AdminContext $context): Response

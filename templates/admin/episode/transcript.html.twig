@@ -10,7 +10,13 @@
 %}
 
 {% block main %}
-  <a href="{{ episode_url }}"><h4>< {{ episode }}</h4></a>
+  <div class="h4 mb-4">
+    <a href="{{ episode_url }}">< {{ episode }}</a>
+  </div>
 
-  Coming soon<sup>TM</sup>
+  <div class="card bg-light mb-4">
+    <div class="card-body">
+      <pre><code>{{ contents }}</code></pre>
+    </div>
+  </div>
 {% endblock %}

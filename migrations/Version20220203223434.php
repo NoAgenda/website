@@ -18,8 +18,8 @@ final class Version20220203223434 extends AbstractMigration
     {
         $this->addSql('ALTER TABLE na_episode ADD transcript_type TINYTEXT NOT NULL');
 
-        $this->addSql('UPDATE na_episode SET transcript = 1, transcript_type = "beta" WHERE beta_transcript = 1;');
-        $this->addSql('UPDATE na_episode SET transcript_type = "legacy" WHERE transcript = 1;');
+        $this->addSql('UPDATE na_episode SET transcript = 1, transcript_type = "json" WHERE beta_transcript = 1;');
+        $this->addSql('UPDATE na_episode SET transcript_type = "srt" WHERE transcript = 1;');
 
         $this->addSql('ALTER TABLE na_episode DROP beta_transcript');
     }
@@ -28,8 +28,8 @@ final class Version20220203223434 extends AbstractMigration
     {
         $this->addSql('ALTER TABLE na_episode ADD beta_transcript TINYINT(1) NOT NULL');
 
-        $this->addSql('UPDATE na_episode SET transcript = 0, beta_transcript = 1 WHERE transcript_type = "beta";');
-        $this->addSql('UPDATE na_episode SET WHERE transcript = 1 HERE transcript_type = "legacy";');
+        $this->addSql('UPDATE na_episode SET transcript = 0, beta_transcript = 1 WHERE transcript_type = "json";');
+        $this->addSql('UPDATE na_episode SET WHERE transcript = 1 HERE transcript_type = "srt";');
 
         $this->addSql('ALTER TABLE na_episode DROP transcript_type');
     }

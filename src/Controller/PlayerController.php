@@ -60,17 +60,11 @@ class PlayerController extends AbstractController
             $timestamp = $transcriptTimestamp;
         }
 
-        if ($episode->hasTranscript() && $episode->getTranscriptType() === 'legacy') {
-            $transcriptPath = sprintf('%s/episode_transcripts/%s.srt', $_SERVER['APP_STORAGE_PATH'], $episode->getCode());
-
-            if (file_exists($transcriptPath)) {
-                $lines = (new SrtParser())->loadString(file_get_contents($transcriptPath))->parse();
-            }
-        } else if ($episode->hasTranscript() && $episode->getTranscriptType() === 'beta') {
-            $transcriptPath = sprintf('%s/transcripts/%s.json', $_SERVER['APP_STORAGE_PATH'], $episode->getCode());
-
-            if (file_exists($transcriptPath)) {
-                $lines = json_decode(file_get_contents($transcriptPath));
+        if ($episode->hasTranscript()) {
+            if ('srt' === $episode->getTranscriptType()) {
+                $transcriptLines = (new SrtParser())->loadString(file_get_contents($episode->getTranscriptPath()))->parse();
+            } else if ('json' === $episode->getTranscriptType()) {
+                $transcriptLines = json_decode(file_get_contents($episode->getTranscriptPath()));
             }
         }
 
@@ -94,7 +88,7 @@ class PlayerController extends AbstractController
             'episode' => $episode,
             'chapters' => $chapters,
             'shownotes' => $shownotes,
-            'transcriptLines' => $lines ?? [],
+            'transcriptLines' => $transcriptLines ?? [],
         ]);
     }
 

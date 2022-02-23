@@ -62,27 +62,24 @@ class EpisodeFilesCrawler
 
     public function crawlTranscript(Episode $episode): void
     {
-        $transcriptPath = sprintf('%s/episode_transcripts/%s.srt', $_SERVER['APP_STORAGE_PATH'], $episode->getCode());
-
-        if (!is_dir(dirname($transcriptPath))) {
-            $filesystem = new Filesystem();
-            $filesystem->mkdir([
-                dirname($transcriptPath),
-            ]);
+        if (!$episode->getTranscriptUri()) {
+            return;
         }
 
-        if ($episode->getTranscriptUri()) {
-            if ($this->putContents($episode->getTranscriptUri(), $transcriptPath)) {
-                $episode->setTranscript(true);
-            }
-        }
+        if ($this->putContents($episode->getTranscriptUri(), $episode->getTranscriptPath())) {
+            $episode->setTranscript(true);
 
-        $this->entityManager->persist($episode);
+            $this->entityManager->persist($episode);
+        }
     }
 
     private function putContents(string $source, string $target): bool
     {
         $this->logger->debug("Downloading $source");
+
+        if (!is_dir($targetDirectory = dirname($target))) {
+            (new Filesystem())->mkdir($targetDirectory);
+        }
 
         try {
             $stream = fopen($source, 'r');

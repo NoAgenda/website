@@ -1,5 +1,5 @@
 <ul class="site-transcript-lines list-unstyled" data-episode-transcripts>
-  {% if episode.transcriptType == 'legacy' %}
+  {% if episode.transcriptType == 'srt' %}
     {% for line in transcriptLines %}
       <li
         class="site-transcript-line"
@@ -53,7 +53,7 @@
         </div>
       </li>
     {% endfor %}
-  {% elseif episode.transcriptType == 'beta' %}
+  {% elseif episode.transcriptType == 'json' %}
     {% for line in transcriptLines %}
       <li
         class="site-transcript-line"

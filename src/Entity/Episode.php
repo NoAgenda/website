@@ -415,16 +415,13 @@ class Episode
         return file_exists($this->getChatMessagesPath());
     }
 
-    public function getTranscriptPath(): string
+    public function getTranscriptPath(): ?string
     {
-        $jsonPath = sprintf('%s/transcripts/%s.json', $_SERVER['APP_STORAGE_PATH'], $this->code);
-        $srtPath = sprintf('%s/transcripts/%s.srt', $_SERVER['APP_STORAGE_PATH'], $this->code);
-
-        if (file_exists($jsonPath)) {
-            return $jsonPath;
+        if (!$this->getTranscriptType()) {
+            return null;
         }
 
-        return $srtPath;
+        return sprintf('%s/episode_transcripts/%s.%s', $_SERVER['APP_STORAGE_PATH'], $this->getCode(), $this->getTranscriptType());
     }
 
     public function getTranscriptExists(): bool
