@@ -26,11 +26,19 @@ class EpisodeRepository extends AbstractRepository
     }
 
     /** @return Episode[] */
-    public function findFeedEpisodes(): array
+    public function findEpisodesSince(\DateTimeInterface $date): array
     {
+        $builder = $this->createQueryBuilder('episode');
+
+        $query = $builder
+            ->where($builder->expr()->gte('episode.publishedAt', ':date'))
+            ->setParameter('date', $date->format('Y-m-d'))
+            ->getQuery()
+        ;
+
         $episodes = [];
 
-        foreach ($this->findBy(null, null, 32) as $episode) {
+        foreach ($query->getResult() as $episode) {
             $episodes[$episode->getCode()] = $episode;
         }
 

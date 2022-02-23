@@ -22,38 +22,63 @@ use Psr\Log\NullLogger;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Stamp\DelayStamp;
+use Symfony\Contracts\Cache\CacheInterface;
 
 class FeedCrawler
 {
     use LoggerAwareTrait;
 
-    private $entityManager;
-    private $httpClient;
-    private $messenger;
-
-    public function __construct(HttpMethodsClient $httpClient, EntityManagerInterface $entityManager, MessageBusInterface $crawlerBus)
-    {
-        $this->httpClient = $httpClient;
-        $this->entityManager = $entityManager;
-        $this->messenger = $crawlerBus;
+    public function __construct(
+        private HttpMethodsClient $httpClient,
+        private EntityManagerInterface $entityManager,
+        private MessageBusInterface $messenger,
+        private CacheInterface $cache,
+    ) {
         $this->logger = new NullLogger();
     }
 
     public function crawl(): void
     {
-        $entries = $this->crawlFeed();
+        if (null === $entries = $this->crawlFeed()) {
+            return;
+        }
+
+        $earliestPublishDate = min(array_column($entries, 'publishedAt'));
 
         $episodeRepository = $this->entityManager->getRepository(Episode::class);
-        $episodes = $episodeRepository->findFeedEpisodes();
+        $episodes = $episodeRepository->findEpisodesSince($earliestPublishDate);
 
         foreach ($entries as $entry) {
             $this->handleEntry($entry, $episodes[$entry['code']] ?? null);
         }
     }
 
-    private function crawlFeed(): array
+    private function crawlFeed(): ?array
     {
-        $response = $this->httpClient->get('http://feed.nashownotes.com/rss.xml');
+        $lastModifiedCache = $this->cache->getItem('feed.last_modified');
+        $lastModifiedAt = $lastModifiedCache->get();
+
+        $headers = [];
+
+        if (null !== $lastModifiedAt) {
+            $headers['If-Modified-Since'] = $lastModifiedAt;
+        }
+
+        $response = $this->httpClient->get('http://feed.nashownotes.com/rss.xml', $headers);
+
+        if (304 === $response->getStatusCode()) {
+            $this->logger->debug(sprintf('No changes to feed. Last modified at %s', $lastModifiedAt));
+
+            return null;
+        }
+
+        $lastModifiedAt = $response->getHeaderLine('Last-Modified');
+
+        $this->logger->debug(sprintf('Feed has been changed. Modified at %s', $lastModifiedAt));
+
+        $lastModifiedCache->set($lastModifiedAt);
+        $this->cache->save($lastModifiedCache);
+
         $source = $response->getBody()->getContents();
 
         $entries = [];
