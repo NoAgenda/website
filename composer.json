@@ -64,6 +64,7 @@
     },
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^3.0",
+        "phpunit/phpunit": "^9.5",
         "symfony/browser-kit": "^5.4",
         "symfony/css-selector": "^5.4",
         "symfony/debug-bundle": "^5.4",
@@ -85,6 +86,11 @@
     "autoload": {
         "psr-4": {
             "App\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "App\\Tests\\": "tests/"
         }
     },
     "replace": {
