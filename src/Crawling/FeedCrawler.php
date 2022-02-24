@@ -94,13 +94,21 @@ class FeedCrawler
         /** @var RssEntry|PodcastEntry $feedItem */
         foreach ($feed as $feedItem) {
             preg_match('/^(\d+): "(.*)"$/', $feedItem->getTitle(), $matches);
-            list(, $code, $name) = $matches;
+            $titleParts = explode(':', $feedItem->getTitle(), 2);
+
+            if (count($titleParts) < 2) {
+                $this->logger->alert(sprintf('Failed to parse episode title: %s', $feedItem->getTitle()));
+
+                $titleParts[1] = $titleParts[0];
+            }
+
+            list($code, $name) = $titleParts;
 
             $xpath = $feedItem->getXpath();
 
             $entries[] = [
-                'code' => $code,
-                'name' => $name,
+                'code' => trim($code),
+                'name' => trim($name, ' "'),
                 'author' => $feedItem->getCastAuthor(),
                 'coverUri' => $feedItem->getItunesImage(),
                 'recordingUri' => $feedItem->getEnclosure()->url,
