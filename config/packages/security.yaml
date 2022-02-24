@@ -20,7 +20,6 @@ security:
             security: false
         main:
             anonymous: ~
-            http_basic: ~
             form_login:
                 login_path: security_login
                 check_path: security_login
