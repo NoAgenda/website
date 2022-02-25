@@ -39,7 +39,7 @@ RUN apt-get update; \
 RUN apt-get update; \
     apt-get install --no-install-recommends -y ffmpeg mplayer; \
     apt-get install -y python3-pip; \
-    pip install --user git+https://$GITHUB_TOKEN@github.com/abramhindle/audio-offset-finder.git
+    pip install --user git+https://$GITHUB_TOKEN@github.com/flutterfromscratch/audio-offset-finder.git
 
 ENV PATH="/root/.local/bin:${PATH}"
 

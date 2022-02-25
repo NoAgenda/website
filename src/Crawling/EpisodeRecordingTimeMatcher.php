@@ -59,9 +59,13 @@ class EpisodeRecordingTimeMatcher
 
         $this->splitRecording($episode);
 
-        $recordedAt = $this->matchRecordings($episode, $signal);
+        if (null === $recordedAt = $this->matchRecordings($episode, $signal)) {
+            $this->logger->info(sprintf('Unable to match the recoding time for episode %s.', $episode->getCode()));
 
-        $this->logger->info(sprintf('Matched episode recording time: %s', $recordedAt->format('Y-m-d H:i:s')));
+            return;
+        }
+
+        $this->logger->info(sprintf('Matched recording time for episode %s: %s', $episode->getCode(), $recordedAt->format('Y-m-d H:i:s')));
 
         $episode->setRecordedAt($recordedAt);
 
@@ -71,7 +75,7 @@ class EpisodeRecordingTimeMatcher
         $this->messenger->dispatch($matchChatMessagesMessage);
     }
 
-    private function matchRecordings(Episode $episode, BatSignal $signal): \DateTime
+    private function matchRecordings(Episode $episode, BatSignal $signal): ?\DateTime
     {
         $sourcePath = sprintf('%s/episode_parts', $_SERVER['APP_STORAGE_PATH']);
 
@@ -96,7 +100,8 @@ class EpisodeRecordingTimeMatcher
                 preg_match("/_(\d+)./", $sourceFile->getFilename(), $matches);
                 list(, $offset) = $matches;
 
-                $command = 'audio-offset-finder --find-offset-of "$LIVE_FILE" --within "$SOURCE_FILE"';
+                $command = 'audio-offset-finder --not-generate "$SOURCE_FILE" "$LIVE_FILE"';
+                //dd([$liveFile->getPathname(), $sourceFile->getPathname()]);
                 $process = Process::fromShellCommandline($command);
 
                 $process->setTimeout(600);
@@ -106,10 +111,21 @@ class EpisodeRecordingTimeMatcher
                     'SOURCE_FILE' => $sourceFile->getPathname(),
                 ]);
 
-                preg_match("/Offset: (\d+)/", $process->getOutput(), $matches);
-                list(, $matchedOffset) = $matches;
-                preg_match("/score: (\d+)/", $process->getOutput(), $matches);
-                list(, $matchedScore) = $matches;
+                preg_match("/The offset calculated is: (\S+)/", $process->getOutput(), $matches);
+                $matchedOffset = $matches[1] ?? null;
+                preg_match("/The score is: (\S+)/", $process->getOutput(), $matches);
+                $matchedScore = $matches[1] ?? null;
+
+                if (null === $matchedOffset || null == $matchedScore) {
+                    throw new \RuntimeException(sprintf('Failed to parse recording time matcher output: %s', $process->getOutput()));
+                }
+
+                $matchedOffset = floor($matchedOffset);
+                $matchedScore = floor($matchedScore);
+
+                if ($matchedScore < 8) {
+                    continue;
+                }
 
                 $recordingOffset = $offset + $matchedOffset;
                 $episodeRecordedAt = $recordedAt->sub(new \DateInterval('PT' . $recordingOffset . 'S'));
@@ -130,6 +146,10 @@ class EpisodeRecordingTimeMatcher
                     $matchedScore
                 ));
             }
+        }
+
+        if (!count($recordingMatrix)) {
+            return null;
         }
 
         // Optimize recording matrix
