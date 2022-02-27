@@ -2,94 +2,54 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
-use Symfony\Bridge\Doctrine\Validator\Constraints as Assert;
+use App\Repository\UserRepository;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\Table;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
- * @ORM\Table(name="na_user")
- * @Assert\UniqueEntity("username")
- * @Assert\UniqueEntity("email")
- */
+#[Entity(repositoryClass: UserRepository::class)]
+#[Table(name: 'na_user')]
+#[UniqueEntity('username')]
+#[UniqueEntity('email')]
 class User implements UserInterface, \Serializable
 {
-    /**
-     * @var int
-     *
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
-     */
-    private $id;
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
+    private ?int $id;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(type="string", length=255, unique=true)
-     */
-    private $username;
+    #[Column(type: 'string', length: 255, unique: true)]
+    private ?string $username;
 
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(type="string", length=255, unique=true, nullable=true)
-     */
-    private $email;
+    #[Column(type: 'string', length: 255, unique: true, nullable: true)]
+    private ?string $email;
 
-    /**
-     * @var string|null
-     */
-    private $plainPassword;
+    private ?string $plainPassword;
 
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $password;
+    #[Column(type: 'string', length: 255, nullable: true)]
+    private ?string $password;
 
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $salt;
+    #[Column(type: 'string', length: 255, nullable: true)]
+    private ?string $salt;
 
-    /**
-     * @var array
-     *
-     * @ORM\Column(type="array")
-     */
-    private $roles = ['ROLE_USER'];
+    #[Column(type: 'array')]
+    private ?array $roles = ['ROLE_USER'];
 
-    /**
-     * @var bool
-     *
-     * @ORM\Column(type="boolean")
-     */
-    private $hidden = false;
+    #[Column(type: 'boolean')]
+    private bool $hidden = false;
 
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $activationToken;
+    #[Column(type: 'string', length: 255, nullable: true)]
+    private ?string $activationToken;
 
-    /**
-     * @var \DateTimeInterface|null
-     *
-     * @ORM\Column(type="datetime_immutable", nullable=true)
-     */
-    private $activationTokenExpiresAt;
+    #[Column(type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $activationTokenExpiresAt;
 
-    /**
-     * @var \DateTimeImmutable
-     *
-     * @ORM\Column(type="datetime_immutable")
-     */
-    private $createdAt;
+    #[Column(type: 'datetime_immutable')]
+    private \DateTimeImmutable $createdAt;
 
     public function __construct()
     {

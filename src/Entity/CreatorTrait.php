@@ -2,25 +2,18 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
 
 trait CreatorTrait
 {
-    /**
-     * @var User|null
-     *
-     * @ORM\ManyToOne(targetEntity="App\Entity\User")
-     * @ORM\JoinColumn(nullable=true)
-     */
-    private $creator;
+    #[ManyToOne(targetEntity: User::class)]
+    #[JoinColumn(nullable: true)]
+    private ?User $creator;
 
-    /**
-     * @var UserToken|null
-     *
-     * @ORM\ManyToOne(targetEntity="App\Entity\UserToken")
-     * @ORM\JoinColumn(nullable=true)
-     */
-    private $creatorToken;
+    #[ManyToOne(targetEntity: UserToken::class)]
+    #[JoinColumn(nullable: true)]
+    private ?UserToken $creatorToken;
 
     public function getCreator(): ?User
     {

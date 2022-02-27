@@ -2,37 +2,21 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\Column;
 
 trait EpisodeChapterTrait
 {
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(type="string", length=1024, nullable=true)
-     */
-    private $name;
+    #[Column(type: 'string', length: 1024, nullable: true)]
+    private ?string $name;
 
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(type="text", nullable=true)
-     */
-    private $description;
+    #[Column(type: 'text', nullable: true)]
+    private ?string $description;
 
-    /**
-     * @var int
-     *
-     * @ORM\Column(type="integer")
-     */
-    private $startsAt;
+    #[Column(type: 'integer')]
+    private ?int $startsAt;
 
-    /**
-     * @var int|null
-     *
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $duration;
+    #[Column(type: 'integer', nullable: true)]
+    private ?int $duration;
 
     public function getName(): ?string
     {

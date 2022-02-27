@@ -2,57 +2,42 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
+use App\Repository\NetworkSiteRepository;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\Table;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\NetworkSiteRepository")
- * @ORM\Table("na_network_site")
- */
+#[Entity(repositoryClass: NetworkSiteRepository::class)]
+#[Table(name: 'na_network_site')]
 class NetworkSite
 {
-    /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
-     */
-    private $id;
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
+    private ?int $id;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $name;
+    #[Column(type: 'string', length: 255)]
+    private ?string $name;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $icon;
+    #[Column(type: 'string', length: 255, nullable: true)]
+    private ?string $icon;
 
-    /**
-     * @ORM\Column(type="text")
-     */
-    private $description;
+    #[Column(type: 'text')]
+    private ?string $description;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $uri;
+    #[Column(type: 'string', length: 255)]
+    private ?string $uri;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $displayUri;
+    #[Column(type: 'string', length: 255)]
+    private ?string $displayUri;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $priority = 1000;
+    #[Column(type: 'integer')]
+    private ?int $priority = 1000;
 
-    /**
-     * @var \DateTimeImmutable
-     *
-     * @ORM\Column(type="datetime_immutable")
-     */
-    private $createdAt;
+    #[Column(type: 'datetime_immutable')]
+    private \DateTimeImmutable $createdAt;
 
     public function __construct()
     {

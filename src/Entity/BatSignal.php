@@ -2,36 +2,27 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
+use App\Repository\BatSignalRepository;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\Table;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\BatSignalRepository")
- * @ORM\Table("na_bat_signal")
- */
+#[Entity(repositoryClass: BatSignalRepository::class)]
+#[Table(name: 'na_bat_signal')]
 class BatSignal
 {
-    /**
-     * @var int
-     *
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
-     */
-    private $id;
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
+    private ?int $id;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(type="string", length=15)
-     */
-    private $code;
+    #[Column(type: 'string', length: 16)]
+    private ?string $code;
 
-    /**
-     * @var \DateTimeInterface
-     *
-     * @ORM\Column(type="datetime")
-     */
-    private $deployedAt;
+    #[Column(type: 'datetime')]
+    private ?\DateTimeInterface $deployedAt;
 
     public function getId(): ?int
     {

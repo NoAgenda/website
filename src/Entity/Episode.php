@@ -3,150 +3,78 @@
 namespace App\Entity;
 
 use App\Crawling\Shownotes\ShownotesParserFactory;
+use App\Repository\EpisodeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\ORM\Mapping\Table;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\EpisodeRepository")
- * @ORM\Table(name="na_episode")
- */
+#[Entity(repositoryClass: EpisodeRepository::class)]
+#[Table(name: 'na_episode')]
 class Episode
 {
-    /**
-     * @var int
-     *
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
-     */
-    private $id;
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
+    private ?int $id;
 
-    /**
-     * @var Collection
-     *
-     * @ORM\OneToMany(targetEntity="EpisodeChapter", mappedBy="episode")
-     */
-    private $chapters;
+    #[OneToMany(mappedBy: 'episode', targetEntity: EpisodeChapter::class)]
+    private Collection $chapters;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(type="string", length=15)
-     */
-    private $code;
+    #[Column(type: 'string', length: 16)]
+    private ?string $code;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(type="string", length=255)
-     */
-    private $name;
+    #[Column(type: 'string', length: 255)]
+    private ?string $name;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(type="string", length=255)
-     */
-    private $author;
+    #[Column(type: 'string', length: 255)]
+    private ?string $author;
 
-    /**
-     * @var bool
-     *
-     * @ORM\Column(type="boolean")
-     */
-    private $cover = false;
+    #[Column(type: 'boolean')]
+    private bool $cover = false;
 
-    /**
-     * @var bool
-     *
-     * @ORM\Column(type="boolean")
-     */
-    private $special = false;
+    #[Column(type: 'boolean')]
+    private bool $special = false;
 
-    /**
-     * @var bool
-     *
-     * @ORM\Column(type="boolean")
-     */
-    private $chatMessages = false;
+    #[Column(type: 'boolean')]
+    private bool $chatMessages = false;
 
-    /**
-     * @var bool
-     *
-     * @ORM\Column(type="boolean")
-     */
-    private $transcript = false;
+    #[Column(type: 'boolean')]
+    private bool $transcript = false;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(type="text", length=16)
-     */
-    private $transcriptType;
+    #[Column(type: 'string', length: 16, nullable: true)]
+    private ?string $transcriptType;
 
-    /**
-     * @var \DateTimeInterface
-     *
-     * @ORM\Column(type="date")
-     */
-    private $publishedAt;
+    #[Column(type: 'date')]
+    private ?\DateTimeInterface $publishedAt;
 
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(type="text", nullable=true)
-     */
-    private $coverUri;
+    #[Column(type: 'text', nullable: true)]
+    private ?string $coverUri;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(type="text")
-     */
-    private $recordingUri;
+    #[Column(type: 'text')]
+    private ?string $recordingUri;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(type="text", nullable=true)
-     */
-    private $shownotesUri;
+    #[Column(type: 'text', nullable: true)]
+    private ?string $shownotesUri;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(type="text", nullable=true)
-     */
-    private $transcriptUri;
+    #[Column(type: 'text', nullable: true)]
+    private ?string $transcriptUri;
 
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(type="text", nullable=true)
-     */
-    private $chatNotice;
+    #[Column(type: 'text', nullable: true)]
+    private ?string $chatNotice;
 
-    /**
-     * @var int|null
-     *
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $duration;
+    #[Column(type: 'integer', nullable: true)]
+    private ?int $duration;
 
-    /**
-     * @var \DateTimeInterface|null
-     *
-     * @ORM\Column(type="datetime", nullable=true)
-     */
-    private $recordedAt;
+    #[Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $recordedAt;
 
-    /**
-     * @var array|null
-     *
-     * @ORM\Column(type="array", nullable=true)
-     */
-    private $crawlerOutput;
+    #[Column(type: 'array', nullable: true)]
+    private ?array $crawlerOutput;
 
     public function __construct()
     {

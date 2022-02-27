@@ -2,43 +2,30 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
+use App\Repository\UserTokenRepository;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\Table;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\UserTokenRepository")
- * @ORM\Table(name="na_user_token")
- */
+#[Entity(repositoryClass: UserTokenRepository::class)]
+#[Table(name: 'na_user_token')]
 class UserToken
 {
-    /**
-     * @var int
-     *
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
-     */
-    private $id;
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
+    private ?int $id;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(type="string", length=255)
-     */
-    private $token;
+    #[Column(type: 'string', length: 255)]
+    private ?string $token;
 
-    /**
-     * @var array
-     *
-     * @ORM\Column(type="array")
-     */
-    private $ipAddresses = [];
+    #[Column(type: 'array')]
+    private array $ipAddresses = [];
 
-    /**
-     * @var \DateTimeImmutable
-     *
-     * @ORM\Column(type="datetime_immutable")
-     */
-    private $createdAt;
+    #[Column(type: 'datetime_immutable')]
+    private \DateTimeImmutable $createdAt;
 
     public function __construct()
     {

@@ -2,53 +2,38 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
+use App\Repository\FeedbackVoteRepository;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\Table;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\FeedbackVoteRepository")
- * @ORM\Table(name="na_feedback_vote")
- */
+#[Entity(repositoryClass: FeedbackVoteRepository::class)]
+#[Table(name: 'na_feedback_vote')]
 class FeedbackVote
 {
     use CreatorTrait;
 
-    /**
-     * @var int
-     *
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
-     */
-    private $id;
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
+    private ?int $id;
 
-    /**
-     * @var FeedbackItem
-     *
-     * @ORM\ManyToOne(targetEntity="App\Entity\FeedbackItem", inversedBy="votes")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $item;
+    #[ManyToOne(targetEntity: FeedbackItem::class, inversedBy: 'votes')]
+    #[JoinColumn(nullable: false)]
+    private ?FeedbackItem $item;
 
-    /**
-     * @var bool
-     *
-     * @ORM\Column(type="boolean")
-     */
-    private $supported;
+    #[Column(type: 'boolean')]
+    private bool $supported = false;
 
-    /**
-     * @var bool
-     *
-     * @ORM\Column(type="boolean")
-     */
-    private $rejected;
+    #[Column(type: 'boolean')]
+    private bool $rejected = false;
 
-    /**
-     * @var \DateTimeImmutable
-     *
-     * @ORM\Column(type="datetime_immutable")
-     */
-    private $createdAt;
+    #[Column(type: 'datetime_immutable')]
+    private \DateTimeImmutable $createdAt;
 
     public function __construct()
     {

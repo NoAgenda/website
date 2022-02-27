@@ -2,49 +2,37 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
+use App\Repository\EpisodeChapterDraftRepository;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\Table;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\EpisodeChapterDraftRepository")
- * @ORM\Table(name="na_episode_chapter_draft")
- */
+#[Entity(repositoryClass: EpisodeChapterDraftRepository::class)]
+#[Table(name: 'na_episode_chapter_draft')]
 class EpisodeChapterDraft
 {
     use CreatorTrait;
     use EpisodeChapterTrait;
     use FeedbackItemTrait;
 
-    /**
-     * @var int
-     *
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
-     */
-    private $id;
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
+    private ?int $id;
 
-    /**
-     * @var Episode
-     *
-     * @ORM\ManyToOne(targetEntity="Episode")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $episode;
+    #[ManyToOne(targetEntity: Episode::class, inversedBy: 'chapters')]
+    #[JoinColumn(nullable: false)]
+    private ?Episode $episode;
 
-    /**
-     * @var EpisodeChapter|null
-     *
-     * @ORM\ManyToOne(targetEntity="EpisodeChapter", inversedBy="drafts")
-     * @ORM\JoinColumn(nullable=true)
-     */
-    private $chapter;
+    #[ManyToOne(targetEntity: EpisodeChapter::class, inversedBy: 'drafts')]
+    private ?EpisodeChapter $chapter;
 
-    /**
-     * @var \DateTimeImmutable
-     *
-     * @ORM\Column(type="datetime_immutable")
-     */
-    private $createdAt;
+    #[Column(type: 'datetime_immutable')]
+    private \DateTimeImmutable $createdAt;
 
     public function __construct()
     {

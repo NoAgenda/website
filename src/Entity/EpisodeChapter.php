@@ -2,47 +2,39 @@
 
 namespace App\Entity;
 
+use App\Repository\EpisodeChapterRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\ORM\Mapping\Table;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\EpisodeChapterRepository")
- * @ORM\Table(name="na_episode_chapter")
- */
+#[Entity(repositoryClass: EpisodeChapterRepository::class)]
+#[Table(name: 'na_episode_chapter')]
 class EpisodeChapter
 {
     use CreatorTrait;
     use EpisodeChapterTrait;
 
-    /**
-     * @var int
-     *
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
-     */
-    private $id;
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
+    private ?int $id;
 
-    /**
-     * @var Episode
-     *
-     * @ORM\ManyToOne(targetEntity="Episode", inversedBy="chapters")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $episode;
+    #[ManyToOne(targetEntity: Episode::class, inversedBy: 'chapters')]
+    #[JoinColumn(nullable: false)]
+    private ?Episode $episode;
 
-    /**
-     * @var \DateTimeImmutable
-     *
-     * @ORM\Column(type="datetime_immutable")
-     */
-    private $createdAt;
+    #[OneToMany(mappedBy: 'chapters', targetEntity: EpisodeChapterDraft::class)]
+    private Collection $drafts;
 
-    /**
-     * @ORM\OneToMany(targetEntity="EpisodeChapterDraft", mappedBy="chapter")
-     */
-    private $drafts;
+    #[Column(type: 'datetime_immutable')]
+    private \DateTimeImmutable $createdAt;
 
     public function __construct()
     {
@@ -65,21 +57,11 @@ class EpisodeChapter
         return $this->episode;
     }
 
-    public function setEpisode(?Episode $episode): self
+    public function setEpisode(Episode $episode): self
     {
         $this->episode = $episode;
 
         return $this;
-    }
-
-    public function getCreatedAt(): \DateTimeImmutable
-    {
-        return $this->createdAt;
-    }
-
-    public function isDraft(): bool
-    {
-        return false;
     }
 
     /**
@@ -104,6 +86,7 @@ class EpisodeChapter
     {
         if ($this->drafts->contains($draft)) {
             $this->drafts->removeElement($draft);
+
             // set the owning side to null (unless already changed)
             if ($draft->getChapter() === $this) {
                 $draft->setChapter(null);
@@ -111,5 +94,15 @@ class EpisodeChapter
         }
 
         return $this;
+    }
+
+    public function getCreatedAt(): \DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function isDraft(): bool
+    {
+        return false;
     }
 }

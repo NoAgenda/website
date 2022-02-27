@@ -2,40 +2,33 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
+use App\Repository\VideoRepository;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\Table;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\VideoRepository")
- * @ORM\Table(name="na_video")
- */
+#[Entity(repositoryClass: VideoRepository::class)]
+#[Table(name: 'na_video')]
 class Video
 {
-    /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
-     */
-    private $id;
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
+    private ?int $id;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $title;
+    #[Column(type: 'string', length: 255)]
+    private ?string $title;
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
-    private $publishedAt;
+    #[Column(type: 'datetime')]
+    private ?\DateTimeInterface $publishedAt;
 
-    /**
-     * @ORM\Column(type="string", length=32)
-     */
-    private $youtubeId;
+    #[Column(type: 'string', length: 32)]
+    private ?string $youtubeId;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $youtubeEtag;
+    #[Column(type: 'string', length: 255, nullable: true)]
+    private ?string $youtubeEtag;
 
     public function getId(): ?int
     {

@@ -2,17 +2,14 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\OneToOne;
 
 trait FeedbackItemTrait
 {
-    /**
-     * @var FeedbackItem
-     *
-     * @ORM\OneToOne(targetEntity="FeedbackItem", cascade={"all"})
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $feedbackItem;
+    #[OneToOne(targetEntity: FeedbackItem::class, cascade: ['all'])]
+    #[JoinColumn(nullable: false)]
+    private ?FeedbackItem $feedbackItem;
 
     public function getFeedbackItem(): ?FeedbackItem
     {

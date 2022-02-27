@@ -2,65 +2,44 @@
 
 namespace App\Entity;
 
+use App\Repository\FeedbackItemRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\ORM\Mapping\Table;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\FeedbackItemRepository")
- * @ORM\Table(name="na_feedback_item")
- */
+#[Entity(repositoryClass: FeedbackItemRepository::class)]
+#[Table(name: 'na_feedback_item')]
 class FeedbackItem
 {
-    /**
-     * @var int
-     *
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
-     */
-    private $id;
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
+    private ?int $id;
 
-    /**
-     * @ORM\OneToMany(targetEntity="App\Entity\FeedbackVote", mappedBy="item")
-     */
+    #[OneToMany(mappedBy: 'item', targetEntity: FeedbackVote::class)]
     private $votes;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $entityName;
+    #[Column(type: 'string', length: 255)]
+    private ?string $entityName;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $entityId;
+    #[Column(type: 'integer', nullable: true)]
+    private ?int $entityId;
 
-    /**
-     * @var bool
-     *
-     * @ORM\Column(type="boolean")
-     */
-    private $accepted = false;
+    #[Column(type: 'boolean')]
+    private bool $accepted = false;
 
-    /**
-     * @var bool
-     *
-     * @ORM\Column(type="boolean")
-     */
-    private $rejected = false;
+    #[Column(type: 'boolean')]
+    private bool $rejected = false;
 
-    /**
-     * @var \DateTimeImmutable
-     *
-     * @ORM\Column(type="datetime_immutable")
-     */
-    private $createdAt;
+    #[Column(type: 'datetime_immutable')]
+    private \DateTimeImmutable $createdAt;
 
-    /**
-     * @var object
-     */
-    private $entity;
+    private ?object $entity = null;
 
     public function __construct()
     {
@@ -159,12 +138,12 @@ class FeedbackItem
         return $this->createdAt;
     }
 
-    public function getEntity()
+    public function getEntity(): ?object
     {
         return $this->entity;
     }
 
-    public function setEntity($entity): self
+    public function setEntity(?object $entity): self
     {
         $this->entity = $entity;
 
