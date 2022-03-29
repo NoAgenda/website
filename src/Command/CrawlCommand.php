@@ -2,170 +2,130 @@
 
 namespace App\Command;
 
-use App\Crawling\BatSignalCrawler;
-use App\Crawling\CrawlingLogger;
-use App\Crawling\EpisodeChatMessagesMatcher;
-use App\Crawling\EpisodeFilesCrawler;
-use App\Crawling\EpisodeRecordingTimeMatcher;
-use App\Crawling\EpisodeShownotesCrawler;
-use App\Crawling\FeedCrawler;
-use App\Crawling\YoutubeCrawler;
+use App\Crawling\Crawlers;
+use App\Crawling\EpisodeCrawlerInterface;
+use App\Crawling\EpisodeFileCrawlerInterface;
+use App\Crawling\FileDownloader;
 use App\Entity\Episode;
+use App\Repository\EpisodeRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Contracts\Service\ServiceSubscriberInterface;
-use Symfony\Contracts\Service\ServiceSubscriberTrait;
+use Symfony\Component\Console\Style\StyleInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
-class CrawlCommand extends Command implements ServiceSubscriberInterface
+class CrawlCommand extends Command
 {
-    use ServiceSubscriberTrait;
+    protected static $defaultName = 'crawl';
+    protected static $defaultDescription = 'Execute a crawling command';
 
-    protected static $defaultName = 'app:crawl';
+    public function __construct(
+        protected EntityManagerInterface $entityManager,
+        protected EpisodeRepository $episodeRepository,
+        protected FileDownloader $fileDownloader,
+        protected ContainerInterface $crawlers,
+    ) {
+        parent::__construct();
+    }
 
     protected function configure(): void
     {
         $this
-            ->setDescription('Execute a crawling command')
-            ->addArgument('data', InputArgument::REQUIRED, 'The type of data to crawl: feed, bat_signal, files, shownotes, recording_time, chat_messages, youtube')
-            ->addOption('episode', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'The episode code to crawling')
+            ->addArgument('data', InputArgument::OPTIONAL, 'The type of data to crawl (help for more information)', 'help')
+            ->addOption('episode', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'The episode code to crawl')
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $data = $input->getArgument('data');
+        $style = new SymfonyStyle($input, $output);
 
-        $this->crawlingLogger()->addLogger(new ConsoleLogger($output));
+        if ('help' === $data = $input->getArgument('data')) {
+            $style->writeln('Available types of data:');
+            $style->listing(array_keys(Crawlers::$crawlers));
 
-        $collectionActions = [
-            'bat_signal' => function () {
-                $crawler = $this->signalCrawler();
-
-                $crawler->crawl();
-            },
-            'feed' => function () {
-                $crawler = $this->feedCrawler();
-
-                $crawler->crawl();
-            },
-            'youtube' => function () {
-                $crawler = $this->youtubeCrawler();
-
-                $crawler->crawl();
-            },
-        ];
-
-        $episodeActions = [
-            'files' => function (Episode $episode) {
-                $crawler = $this->filesCrawler();
-
-                $crawler->crawl($episode);
-            },
-            'shownotes' => function (Episode $episode) {
-                $crawler = $this->shownotesCrawler();
-
-                $crawler->crawl($episode);
-            },
-            'transcript' => function (Episode $episode) {
-                $crawler = $this->filesCrawler();
-
-                $crawler->crawlTranscript($episode);
-            },
-            'chat_messages' => function (Episode $episode) {
-                $matcher = $this->chatMessagesMatcher();
-
-                $matcher->match($episode);
-            },
-            'recording_time' => function (Episode $episode) {
-                $matcher = $this->recordingTimeMatcher();
-
-                $matcher->match($episode);
-            },
-        ];
-
-        if (isset($collectionActions[$data])) {
-            $this->entityManager()->beginTransaction();
-
-            $collectionActions[$data]();
-
-            $this->entityManager()->flush();
-            $this->entityManager()->commit();
-
-            return 0;
+            return Command::SUCCESS;
         }
 
-        if (isset($episodeActions[$data])) {
-            $this->entityManager()->beginTransaction();
+        if (!$crawlerName = Crawlers::$crawlers[$data] ?? false) {
+            $style->warning(sprintf('Invalid data type: %s', $data));
 
-            foreach ($input->getOption('episode') as $code) {
-                $episode = $this->findEpisode($code);
+            return Command::INVALID;
+        }
 
-                $episodeActions[$data]($episode);
+        $this->preCrawl($data, $style);
+
+        if (is_subclass_of($crawlerName, EpisodeCrawlerInterface::class) || is_subclass_of($crawlerName, EpisodeFileCrawlerInterface::class)) {
+            $episodeCodes = $input->getOption('episode');
+
+            if (!count($episodeCodes)) {
+                $style->warning('To crawl this type of data you need to specify an episode with --episode [code].');
+
+                return Command::INVALID;
             }
 
-            $this->entityManager()->flush();
-            $this->entityManager()->commit();
+            foreach ($episodeCodes as $code) {
+                $episode = $this->episodeRepository->findOneByCode($code);
 
-            return 0;
+                if (!$episode) {
+                    $style->warning(sprintf('Invalid episode code: %s', $code));
+
+                    return Command::INVALID;
+                }
+
+                $this->crawlEpisode($data, $episode, $style);
+            }
+        } else {
+            $this->crawl($data, $style);
         }
 
-        $output->writeln("Invalid data type: $data");
+        $this->postCrawl($data, $style);
 
-        return 1;
+        return Command::SUCCESS;
     }
 
-    private function chatMessagesMatcher(): EpisodeChatMessagesMatcher
+    protected function preCrawl(string $data, OutputInterface $output): void
     {
-        return $this->container->get(__METHOD__);
+        $this->entityManager->beginTransaction();
     }
 
-    private function feedCrawler(): FeedCrawler
+    protected function postCrawl(string $data, StyleInterface $style): void
     {
-        return $this->container->get(__METHOD__);
+        $this->entityManager->flush();
+        $this->entityManager->commit();
+
+        $style->success(sprintf('Finished crawling %s.', $data));
     }
 
-    private function filesCrawler(): EpisodeFilesCrawler
+    protected function crawl(string $data, StyleInterface $style): void
     {
-        return $this->container->get(__METHOD__);
+        $style->note(sprintf('Crawling %s...', $data));
+
+        $crawler = $this->crawlers->get(Crawlers::$crawlers[$data]);
+        $crawler->crawl();
+
+        $style->writeln('');
     }
 
-    private function recordingTimeMatcher(): EpisodeRecordingTimeMatcher
+    protected function crawlEpisode(string $data, Episode $episode, StyleInterface $style): void
     {
-        return $this->container->get(__METHOD__);
-    }
+        $style->note(sprintf('Crawling %s for episode %s...', $data, $episode->getCode()));
 
-    private function shownotesCrawler(): EpisodeShownotesCrawler
-    {
-        return $this->container->get(__METHOD__);
-    }
+        $crawlerName = Crawlers::$crawlers[$data];
+        $crawler = $this->crawlers->get($crawlerName);
 
-    private function signalCrawler(): BatSignalCrawler
-    {
-        return $this->container->get(__METHOD__);
-    }
+        if ($crawler instanceof EpisodeFileCrawlerInterface) {
+            $lastModifiedAt = $crawler->crawl($episode);
 
-    private function youtubeCrawler(): YoutubeCrawler
-    {
-        return $this->container->get(__METHOD__);
-    }
+            $this->fileDownloader->updateSchedule($crawlerName, $episode, $lastModifiedAt, new \DateTime());
+        } else {
+            $crawler->crawl($episode);
+        }
 
-    private function crawlingLogger(): CrawlingLogger
-    {
-        return $this->container->get(__METHOD__);
-    }
-
-    private function entityManager(): EntityManagerInterface
-    {
-        return $this->container->get(__METHOD__);
-    }
-
-    private function findEpisode(string $code): Episode
-    {
-        return $this->entityManager()->getRepository(Episode::class)->findOneByCode($code);
+        $style->writeln('');
     }
 }

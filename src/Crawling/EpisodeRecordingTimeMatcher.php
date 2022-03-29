@@ -4,111 +4,88 @@ namespace App\Crawling;
 
 use App\Entity\BatSignal;
 use App\Entity\Episode;
-use App\Message\MatchEpisodeChatMessages;
+use App\Repository\BatSignalRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Component\Notifier\Notification\Notification;
-use Symfony\Component\Notifier\NotifierInterface;
 use Symfony\Component\Process\Process;
 
-class EpisodeRecordingTimeMatcher
+class EpisodeRecordingTimeMatcher implements EpisodeCrawlerInterface
 {
     use LoggerAwareTrait;
 
-    private $entityManager;
-    private $messenger;
-    private $notifier;
-
-    public function __construct(EntityManagerInterface $entityManager, MessageBusInterface $crawlerBus, NotifierInterface $notifier)
-    {
-        $this->entityManager = $entityManager;
-        $this->messenger = $crawlerBus;
-        $this->notifier = $notifier;
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+        private BatSignalRepository $batSignalRepository,
+        private MessageBusInterface $messenger,
+        private FileDownloader $fileDownloader,
+    ) {
         $this->logger = new NullLogger();
     }
 
-    public function match(Episode $episode): void
+    public function crawl(Episode $episode): void
     {
-        $signalRepository = $this->entityManager->getRepository(BatSignal::class);
-
         if (!$episode->getDuration()) {
-            $this->logger->warning('Episode duration must be available to match the recording time.');
+            $this->logger->warning(sprintf('Unable to match recording time for episode %s because its duration is unknown.', $episode->getCode()));
 
             return;
         }
 
-        $signal = $signalRepository->findOneByEpisode($episode);
-
-        if (!$signal) {
-            $this->logger->warning('Unable to find a matching bat signal.');
+        if (!$signal = $this->batSignalRepository->findOneByEpisode($episode)) {
+            $this->logger->warning(sprintf('Unable to find a bat signal matching episode %s.', $episode->getCode()));
 
             return;
         }
 
-        $liveFiles = $this->getLivestreamRecordings($signal);
-
-        if ($liveFiles->count() === 0) {
-            $this->logger->warning('No livestream recordings found that match the given bat signal.');
+        if (!count($recordings = $this->findLivestreamRecordings($signal))) {
+            $this->logger->warning(sprintf('No livestream recordings found matching episode %s.', $episode->getCode()));
 
             return;
         }
 
-        $this->splitRecording($episode);
+        $parts = $this->splitEpisodeRecording($episode);
 
-        if (null === $recordedAt = $this->matchRecordings($episode, $signal)) {
-            $this->logger->info(sprintf('Unable to match the recoding time for episode %s.', $episode->getCode()));
+        if (!$matrix = $this->buildMatrix($episode, $recordings, $parts)) {
+            $this->logger->warning(sprintf('Unable to build a recording time matrix for episode %s.', $episode->getCode()));
 
             return;
         }
+
+        $recordedAt = new \DateTime(array_key_first($matrix));
 
         $this->logger->info(sprintf('Matched recording time for episode %s: %s', $episode->getCode(), $recordedAt->format('Y-m-d H:i:s')));
+        $this->logger->debug(sprintf("Recording matrix dump:\n%s", self::printMatrix($matrix)));
 
         $episode->setRecordedAt($recordedAt);
+        $episode->setRecordingTimeMatrix($matrix);
 
         $this->entityManager->persist($episode);
-
-        $matchChatMessagesMessage = new MatchEpisodeChatMessages($episode->getCode());
-        $this->messenger->dispatch($matchChatMessagesMessage);
     }
 
-    private function matchRecordings(Episode $episode, BatSignal $signal): ?\DateTime
+    private function buildMatrix(Episode $episode, Finder $recordings, Finder $parts): ?array
     {
-        $sourcePath = sprintf('%s/episode_parts', $_SERVER['APP_STORAGE_PATH']);
+        $matrix = [];
 
-        $sourceFiles = Finder::create()
-            ->files()
-            ->in($sourcePath)
-            ->name(sprintf('%s_*.mp3', $episode->getCode()))
-        ;
+        /** @var \SplFileInfo $recording */
+        foreach ($recordings as $recording) {
+            $timestamp = substr($recording->getFilename(), strlen('recording_'), 14);
 
-        $liveFiles = $this->getLivestreamRecordings($signal);
-
-        $recordingMatrix = [];
-
-        /** @var \SplFileInfo $liveFile */
-        foreach ($liveFiles as $liveFile) {
-            $timestamp = substr($liveFile->getFilename(), strlen('recording_'), 14);
-
-            /** @var \SplFileInfo $sourceFile */
-            foreach ($sourceFiles as $sourceFile) {
-                $recordedAt = new \DateTime($timestamp);
-
-                preg_match("/_(\d+)./", $sourceFile->getFilename(), $matches);
+            /** @var \SplFileInfo $part */
+            foreach ($parts as $part) {
+                preg_match("/_(\d+)./", $part->getFilename(), $matches);
                 list(, $offset) = $matches;
 
-                $command = 'audio-offset-finder --not-generate "$SOURCE_FILE" "$LIVE_FILE"';
-                //dd([$liveFile->getPathname(), $sourceFile->getPathname()]);
-                $process = Process::fromShellCommandline($command);
+                $command = 'audio-offset-finder --not-generate "$PART" "$RECORDING"';
+                $process = Process::fromShellCommandline($command)
+                    ->setTimeout(600)
+                ;
 
-                $process->setTimeout(600);
-
-                $process->run(null, [
-                    'LIVE_FILE' => $liveFile->getPathname(),
-                    'SOURCE_FILE' => $sourceFile->getPathname(),
+                $process->mustRun(null, [
+                    'PART' => $part->getPathname(),
+                    'RECORDING' => $recording->getPathname(),
                 ]);
 
                 preg_match("/The offset calculated is: (\S+)/", $process->getOutput(), $matches);
@@ -117,7 +94,9 @@ class EpisodeRecordingTimeMatcher
                 $matchedScore = $matches[1] ?? null;
 
                 if (null === $matchedOffset || null == $matchedScore) {
-                    throw new \RuntimeException(sprintf('Failed to parse recording time matcher output: %s', $process->getOutput()));
+                    $this->logger->notice(sprintf('Failed to parse recording time matcher output: %s', $process->getOutput()));
+
+                    continue;
                 }
 
                 $matchedOffset = floor($matchedOffset);
@@ -128,54 +107,54 @@ class EpisodeRecordingTimeMatcher
                 }
 
                 $recordingOffset = $offset + $matchedOffset;
-                $episodeRecordedAt = $recordedAt->sub(new \DateInterval('PT' . $recordingOffset . 'S'));
+                $episodeRecordedAt = (new \DateTime($timestamp))->sub(new \DateInterval("PT${recordingOffset}S"));
 
                 $episodeRecordedAtKey = $episodeRecordedAt->format('YmdHis');
 
-                if (!isset($recordingMatrix[$episodeRecordedAtKey])) {
-                    $recordingMatrix[$episodeRecordedAtKey] = [];
+                if (!isset($matrix[$episodeRecordedAtKey])) {
+                    $matrix[$episodeRecordedAtKey] = [];
                 }
 
-                $recordingMatrix[$episodeRecordedAtKey][] = $matchedScore;
+                $matrix[$episodeRecordedAtKey][] = $matchedScore;
 
                 $this->logger->debug(sprintf('Matched live recording "%s" to episode offset %s-%s to "%s" with a score of %s.',
                     $timestamp,
                     $offset,
                     $offset + 600,
                     $episodeRecordedAt->format('Y-m-d H:i:s'),
-                    $matchedScore
+                    $matchedScore,
                 ));
             }
         }
 
-        if (!count($recordingMatrix)) {
+        if (!count($matrix)) {
             return null;
         }
 
-        // Optimize recording matrix
-        ksort($recordingMatrix);
+        ksort($matrix);
 
-        foreach ($recordingMatrix as $key => $scores) {
-            foreach ($recordingMatrix as $matchKey => $matchScores) {
+        // Group similar timestamps
+        foreach ($matrix as $key => $scores) {
+            foreach ($matrix as $matchKey => $matchScores) {
                 // Found similar timestamps
                 if ($matchKey > $key && $matchKey < ($key + 5)) {
                     // The latter has more scores
                     if (count($matchScores) > count($scores)) {
-                        unset($recordingMatrix[$key]);
-                        $recordingMatrix[$matchKey] = array_merge($scores, $matchScores);
+                        unset($matrix[$key]);
+                        $matrix[$matchKey] = array_merge($scores, $matchScores);
 
                         continue 2;
                     }
 
                     // The first one has more or equal scores
-                    unset($recordingMatrix[$matchKey]);
-                    $recordingMatrix[$key] = array_merge($scores, $matchScores);
+                    unset($matrix[$matchKey]);
+                    $matrix[$key] = array_merge($scores, $matchScores);
                 }
             }
         }
 
         // Sort by top match
-        uasort($recordingMatrix, function($a, $b) {
+        uasort($matrix, function($a, $b) {
             // A has more matches
             if (count($a) > count($b)) {
                 return -1;
@@ -196,67 +175,14 @@ class EpisodeRecordingTimeMatcher
             return ($averageA > $averageB) ? -1 : 1;
         });
 
-        $listing = [];
-        foreach ($recordingMatrix as $key => $matches) {
-            $listing[] = sprintf('%s: %s', $key, implode(', ', $matches));
-        }
-
-        $matrixOutput = implode("\n", $listing);
-        $this->logger->info('Recording matrix dump: ' . "\n" . $matrixOutput);
-
-        $notification = new Notification(
-            sprintf("Episode %s live stream matcher matrix:\n%s", $episode->getCode(), $matrixOutput),
-            ['chat/slack_default']
-        );
-        $this->notifier->send($notification);
-
-        return new \DateTime(array_key_first($recordingMatrix));
+        return $matrix;
     }
 
-    private function splitRecording(Episode $episode): void
-    {
-        $sourcePath = sprintf('%s/episode_parts', $_SERVER['APP_STORAGE_PATH']);
-
-        if (!is_dir($sourcePath)) {
-            $filesystem = new Filesystem();
-            $filesystem->mkdir($sourcePath);
-        }
-
-        // Clean up directory
-        $sourceFiles = Finder::create()
-            ->files()
-            ->in($sourcePath)
-        ;
-
-        foreach ($sourceFiles as $sourceFile) {
-            unlink($sourceFile);
-        }
-
-        $sourcePath = sprintf('%s/episode_recordings/%s.mp3', $_SERVER['APP_STORAGE_PATH'], $episode->getCode());
-        $targetPathPrefix = sprintf('%s/episode_parts/%s_', $_SERVER['APP_STORAGE_PATH'], $episode->getCode());
-
-        $command = 'bin/scripts/split-recording.bash "$SOURCE_PATH" "$TARGET_PATH"';
-        $process = Process::fromShellCommandline($command);
-
-        $process->setTimeout(1800);
-
-        $returnCode = $process->run(null, [
-            'SOURCE_PATH' => $sourcePath,
-            'TARGET_PATH' => $targetPathPrefix,
-        ]);
-
-        if ($returnCode > 0) {
-            $this->logger->critical('An error occurred while splitting the recording.');
-
-            throw new \Exception('Failed to split recording');
-        }
-    }
-
-    private function getLivestreamRecordings(BatSignal $signal): Finder
+    private function findLivestreamRecordings(BatSignal $signal): Finder
     {
         $livePath = sprintf('%s/livestream_recordings', $_SERVER['APP_STORAGE_PATH']);
 
-        return Finder::create()
+        return (new Finder())
             ->files()
             ->in($livePath)
             ->name('recording_*.asf')
@@ -279,6 +205,49 @@ class EpisodeRecordingTimeMatcher
                 return true;
             })
             ->sortByName()
+            ;
+    }
+
+    private function splitEpisodeRecording(Episode $episode): Finder
+    {
+        $sourcePath = sprintf('%s/episodes/%s.mp3', $_SERVER['APP_STORAGE_PATH'], $episode->getCode());
+        $outputPath = sprintf('%s/episode_parts', $_SERVER['APP_STORAGE_PATH']);
+        $outputPrefix = sprintf('%s/%s_', $outputPath, $episode->getCode());
+
+        $this->fileDownloader->download($episode->getRecordingUri(), $sourcePath);
+
+        // Prepare output directory, fully clear it because the matcher is still prone to errors
+        $filesystem = new Filesystem();
+        $filesystem->mkdir($outputPath);
+        $filesystem->remove((new Finder())
+            ->files()
+            ->in($outputPath)
+        );
+
+        $command = 'bin/scripts/split-recording.bash "$SOURCE_PATH" "$OUTPUT_PREFIX"';
+        $process = Process::fromShellCommandline($command)
+            ->setTimeout(1800)
         ;
+
+        $process->mustRun(null, [
+            'SOURCE_PATH' => $sourcePath,
+            'OUTPUT_PREFIX' => $outputPrefix,
+        ]);
+
+        return (new Finder())
+            ->files()
+            ->in($outputPath)
+            ->name(sprintf('%s_*.mp3', $episode->getCode()))
+        ;
+    }
+
+    public static function printMatrix(array $matrix): string
+    {
+        $listing = [];
+        foreach ($matrix as $key => $matches) {
+            $listing[] = sprintf('%s: %s', $key, implode(', ', $matches));
+        }
+
+        return implode("\n", $listing);
     }
 }

@@ -4,7 +4,7 @@ services:
   app:
     build:
       context: .
-      target: noagenda_app
+      target: app
     image: ghcr.io/noagenda/website/app:${APP_TAG:-local}
     restart: unless-stopped
     tty: true
@@ -15,7 +15,6 @@ services:
     volumes:
       - ./:/srv/www
       - public_media:/srv/www/public/media
-      - var_data:/srv/www/var
     networks:
       - assets
       - database
@@ -25,7 +24,7 @@ services:
   assets:
     build:
       context: .
-      target: noagenda_assets
+      target: assets
     image: ghcr.io/noagenda/website/assets:${APP_TAG:-local}
     restart: unless-stopped
     tty: true
@@ -39,12 +38,11 @@ services:
     restart: unless-stopped
     tty: true
     entrypoint: app-php-entrypoint
-    command: bin/console app:record chat
+    command: bin/console record chat
     depends_on:
       - app
     volumes:
       - ./:/srv/www
-      - var_data:/srv/www/var
     networks:
       - php
 
@@ -59,7 +57,6 @@ services:
     volumes:
       - ./:/srv/www
       - public_media:/srv/www/public/media
-      - var_data:/srv/www/var
     networks:
       - database
       - php
@@ -75,6 +72,7 @@ services:
     ports:
       - "8034:3306"
     volumes:
+      - ./docker/database/conf.d:/etc/mysql/conf.d
       - database_data:/var/lib/mysql
     networks:
       - database
@@ -82,7 +80,7 @@ services:
   http:
     build:
       context: .
-      target: noagenda_http
+      target: http
     image: ghcr.io/noagenda/website/http:${APP_TAG:-local}
     restart: unless-stopped
     depends_on:
@@ -102,12 +100,11 @@ services:
     restart: unless-stopped
     tty: true
     entrypoint: app-php-entrypoint
-    command: bin/console app:record livestream
+    command: bin/console record livestream
     depends_on:
       - app
     volumes:
       - ./:/srv/www
-      - var_data:/srv/www/var
     networks:
       - php
 
@@ -122,7 +119,6 @@ services:
 volumes:
   database_data:
   public_media:
-  var_data:
 
 networks:
   assets:

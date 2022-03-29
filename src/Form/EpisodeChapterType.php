@@ -10,12 +10,9 @@ use Symfony\Component\Validator\Constraints\Length;
 
 class EpisodeChapterType extends AbstractType
 {
-    private $timestampTransformer;
-
-    public function __construct(TimestampTransformer $timestampTransformer)
-    {
-        $this->timestampTransformer = $timestampTransformer;
-    }
+    public function __construct(
+        private TimestampTransformer $timestampTransformer
+    ) {}
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {

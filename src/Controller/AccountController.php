@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -12,40 +11,26 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-/**
- * @Route("/account", name="account_")
- */
+#[Route('/account', name: 'account_')]
 class AccountController extends AbstractController
 {
-    private $passwordEncoder;
-    private $entityManager;
-
     public function __construct(
-        UserPasswordEncoderInterface $passwordEncoder,
-        EntityManagerInterface $entityManager
-    )
-    {
-        $this->passwordEncoder = $passwordEncoder;
-        $this->entityManager = $entityManager;
-    }
+        private EntityManagerInterface $entityManager,
+        private UserPasswordHasherInterface $passwordHasher,
+    ) {}
 
-    /**
-     * @Route("", name="index", methods="GET")
-     */
+    #[Route('', name: 'index', methods: ['GET'])]
     public function index(): Response
     {
         return $this->render('account/index.html.twig');
     }
 
-    /**
-     * @param User $user
-     *
-     * @Route("/email", name="email", methods="GET|POST")
-     */
+    #[Route('/email', name: 'email', methods: ['GET', 'POST'])]
     public function email(Request $request, ?UserInterface $user): Response
     {
         $form = $this->createFormBuilder()
@@ -66,9 +51,8 @@ class AccountController extends AbstractController
             $email = $form->get('email')->getData();
             $user->setEmail($email);
 
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($user);
-            $entityManager->flush();
+            $this->entityManager->persist($user);
+            $this->entityManager->flush();
 
             $this->addFlash('success', 'Your email address has been updated.');
         }
@@ -79,10 +63,9 @@ class AccountController extends AbstractController
     }
 
     /**
-     * @param User $user
-     *
-     * @Route("/password", name="password", methods="GET|POST")
+     * @param PasswordAuthenticatedUserInterface|null $user
      */
+    #[Route('/password', name: 'password', methods: ['GET', 'POST'])]
     public function password(Request $request, ?UserInterface $user): Response
     {
         $form = $this->createFormBuilder()
@@ -101,7 +84,7 @@ class AccountController extends AbstractController
 
         if ($form->isSubmitted()) {
             $oldPassword = $form->get('oldPassword')->getData();
-            $isPasswordValid = $this->passwordEncoder->isPasswordValid($user, $oldPassword);
+            $isPasswordValid = $this->passwordHasher->isPasswordValid($user, $oldPassword);
 
             if (!$isPasswordValid) {
                 $form->get('oldPassword')->addError(new FormError('Incorrect password.'));
@@ -111,9 +94,8 @@ class AccountController extends AbstractController
                 $password = $form->get('password')->getData();
                 $user->setPlainPassword($password);
 
-                $entityManager = $this->getDoctrine()->getManager();
-                $entityManager->persist($user);
-                $entityManager->flush();
+                $this->entityManager->persist($user);
+                $this->entityManager->flush();
 
                 $this->addFlash('success', 'Your password has been updated.');
             }
@@ -124,11 +106,7 @@ class AccountController extends AbstractController
         ]);
     }
 
-    /**
-     * @param User $user
-     *
-     * @Route("/status", name="status", methods="GET|POST")
-     */
+    #[Route('/status', name: 'status', methods: ['GET', 'POST'])]
     public function status(Request $request, ?UserInterface $user): Response
     {
         $submittedToken = $request->request->get('token');
@@ -144,9 +122,8 @@ class AccountController extends AbstractController
                 $user->expose();
             }
 
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($user);
-            $entityManager->flush();
+            $this->entityManager->persist($user);
+            $this->entityManager->flush();
         }
 
         return $this->render('account/status.html.twig');

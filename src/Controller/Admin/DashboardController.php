@@ -4,10 +4,10 @@ namespace App\Controller\Admin;
 
 use App\Entity\BatSignal;
 use App\Entity\Episode;
-use App\Entity\FeedbackItem;
 use App\Entity\NetworkSite;
 use App\Entity\User;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\EpisodeRepository;
+use App\Repository\FeedbackItemRepository;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
@@ -17,14 +17,15 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class DashboardController extends AbstractDashboardController
 {
-    public function __construct(private EntityManagerInterface $entityManager)
-    {
-    }
+    public function __construct(
+        private EpisodeRepository $episodeRepository,
+        private FeedbackItemRepository $feedbackItemRepository,
+    ) {}
 
     public function configureDashboard(): Dashboard
     {
         return Dashboard::new()
-            ->setTitle('No Agenda Show Website Console')
+            ->setTitle('No Agenda Website Console')
         ;
     }
 
@@ -56,8 +57,8 @@ class DashboardController extends AbstractDashboardController
     public function index(): Response
     {
         return $this->render('admin/dashboard.html.twig', [
-            'latest_episodes' => $this->entityManager->getRepository(Episode::class)->findLatestEpisodes(8),
-            'unresolved_feedback_count' => $this->entityManager->getRepository(FeedbackItem::class)->countUnresolvedItems(),
+            'latest_episodes' => $this->episodeRepository->findLatestEpisodes(8, false),
+            'unresolved_feedback_count' => $this->feedbackItemRepository->countUnresolvedItems(),
         ]);
     }
 
@@ -66,8 +67,8 @@ class DashboardController extends AbstractDashboardController
     public function feedback(): Response
     {
         return $this->render('admin/feedback.html.twig', [
-            'latest_episodes' => $this->entityManager->getRepository(Episode::class)->findLatestEpisodes(8),
-            'latest_feedback_items' => $this->entityManager->getRepository(FeedbackItem::class)->findOpenFeedbackItems(8),
+            'latest_episodes' => $this->episodeRepository->findLatestEpisodes(8),
+            'latest_feedback_items' => $this->feedbackItemRepository->findOpenFeedbackItems(8),
         ]);
     }
 }

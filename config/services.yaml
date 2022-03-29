@@ -1,23 +1,15 @@
-# This file is the entry point to configure your own services.
-# Files in the packages/ subdirectory configure your dependencies.
-
-# Put parameters here that don't need to change on each machine where the app is deployed
-# https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
-parameters:
-
 services:
-    # default configuration for services in *this* file
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
         bind:
+            $crawlers: '@crawler_locator'
             $httpClient: '@httplug.client.app'
             $mastodonClient: '@httplug.client.mastodon'
-            $shownotesClient: '@httplug.client.shownotes'
             $messenger: '@crawler_bus'
+            $securityToken: '%env(API_SECURITY_TOKEN)%'
+            $shownotesClient: '@httplug.client.shownotes'
 
-    # makes classes in src/ available to be used as services
-    # this creates a service per class whose id is the fully-qualified class name
     App\:
         resource: '../src/'
         exclude:
@@ -25,17 +17,24 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
-    # add more service definitions when explicit configuration is needed
-    # please note that last definitions always *replace* previous ones
     App\Crawling\:
         resource: '../src/Crawling/'
-        exclude: '../src/Crawling/{CrawlingLogger.php,Shownotes}'
+        exclude: '../src/Crawling/{Crawlers.php,Shownotes}'
         calls:
-            - ['setLogger', ['@App\Crawling\CrawlingLogger']]
+            - ['setLogger', ['@monolog.logger.crawler']]
+        bind:
+            $mastodonAccessToken: '%env(MASTODON_ACCESS_TOKEN)%'
+            $mastodonAccountId: '%env(MASTODON_ACCOUNT_ID)%'
+            $mastodonPublish: '%env(MASTODON_PUBLISH)%'
+            $youtubeKey: '%env(YOUTUBE_KEY)%'
+            $youtubePlaylistId: '%env(YOUTUBE_PLAYLIST_ID)%'
+        tags: ['crawler']
 
     App\EventListener\Doctrine\:
         resource: '../src/EventListener/Doctrine/'
         tags: ['doctrine.event_subscriber']
 
-    Liip\ImagineBundle\Imagine\Filter\FilterManager: '@liip_imagine.filter.manager'
-    Liip\ImagineBundle\Service\FilterService: '@liip_imagine.service.filter'
+    crawler_locator:
+        class: Symfony\Component\DependencyInjection\ServiceLocator
+        arguments:
+            - !tagged_iterator crawler

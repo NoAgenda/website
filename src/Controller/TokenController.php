@@ -13,29 +13,16 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
-/**
- * @Route("", name="token_")
- */
+#[Route('', name: 'token_')]
 class TokenController extends AbstractController
 {
-    private $authChecker;
-    private $entityManager;
-    private $repository;
-
     public function __construct(
-        AuthorizationCheckerInterface $authChecker,
-        EntityManagerInterface $entityManager,
-        UserTokenRepository $repository
-    )
-    {
-        $this->authChecker = $authChecker;
-        $this->entityManager = $entityManager;
-        $this->repository = $repository;
-    }
+        private EntityManagerInterface $entityManager,
+        private UserTokenRepository $userTokenRepository,
+        private AuthorizationCheckerInterface $authChecker,
+    ) {}
 
-    /**
-     * @Route("/token", name="create", methods="POST")
-     */
+    #[Route('/token', name: 'create', methods: ['POST'])]
     public function create(Request $request): Response
     {
         if ($this->authChecker->isGranted('ROLE_USER')) {
@@ -48,12 +35,12 @@ class TokenController extends AbstractController
             $string = $this->generateToken();
         }
 
-        $token = $this->repository->findOneBy(['token' => $string]);
+        $token = $this->userTokenRepository->findOneBy(['token' => $string]);
 
         if (!$token) {
-            $token = (new UserToken)
+            $token = (new UserToken())
                 ->setToken($string)
-                ->addCurrentIpAddress()
+                ->addIpAddress($request->getClientIp())
             ;
 
             $this->entityManager->persist($token);

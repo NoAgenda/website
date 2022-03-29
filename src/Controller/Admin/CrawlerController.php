@@ -2,16 +2,12 @@
 
 namespace App\Controller\Admin;
 
+use App\Crawling\Crawlers;
+use App\Crawling\EpisodeFileCrawlerInterface;
 use App\Crawling\Shownotes\ShownotesParserFactory;
-use App\Entity\Episode;
-use App\Message\CrawlBatSignal;
-use App\Message\CrawlEpisodeFiles;
-use App\Message\CrawlEpisodeShownotes;
-use App\Message\CrawlEpisodeTranscript;
-use App\Message\CrawlFeed;
-use App\Message\CrawlYoutube;
-use App\Message\MatchEpisodeChatMessages;
-use App\Message\MatchEpisodeRecordingTime;
+use App\Message\Crawl;
+use App\Message\CrawlFile;
+use App\Repository\EpisodeRepository;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Finder\Finder;
@@ -22,134 +18,74 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class CrawlerController extends AbstractController
 {
-    private AdminUrlGenerator $adminUrlGenerator;
-    private $messenger;
-    private $shownotesParserFactory;
+    public function __construct(
+        private EpisodeRepository $episodeRepository,
+        private ShownotesParserFactory $shownotesParserFactory,
+        private MessageBusInterface $messenger,
+        private AdminUrlGenerator $adminUrlGenerator,
+    ) {}
 
-    public function __construct(ShownotesParserFactory $shownotesParserFactory, MessageBusInterface $crawlerBus, AdminUrlGenerator $adminUrlGenerator)
-    {
-        $this->shownotesParserFactory = $shownotesParserFactory;
-        $this->messenger = $crawlerBus;
-        $this->adminUrlGenerator = $adminUrlGenerator;
-    }
-
-    /**
-     * @Route("/chat_logs/{date}", name="admin_chat_logs", defaults={"date"="today"})
-     */
-    public function chatLogsAction(Request $request, string $date): Response
+    #[Route('/chat_logs/{date}', name: 'admin_chat_logs', defaults: ['date' => 'today'])]
+    public function chatLogs(string $date): Response
     {
         $path = implode('/', [$_SERVER['APP_STORAGE_PATH'], 'chat_logs']);
-
-        $finder = Finder::create()
-            ->files()
-            ->in($path)
-            ->name('*.log')
-        ;
-
-        $files = array_flip(array_map(function (\SplFileInfo $info) {
-            return str_replace('.log', '', $info->getFilename());
-        }, iterator_to_array($finder->getIterator())));
-
-        krsort($files);
-
-        if ('today' === $date) {
-            $date = (new \DateTime())->format('Ymd');
-        }
-
-        $logs = 'No logs found for this date.';
-
-        if (isset($files[$date])) {
-            $logs = file_get_contents($files[$date]);
-        }
+        $files = $this->getAvailableLogs($path);
 
         return $this->render('admin/chat_logs.html.twig', [
-            'files' => array_keys($files),
+            'files' => $files,
             'current_file' => $date,
-            'logs' => $logs,
+            'logs' => $this->getLogs($files, $date),
         ]);
     }
 
     #[Route('/crawler/{date}', name: 'admin_crawler', defaults: ['date' => 'today'])]
-    public function crawlerAction(Request $request, string $date): Response
+    public function crawler(Request $request, string $date): Response
     {
         if ('POST' === $request->getMethod()) {
-            $task = $request->request->get('task');
-            $code = $request->request->get('code');
+            $url = $this->adminUrlGenerator
+                ->setRoute('admin_crawler', ['date' => $date])
+                ->generateUrl()
+            ;
 
-            $message = false;
+            $data = $request->request->get('task');
 
-            static $messages = [
-                'bat_signal' => CrawlBatSignal::class,
-                'feed' => CrawlFeed::class,
-                'youtube' => CrawlYoutube::class,
-            ];
-
-            if (isset($messages[$task])) {
-                $message = new $messages[$task]();
-            }
-
-            static $episodeMessages = [
-                'episode_chat' => MatchEpisodeChatMessages::class,
-                'episode_time' => MatchEpisodeRecordingTime::class,
-                'episode_files' => CrawlEpisodeFiles::class,
-                'episode_shownotes' => CrawlEpisodeShownotes::class,
-                'episode_transcript' => CrawlEpisodeTranscript::class,
-            ];
-
-            if (isset($episodeMessages[$task])) {
-                $message = new $episodeMessages[$task]($code);
-            }
-
-            if ($message) {
-                /** @var object $message */
-                $this->messenger->dispatch($message);
-
-                $this->addFlash('success', 'Scheduled job: ' . get_class($message));
-
-                $url = $this->adminUrlGenerator
-                    ->setRoute('admin_crawler', ['date' => $date])
-                    ->generateUrl()
-                ;
+            if (!$crawlerName = Crawlers::$crawlers[$data] ?? false) {
+                $this->addFlash('danger', sprintf('Invalid data type: %s', $data));
 
                 return $this->redirect($url);
             }
+
+            if ($code = $request->request->get('code')) {
+                if (is_subclass_of($crawlerName, EpisodeFileCrawlerInterface::class)) {
+                    $message = new CrawlFile($crawlerName, $code);
+                } else {
+                    $message = new Crawl($crawlerName, $code);
+                }
+
+                $this->addFlash('success', sprintf('Scheduled crawling of %s for episode %s.', $data, $code));
+            } else {
+                $message = new Crawl($crawlerName);
+
+                $this->addFlash('success', sprintf('Scheduled crawling of %s.', $data));
+            }
+
+            $this->messenger->dispatch($message);
+
+            return $this->redirect($url);
         }
 
         $path = implode('/', [$_SERVER['APP_STORAGE_PATH'], 'crawler_logs']);
+        $files = $this->getAvailableLogs($path);
 
-        $finder = Finder::create()
-            ->files()
-            ->in($path)
-            ->name('*.log')
-        ;
-
-        $files = array_flip(array_map(function (\SplFileInfo $info) {
-            return str_replace('.log', '', $info->getFilename());
-        }, iterator_to_array($finder->getIterator())));
-
-        krsort($files);
-
-        if ('today' === $date) {
-            $date = (new \DateTime())->format('Ymd');
-        }
-
-        $logs = 'No logs found for this date.';
-
-        if (isset($files[$date])) {
-            $logs = file_get_contents($files[$date]);
-        }
-
-        return $this->render('admin/crawler.html.twig', [
-            'files' => array_keys($files),
+        return $this->render('admin/chat_logs.html.twig', [
+            'files' => $files,
             'current_file' => $date,
-            'logs' => $logs,
+            'logs' => $this->getLogs($files, $date),
         ]);
     }
 
-    /**
-     * @Route("/livestream_recordings/{date}", name="admin_livestream_recordings", defaults={"date"="today"})
-     */
-    public function livestreamRecordingsAction(Request $request, string $date): Response
+    #[Route('/livestream_recordings/{date}', name: 'admin_Livestream_recordings', defaults: ['date' => 'today'])]
+    public function livestreamRecordings(string $date): Response
     {
         $path = implode('/', [$_SERVER['APP_STORAGE_PATH'], 'livestream_recordings']);
 
@@ -174,7 +110,7 @@ class CrawlerController extends AbstractController
 
         $recordings = [];
 
-        if (false !== array_search($date, $dates)) {
+        if (in_array($date, $dates)) {
             $prefix = sprintf('recording_%s', $date);
 
             $finder = Finder::create()
@@ -222,42 +158,64 @@ class CrawlerController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("/livestream_recordings/download/{date}/{time}", name="admin_livestream_recordings_download")
-     */
-    public function livestreamRecordingsDownloadAction(Request $request, string $date, string $time): Response
+    #[Route('/livestream_recordings/download/{date}/{time}', name: 'admin_livestream_recordings_download')]
+    public function livestreamRecordingsDownload(string $date, string $time): Response
     {
         $recordingPath = sprintf('%s/livestream_recordings/recording_%s%s.asf', $_SERVER['APP_STORAGE_PATH'], $date, $time);
 
         return $this->file($recordingPath);
     }
 
-    /**
-     * @Route("/archive/credits/{page}", name="admin_archive_credits")
-     */
-    public function archiveCreditsAction(Request $request, int $page): Response
+    #[Route('/archive/credits/{page}', name: 'admin_archive_credits')]
+    public function archiveCredits(int $page): Response
     {
-        $shownotes = [];
+        // todo fix pagination
 
-        $repository = $this->getDoctrine()->getRepository(Episode::class);
+        $collection = [];
 
         $start = $page * 100;
         $end = $start + 99;
 
         for ($i = $start; $i <= $end; $i++) {
-            $episode = $repository->findOneByCode($i);
+            $episode = $this->episodeRepository->findOneByCode($i);
 
-            if ($episode) {
-                $shownote = $this->shownotesParserFactory->get($episode);
-
-                if ($shownote) {
-                    $shownotes[$episode->getCode()] = $shownote->getCredits();
-                }
+            if ($episode && $shownotes = $this->shownotesParserFactory->get($episode)) {
+                $collection[$episode->getCode()] = $shownotes->getCredits();
             }
         }
 
         return $this->render('admin/archive_credits.html.twig', [
-            'shownotes' => $shownotes,
+            'shownotes' => $collection,
         ]);
+    }
+
+    private function getAvailableLogs(string $path): array
+    {
+        $finder = Finder::create()
+            ->files()
+            ->in($path)
+            ->name('*.log')
+        ;
+
+        $files = array_flip(array_map(function (\SplFileInfo $info) {
+            return str_replace('.log', '', $info->getFilename());
+        }, iterator_to_array($finder->getIterator())));
+
+        krsort($files);
+
+        return $files;
+    }
+
+    private function getLogs(array $files, string $date): string
+    {
+        if ('today' === $date) {
+            $date = (new \DateTime())->format('Ymd');
+        }
+
+        if (!isset($files[$date])) {
+            return 'No logs found for this date.';
+        }
+
+        return file_get_contents($files[$date]);
     }
 }

@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use App\Crawling\Shownotes\ShownotesParserFactory;
 use App\Repository\EpisodeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -34,47 +33,59 @@ class Episode
     #[Column(type: 'string', length: 255)]
     private ?string $author;
 
+    #[Column(type: 'date')]
+    private ?\DateTimeInterface $publishedAt;
+
     #[Column(type: 'boolean')]
-    private bool $cover = false;
+    private bool $published = false;
 
     #[Column(type: 'boolean')]
     private bool $special = false;
 
-    #[Column(type: 'boolean')]
-    private bool $chatMessages = false;
+    #[Column(type: 'integer', nullable: true)]
+    private ?int $duration = null;
 
-    #[Column(type: 'boolean')]
-    private bool $transcript = false;
-
-    #[Column(type: 'string', length: 16, nullable: true)]
-    private ?string $transcriptType;
-
-    #[Column(type: 'date')]
-    private ?\DateTimeInterface $publishedAt;
-
-    #[Column(type: 'text', nullable: true)]
-    private ?string $coverUri;
+    #[Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $recordedAt = null;
 
     #[Column(type: 'text')]
     private ?string $recordingUri;
 
     #[Column(type: 'text', nullable: true)]
-    private ?string $shownotesUri;
+    private ?string $coverUri = null;
 
     #[Column(type: 'text', nullable: true)]
-    private ?string $transcriptUri;
+    private ?string $coverPath = null;
 
     #[Column(type: 'text', nullable: true)]
-    private ?string $chatNotice;
+    private ?string $publicShownotesUri = null;
 
-    #[Column(type: 'integer', nullable: true)]
-    private ?int $duration;
+    #[Column(type: 'text', nullable: true)]
+    private ?string $shownotesUri = null;
 
-    #[Column(type: 'datetime', nullable: true)]
-    private ?\DateTimeInterface $recordedAt;
+    #[Column(type: 'text', nullable: true)]
+    private ?string $shownotesPath = null;
+
+    #[Column(type: 'text', nullable: true)]
+    private ?string $transcriptUri = null;
+
+    #[Column(type: 'text', nullable: true)]
+    private ?string $transcriptPath = null;
+
+    #[Column(type: 'string', length: 16, nullable: true)]
+    private ?string $transcriptType = null;
+
+    #[Column(type: 'text', nullable: true)]
+    private ?string $chatArchivePath = null;
+
+    #[Column(type: 'text', nullable: true)]
+    private ?string $chatNotice = null;
 
     #[Column(type: 'array', nullable: true)]
-    private ?array $crawlerOutput;
+    private ?array $crawlerOutput = null;
+
+    #[Column(type: 'json', nullable: true)]
+    private ?array $recordingTimeMatrix = null;
 
     public function __construct()
     {
@@ -160,66 +171,6 @@ class Episode
         return $this;
     }
 
-    public function hasCover(): bool
-    {
-        return $this->cover;
-    }
-
-    public function setCover(bool $cover): self
-    {
-        $this->cover = $cover;
-
-        return $this;
-    }
-
-    public function isSpecial(): bool
-    {
-        return $this->special;
-    }
-
-    public function setSpecial(bool $special): self
-    {
-        $this->special = $special;
-
-        return $this;
-    }
-
-    public function hasChatMessages(): bool
-    {
-        return $this->chatMessages;
-    }
-
-    public function setChatMessages(bool $chatMessages): self
-    {
-        $this->chatMessages = $chatMessages;
-
-        return $this;
-    }
-
-    public function hasTranscript(): bool
-    {
-        return $this->transcript;
-    }
-
-    public function setTranscript(bool $transcript): self
-    {
-        $this->transcript = $transcript;
-
-        return $this;
-    }
-
-    public function getTranscriptType(): ?string
-    {
-        return $this->transcriptType;
-    }
-
-    public function setTranscriptType(?string $transcriptType): self
-    {
-        $this->transcriptType = $transcriptType;
-
-        return $this;
-    }
-
     public function getPublishedAt(): ?\DateTimeInterface
     {
         return $this->publishedAt;
@@ -232,62 +183,26 @@ class Episode
         return $this;
     }
 
-    public function getCoverUri(): ?string
+    public function isPublished(): bool
     {
-        return $this->coverUri;
+        return $this->published;
     }
 
-    public function setCoverUri(?string $uri): self
+    public function setPublished(bool $published): self
     {
-        $this->coverUri = $uri;
+        $this->published = $published;
 
         return $this;
     }
 
-    public function getRecordingUri(): ?string
+    public function isSpecial(): bool
     {
-        return $this->recordingUri;
+        return $this->special;
     }
 
-    public function setRecordingUri(string $uri): self
+    public function setSpecial(bool $special): self
     {
-        $this->recordingUri = $uri;
-
-        return $this;
-    }
-
-    public function getShownotesUri(): ?string
-    {
-        return $this->shownotesUri;
-    }
-
-    public function setShownotesUri(?string $uri): self
-    {
-        $this->shownotesUri = $uri;
-
-        return $this;
-    }
-
-    public function getTranscriptUri(): ?string
-    {
-        return $this->transcriptUri;
-    }
-
-    public function setTranscriptUri(?string $uri): self
-    {
-        $this->transcriptUri = $uri;
-
-        return $this;
-    }
-
-    public function getChatNotice(): ?string
-    {
-        return $this->chatNotice;
-    }
-
-    public function setChatNotice(?string $notice): self
-    {
-        $this->chatNotice = $notice;
+        $this->special = $special;
 
         return $this;
     }
@@ -316,6 +231,158 @@ class Episode
         return $this;
     }
 
+    public function getRecordingUri(): ?string
+    {
+        return $this->recordingUri;
+    }
+
+    public function setRecordingUri(string $uri): self
+    {
+        $this->recordingUri = $uri;
+
+        return $this;
+    }
+
+    public function getCoverUri(): ?string
+    {
+        return $this->coverUri;
+    }
+
+    public function setCoverUri(?string $uri): self
+    {
+        $this->coverUri = $uri;
+
+        return $this;
+    }
+
+    public function getCoverPath(): ?string
+    {
+        return $this->coverPath;
+    }
+
+    public function setCoverPath(?string $path): self
+    {
+        $this->coverPath = $path;
+
+        return $this;
+    }
+
+    public function hasCover(): bool
+    {
+        return $this->coverPath && file_exists($this->coverPath);
+    }
+
+    public function getPublicShownotesUri(): ?string
+    {
+        return $this->publicShownotesUri;
+    }
+
+    public function setPublicShownotesUri(?string $uri): self
+    {
+        $this->publicShownotesUri = $uri;
+
+        return $this;
+    }
+
+    public function getShownotesUri(): ?string
+    {
+        return $this->shownotesUri;
+    }
+
+    public function setShownotesUri(?string $uri): self
+    {
+        $this->shownotesUri = $uri;
+
+        return $this;
+    }
+
+    public function getShownotesPath(): ?string
+    {
+        return $this->shownotesPath;
+    }
+
+    public function setShownotesPath(?string $path): self
+    {
+        $this->shownotesPath = $path;
+
+        return $this;
+    }
+
+    public function hasShownotes(): bool
+    {
+        return $this->shownotesPath && file_exists($this->shownotesPath);
+    }
+
+    public function getTranscriptUri(): ?string
+    {
+        return $this->transcriptUri;
+    }
+
+    public function setTranscriptUri(?string $uri): self
+    {
+        $this->transcriptUri = $uri;
+
+        return $this;
+    }
+
+    public function getTranscriptPath(): ?string
+    {
+        return $this->transcriptPath;
+    }
+
+    public function setTranscriptPath(?string $path): self
+    {
+        $this->transcriptPath = $path;
+
+        return $this;
+    }
+
+    public function hasTranscript(): bool
+    {
+        return $this->transcriptPath && file_exists($this->transcriptPath);
+    }
+
+    public function getTranscriptType(): ?string
+    {
+        return $this->transcriptType;
+    }
+
+    public function setTranscriptType(?string $transcriptType): self
+    {
+        $this->transcriptType = $transcriptType;
+
+        return $this;
+    }
+
+    public function getChatArchivePath(): ?string
+    {
+        return $this->chatArchivePath;
+    }
+
+    public function setChatArchivePath(?string $path): self
+    {
+        $this->chatArchivePath = $path;
+
+        return $this;
+    }
+
+    public function hasChatArchive(): bool
+    {
+        return $this->chatArchivePath && file_exists($this->chatArchivePath);
+    }
+
+    public function getChatNotice(): ?string
+    {
+        return $this->chatNotice;
+    }
+
+    public function setChatNotice(?string $notice): self
+    {
+        $this->chatNotice = $notice;
+
+        return $this;
+    }
+
     public function getCrawlerOutput(): ?array
     {
         return $this->crawlerOutput;
@@ -328,32 +395,15 @@ class Episode
         return $this;
     }
 
-    public function hasShownotes(): bool
+    public function getRecordingTimeMatrix(): ?array
     {
-        return file_exists(ShownotesParserFactory::getShownotesPath($this));
+        return $this->recordingTimeMatrix;
     }
 
-    public function getChatMessagesPath(): string
+    public function setRecordingTimeMatrix(?array $recordingTimeMatrix): self
     {
-        return sprintf('%s/chat_messages/%s.json', $_SERVER['APP_STORAGE_PATH'], $this->code);
-    }
+        $this->recordingTimeMatrix = $recordingTimeMatrix;
 
-    public function getChatMessagesExist(): bool
-    {
-        return file_exists($this->getChatMessagesPath());
-    }
-
-    public function getTranscriptPath(): ?string
-    {
-        if (!$this->getTranscriptType()) {
-            return null;
-        }
-
-        return sprintf('%s/episode_transcripts/%s.%s', $_SERVER['APP_STORAGE_PATH'], $this->getCode(), $this->getTranscriptType());
-    }
-
-    public function getTranscriptExists(): bool
-    {
-        return file_exists($this->getTranscriptPath());
+        return $this;
     }
 }

@@ -3,58 +3,32 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Form\UserRegistrationType;
 use App\Repository\UserRepository;
 use App\Updates\ResetPasswordUpdater;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use Symfony\Component\Form\Extension\Core\Type\PasswordType;
-use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
-use Symfony\Component\Validator\Constraints\Length;
 
-/**
- * @Route("", name="security_")
- */
+#[Route('', name: 'security_')]
 class SecurityController extends AbstractController
 {
-    private $authChecker;
-    private $passwordEncoder;
-    private $authenticationUtils;
-    private $entityManager;
-    private $repository;
-    private $resetPasswordUpdater;
-
     public function __construct(
-        AuthorizationCheckerInterface $authChecker,
-        UserPasswordEncoderInterface $passwordEncoder,
-        AuthenticationUtils $authenticationUtils,
-        EntityManagerInterface $entityManager,
-        UserRepository $repository,
-        ResetPasswordUpdater $resetPasswordUpdater
-    )
-    {
-        $this->authChecker = $authChecker;
-        $this->passwordEncoder = $passwordEncoder;
-        $this->authenticationUtils = $authenticationUtils;
-        $this->entityManager = $entityManager;
-        $this->repository = $repository;
-        $this->resetPasswordUpdater = $resetPasswordUpdater;
-    }
+        private EntityManagerInterface $entityManager,
+        private UserRepository $repository,
+        private AuthorizationCheckerInterface $authChecker,
+        private AuthenticationUtils $authenticationUtils,
+        private ResetPasswordUpdater $resetPasswordUpdater,
+    ) {}
 
-    /**
-     * @Route("/login", name="login", methods="GET|POST")
-     */
-    public function login(Request $request): Response
+    #[Route('/login', name: 'login', methods: ['GET', 'POST'])]
+    public function login(): Response
     {
         if ($this->authChecker->isGranted('ROLE_USER')) {
             return $this->redirectToRoute('account_index');
@@ -75,17 +49,13 @@ class SecurityController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("/logout", name="logout", methods="GET")
-     */
+    #[Route('/logout', name: 'logout', methods: ['GET'])]
     public function logout(): Response
     {
         throw new AccessDeniedHttpException();
     }
 
-    /**
-     * @Route("/register", name="registration", methods="GET|POST")
-     */
+    #[Route('/register', name: 'registration', methods: ['GET', 'POST'])]
     public function registration(Request $request): Response
     {
         if ($this->authChecker->isGranted('ROLE_USER')) {
@@ -106,7 +76,7 @@ class SecurityController extends AbstractController
         $messages = [];
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $user = (new User)
+            $user = (new User())
                 ->setUsername($form->get('username')->getData())
                 ->setPlainPassword($form->get('password')->getData())
                 ->setEmail($form->get('email')->getData())
@@ -130,9 +100,7 @@ class SecurityController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("/forgot_password", name="forgot_password", methods="GET|POST")
-     */
+    #[Route('/forgot_password', name: 'forgot_password', methods: ['GET', 'POST'])]
     public function forgotPassword(Request $request): Response
     {
         if ($this->authChecker->isGranted('ROLE_USER')) {
@@ -179,9 +147,7 @@ class SecurityController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("/reset_password/{token}", name="reset_password", methods="GET|POST")
-     */
+    #[Route('/reset_password/{token}', name: 'reset_password', methods: ['GET', 'POST'])]
     public function resetPassword(Request $request, string $token): Response
     {
         if ($this->authChecker->isGranted('ROLE_USER')) {
@@ -233,35 +199,8 @@ class SecurityController extends AbstractController
 
     private function createRegistrationForm(): FormInterface
     {
-        $formOptions = [
-            'constraints' => new UniqueEntity([
-                'fields' => 'username',
-            ]),
-            'data_class' => User::class,
-        ];
-
-        return $this->createFormBuilder(null, $formOptions)
-            ->setAction($this->generateUrl('security_registration'))
-            ->add('username', TextType::class, [
-                'required' => true,
-                'constraints' => [
-                    new Length(['min' => 3, 'max' => 24]),
-                    // new ContainsAlphanumeric,
-                ],
-                'label' => 'Username',
-            ])
-            ->add('password', RepeatedType::class, [
-                'type' => PasswordType::class,
-                'required' => true,
-                'invalid_message' => 'The passwords did not match.',
-                'first_options'  => ['label' => 'Password'],
-                'second_options' => ['label' => 'Confirm password'],
-            ])
-            ->add('email', EmailType::class, [
-                'label' => 'Email address',
-                'required' => false,
-            ])
-            ->getForm()
-        ;
+        return $this->createForm(UserRegistrationType::class, null, [
+            'action' => $this->generateUrl('security_registration'),
+        ]);
     }
 }

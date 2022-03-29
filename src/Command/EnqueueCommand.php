@@ -2,52 +2,56 @@
 
 namespace App\Command;
 
-use App\Message\CrawlBatSignal;
-use App\Message\CrawlFeed;
-use App\Message\CrawlYoutube;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputInterface;
+use App\Crawling\Crawlers;
+use App\Crawling\EpisodeFileCrawlerInterface;
+use App\Crawling\FileDownloader;
+use App\Entity\Episode;
+use App\Message\Crawl;
+use App\Message\CrawlFile;
+use App\Repository\EpisodeRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\StyleInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-class EnqueueCommand extends Command
+class EnqueueCommand extends CrawlCommand
 {
-    protected static $defaultName = 'app:enqueue';
+    protected static $defaultName = 'enqueue';
+    protected static $defaultDescription = 'Enqueues a crawling job';
 
-    private $messenger;
-
-    public function __construct(string $name = null, MessageBusInterface $crawlerBus)
-    {
-        parent::__construct($name);
-
-        $this->messenger = $crawlerBus;
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        EpisodeRepository $episodeRepository,
+        FileDownloader $fileDownloader,
+        ContainerInterface $crawlers,
+        private MessageBusInterface $messenger,
+    ) {
+        parent::__construct($entityManager, $episodeRepository, $fileDownloader, $crawlers);
     }
 
-    protected function configure(): void
+    protected function preCrawl(string $data, OutputInterface $output): void {}
+
+    protected function postCrawl(string $data, StyleInterface $style): void {}
+
+    protected function crawl(string $data, StyleInterface $style): void
     {
-        $this
-            ->setDescription('Queues crawling jobs')
-            ->addArgument('data', InputArgument::REQUIRED, 'The type of job to enqueue: bat_signal, feed, youtube')
-        ;
+        $this->messenger->dispatch(new Crawl(Crawlers::$crawlers[$data]));
+
+        $style->success(sprintf('Enqueued crawling of %s.', $data));
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    protected function crawlEpisode(string $data, Episode $episode, StyleInterface $style): void
     {
-        $data = $input->getArgument('data');
+        $crawlerName = Crawlers::$crawlers[$data];
+        $crawler = $this->crawlers->get($crawlerName);
 
-        $messages = [
-            'bat_signal' => new CrawlBatSignal(),
-            'feed' => new CrawlFeed(),
-            'youtube' => new CrawlYoutube(),
-        ];
-
-        if (!isset($messages[$data])) {
-            $output->writeln("Invalid data type: $data");
+        if ($crawler instanceof EpisodeFileCrawlerInterface) {
+            $this->messenger->dispatch(new CrawlFile($crawlerName, $episode->getCode()));
+        } else {
+            $this->messenger->dispatch(new Crawl($crawlerName, $episode->getCode()));
         }
 
-        $this->messenger->dispatch($messages[$data]);
-
-        return 0;
+        $style->success(sprintf('Enqueued crawling of %s for episode %s.', $data, $episode->getCode()));
     }
 }

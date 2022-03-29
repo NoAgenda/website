@@ -9,14 +9,10 @@ use Twig\TwigFunction;
 
 class AjaxExtension extends AbstractExtension
 {
-    private $router;
-    private $requestStack;
-
-    public function __construct(RouterInterface $router, RequestStack $requestStack)
-    {
-        $this->router = $router;
-        $this->requestStack = $requestStack;
-    }
+    public function __construct(
+        private RouterInterface $router,
+        private RequestStack $requestStack,
+    ) {}
 
     public function getFunctions(): array
     {

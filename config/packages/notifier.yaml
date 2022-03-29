@@ -1,14 +1,16 @@
 framework:
     notifier:
-        chatter_transports:
-            slack_default: '%env(SLACK_DSN)%'
-            slack_feedback: '%env(SLACK_FEEDBACK_DSN)%'
+        #chatter_transports:
+        #    slack: '%env(SLACK_DSN)%'
         #    telegram: '%env(TELEGRAM_DSN)%'
         #texter_transports:
         #    twilio: '%env(TWILIO_DSN)%'
         #    nexmo: '%env(NEXMO_DSN)%'
-        channel_policy:
-            urgent: ['chat/slack_default']
-            high: ['chat/slack_default']
-            medium: ['chat/slack_default']
-            low: ['chat/slack_default']
+        #channel_policy:
+        #    # use chat/slack, chat/telegram, sms/twilio or sms/nexmo
+        #    urgent: ['email']
+        #    high: ['email']
+        #    medium: ['email']
+        #    low: ['email']
+        #admin_recipients:
+        #    - { email: admin@example.com }

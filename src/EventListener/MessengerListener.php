@@ -2,7 +2,7 @@
 
 namespace App\EventListener;
 
-use App\Crawling\CrawlingLogger;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Messenger\Event\WorkerMessageFailedEvent;
 use Symfony\Component\Messenger\Event\WorkerMessageHandledEvent;
@@ -19,25 +19,22 @@ class MessengerListener implements EventSubscriberInterface
         ];
     }
 
-    private $logger;
-
-    public function __construct(CrawlingLogger $logger)
-    {
-        $this->logger = $logger;
-    }
+    public function __construct(
+        private LoggerInterface $crawlerLogger,
+    ) {}
 
     public function onReceiveMessage(WorkerMessageReceivedEvent $event): void
     {
-        $this->logger->info(sprintf('Executing job: %s', get_class($event->getEnvelope()->getMessage())));
+        $this->crawlerLogger->info(sprintf('Executing job: %s', get_class($event->getEnvelope()->getMessage())));
     }
 
     public function onHandledMessage(WorkerMessageHandledEvent $event): void
     {
-        // $this->logger->info(sprintf('Finished job: %s', get_class($event->getEnvelope()->getMessage())));
+        // $this->$this->crawlerLogger->info(sprintf('Finished job: %s', get_class($event->getEnvelope()->getMessage())));
     }
 
     public function onFailedToHandleMessage(WorkerMessageFailedEvent $event): void
     {
-        $this->logger->error(sprintf('Job failed: %s', get_class($event->getEnvelope()->getMessage())));
+        $this->crawlerLogger->error(sprintf('Job failed: %s', get_class($event->getEnvelope()->getMessage())));
     }
 }

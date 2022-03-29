@@ -8,44 +8,35 @@ use App\Entity\EpisodeChapterDraft;
 use App\Entity\FeedbackItem;
 use App\Entity\FeedbackVote;
 use App\Form\EpisodeChapterType;
+use App\Repository\EpisodeChapterDraftRepository;
 use App\UserTokenManager;
-use App\Utilities;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Notifier\Notification\Notification;
-use Symfony\Component\Notifier\NotifierInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class ChapterController extends AbstractController
 {
-    private $entityManager;
-    private $userTokenManager;
-    private NotifierInterface $notifier;
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+        private EpisodeChapterDraftRepository $episodeChapterDraftRepository,
+        private UserTokenManager $userTokenManager,
+    ) {}
 
-    public function __construct(UserTokenManager $userTokenManager, EntityManagerInterface $entityManager, NotifierInterface $notifier)
-    {
-        $this->userTokenManager = $userTokenManager;
-        $this->entityManager = $entityManager;
-        $this->notifier = $notifier;
-    }
-
-    /**
-     * @Route("/guidelines/chapters", name="chapter_guidelines")
-     */
+    #[Route('/guidelines/chapters', name: 'chapter_guidelines')]
     public function guidelines(): Response
     {
         return $this->render('chapter/guidelines.html.twig');
     }
 
     /**
-     * @Route("/episode/{episode}/chapters/new", name="episode_chapter_new")
      * @ParamConverter("episode", class="App\Entity\Episode", options={"mapping": {"episode": "code"}})
      */
+    #[Route('/episode/{episode}/chapters/new', name: 'episode_chapter_new')]
     public function draftNew(Request $request, Episode $episode): Response
     {
         if ($request->getMethod() === 'POST' && !$this->userTokenManager->isAuthenticated()) {
@@ -74,19 +65,6 @@ class ChapterController extends AbstractController
             $this->entityManager->persist($feedbackItem);
             $this->entityManager->flush();
 
-            $notification = new Notification(sprintf('New suggestion by %s on #%s: "%s" at %s',
-                $draft->getCreator() ? $draft->getCreator() : 'Anon.',
-                $episode->getCode(),
-                $draft->getName(),
-                Utilities::prettyTimestamp($draft->getStartsAt()),
-            ), ['chat/slack_feedback']);
-
-            try {
-                $this->notifier->send($notification);
-            } catch (\Exception $exception) {
-                // Ignore Slack exceptions
-            }
-
             return $this->redirectToReferral();
         }
 
@@ -97,9 +75,9 @@ class ChapterController extends AbstractController
     }
 
     /**
-     * @Route("/episode/{episode}/chapters/{chapter}/improve", name="episode_chapter_refactor")
      * @ParamConverter("episode", class="App\Entity\Episode", options={"mapping": {"episode": "code"}})
      */
+    #[Route('/episode/{episode}/chapters/{chapter}/improve', name: 'episode_chapter_refactor')]
     public function draftRefactor(Request $request, Episode $episode, EpisodeChapter $chapter): Response
     {
         if ($request->getMethod() === 'POST' && !$this->userTokenManager->isAuthenticated()) {
@@ -133,19 +111,6 @@ class ChapterController extends AbstractController
             $this->entityManager->persist($feedbackItem);
             $this->entityManager->flush();
 
-            $notification = new Notification(sprintf('Improved suggestion by %s on #%s: "%s" at %s',
-                $draft->getCreator() ? $draft->getCreator() : 'Anon.',
-                $episode->getCode(),
-                $draft->getName(),
-                Utilities::prettyTimestamp($draft->getStartsAt()),
-            ), ['chat/slack_feedback']);
-
-            try {
-                $this->notifier->send($notification);
-            } catch (\Exception $exception) {
-                // Ignore Slack exceptions
-            }
-
             return $this->redirectToReferral();
         }
 
@@ -157,9 +122,9 @@ class ChapterController extends AbstractController
     }
 
     /**
-     * @Route("/episode/{episode}/chapters/{chapter}", name="episode_chapter_edit")
      * @ParamConverter("episode", class="App\Entity\Episode", options={"mapping": {"episode": "code"}})
      */
+    #[Route('/episode/{episode}/chapters/{chapter}', name: 'episode_chapter_edit')]
     public function edit(Request $request, Episode $episode, EpisodeChapter $chapter): Response
     {
         $this->denyAccessUnlessGranted('ROLE_MOD');
@@ -183,9 +148,9 @@ class ChapterController extends AbstractController
     }
 
     /**
-     * @Route("/episode/{episode}/chapters/{chapter}/delete", name="episode_chapter_delete")
      * @ParamConverter("episode", class="App\Entity\Episode", options={"mapping": {"episode": "code"}})
      */
+    #[Route('/episode/{episode}/chapters/{chapter}/delete', name: 'episode_chapter_delete')]
     public function delete(Episode $episode, EpisodeChapter $chapter): Response
     {
         $this->denyAccessUnlessGranted('ROLE_MOD');
@@ -201,9 +166,9 @@ class ChapterController extends AbstractController
     }
 
     /**
-     * @Route("/episode/{episode}/draft/{draft}/accept", name="episode_chapter_accept")
      * @ParamConverter("episode", class="App\Entity\Episode", options={"mapping": {"episode": "code"}})
      */
+    #[Route('/episode/{episode}/chapters/{chapter}/accept', name: 'episode_chapter_accept')]
     public function accept(Episode $episode, EpisodeChapterDraft $draft): Response
     {
         $this->denyAccessUnlessGranted('ROLE_MOD');
@@ -216,9 +181,9 @@ class ChapterController extends AbstractController
     }
 
     /**
-     * @Route("/episode/{episode}/draft/{draft}/acceptEdit", name="episode_chapter_accept_edit")
      * @ParamConverter("episode", class="App\Entity\Episode", options={"mapping": {"episode": "code"}})
      */
+    #[Route('/episode/{episode}/draft/{draft}/accept_edit', name: 'episode_chapter_accept_edit')]
     public function acceptEdit(Episode $episode, EpisodeChapterDraft $draft): Response
     {
         $this->denyAccessUnlessGranted('ROLE_MOD');
@@ -234,14 +199,14 @@ class ChapterController extends AbstractController
     }
 
     /**
-     * @Route("/episode/{episode}/accept_all", name="episode_chapter_accept_all")
      * @ParamConverter("episode", class="App\Entity\Episode", options={"mapping": {"episode": "code"}})
      */
+    #[Route('/episode/{episode}/accept_all', name: 'episode_chapter_accept_all')]
     public function acceptAll(Episode $episode): Response
     {
         $this->denyAccessUnlessGranted('ROLE_MOD');
 
-        $drafts = $this->entityManager->getRepository(EpisodeChapterDraft::class)->findNewSuggestionsByEpisode($episode);
+        $drafts = $this->episodeChapterDraftRepository->findNewSuggestionsByEpisode($episode);
 
         foreach ($drafts as $draft) {
             $this->doAcceptDraft($draft);
@@ -253,9 +218,9 @@ class ChapterController extends AbstractController
     }
 
     /**
-     * @Route("/episode/{episode}/draft/{draft}/reject", name="episode_chapter_reject")
      * @ParamConverter("episode", class="App\Entity\Episode", options={"mapping": {"episode": "code"}})
      */
+    #[Route('/episode/{episode}/draft/{draft}/reject', name: 'episode_chapter_reject')]
     public function reject(Episode $episode, EpisodeChapterDraft $draft): Response
     {
         $this->denyAccessUnlessGranted('ROLE_MOD');
@@ -263,16 +228,15 @@ class ChapterController extends AbstractController
         $draft->setRejected(true);
 
         $this->entityManager->persist($draft);
-
         $this->entityManager->flush();
 
         return $this->redirectToReferral();
     }
 
     /**
-     * @Route("/episode/{episode}/draft/{draft}/vote/{vote?support|reject}", name="episode_chapter_vote")
      * @ParamConverter("episode", class="App\Entity\Episode", options={"mapping": {"episode": "code"}})
      */
+    #[Route('/episode/{episode}/draft/{draft}/vote/{vote?support|reject}', name: 'episode_chapter_vote')]
     public function vote(EpisodeChapterDraft $draft, string $vote): Response
     {
         if (!$this->userTokenManager->isAuthenticated()) {

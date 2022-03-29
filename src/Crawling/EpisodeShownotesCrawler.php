@@ -3,50 +3,63 @@
 namespace App\Crawling;
 
 use App\Entity\Episode;
+use App\Exception\FileDownloadException;
 use Doctrine\ORM\EntityManagerInterface;
-use Http\Client\Common\HttpMethodsClient;
+use Http\Client\Common\HttpMethodsClientInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
 
-class EpisodeShownotesCrawler
+class EpisodeShownotesCrawler implements EpisodeFileCrawlerInterface
 {
     use LoggerAwareTrait;
 
-    private $entityManager;
-    private $httpClient;
-
-    public function __construct(EntityManagerInterface $entityManager, HttpMethodsClient $shownotesClient)
-    {
-        $this->entityManager = $entityManager;
-        $this->httpClient = $shownotesClient;
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+        private HttpMethodsClientInterface $shownotesClient,
+        private FileDownloader $fileDownloader,
+    ) {
         $this->logger = new NullLogger();
     }
 
-    public function crawl(Episode $episode): void
+    public function crawl(Episode $episode, \DateTime $ifModifiedSince = null): \DateTime
     {
-        libxml_use_internal_errors(true);
+        $frontResponse = $this->shownotesClient->get(sprintf('http://%s.noagendanotes.com', $episode->getCode()));
+        $publicUri = $frontResponse->getHeaderLine('Location');
 
-        $frontResponse = $this->httpClient->get(sprintf('http://%s.noagendanotes.com', $episode->getCode()));
-        $uri = str_replace('symfony://', '', $frontResponse->getBody()->getMetadata('uri'));
+        if ($publicUri !== $episode->getPublicShownotesUri()) {
+            $publicResponse = $this->shownotesClient->get($publicUri);
+            $publicContents = $publicResponse->getBody()->getContents();
 
-        $episode->setShownotesUri($uri);
+            libxml_use_internal_errors(true);
 
-        $htmlResponse = $this->httpClient->get($episode->getShownotesUri());
-        $htmlContents = $htmlResponse->getBody()->getContents();
+            $publicDom = new \DOMDocument();
+            $publicDom->loadHTML($publicContents);
 
-        $htmlDom = new \DOMDocument();
-        $htmlDom->loadHTML($htmlContents);
+            $uri = (new \DOMXPath($publicDom))
+                ->query('.//link[@title="OPML"]')
+                ->item(0)
+                ->getAttribute('href')
+            ;
 
-        $htmlXpath = new \DOMXPath($htmlDom);
+            $episode->setPublicShownotesUri($publicUri);
+            $episode->setShownotesUri($uri);
 
-        $opmlUri = $htmlXpath->query('.//link[@title="OPML"]')->item(0)->getAttribute('href');
+            $this->entityManager->persist($episode);
+        }
 
-        $response = $this->httpClient->get($opmlUri);
-        $contents = $response->getBody()->getContents();
+        if (!$episode->getShownotesUri()) {
+            throw new FileDownloadException(sprintf('Shownotes URI for episode %s could not be found.', $episode->getCode()));
+        }
 
-        $shownotesPath = sprintf('%s/shownotes/%s.xml', $_SERVER['APP_STORAGE_PATH'], $episode->getCode());
-        file_put_contents($shownotesPath, $contents);
+        $path = sprintf('%s/shownotes/%s.xml', $_SERVER['APP_STORAGE_PATH'], $episode->getCode());
+        $lastModifiedAt = $this->fileDownloader->download($episode->getShownotesUri(), $path, $ifModifiedSince);
 
-        $this->entityManager->persist($episode);
+        if ($path !== $episode->getShownotesPath()) {
+            $episode->setShownotesPath($path);
+
+            $this->entityManager->persist($episode);
+        }
+
+        return $lastModifiedAt;
     }
 }

@@ -2,10 +2,11 @@
 
 namespace App\Controller\Admin;
 
+use App\Crawling\EpisodeChatArchiveMatcher;
+use App\Crawling\EpisodeRecordingTimeMatcher;
+use App\Crawling\EpisodeTranscriptCrawler;
 use App\Entity\Episode;
-use App\Message\CrawlEpisodeTranscript;
-use App\Message\MatchEpisodeChatMessages;
-use App\Message\MatchEpisodeRecordingTime;
+use App\Message\Crawl;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -28,8 +29,8 @@ class EpisodeCrudController extends AbstractCrudController
 {
     public function __construct(
         private MessageBusInterface $messenger,
-        private AdminUrlGenerator $adminUrlGenerator
-    ) { }
+        private AdminUrlGenerator $adminUrlGenerator,
+    ) {}
 
     public static function getEntityFqcn(): string
     {
@@ -62,8 +63,7 @@ class EpisodeCrudController extends AbstractCrudController
 
     public function configureFields(string $pageName): iterable
     {
-        $isIndex = Crud::PAGE_INDEX === $pageName;
-        $isDetail = Crud::PAGE_DETAIL === $pageName;
+        $isIndex = $pageName === Crud::PAGE_INDEX;
 
         yield TextField::new('code', $isIndex ? 'No.' : 'Episode No.');
 
@@ -75,13 +75,19 @@ class EpisodeCrudController extends AbstractCrudController
 
         if (!$isIndex) {
             yield TextField::new('author');
-            yield IntegerField::new('duration');
+            yield IntegerField::new('duration')
+                ->setTemplatePath('admin/field/duration.html.twig')
+            ;
         }
 
         yield DateField::new('publishedAt')
             ->renderAsText()
         ;
         yield BooleanField::new('special', $isIndex ? 'Special' : 'Special Episode')
+            ->renderAsSwitch(!$isIndex)
+        ;
+        yield BooleanField::new('published')
+            ->setHelp('Whether the episode is published on the website. Data for the episode is crawled before the episode is published.')
             ->renderAsSwitch(!$isIndex)
         ;
 
@@ -99,25 +105,27 @@ class EpisodeCrudController extends AbstractCrudController
                 ])
                 ->setTemplatePath('admin/field/recorded_at.html.twig')
             ;
-            yield UrlField::new('coverUri');
-            yield UrlField::new('shownotesUri');
+            yield UrlField::new('coverUri')
+                ->setTemplatePath('admin/field/cover_uri.html.twig')
+            ;
+            yield TextField::new('coverPath');
+            yield UrlField::new('publicShownotesUri');
+            yield UrlField::new('shownotesUri')
+                ->setTemplatePath('admin/field/shownotes_uri.html.twig')
+            ;
+            yield TextField::new('shownotesPath');
 
             yield FormField::addPanel('Transcript')
                 ->setIcon('fas fa-bars')
                 ->setHelp('Data used for crawling and processing metadata related to the transcript.')
             ;
 
-            if ($isDetail) {
-                yield BooleanField::new('transcriptExists')
-                    ->setHelp('Episode has a transcript')
-                    ->setTemplatePath('admin/field/transcript_exists.html.twig')
-                ;
-            }
-
-            yield BooleanField::new('transcript')
-                ->setHelp('Transcript is visible on the website')
+            yield UrlField::new('transcriptUri')
+                ->setTemplatePath('admin/field/transcript_uri.html.twig')
             ;
-            yield UrlField::new('transcriptUri');
+            yield TextField::new('transcriptPath')
+                ->setTemplatePath('admin/field/transcript_path.html.twig')
+            ;
             yield ChoiceField::new('transcriptType')
                 ->setChoices([
                     'SRT' => 'srt',
@@ -130,15 +138,8 @@ class EpisodeCrudController extends AbstractCrudController
                 ->setHelp('Data used for crawling and processing metadata related to live chat logs.')
             ;
 
-            if ($isDetail) {
-                yield BooleanField::new('chatMessagesExist')
-                    ->setHelp('Episode has an archive of the live chat')
-                    ->setTemplatePath('admin/field/chat_messages_exist.html.twig')
-                ;
-            }
-
-            yield BooleanField::new('chatMessages')
-                ->setHelp('Chat archive is visible on the website')
+            yield TextField::new('chatArchivePath')
+                ->setTemplatePath('admin/field/chat_archive_path.html.twig')
             ;
             yield TextField::new('chatNotice')
                 ->setHelp('Message displayed above the chat archive in case of a problem, like being out of sync for a few minutes.')
@@ -146,7 +147,7 @@ class EpisodeCrudController extends AbstractCrudController
         }
     }
 
-    public function chatMessages(AdminContext $context): Response
+    public function chatArchive(AdminContext $context): Response
     {
         $episode = $context->getEntity()->getInstance();
 
@@ -156,11 +157,11 @@ class EpisodeCrudController extends AbstractCrudController
             ]);
         }
 
-        $chatMessages = json_decode(file_get_contents($episode->getChatMessagesPath()));
+        $chatArchive = json_decode(file_get_contents($episode->getChatMessagesPath()));
 
-        return $this->render('admin/episode/chat_messages.html.twig', [
+        return $this->render('admin/episode/chat_archive.html.twig', [
             'episode' => $episode,
-            'chat_messages' => $chatMessages,
+            'chat_archive' => $chatArchive,
         ]);
     }
 
@@ -190,11 +191,10 @@ class EpisodeCrudController extends AbstractCrudController
     {
         $episode = $context->getEntity()->getInstance();
 
-        $message = new CrawlEpisodeTranscript($episode->getCode());
-
+        $message = new Crawl(EpisodeTranscriptCrawler::class, $episode->getCode());
         $this->messenger->dispatch($message);
 
-        $this->addFlash('success', 'Job queued');
+        $this->addFlash('success', sprintf('Scheduled crawling of transcript for episode %s.', $episode->getCode()));
 
         return $this->redirect($this->adminUrlGenerator
             ->setController(self::class)
@@ -208,11 +208,10 @@ class EpisodeCrudController extends AbstractCrudController
     {
         $episode = $context->getEntity()->getInstance();
 
-        $message = new MatchEpisodeChatMessages($episode->getCode());
-
+        $message = new Crawl(EpisodeChatArchiveMatcher::class, $episode->getCode());
         $this->messenger->dispatch($message);
 
-        $this->addFlash('success', 'Job queued');
+        $this->addFlash('success', sprintf('Scheduled crawling of chat_messages for episode %s.', $episode->getCode()));
 
         return $this->redirect($this->adminUrlGenerator
             ->setController(self::class)
@@ -226,11 +225,10 @@ class EpisodeCrudController extends AbstractCrudController
     {
         $episode = $context->getEntity()->getInstance();
 
-        $message = new MatchEpisodeRecordingTime($episode->getCode());
-
+        $message = new Crawl(EpisodeRecordingTimeMatcher::class, $episode->getCode());
         $this->messenger->dispatch($message);
 
-        $this->addFlash('success', 'Job queued');
+        $this->addFlash('success', sprintf('Scheduled crawling of recording_time for episode %s.', $episode->getCode()));
 
         return $this->redirect($this->adminUrlGenerator
             ->setController(self::class)

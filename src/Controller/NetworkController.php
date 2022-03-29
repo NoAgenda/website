@@ -9,16 +9,11 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class NetworkController extends AbstractController
 {
-    private $networkSiteRepository;
+    public function __construct(
+        private NetworkSiteRepository $networkSiteRepository,
+    ) {}
 
-    public function __construct(NetworkSiteRepository $networkSiteRepository)
-    {
-        $this->networkSiteRepository = $networkSiteRepository;
-    }
-
-    /**
-     * @Route("/network", name="network")
-     */
+    #[Route('/network', name: 'network')]
     public function index(): Response
     {
         $networkSites = $this->networkSiteRepository->findAll();

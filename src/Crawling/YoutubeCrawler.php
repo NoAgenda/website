@@ -3,107 +3,93 @@
 namespace App\Crawling;
 
 use App\Entity\Video;
+use App\Repository\VideoRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Http\Client\Common\HttpMethodsClient;
+use Http\Client\Common\HttpMethodsClientInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
 
-class YoutubeCrawler
+class YoutubeCrawler implements CrawlerInterface
 {
     use LoggerAwareTrait;
 
-    private $httpClient;
-    private $entityManager;
-
-    public function __construct(HttpMethodsClient $httpClient, EntityManagerInterface $entityManager)
-    {
-        $this->httpClient = $httpClient;
-        $this->entityManager = $entityManager;
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+        private VideoRepository $videoRepository,
+        private HttpMethodsClientInterface $httpClient,
+        private ?string $youtubeKey = null,
+        private ?string $youtubePlaylistId = null,
+    ) {
         $this->logger = new NullLogger();
     }
 
     public function crawl(): void
     {
-        if (!$_SERVER['YOUTUBE_KEY']) {
+        if (!$this->youtubeKey) {
+            $this->logger->critical('YouTube API key not found. Skipping crawling of ANA videos.');
+
             return;
         }
 
-        $videoRepository = $this->entityManager->getRepository(Video::class);
+        foreach ($this->fetchPlaylist() as $youtubeId) {
+            $video = $this->videoRepository->findOneBy(['youtubeId' => $youtubeId]) ?: new Video($youtubeId);
 
-        $videoIds = $this->fetchAnimatedNaVideos();
-
-        foreach ($videoIds as $videoId) {
-            $video = $videoRepository->findOneBy(['youtubeId' => $videoId]);
-            $video = $video ?: new Video();
-
-            $etag = $video->getYoutubeEtag();
-
-            $videoData = $this->fetchVideo($videoId, $etag);
-
-            if (!$videoData) {
-                continue;
-            }
-
-            $video->setTitle($videoData['snippet']['title']);
-            $video->setPublishedAt(new \DateTime($videoData['snippet']['publishedAt']));
-            $video->setYoutubeId($videoId);
-            $video->setYoutubeEtag($etag);
-
-            if (!$video->getId()) {
-                $this->logger->info(sprintf('Found new Animated NA video: %s', $video->getTitle()));
-            } else {
-                $this->logger->info(sprintf('Updated Animated NA video: %s', $video->getTitle()));
-            }
-
-            $this->entityManager->persist($video);
+            $this->fetchVideo($video);
         }
     }
 
-    private function fetchAnimatedNaVideos(): array
+    private function fetchPlaylist(): \Generator
     {
         $uri = sprintf('https://www.googleapis.com/youtube/v3/playlistItems?%s', http_build_query([
-            'key' => $_SERVER['YOUTUBE_KEY'],
-            'playlistId' => $_SERVER['YOUTUBE_ANIMATED_NA_UPLOADS_PLAYLIST_ID'],
+            'key' => $this->youtubeKey,
+            'playlistId' => $this->youtubePlaylistId,
             'part' => 'contentDetails',
             'maxResults' => 10,
         ]));
 
         $response = $this->httpClient->get($uri);
-
         $contents = json_decode($response->getBody()->getContents(), true);
 
-        $items = [];
         foreach ($contents['items'] as $item) {
-            $items[] = $item['contentDetails']['videoId'];
+            yield $item['contentDetails']['videoId'];
         }
-
-        return $items;
     }
 
-    private function fetchVideo(string $id, string &$etag = null): ?array
+    private function fetchVideo(Video $video): void
     {
         $uri = sprintf('https://www.googleapis.com/youtube/v3/videos?%s', http_build_query([
-            'key' => $_SERVER['YOUTUBE_KEY'],
-            'id' => $id,
+            'key' => $this->youtubeKey,
+            'id' => $video->getYoutubeId(),
             'part' => 'snippet',
         ]));
 
         $headers = [];
 
-        if ($etag) {
+        if ($etag = $video->getYoutubeEtag()) {
             $headers['If-None-Match'] = $etag;
         }
 
         $response = $this->httpClient->get($uri, $headers);
 
         if (304 === $response->getStatusCode()) {
-            return null;
+            return;
         }
 
         $contents = json_decode($response->getBody()->getContents(), true);
+        $data = $contents['items'][0];
 
-        $etag = $contents['etag'];
+        $video
+            ->setTitle($data['snippet']['title'])
+            ->setPublishedAt(new \DateTime($data['snippet']['publishedAt']))
+            ->setYoutubeEtag($contents['etag'])
+        ;
 
-        return $contents['items'][0];
+        if (!$video->getId()) {
+            $this->logger->info(sprintf('Found new Animated NA video: %s', $video->getTitle()));
+        } else {
+            $this->logger->info(sprintf('Updated Animated NA video: %s', $video->getTitle()));
+        }
+
+        $this->entityManager->persist($video);
     }
 }

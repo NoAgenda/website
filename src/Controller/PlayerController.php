@@ -16,41 +16,30 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 class PlayerController extends AbstractController
 {
-    private $episodeChapterDraftRepository;
-    private $episodeChapterRepository;
-    private $episodeRepository;
-    private $shownotesParserFactory;
-
     public function __construct(
-        ShownotesParserFactory $shownotesParserFactory,
-        EpisodeRepository $episodeRepository,
-        EpisodeChapterRepository $episodeChapterRepository,
-        EpisodeChapterDraftRepository $episodeChapterDraftRepository
-    ) {
-        $this->shownotesParserFactory = $shownotesParserFactory;
-        $this->episodeRepository = $episodeRepository;
-        $this->episodeChapterRepository = $episodeChapterRepository;
-        $this->episodeChapterDraftRepository = $episodeChapterDraftRepository;
-    }
+        private EpisodeRepository $episodeRepository,
+        private EpisodeChapterRepository $episodeChapterRepository,
+        private EpisodeChapterDraftRepository $episodeChapterDraftRepository,
+        private ShownotesParserFactory $shownotesParserFactory,
+    ) {}
 
-    /**
-     * @Route("/listen", name="player_latest")
-     */
+    #[Route('/listen', name: 'player_latest')]
     public function latest(): Response
     {
-        $episode = $this->episodeRepository->findLatest();
+        $episode = $this->episodeRepository->findLastPublishedEpisode();
 
         return $this->redirectToRoute('player', ['episode' => $episode->getCode()], Response::HTTP_TEMPORARY_REDIRECT);
     }
 
     /**
-     * @Route("/listen/{episode}", name="player")
      * @ParamConverter("episode", class="App\Entity\Episode", options={"mapping": {"episode": "code"}})
      */
+    #[Route('/listen/{episode}', name: 'player')]
     public function player(Request $request, Episode $episode): Response
     {
         $timestamp = Utilities::parsePrettyTimestamp($request->query->get('t', 0));
@@ -93,9 +82,9 @@ class PlayerController extends AbstractController
     }
 
     /**
-     * @Route("/listen/{episode}/audio", name="player_audio")
      * @ParamConverter("episode", class="App\Entity\Episode", options={"mapping": {"episode": "code"}})
      */
+    #[Route('/listen/{episode}/audio', name: 'player_audio')]
     public function audio(Episode $episode): Response
     {
         $path = sprintf('%s/episode_recordings/%s.mp3', $_SERVER['APP_STORAGE_PATH'], $episode->getCode());
@@ -104,13 +93,15 @@ class PlayerController extends AbstractController
     }
 
     /**
-     * @Route("/listen/{episode}/chat", name="player_chat_messages")
      * @ParamConverter("episode", class="App\Entity\Episode", options={"mapping": {"episode": "code"}})
      */
-    public function chatMessages(Episode $episode): Response
+    #[Route('/listen/{episode}/chat', name: 'player_chat_archive')]
+    public function chatArchive(Episode $episode): Response
     {
-        $path = sprintf('%s/chat_messages/%s.json', $_SERVER['APP_STORAGE_PATH'], $episode->getCode());
+        if (!$episode->hasChatArchive()) {
+            throw new NotFoundHttpException();
+        }
 
-        return new BinaryFileResponse($path);
+        return new BinaryFileResponse($episode->getChatArchivePath());
     }
 }

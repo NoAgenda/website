@@ -7,7 +7,7 @@ use Psr\Log\NullLogger;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
 
-class LivestreamRecorder
+class LivestreamRecorder implements RecorderInterface
 {
     use LoggerAwareTrait;
 
@@ -16,35 +16,24 @@ class LivestreamRecorder
         $this->logger = new NullLogger();
     }
 
-    public function record(bool $timeout = true): void
+    public function record(): void
     {
         $time = (new \DateTime())->format('YmdHis');
-        $recordingPath = sprintf('%s/livestream_recordings/recording_%s', $_SERVER['APP_STORAGE_PATH'], $time);
+        $path = sprintf('%s/livestream_recordings/recording_%s', $_SERVER['APP_STORAGE_PATH'], $time);
 
-        if (!is_dir(dirname($recordingPath))) {
-            $filesystem = new Filesystem();
-            $filesystem->mkdir(dirname($recordingPath));
-        }
+        (new Filesystem())->mkdir(dirname($path));
 
-        $this->logger->debug('Starting recording...');
+        $this->logger->debug(sprintf('Starting livestream recording: %s', $time));
 
         $command = 'bin/scripts/record-livestream.bash "$DUMP_PATH"';
-        $process = Process::fromShellCommandline($command);
+        $process = Process::fromShellCommandline($command)
+            ->setTimeout(180)
+        ;
 
-        $process->setTimeout(180);
-
-        $process->run(null, [
-            'DUMP_PATH' => $recordingPath,
+        $process->mustRun(null, [
+            'DUMP_PATH' => $path,
         ]);
 
-        if ($timeout) {
-            $this->logger->debug('Finished recording, starting timeout');
-
-            sleep(14 * 60);
-        }
-
-        if (!$process->isSuccessful()) {
-            throw new \Exception('An error occurred while creating the recording.');
-        }
+        $this->logger->debug(sprintf('Finished livestream recording: %s', $time));
     }
 }

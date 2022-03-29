@@ -3,60 +3,58 @@
 namespace App\Crawling;
 
 use App\Entity\BatSignal;
+use App\Repository\BatSignalRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Http\Client\Common\HttpMethodsClient;
+use Http\Client\Common\HttpMethodsClientInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
 
-class BatSignalCrawler
+class BatSignalCrawler implements CrawlerInterface
 {
     use LoggerAwareTrait;
 
-    private $httpClient;
-    private $entityManager;
-
-    public function __construct(HttpMethodsClient $mastodonClient, EntityManagerInterface $entityManager)
-    {
-        $this->httpClient = $mastodonClient;
-        $this->entityManager = $entityManager;
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+        private BatSignalRepository $batSignalRepository,
+        private HttpMethodsClientInterface $mastodonClient,
+        private ?string $mastodonAccessToken,
+        private int $mastodonAccountId,
+    ) {
         $this->logger = new NullLogger();
     }
 
     public function crawl(): void
     {
-        $signalRepository = $this->entityManager->getRepository(BatSignal::class);
-
-        $newSignal = $this->crawlBatSignal();
-
-        if (!$newSignal) {
-            return;
-        }
-
-        $existingSignal = $signalRepository->findOneBy([
-            'code' => $newSignal->getCode(),
-            'deployedAt' => $newSignal->getDeployedAt(),
-        ]);
-
-        if ($existingSignal) {
-            $this->logger->debug('No new bat signal found.');
+        if (!$this->mastodonAccessToken) {
+            $this->logger->critical('Mastodon access token not found. Skipping crawling of bat signal.');
 
             return;
         }
 
-        $this->logger->info(sprintf('Found new bat signal with code: %s', $newSignal->getCode()));
+        if (!$signal = $this->crawlBatSignal()) {
+            $this->logger->debug('No bat signal found.');
 
-        $this->entityManager->persist($newSignal);
+            return;
+        }
+
+        if ($this->batSignalRepository->exists($signal)) {
+            $this->logger->debug('Found bat signal already exists.');
+
+            return;
+        }
+
+        $this->logger->info(sprintf(
+            'Found new bat signal with code "%s" published at %s.',
+            $signal->getCode(),
+            $signal->getDeployedAt()->format('Y-m-d H:i:s'),
+        ));
+
+        $this->entityManager->persist($signal);
     }
 
     private function crawlBatSignal(): ?BatSignal
     {
-        if (!$_SERVER['MASTODON_ACCESS_TOKEN']) {
-            $this->logger->critical('Failed to initialize Mastodon API to fetch bat signal.');
-
-            return null;
-        }
-
-        $response = $this->httpClient->get('/accounts/1/statuses');
+        $response = $this->mastodonClient->get(sprintf('/accounts/%s/statuses', $this->mastodonAccountId));
 
         if ($response->getStatusCode() > 200) {
             $this->logger->critical('Failed to fetch messages from No Agenda Social.');
@@ -66,30 +64,18 @@ class BatSignalCrawler
 
         $entries = json_decode($response->getBody()->getContents(), true);
 
-        $post = false;
-
         foreach ($entries as $entry) {
-            if (strpos($entry['content'], '#@pocketnoagenda') === false) {
-                continue;
+            if (str_contains($entry['content'], '#@pocketnoagenda')) {
+                preg_match('/episode (\d+)/', $entry['content'],$matches);
+                list(, $code) = $matches;
+
+                return (new BatSignal())
+                    ->setCode($code)
+                    ->setDeployedAt(new \DateTime($entry['created_at']))
+                ;
             }
-
-            $post = $entry;
-
-            break;
         }
 
-        if (!$post) {
-            return null;
-        }
-
-        preg_match('/episode (\d+)/', $post['content'],$matches);
-        list(, $code) = $matches;
-
-        $signal = new BatSignal();
-
-        $signal->setCode($code);
-        $signal->setDeployedAt(new \DateTime($post['created_at']));
-
-        return $signal;
+        return null;
     }
 }

@@ -9,30 +9,26 @@ use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
 use Symfony\Component\Filesystem\Filesystem;
 
-class ChatRecorder
+class ChatRecorder implements RecorderInterface
 {
     use LoggerAwareTrait;
 
-    private $joined = false;
+    private bool $joined = false;
+    private \DateTime $lastUpdatedAt;
 
     public function __construct()
     {
+        $this->lastUpdatedAt = new \DateTime();
         $this->logger = new NullLogger();
-        $this->lastUpdated = new \DateTime();
     }
 
     public function record(): void
     {
-        $logPath = sprintf('%s/chat_logs', $_SERVER['APP_STORAGE_PATH']);
+        $basePath = sprintf('%s/chat_logs', $_SERVER['APP_STORAGE_PATH']);
 
-        if (!is_dir($logPath)) {
-            $filesystem = new Filesystem();
-            $filesystem->mkdir($logPath);
-        }
+        (new Filesystem())->mkdir($basePath);
 
-        $connection = new Connection();
-
-        $connection
+        $connection = (new Connection())
             ->setServerHostname('irc.zeronode.net')
             ->setServerPort(6667)
             ->setHostname('irc.zeronode.net')
@@ -44,9 +40,9 @@ class ChatRecorder
 
         $client = new Client();
 
-        $client->on('irc.received', function ($message, WriteStream $write) {
+        $client->on('irc.received', function (array $message, WriteStream $write) use ($basePath) {
             if (!$this->joined) {
-                if (strpos($message['message'], 'message of the day') !== false) {
+                if (str_contains($message['message'], 'message of the day')) {
                     $write->ircJoin('#NoAgenda');
 
                     $this->joined = true;
@@ -55,7 +51,7 @@ class ChatRecorder
                 return;
             }
 
-            $this->lastUpdated = $lastUpdated = new \DateTime();
+            $this->lastUpdatedAt = $lastUpdatedAt = new \DateTime();
 
             if (!strpos($message['message'], 'PRIVMSG #NoAgenda')) {
                 return;
@@ -65,25 +61,21 @@ class ChatRecorder
             $messageText = preg_replace('/[[:cntrl:]]/', '', $messageText);
             $messageText = mb_convert_encoding($messageText, 'UTF-8', 'UTF-8');
 
-            $log = sprintf('%s >>> %s', $lastUpdated->format('Y-m-d H:i:s'), $messageText);
+            $path = sprintf('%s/%s.log', $basePath, $lastUpdatedAt->format('Ymd'));
+            $log = sprintf('%s >>> %s', $lastUpdatedAt->format('Y-m-d H:i:s'), $messageText);
 
-            file_put_contents($this->getLogPath(), $log . "\n", FILE_APPEND | LOCK_EX);
+            file_put_contents($path, "$log\n", FILE_APPEND | LOCK_EX);
         });
 
         $client->on('irc.tick', function () {
-            $stallTime = (new \DateTime())->sub(new \DateInterval('PT15M'));
+            $ifNotUpdatedSince = (new \DateTime())->sub(new \DateInterval('PT15M'));
 
-            if ($this->lastUpdated < $stallTime) {
+            if ($this->lastUpdatedAt < $ifNotUpdatedSince) {
                 exit();
             }
         });
 
         $client->run($connection);
-    }
-
-    private function getLogPath(): string
-    {
-        return sprintf('%s/chat_logs/%s.log', $_SERVER['APP_STORAGE_PATH'], (new \DateTime())->format('Ymd'));
     }
 
     private function getRandomName(): string

@@ -9,13 +9,14 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[Entity(repositoryClass: UserRepository::class)]
 #[Table(name: 'na_user')]
 #[UniqueEntity('username')]
 #[UniqueEntity('email')]
-class User implements UserInterface, \Serializable
+class User implements UserInterface, PasswordAuthenticatedUserInterface, \Serializable
 {
     #[Id]
     #[GeneratedValue]
@@ -263,5 +264,25 @@ class User implements UserInterface, \Serializable
             $this->password,
             $this->salt
         ) = unserialize($serialized, ['allowed_classes' => false]);
+    }
+
+    public function __serialize(): array
+    {
+        return [
+            $this->id,
+            $this->username,
+            $this->password,
+            $this->salt,
+        ];
+    }
+
+    public function __unserialize($serialized): void
+    {
+        list (
+            $this->id,
+            $this->username,
+            $this->password,
+            $this->salt
+        ) = $serialized;
     }
 }

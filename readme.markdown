@@ -81,8 +81,8 @@ bin/console app:crawl transcript --episode <code>
 # Match an episode's recording time
 bin/console app:crawl recording_time --episode <code>
 
-# Match an episode's chat messages
-bin/console app:crawl chat_messages --episode <code>
+# Match an episode's chat archive
+bin/console app:crawl chat_archive --episode <code>
 
 # Record a chunk of the livestream
 bin/console app:record livestream

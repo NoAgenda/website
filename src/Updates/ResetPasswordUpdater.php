@@ -3,6 +3,7 @@
 namespace App\Updates;
 
 use App\Entity\User;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 
 class ResetPasswordUpdater extends AbstractUpdater
 {
@@ -13,23 +14,19 @@ class ResetPasswordUpdater extends AbstractUpdater
             return true;
         }
 
-        $contents = $this->renderTemplate('emails/reset_password.html.twig', [
-            'user' => $user,
-            'remote_address' => $this->locator->get('request_stack')->getCurrentRequest()->getClientIp(),
-            'activation_url' => $this->generateUrl('security_reset_password', ['token' => $user->getActivationToken()])
-        ]);
-
-        $message = (new \Swift_Message)
-            ->setFrom($this->getAuthorEmail(), $this->getAuthorName())
-            ->setTo($user->getEmail(), $user->getUsername())
-            ->setSubject('Reset password')
-            ->setBody($contents, 'text/html')
+        $message = (new TemplatedEmail())
+            ->from($this->getAuthorEmail(), $this->getAuthorName())
+            ->to($user->getEmail(), $user->getUsername())
+            ->subject('Reset password')
+            ->htmlTemplate('emails/reset_password.html.twig')
+            ->context([
+                'user' => $user,
+                'remote_address' => $this->requestStack->getCurrentRequest()->getClientIp(),
+                'activation_url' => $this->generateUrl('security_reset_password', ['token' => $user->getActivationToken()])
+            ])
         ;
 
-        $result = $this->sendMessage($message);
-
-        // todo log result if false?
-        // $this->log('error', '');
+        $this->mailer->send($message);
 
         return true;
     }

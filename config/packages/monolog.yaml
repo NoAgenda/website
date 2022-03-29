@@ -1,5 +1,6 @@
 monolog:
     channels:
+        - crawler
         - deprecation # Deprecations are logged in the dedicated "deprecation" channel when it exists
 
 when@dev:
@@ -9,19 +10,24 @@ when@dev:
                 type: stream
                 path: "%kernel.logs_dir%/%kernel.environment%.log"
                 level: debug
-                channels: ["!event"]
-            # uncomment to get logging in your browser
-            # you may have to allow bigger header sizes in your Web server configuration
-            #firephp:
-            #    type: firephp
-            #    level: info
-            #chromephp:
-            #    type: chromephp
-            #    level: info
+                channels: ["!event", "!crawler"]
             console:
                 type: console
                 process_psr_3_messages: false
-                channels: ["!event", "!doctrine", "!console"]
+                channels: ["!event", "!doctrine", "!console", "!crawler"]
+            crawler_console:
+                type: console
+                verbosity_levels:
+                    VERBOSITY_QUIET: NOTICE
+                    VERBOSITY_NORMAL: INFO
+                    VERBOSITY_VERBOSE: DEBUG
+                    VERBOSITY_VERY_VERBOSE: DEBUG
+                channels: crawler
+            crawler_file:
+                type: stream
+                path: "%kernel.logs_dir%/crawler.log"
+                level: debug
+                channels: crawler
 
 when@test:
     monolog:
@@ -54,8 +60,21 @@ when@prod:
             console:
                 type: console
                 process_psr_3_messages: false
-                channels: ["!event", "!doctrine"]
+                channels: ["!event", "!doctrine", "!crawler"]
             deprecation:
                 type: stream
                 channels: [deprecation]
                 path: php://stderr
+            crawler_console:
+                type: console
+                verbosity_levels:
+                    VERBOSITY_QUIET: NOTICE
+                    VERBOSITY_NORMAL: INFO
+                    VERBOSITY_VERBOSE: DEBUG
+                    VERBOSITY_VERY_VERBOSE: DEBUG
+                channels: crawler
+            crawler_file:
+                type: stream
+                path: "%kernel.logs_dir%/crawler.log"
+                level: debug
+                channels: crawler

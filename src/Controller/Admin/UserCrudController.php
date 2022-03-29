@@ -26,7 +26,7 @@ class UserCrudController extends AbstractCrudController
 
     public function configureFields(string $pageName): iterable
     {
-        $isIndex = Crud::PAGE_INDEX === $pageName;
+        $isIndex = $pageName === Crud::PAGE_INDEX;
 
         yield TextField::new('username');
         yield TextField::new('plainPassword', 'New password')

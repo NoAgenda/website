@@ -12,22 +12,14 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class DefaultController extends AbstractController
 {
-    private $episodeRepository;
-    private $feedbackItemRepository;
-    private $networkSiteRepository;
-    private $videoRepository;
+    public function __construct(
+        private EpisodeRepository $episodeRepository,
+        private FeedbackItemRepository $feedbackItemRepository,
+        private NetworkSiteRepository $networkSiteRepository,
+        private VideoRepository $videoRepository,
+    ) {}
 
-    public function __construct(EpisodeRepository $episodeRepository, FeedbackItemRepository $feedbackItemRepository, NetworkSiteRepository $networkSiteRepository, VideoRepository $videoRepository)
-    {
-        $this->episodeRepository = $episodeRepository;
-        $this->feedbackItemRepository = $feedbackItemRepository;
-        $this->networkSiteRepository = $networkSiteRepository;
-        $this->videoRepository = $videoRepository;
-    }
-
-    /**
-     * @Route("/", name="homepage")
-     */
+    #[Route('/', name: 'homepage')]
     public function index(): Response
     {
         $episodes = $this->episodeRepository->getHomepageEpisodes();
@@ -43,9 +35,7 @@ class DefaultController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("/podcast", name="podcast")
-     */
+    #[Route('/podcast', name: 'podcast')]
     public function podcast(): Response
     {
         return $this->render('default/podcast.html.twig');

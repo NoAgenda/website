@@ -28,25 +28,22 @@ class NetworkSiteCrudController extends AbstractCrudController
 
     public function configureFields(string $pageName): iterable
     {
-        $name = TextField::new('name');
-        $displayUri = TextField::new('displayUri');
-        $uri = TextField::new('uri');
-        $icon = TextField::new('icon');
-        $description = TextareaField::new('description');
-        $priority = IntegerField::new('priority');
-        $id = IntegerField::new('id', 'ID');
-        $createdAt = DateTimeField::new('createdAt');
+        yield IntegerField::new('id', 'ID')
+            ->onlyOnDetail()
+        ;
+        yield TextField::new('name');
 
-        if (Crud::PAGE_INDEX === $pageName) {
-            return [$name, $uri, $displayUri, $priority];
-        } elseif (Crud::PAGE_DETAIL === $pageName) {
-            return [$id, $name, $icon, $description, $uri, $displayUri, $priority, $createdAt];
-        } elseif (Crud::PAGE_NEW === $pageName) {
-            return [$name, $displayUri, $uri, $icon, $description, $priority];
-        } elseif (Crud::PAGE_EDIT === $pageName) {
-            return [$name, $displayUri, $uri, $icon, $description, $priority];
-        }
-
-        throw new \LogicException();
+        yield TextField::new('icon')
+            ->onlyOnDetail()
+        ;
+        yield TextareaField::new('description')
+            ->onlyOnDetail()
+        ;
+        yield TextField::new('displayUri');
+        yield TextField::new('uri');
+        yield IntegerField::new('priority');
+        yield DateTimeField::new('createdAt')
+            ->onlyOnDetail()
+        ;
     }
 }

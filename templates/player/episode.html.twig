@@ -38,7 +38,7 @@
     icon: '<span class="fas fa-fw fa-smile" aria-hidden="true"></span>',
     name: 'Troll room',
     contents: 'player/blocks/chat.html.twig',
-    enabled: episode.chatMessages,
+    enabled: episode.chatArchive,
   },
 ] %}
 
@@ -175,7 +175,7 @@
                 </li>
               {% endfor %}
 
-              {% if episode.chatMessages %}
+              {% if episode.chatArchive %}
                 <li class="player-chat-activator nav-item ml-auto d-none d-xl-block">
                   <div class="nav-link cursor-pointer" data-chat-activator>
                     <span class="far fa-fw fa-smile" aria-hidden="true"></span> Troll room

@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\RemoteFileResponse;
-use Http\Client\Common\HttpMethodsClient;
+use Http\Client\Common\HttpMethodsClientInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -11,24 +11,16 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ProxyController extends AbstractController
 {
-    private $domains = [
+    private array $domains = [
         'adam' => 'adam.curry.com',
         'fcassets' => 'fcassets.curry.com.s3.wasabisys.com',
     ];
 
-    /**
-     * @var HttpMethodsClient
-     */
-    private $httpClient;
+    public function __construct(
+        private HttpMethodsClientInterface $httpClient,
+    ) {}
 
-    public function __construct(HttpMethodsClient $httpClient)
-    {
-        $this->httpClient = $httpClient;
-    }
-
-    /**
-     * @Route("/proxy/{domain}/{url}", requirements={"url": ".+"}, name="proxy")
-     */
+    #[Route('/proxy/{domain}/{url}', name: 'proxy', requirements: ['url' => '.+'])]
     public function proxy(string $domain, string $url): Response
     {
         if (!isset($this->domains[$domain])) {

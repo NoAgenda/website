@@ -45,20 +45,28 @@ class EpisodeRepository extends AbstractRepository
         return $episodes;
     }
 
-    public function findLatest(): Episode
+    public function findLastPublishedEpisode(): Episode
     {
-        return $this->findLatestEpisode();
-    }
-
-    public function findLatestEpisode(): Episode
-    {
-        return $this->findOneBy();
+        return $this->findOneBy([
+            'published' => true,
+        ]);
     }
 
     /** @return Episode[] */
-    public function findLatestEpisodes(int $count = 4): array
+    public function findLatestEpisodes(int $count = 4, bool $published = true): array
     {
-        return $this->findBy(null, null, $count);
+        $publishedCriteria = [
+            'published' => true,
+        ];
+
+        return $this->findBy($published ? $publishedCriteria : null, null, $count);
+    }
+
+    public function findPublishedEpisodes(): array
+    {
+        return $this->findBy([
+            'published' => true,
+        ]);
     }
 
     /** @return Episode[] */
@@ -73,6 +81,7 @@ class EpisodeRepository extends AbstractRepository
 
         $builder
             ->select('episode', 'chapter')
+            ->where($builder->expr()->eq('episode.published', true))
             ->leftJoin('episode.chapters', 'chapter')
             ->orderBy('episode.publishedAt', 'desc')
         ;
@@ -86,7 +95,10 @@ class EpisodeRepository extends AbstractRepository
 
         $builder
             ->select('episode', 'chapter')
-            ->where($builder->expr()->eq('episode.special', true))
+            ->where($builder->expr()->andX([
+                $builder->expr()->eq('episode.published', true),
+                $builder->expr()->eq('episode.special', true),
+            ]))
             ->leftJoin('episode.chapters', 'chapter')
             ->orderBy('episode.publishedAt', 'desc')
         ;

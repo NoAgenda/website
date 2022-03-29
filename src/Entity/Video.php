@@ -25,10 +25,15 @@ class Video
     private ?\DateTimeInterface $publishedAt;
 
     #[Column(type: 'string', length: 32)]
-    private ?string $youtubeId;
+    private string $youtubeId;
 
     #[Column(type: 'string', length: 255, nullable: true)]
     private ?string $youtubeEtag;
+
+    public function __construct(string $youtubeId)
+    {
+        $this->youtubeId = $youtubeId;
+    }
 
     public function getId(): ?int
     {
@@ -59,7 +64,7 @@ class Video
         return $this;
     }
 
-    public function getYoutubeId(): ?string
+    public function getYoutubeId(): string
     {
         return $this->youtubeId;
     }

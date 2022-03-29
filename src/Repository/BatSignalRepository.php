@@ -15,28 +15,23 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class BatSignalRepository extends ServiceEntityRepository
 {
-    private $episodeRepository;
-
-    public function __construct(ManagerRegistry $registry, EpisodeRepository $episodeRepository)
+    public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, BatSignal::class);
-
-        $this->episodeRepository = $episodeRepository;
     }
 
-    /**
-     * @param Episode|string $episode
-     */
-    public function findOneByEpisode($episode): ?BatSignal
+    public function exists(BatSignal $signal): bool
     {
-        if (!$episode instanceof Episode) {
-            $episode = $this->episodeRepository->findOneByCode($episode);
+        $existing = $this->findOneBy([
+            'code' => $signal->getCode(),
+            'deployedAt' => $signal->getDeployedAt(),
+        ]);
 
-            if (!$episode) {
-                throw new \RuntimeException(sprintf('Invalid episode code "%s".', $episode));
-            }
-        }
+        return null !== $existing;
+    }
 
+    public function findOneByEpisode(Episode $episode): ?BatSignal
+    {
         $builder = $this->createQueryBuilder('signal');
 
         $timespanEnd = new \DateTime();
@@ -52,12 +47,5 @@ class BatSignalRepository extends ServiceEntityRepository
         $query = $builder->getQuery();
 
         return $query->getOneOrNullResult();
-    }
-
-    public function findOneByLatestEpisode(): ?BatSignal
-    {
-        $latestEpisode = $this->episodeRepository->findLatest();
-
-        return $this->findOneByEpisode($latestEpisode);
     }
 }

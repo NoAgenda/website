@@ -2,10 +2,9 @@
 
 namespace App\Repository;
 
-use App\Criteria\CriteriaInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query;
-use Pagerfanta\Adapter\DoctrineORMAdapter;
+use Pagerfanta\Doctrine\ORM\QueryAdapter;
 use Pagerfanta\Pagerfanta;
 
 abstract class AbstractRepository extends ServiceEntityRepository
@@ -29,7 +28,7 @@ abstract class AbstractRepository extends ServiceEntityRepository
 
     protected function createPaginator(Query $query, int $page = 1): Pagerfanta
     {
-        $paginator = new Pagerfanta(new DoctrineORMAdapter($query));
+        $paginator = new Pagerfanta(new QueryAdapter($query));
 
         $paginator->setMaxPerPage($this->itemsPerPage);
         $paginator->setCurrentPage($page);

@@ -11,12 +11,10 @@ use Twig\TwigFunction;
 
 class AppExtension extends AbstractExtension implements GlobalsInterface
 {
-    private $userTokenManager;
-
-    public function __construct(UserTokenManager $userTokenManager)
-    {
-        $this->userTokenManager = $userTokenManager;
-    }
+    public function __construct(
+        private UserTokenManager $userTokenManager,
+        private string $securityToken,
+    ) {}
 
     public function getFilters(): array
     {
@@ -42,6 +40,7 @@ class AppExtension extends AbstractExtension implements GlobalsInterface
     {
         return [
             'authenticated' => $this->userTokenManager->isAuthenticated(),
+            'security_token' => $this->securityToken,
         ];
     }
 

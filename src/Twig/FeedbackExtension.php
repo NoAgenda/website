@@ -12,14 +12,10 @@ use Twig\TwigFunction;
 
 class FeedbackExtension extends AbstractExtension
 {
-    private $episodeChapterDraftRepository;
-    private $userTokenManager;
-
-    public function __construct(UserTokenManager $userTokenManager, EpisodeChapterDraftRepository $episodeChapterDraftRepository)
-    {
-        $this->userTokenManager = $userTokenManager;
-        $this->episodeChapterDraftRepository = $episodeChapterDraftRepository;
-    }
+    public function __construct(
+        private EpisodeChapterDraftRepository $episodeChapterDraftRepository,
+        private UserTokenManager $userTokenManager,
+    ) {}
 
     public function getFunctions(): array
     {
