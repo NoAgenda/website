@@ -30,7 +30,7 @@ final class Version20220222202233 extends AbstractMigration
             $this->addSql('UPDATE na_episode SET cover_path = :coverPath, public_shownotes_uri = shownotes_uri, shownotes_uri = NULL, shownotes_path = :shownotesPath, transcript_path = :transcriptPath, chat_archive_path = :chatArchivePath WHERE id = :id', [
                 'coverPath' => $episode['cover'] ? sprintf('%s/covers/%s.png', $storagePath, $episode['code']) : null,
                 'shownotesPath' => $episode['shownotes_uri'] ? sprintf('%s/shownotes/%s.xml', $storagePath, $episode['code']) : null,
-                'transcriptPath' => $episode['transcript'] ? sprintf('%s/transcript/%s.%s', $storagePath, $episode['code'], $episode['transcript_type']) : null,
+                'transcriptPath' => $episode['transcript'] ? sprintf('%s/transcripts/%s.%s', $storagePath, $episode['code'], $episode['transcript_type']) : null,
                 'chatArchivePath' => $episode['chat_messages'] ? sprintf('%s/chat_archives/%s.json', $storagePath, $episode['code']) : null,
                 'id' => $episode['id'],
             ]);
