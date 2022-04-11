@@ -124,7 +124,7 @@ class ChapterController extends AbstractController
     /**
      * @ParamConverter("episode", class="App\Entity\Episode", options={"mapping": {"episode": "code"}})
      */
-    #[Route('/episode/{episode}/chapters/{chapter}', name: 'episode_chapter_edit')]
+    #[Route('/episode/{episode}/chapter/{chapter}/edit', name: 'episode_chapter_edit')]
     public function edit(Request $request, Episode $episode, EpisodeChapter $chapter): Response
     {
         $this->denyAccessUnlessGranted('ROLE_MOD');
@@ -150,7 +150,7 @@ class ChapterController extends AbstractController
     /**
      * @ParamConverter("episode", class="App\Entity\Episode", options={"mapping": {"episode": "code"}})
      */
-    #[Route('/episode/{episode}/chapters/{chapter}/delete', name: 'episode_chapter_delete')]
+    #[Route('/episode/{episode}/chapter/{chapter}/delete', name: 'episode_chapter_delete')]
     public function delete(Episode $episode, EpisodeChapter $chapter): Response
     {
         $this->denyAccessUnlessGranted('ROLE_MOD');
@@ -168,7 +168,7 @@ class ChapterController extends AbstractController
     /**
      * @ParamConverter("episode", class="App\Entity\Episode", options={"mapping": {"episode": "code"}})
      */
-    #[Route('/episode/{episode}/chapters/{chapter}/accept', name: 'episode_chapter_accept')]
+    #[Route('/episode/{episode}/draft/{draft}/accept', name: 'episode_chapter_accept')]
     public function accept(Episode $episode, EpisodeChapterDraft $draft): Response
     {
         $this->denyAccessUnlessGranted('ROLE_MOD');
