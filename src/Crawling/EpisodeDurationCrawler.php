@@ -20,8 +20,14 @@ class EpisodeDurationCrawler implements EpisodeFileCrawlerInterface
         $this->logger = new NullLogger();
     }
 
-    public function crawl(Episode $episode, \DateTime $ifModifiedSince = null): \DateTime
+    public function crawl(Episode $episode, \DateTime $ifModifiedSince = null): ?\DateTime
     {
+        if (!$episode->getRecordingUri()) {
+            $this->logger->warning(sprintf('Recording URI for episode %s is empty.', $episode->getCode()));
+
+            return null;
+        }
+
         $path = sprintf('%s/episodes/%s.mp3', $_SERVER['APP_STORAGE_PATH'], $episode->getCode());
         $lastModifiedAt = $this->fileDownloader->download($episode->getRecordingUri(), $path, $ifModifiedSince);
 

@@ -19,7 +19,7 @@ services:
 
     App\Crawling\:
         resource: '../src/Crawling/'
-        exclude: '../src/Crawling/{Crawlers.php,Shownotes}'
+        exclude: '../src/Crawling/{Shownotes}'
         calls:
             - ['setLogger', ['@monolog.logger.crawler']]
         bind:

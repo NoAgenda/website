@@ -24,8 +24,14 @@ class EpisodeCoverCrawler implements EpisodeFileCrawlerInterface
         $this->logger = new NullLogger();
     }
 
-    public function crawl(Episode $episode, \DateTime $ifModifiedSince = null): \DateTime
+    public function crawl(Episode $episode, \DateTime $ifModifiedSince = null): ?\DateTime
     {
+        if (!$episode->getCoverUri()) {
+            $this->logger->warning(sprintf('Cover URI for episode %s is empty.', $episode->getCode()));
+
+            return null;
+        }
+
         $path = sprintf('%s/covers/%s.png', $_SERVER['APP_STORAGE_PATH'], $episode->getCode());
         $lastModifiedAt = $this->fileDownloader->download($episode->getCoverUri(), $path, $ifModifiedSince);
 

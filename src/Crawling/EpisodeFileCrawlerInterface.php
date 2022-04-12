@@ -6,5 +6,5 @@ use App\Entity\Episode;
 
 interface EpisodeFileCrawlerInterface
 {
-    public function crawl(Episode $episode, \DateTime $ifModifiedSince = null): \DateTime;
+    public function crawl(Episode $episode, \DateTime $ifModifiedSince = null): ?\DateTime;
 }

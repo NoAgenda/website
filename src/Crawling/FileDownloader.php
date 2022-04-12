@@ -5,7 +5,7 @@ namespace App\Crawling;
 use App\Entity\Episode;
 use App\Entity\ScheduledFileDownload;
 use App\Exception\FileDownloadException;
-use App\Message\CrawlFile;
+use App\Message\Crawl;
 use App\Repository\ScheduledFileDownloadRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Http\Client\Common\HttpMethodsClientInterface;
@@ -83,9 +83,9 @@ class FileDownloader
         return $lastModifiedAt;
     }
 
-    public function updateSchedule(string $crawler, Episode $episode, \DateTime $lastModifiedAt, \DateTime $initializedAt): void
+    public function updateSchedule(string $data, Episode $episode, \DateTime $lastModifiedAt, \DateTime $initializedAt): void
     {
-        $scheduledFileDownload = $this->scheduledFileDownloadRepository->findDownload($crawler, $episode);
+        $scheduledFileDownload = $this->scheduledFileDownloadRepository->findDownload($data, $episode);
 
         if ($scheduledFileDownload && $initializedAt !== $scheduledFileDownload->getInitializedAt()) {
             $this->logger->debug('File download has already been rescheduled');
@@ -103,7 +103,7 @@ class FileDownloader
 
         if (!$scheduledFileDownload) {
             $scheduledFileDownload = (new ScheduledFileDownload())
-                ->setCrawler($crawler)
+                ->setData($data)
                 ->setEpisode($episode)
                 ->setInitializedAt($initializedAt)
             ;
@@ -116,7 +116,7 @@ class FileDownloader
         }
 
         $this->logger->debug('Rescheduling file download');
-        $message = new CrawlFile($crawler, $episode->getCode(), $lastModifiedAt, $initializedAt);
+        $message = new Crawl($data, $episode->getCode(), $lastModifiedAt, $initializedAt);
         $envelope = new Envelope($message, [
             DelayStamp::delayFor($interval),
         ]);

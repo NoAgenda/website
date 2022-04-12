@@ -18,7 +18,6 @@ framework:
 
         routing:
             'App\Message\Crawl': crawler
-            'App\Message\CrawlFile': crawler
             'App\Message\GenerateEpisodeReport': crawler
             'App\Message\PrepareEpisode': crawler
             'App\Message\PublishEpisode': crawler

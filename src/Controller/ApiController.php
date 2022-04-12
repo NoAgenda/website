@@ -2,16 +2,12 @@
 
 namespace App\Controller;
 
-use App\Crawling\CrawlerInterface;
-use App\Crawling\Crawlers;
+use App\Crawling\CrawlingProcessor;
 use App\Crawling\EpisodeCrawlerInterface;
 use App\Crawling\EpisodeFileCrawlerInterface;
-use App\Crawling\FileDownloader;
-use App\Message\Crawl;
-use App\Message\CrawlFile;
+use App\Entity\Episode;
 use App\Repository\EpisodeRepository;
 use Monolog\Handler\StreamHandler;
-use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,9 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use function Sentry\captureException;
 use function Symfony\Component\String\u;
 
 #[Route('/api', name: 'api_')]
@@ -29,9 +23,7 @@ class ApiController extends AbstractController
 {
     public function __construct(
         private EpisodeRepository $episodeRepository,
-        private ContainerInterface $crawlers,
-        private MessageBusInterface $messenger,
-        private FileDownloader $fileDownloader,
+        private CrawlingProcessor $crawlingProcessor,
         private LoggerInterface $crawlerLogger,
         private string $securityToken,
     ) {}
@@ -41,28 +33,13 @@ class ApiController extends AbstractController
     {
         $this->prepare();
 
-        if (!$crawlerName = Crawlers::$crawlers[$data] ?? false) {
-            throw new BadRequestHttpException();
-        }
-
-        $crawler = $this->crawlers->get($crawlerName);
-        $episode = null;
-
-        if ($crawler instanceof EpisodeCrawlerInterface || $crawler instanceof EpisodeFileCrawlerInterface) {
-            if (!$episodeCode = $request->query->get('episode')) {
-                throw new BadRequestHttpException();
-            }
-
-            if (!$episode = $this->episodeRepository->findOneByCode($episodeCode)) {
-                throw new BadRequestHttpException();
-            }
-        }
+        $episode = $this->validateCrawlRequest($request, $data);
 
         $this->crawlerLogger->pushHandler(new StreamHandler('php://output'));
 
         $response = new StreamedResponse();
-        $response->setCallback(function () use ($crawler, $crawlerName, $episode) {
-            $title = u('Executing ')->append($crawlerName);
+        $response->setCallback(function () use ($data, $episode) {
+            $title = u('Executing ')->append(CrawlingProcessor::$crawlerClasses[$data]);
             $separator = u('=')->repeat(16);
 
             if ($episode) {
@@ -79,21 +56,7 @@ class ApiController extends AbstractController
                 '',
             ]);
 
-            try {
-                if ($crawler instanceof CrawlerInterface) {
-                    $crawler->crawl();
-                } else if ($crawler instanceof EpisodeCrawlerInterface) {
-                    $crawler->crawl($episode);
-                } else if ($crawler instanceof EpisodeFileCrawlerInterface) {
-                    $lastModifiedAt = $crawler->crawl($episode);
-
-                    $this->fileDownloader->updateSchedule($crawlerName, $episode, $lastModifiedAt, new \DateTime());
-                }
-            } catch (\Throwable $exception) {
-                $this->crawlerLogger->error(sprintf('An error occurred: %s', $exception->getMessage()));
-
-                captureException($exception);
-            }
+            $this->crawlingProcessor->crawl($data, $episode);
 
             echo implode(PHP_EOL, [
                 '',
@@ -110,33 +73,11 @@ class ApiController extends AbstractController
     {
         $this->prepare();
 
-        if (!$crawlerName = Crawlers::$crawlers[$data] ?? false) {
-            throw new BadRequestHttpException();
-        }
+        $episode = $this->validateCrawlRequest($request, $data);
 
-        $crawler = $this->crawlers->get($crawlerName);
-        $episodeCode = null;
-        $episode = null;
+        $this->crawlingProcessor->enqueue($data, $episode);
 
-        if ($crawler instanceof EpisodeCrawlerInterface || $crawler instanceof EpisodeFileCrawlerInterface) {
-            if (!$episodeCode = $request->query->get('episode')) {
-                throw new BadRequestHttpException();
-            }
-
-            if (!$episode = $this->episodeRepository->findOneByCode($episodeCode)) {
-                throw new BadRequestHttpException();
-            }
-        }
-
-        if ($crawler instanceof EpisodeFileCrawlerInterface) {
-            $message = new CrawlFile($crawlerName, $episodeCode);
-        } else {
-            $message = new Crawl($crawlerName, $episodeCode);
-        }
-
-        $this->messenger->dispatch($message);
-
-        $title = u('Queueing ')->append($crawlerName);
+        $title = u('Queueing ')->append(CrawlingProcessor::$crawlerClasses[$data]);
         $separator = u('=')->repeat(16);
 
         if ($episode) {
@@ -160,5 +101,26 @@ class ApiController extends AbstractController
         if ($this->securityToken !== $request->query->get('token')) {
             throw new AccessDeniedHttpException();
         }
+    }
+
+    private function validateCrawlRequest(Request $request, string $data): ?Episode
+    {
+        if (!$crawlerName = CrawlingProcessor::$crawlerClasses[$data] ?? false) {
+            throw new BadRequestHttpException();
+        }
+
+        $episode = null;
+
+        if (is_subclass_of($crawlerName, EpisodeCrawlerInterface::class) || is_subclass_of($crawlerName, EpisodeFileCrawlerInterface::class)) {
+            if (!$episodeCode = $request->query->get('episode')) {
+                throw new BadRequestHttpException();
+            }
+
+            if (!$episode = $this->episodeRepository->findOneByCode($episodeCode)) {
+                throw new BadRequestHttpException();
+            }
+        }
+
+        return $episode;
     }
 }

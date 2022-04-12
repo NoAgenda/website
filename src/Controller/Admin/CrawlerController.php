@@ -2,27 +2,24 @@
 
 namespace App\Controller\Admin;
 
-use App\Crawling\Crawlers;
-use App\Crawling\EpisodeFileCrawlerInterface;
+use App\Crawling\CrawlingProcessor;
 use App\Crawling\Shownotes\ShownotesParserFactory;
-use App\Message\Crawl;
-use App\Message\CrawlFile;
 use App\Repository\EpisodeRepository;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use function Sentry\captureException;
 
 class CrawlerController extends AbstractController
 {
     public function __construct(
         private EpisodeRepository $episodeRepository,
-        private ShownotesParserFactory $shownotesParserFactory,
-        private MessageBusInterface $messenger,
         private AdminUrlGenerator $adminUrlGenerator,
+        private CrawlingProcessor $crawlingProcessor,
+        private ShownotesParserFactory $shownotesParserFactory,
     ) {}
 
     #[Route('/chat_logs/{date}', name: 'admin_chat_logs', defaults: ['date' => 'today'])]
@@ -48,28 +45,29 @@ class CrawlerController extends AbstractController
             ;
 
             $data = $request->request->get('task');
+            $episode = null;
 
-            if (!$crawlerName = Crawlers::$crawlers[$data] ?? false) {
-                $this->addFlash('danger', sprintf('Invalid data type: %s', $data));
+            if ($code = $request->request->get('code')) {
+                if (!$episode = $this->episodeRepository->findOneByCode($code)) {
+                    $this->addFlash('danger', sprintf('Invalid episode: %s', $code));
+                }
+            }
+
+            try {
+                $this->crawlingProcessor->enqueue($data, $episode);
+            } catch (\Exception $exception) {
+                $this->addFlash('danger', $exception->getMessage());
+
+                captureException($exception);
 
                 return $this->redirect($url);
             }
 
-            if ($code = $request->request->get('code')) {
-                if (is_subclass_of($crawlerName, EpisodeFileCrawlerInterface::class)) {
-                    $message = new CrawlFile($crawlerName, $code);
-                } else {
-                    $message = new Crawl($crawlerName, $code);
-                }
-
+            if ($code) {
                 $this->addFlash('success', sprintf('Scheduled crawling of %s for episode %s.', $data, $code));
             } else {
-                $message = new Crawl($crawlerName);
-
                 $this->addFlash('success', sprintf('Scheduled crawling of %s.', $data));
             }
-
-            $this->messenger->dispatch($message);
 
             return $this->redirect($url);
         }

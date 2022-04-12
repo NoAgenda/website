@@ -21,7 +21,7 @@ class EpisodeShownotesCrawler implements EpisodeFileCrawlerInterface
         $this->logger = new NullLogger();
     }
 
-    public function crawl(Episode $episode, \DateTime $ifModifiedSince = null): \DateTime
+    public function crawl(Episode $episode, \DateTime $ifModifiedSince = null): ?\DateTime
     {
         $frontResponse = $this->shownotesClient->get(sprintf('http://%s.noagendanotes.com', $episode->getCode()));
         $publicUri = $frontResponse->getHeaderLine('Location');

@@ -2,9 +2,6 @@
 
 namespace App\Controller\Admin;
 
-use App\Crawling\EpisodeChatArchiveMatcher;
-use App\Crawling\EpisodeRecordingTimeMatcher;
-use App\Crawling\EpisodeTranscriptCrawler;
 use App\Entity\Episode;
 use App\Message\Crawl;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
@@ -191,7 +188,7 @@ class EpisodeCrudController extends AbstractCrudController
     {
         $episode = $context->getEntity()->getInstance();
 
-        $message = new Crawl(EpisodeTranscriptCrawler::class, $episode->getCode());
+        $message = new Crawl('transcript', $episode->getCode());
         $this->messenger->dispatch($message);
 
         $this->addFlash('success', sprintf('Scheduled crawling of transcript for episode %s.', $episode->getCode()));
@@ -208,7 +205,7 @@ class EpisodeCrudController extends AbstractCrudController
     {
         $episode = $context->getEntity()->getInstance();
 
-        $message = new Crawl(EpisodeChatArchiveMatcher::class, $episode->getCode());
+        $message = new Crawl('chat_archive', $episode->getCode());
         $this->messenger->dispatch($message);
 
         $this->addFlash('success', sprintf('Scheduled crawling of chat_messages for episode %s.', $episode->getCode()));
@@ -225,7 +222,7 @@ class EpisodeCrudController extends AbstractCrudController
     {
         $episode = $context->getEntity()->getInstance();
 
-        $message = new Crawl(EpisodeRecordingTimeMatcher::class, $episode->getCode());
+        $message = new Crawl('recording_time', $episode->getCode());
         $this->messenger->dispatch($message);
 
         $this->addFlash('success', sprintf('Scheduled crawling of recording_time for episode %s.', $episode->getCode()));

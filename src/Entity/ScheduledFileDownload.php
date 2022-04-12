@@ -14,7 +14,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[Entity(repositoryClass: ScheduledFileDownloadRepository::class)]
 #[Table(name: 'na_file_download')]
-#[UniqueEntity(['crawler', 'episode'])]
+#[UniqueEntity(['data', 'episode'])]
 class ScheduledFileDownload
 {
     #[Id]
@@ -26,8 +26,8 @@ class ScheduledFileDownload
     #[JoinColumn(nullable: false)]
     private ?Episode $episode;
 
-    #[Column(type: 'string', length: 255)]
-    private ?string $crawler;
+    #[Column(name: 'crawling_data', type: 'string', length: 32)]
+    private ?string $data;
 
     #[Column(type: 'datetime')]
     private ?\DateTimeInterface $lastModifiedAt = null;
@@ -52,14 +52,14 @@ class ScheduledFileDownload
         return $this;
     }
 
-    public function getCrawler(): ?string
+    public function getData(): ?string
     {
-        return $this->crawler;
+        return $this->data;
     }
 
-    public function setCrawler(string $crawler): self
+    public function setData(string $data): self
     {
-        $this->crawler = $crawler;
+        $this->data = $data;
 
         return $this;
     }

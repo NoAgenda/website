@@ -2,30 +2,22 @@
 
 namespace App\MessageHandler;
 
-use App\Crawling\CrawlerInterface;
-use App\Crawling\EpisodeCrawlerInterface;
+use App\Crawling\CrawlingProcessor;
 use App\Message\Crawl;
 use App\Repository\EpisodeRepository;
-use Psr\Container\ContainerInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
 class CrawlHandler implements MessageHandlerInterface
 {
     public function __construct(
-        private ContainerInterface $crawlers,
         private EpisodeRepository $episodeRepository,
+        private CrawlingProcessor $crawlingProcessor,
     ) {}
 
     public function __invoke(Crawl $message): void
     {
-        /** @var CrawlerInterface|EpisodeCrawlerInterface $crawler */
-        $crawler = $this->crawlers->get($message->crawler);
+        $episode = $message->episodeCode ? $this->episodeRepository->findOneByCode($message->episodeCode) : null;
 
-        if ($episodeCode = $message->episodeCode) {
-            $episode = $this->episodeRepository->findOneByCode($episodeCode);
-            $crawler->crawl($episode);
-        } else {
-            $crawler->crawl();
-        }
+        $this->crawlingProcessor->crawl($message->data, $episode, $message->lastModifiedAt, $message->initializedAt);
     }
 }
