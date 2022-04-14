@@ -18,7 +18,20 @@ class LivestreamRecorder implements RecorderInterface
 
     public function record(): void
     {
-        $time = (new \DateTime())->format('YmdHis');
+        while (true) {
+            $now = new \DateTime();
+
+            $this->recordLivestream($now);
+
+            $next = $now->modify('+15 minutes');
+
+            time_sleep_until($next->getTimestamp()-1);
+        }
+    }
+
+    private function recordLivestream(\DateTime $initializedAt): void
+    {
+        $time = $initializedAt->format('YmdHis');
         $path = sprintf('%s/livestream_recordings/recording_%s', $_SERVER['APP_STORAGE_PATH'], $time);
 
         (new Filesystem())->mkdir(dirname($path));
