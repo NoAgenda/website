@@ -3,10 +3,7 @@
 set -e
 
 if [ "$1" = 'php-fpm' ] || [ "$1" = 'bin/console' ]; then
-  mkdir -p var/cache var/log public/media
-
-  setfacl -R -m u:www-data:rwX -m u:"$(whoami)":rwX var public/media
-  setfacl -dR -m u:www-data:rwX -m u:"$(whoami)":rwX var public/media
+  mkdir -p public/media var/cache var/log
 
   if [ "$APP_ENV" != 'prod' ]; then
     composer install --prefer-dist --no-autoloader --no-progress --no-scripts --no-interaction

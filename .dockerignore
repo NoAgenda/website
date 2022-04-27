@@ -1,4 +1,5 @@
 /bin/.phpunit/
+/docker/storage/
 /node_modules/
 /public/build/
 /public/bundles/

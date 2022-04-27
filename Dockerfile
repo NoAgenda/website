@@ -1,18 +1,25 @@
 FROM php:8.1-fpm AS base
 
-WORKDIR /srv/www
-
-ARG GITHUB_TOKEN
+ARG UID=3302
+ARG GID=3302
 
 ENV FPM_HOST=app
 ENV FPM_PORT=9000
 
-VOLUME /srv/www/var
+RUN mkdir -p /srv/app; chown $UID:$GID /srv/app
+WORKDIR /srv/app
+
+# Configure app user
+RUN groupdel dialout; \
+    groupadd --gid $GID ben; \
+    useradd --uid $UID --gid $GID --create-home ben; \
+    sed -i "s/user = www-data/user = ben/g" /usr/local/etc/php-fpm.d/www.conf; \
+    sed -i "s/group = www-data/group = ben/g" /usr/local/etc/php-fpm.d/www.conf
 
 # Install persistent & runtime dependencies
 RUN set -eux; \
     apt-get update; \
-    apt-get install --no-install-recommends -y acl git netcat procps; \
+    apt-get install --no-install-recommends -y git netcat procps; \
     rm -rf /var/lib/apt/lists/*
 
 # Install media utilities
@@ -20,10 +27,8 @@ RUN set -eux; \
     apt-get update; \
     apt-get install --no-install-recommends -y ffmpeg mplayer; \
     apt-get install -y python3-pip; \
-    pip install --user git+https://github.com/flutterfromscratch/audio-offset-finder.git; \
+    pip install git+https://github.com/flutterfromscratch/audio-offset-finder.git; \
     rm -rf /var/lib/apt/lists/*
-
-ENV PATH="/root/.local/bin:${PATH}"
 
 # Install PHP extensions
 RUN set -eux; \
@@ -49,13 +54,11 @@ RUN set -eux; \
     rm -rf /var/lib/apt/lists/*
 
 # Install Composer
-ENV COMPOSER_ALLOW_SUPERUSER=1
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-RUN if [ ! -z "$GITHUB_TOKEN" ]; then composer config --global github-oauth.github.com $GITHUB_TOKEN; fi
 
 FROM node:16.14-alpine AS assets
 
-WORKDIR /srv/www
+WORKDIR /srv/app
 
 ENV FPM_HOST=app
 ENV FPM_PORT=9000
@@ -81,40 +84,11 @@ CMD ["npm", "run", "watch"]
 
 FROM base AS app
 
-# Copy application directory contents
-COPY license.markdown readme.markdown ./
-COPY composer.json composer.lock symfony.lock ./
-COPY .env ./
-COPY .env.test phpunit.xml.dist ./
-COPY bin bin/
-COPY config config/
-COPY migrations migrations/
-COPY public public/
-COPY src src/
-COPY templates templates/
-COPY tests tests/
-COPY translations translations/
+ARG UID=3302
+ARG GID=3302
+ARG GITHUB_TOKEN
 
-RUN mkdir -p \
-        docker/storage/chat_archives \
-        docker/storage/chat_logs \
-        docker/storage/covers \
-        docker/storage/episode_parts \
-        docker/storage/episodes \
-        docker/storage/livestream_recordings \
-        docker/storage/shownotes \
-        docker/storage/transcripts
-
-COPY --from=assets /srv/www/public public/
-
-# Run Composer commands
-RUN set -eux; \
-    composer install --no-autoloader --no-dev --no-progress --no-scripts --prefer-dist; \
-    composer clear-cache; \
-    composer dump-autoload --classmap-authoritative; \
-    mkdir -p var/cache var/log public/media; \
-    chmod +x bin/console; \
-    APP_ENV=prod composer run-script post-install-cmd
+RUN if [ ! -z "$GITHUB_TOKEN" ]; then composer config --global github-oauth.github.com $GITHUB_TOKEN; fi
 
 # Set up entrypoints
 COPY docker/app-entrypoint.bash /usr/local/bin/app-entrypoint
@@ -126,16 +100,55 @@ RUN chmod +x /usr/local/bin/app-php-entrypoint
 ENTRYPOINT ["app-entrypoint"]
 CMD ["php-fpm"]
 
-FROM nginx:alpine AS http
+USER ben
 
-WORKDIR /srv/www
+# Copy application directory contents
+COPY --chown=ben:ben license.markdown readme.markdown ./
+COPY --chown=ben:ben composer.json composer.lock symfony.lock ./
+COPY --chown=ben:ben .env ./
+COPY --chown=ben:ben .env.test phpunit.xml.dist ./
+COPY --chown=ben:ben bin bin/
+COPY --chown=ben:ben config config/
+COPY --chown=ben:ben migrations migrations/
+COPY --chown=ben:ben public public/
+COPY --chown=ben:ben src src/
+COPY --chown=ben:ben templates templates/
+COPY --chown=ben:ben tests tests/
+COPY --chown=ben:ben translations translations/
+
+RUN mkdir -p \
+        docker/storage/chat_archives \
+        docker/storage/chat_logs \
+        docker/storage/covers \
+        docker/storage/episode_parts \
+        docker/storage/episodes \
+        docker/storage/livestream_recordings \
+        docker/storage/shownotes \
+        docker/storage/transcripts \
+        public/media \
+        var/cache \
+        var/log
+
+COPY --from=assets --chown=ben:ben /srv/app/public public/
+
+# Run Composer commands
+RUN set -eux; \
+    composer install --no-autoloader --no-dev --no-progress --no-scripts --prefer-dist; \
+    composer clear-cache; \
+    composer dump-autoload --classmap-authoritative; \
+    chmod +x bin/console; \
+    APP_ENV=prod composer run-script post-install-cmd
+
+FROM nginx:alpine AS web
 
 ENV FPM_HOST=app
 ENV FPM_PORT=9000
 
+WORKDIR /srv/app
+
 # Copy Nginx configuration
-COPY docker/nginx/app.conf.template /etc/nginx/templates/
 RUN rm /etc/nginx/conf.d/default.conf
+COPY docker/nginx/app.conf.template /etc/nginx/templates/
 
 # Copy application directory contents
-COPY --from=app /srv/www/public public/
+COPY --from=app /srv/app/public public/

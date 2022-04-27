@@ -1,0 +1,43 @@
+version: "3.8"
+
+services:
+  chat_recorder:
+    image: ghcr.io/noagenda/website/app:${APP_TAG:-local}
+    restart: unless-stopped
+    tty: true
+    entrypoint: app-php-entrypoint
+    command: bin/console record chat
+    depends_on:
+      - app
+    volumes:
+      - ./:/srv/app
+    networks:
+      - php
+
+  crawler:
+    image: ghcr.io/noagenda/website/app:${APP_TAG:-local}
+    restart: unless-stopped
+    tty: true
+    entrypoint: app-php-entrypoint
+    command: bin/console messenger:consume crawler --sleep 60 --time-limit 3600
+    depends_on:
+      - app
+    volumes:
+      - ./:/srv/app
+      - public_media:/srv/app/public/media
+    networks:
+      - database
+      - php
+
+  livestream_recorder:
+    image: ghcr.io/noagenda/website/app:${APP_TAG:-local}
+    restart: unless-stopped
+    tty: true
+    entrypoint: app-php-entrypoint
+    command: bin/console record livestream
+    depends_on:
+      - app
+    volumes:
+      - ./:/srv/app
+    networks:
+      - php

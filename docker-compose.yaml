@@ -6,60 +6,35 @@ services:
       context: .
       target: app
     image: ghcr.io/noagenda/website/app:${APP_TAG:-local}
+    platform: linux/x86_64
     restart: unless-stopped
     tty: true
     #entrypoint: docker-php-entrypoint
     #command: php-fpm
     depends_on:
       - database
+      - mail
     volumes:
-      - ./:/srv/www
-      - public_media:/srv/www/public/media
+      - ./:/srv/app
+      - public_media:/srv/app/public/media
     networks:
       - assets
       - database
-      - http
       - php
+      - web
 
   assets:
     build:
       context: .
       target: assets
     image: ghcr.io/noagenda/website/assets:${APP_TAG:-local}
+    platform: linux/x86_64
     restart: unless-stopped
     tty: true
     volumes:
-      - ./:/srv/www
+      - ./:/srv/app
     networks:
       - assets
-
-  chat_recorder:
-    image: ghcr.io/noagenda/website/app:${APP_TAG:-local}
-    restart: unless-stopped
-    tty: true
-    entrypoint: app-php-entrypoint
-    command: bin/console record chat
-    depends_on:
-      - app
-    volumes:
-      - ./:/srv/www
-    networks:
-      - php
-
-  crawler:
-    image: ghcr.io/noagenda/website/app:${APP_TAG:-local}
-    restart: unless-stopped
-    tty: true
-    entrypoint: app-php-entrypoint
-    command: bin/console messenger:consume crawler --sleep 60 --time-limit 3600
-    depends_on:
-      - app
-    volumes:
-      - ./:/srv/www
-      - public_media:/srv/www/public/media
-    networks:
-      - database
-      - php
 
   database:
     image: mysql:8.0
@@ -77,37 +52,6 @@ services:
     networks:
       - database
 
-  http:
-    build:
-      context: .
-      target: http
-    image: ghcr.io/noagenda/website/http:${APP_TAG:-local}
-    restart: unless-stopped
-    depends_on:
-      - app
-      - assets
-    ports:
-      - "8033:80"
-    volumes:
-      - ./:/srv/www
-      - ./docker/nginx/app.conf.template:/etc/nginx/templates/app.conf.template
-      - public_media:/srv/www/public/media
-    networks:
-      - http
-
-  livestream_recorder:
-    image: ghcr.io/noagenda/website/app:${APP_TAG:-local}
-    restart: unless-stopped
-    tty: true
-    entrypoint: app-php-entrypoint
-    command: bin/console record livestream
-    depends_on:
-      - app
-    volumes:
-      - ./:/srv/www
-    networks:
-      - php
-
   mail:
     image: mailhog/mailhog
     restart: unless-stopped
@@ -116,6 +60,25 @@ services:
     networks:
       - php
 
+  web:
+    build:
+      context: .
+      target: web
+    image: ghcr.io/noagenda/website/web:${APP_TAG:-local}
+    platform: linux/x86_64
+    restart: unless-stopped
+    depends_on:
+      - app
+      - assets
+    ports:
+      - "8033:80"
+    volumes:
+      - ./:/srv/app
+      - ./docker/nginx/app.conf.template:/etc/nginx/templates/app.conf.template
+      - public_media:/srv/app/public/media
+    networks:
+      - web
+
 volumes:
   database_data:
   public_media:
@@ -123,5 +86,5 @@ volumes:
 networks:
   assets:
   database:
-  http:
+  web:
   php:
