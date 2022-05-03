@@ -1,45 +1,46 @@
-{% extends '@EasyAdmin/default/layout.html.twig' %}
+{% extends '@EasyAdmin/page/content.html.twig' %}
 
-{% block content_title %}Livestream recordings{% endblock %}
-
+{% block content_title 'Livestream Recordings' %}
 {% block main %}
-<div class="m-3">
-  <select class="form-control" onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);">
-    <option value="{{ url('admin_livestream_recordings') }}">Today</option>
-    {% for date in dates %}
-    <option value="{{ url('admin_livestream_recordings', {date: date}) }}" {% if current_date == date %}selected{% endif %}>
-      {{ date|desimplifyDate }}
-    </option>
+  <div class="m-3">
+    <select class="form-control" onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);">
+      {% set today_url = ea_url().setRoute('admin_livestream_recordings') %}
+      <option value="{{ today_url }}">Today</option>
+      {% for date in dates %}
+        {% set date_url = ea_url().setRoute('admin_livestream_recordings', {date: date}) %}
+        <option value="{{ date_url }}" {% if current_date == date %}selected{% endif %}>
+          {{ date|desimplifyDate }}
+        </option>
+      {% endfor %}
+    </select>
+
+    <hr>
+
+    {% for recording in recordings %}
+      <div class="card mb-3">
+        <div class="card-header">
+          <div class="h4 mb-0">Recording {{ recording.time|desimplifyTime }}</div>
+        </div>
+        <div class="card-body">
+          {% if recording.recording %}
+            <a class="btn btn-primary" href="{{ path('admin_livestream_recordings_download', {date: recording.date, time: recording.time}) }}">
+              Download Recording
+            </a>
+          {% else %}
+            <a class="btn btn-primary disabled" href="#">
+              Recording unavailable
+            </a>
+          {% endif %}
+            <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#time-{{ recording.time }}">
+              Show Log
+            </button>
+        </div>
+        <div class="card-body collapse p-0" id="time-{{ recording.time }}">
+          <pre class="p-3"><code>{{ recording.logs }}</code></pre>
+        </div>
+      </div>
+    {% else %}
+      No recordings for this date found.
     {% endfor %}
-  </select>
-
-  <hr>
-
-  {% for recording in recordings %}
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3 class="panel-title">Recording {{ recording.time|desimplifyTime }}</h3>
-    </div>
-    <div class="panel-body">
-      {% if recording.recording %}
-      <a class="btn btn-primary" href="{{ path('admin_livestream_recordings_download', {date: recording.date, time: recording.time}) }}">
-        Download recording
-      </a>
-      {% else %}
-        <a class="btn btn-primary disabled" href="#">
-          No recording available
-        </a>
-      {% endif %}
-      <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#time-{{ recording.time }}">
-        Show log
-      </button>
-    </div>
-    <div class="panel-body collapse" id="time-{{ recording.time }}">
-      <pre class="border mt-3 p-3"><code>{{ recording.logs }}</code></pre>
-    </div>
   </div>
-  {% else %}
-  No recordings for this date found.
-  {% endfor %}
-</div>
 {% endblock %}

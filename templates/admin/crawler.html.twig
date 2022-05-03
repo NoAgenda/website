@@ -7,14 +7,15 @@
 } %}
 
 {% set episode_tasks = {
-  episode_time: 'Match episode recording time and chat messages',
-  episode_chat: 'Match chat messages with existing recording time',
-  episode_files: 'Download episode files (mp3, cover)',
-  episode_shownotes: 'Download episode shownotes',
-  episode_transcript: 'Download episode transcript',
+  cover: 'Download episode cover',
+  duration: 'Update episode duration',
+  shownotes: 'Download episode shownotes',
+  transcript: 'Download episode transcript',
+  recording_time: 'Match episode recording time and chat messages',
+  chat_archive: 'Match chat messages with existing recording time',
 } %}
 
-{% block content_title %}Crawler{% endblock %}
+{% block content_title 'Crawler' %}
 {% block main %}
   <div class="mb-3">
     {% for task, task_description in tasks %}
@@ -41,19 +42,4 @@
     </form>
     {% endfor %}
   </div>
-
-  <hr>
-
-  <select class="form-control" onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);">
-    <option value="{{ url('admin_crawler') }}">Today</option>
-    {% for file in files %}
-      <option value="{{ url('admin_crawler', {date: file}) }}" {% if current_file == file %}selected{% endif %}>
-        {{ file|desimplifyDate }}
-      </option>
-    {% endfor %}
-  </select>
-
-  <hr>
-
-  <div>{{ logs|nl2br }}</div>
 {% endblock %}

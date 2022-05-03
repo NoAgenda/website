@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use function Sentry\captureException;
 
+#[Route('/admin/crawler')] /* fake route prefix for easyadmin */
 class CrawlerController extends AbstractController
 {
     public function __construct(
@@ -25,24 +26,29 @@ class CrawlerController extends AbstractController
     #[Route('/chat_logs/{date}', name: 'admin_chat_logs', defaults: ['date' => 'today'])]
     public function chatLogs(string $date): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
         $path = implode('/', [$_SERVER['APP_STORAGE_PATH'], 'chat_logs']);
         $files = $this->getAvailableLogs($path);
 
+        if ('today' === $date) {
+            $date = (new \DateTime())->format('Ymd');
+        }
+
         return $this->render('admin/chat_logs.html.twig', [
-            'files' => $files,
-            'current_file' => $date,
+            'dates' => array_keys($files),
+            'current_date' => $date,
             'logs' => $this->getLogs($files, $date),
         ]);
     }
 
-    #[Route('/crawler/{date}', name: 'admin_crawler', defaults: ['date' => 'today'])]
-    public function crawler(Request $request, string $date): Response
+    #[Route('/crawler', name: 'admin_crawler')]
+    public function crawler(Request $request): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
         if ('POST' === $request->getMethod()) {
-            $url = $this->adminUrlGenerator
-                ->setRoute('admin_crawler', ['date' => $date])
-                ->generateUrl()
-            ;
+            $url = $this->adminUrlGenerator->setRoute('admin_crawler')->generateUrl();
 
             $data = $request->request->get('task');
             $episode = null;
@@ -50,6 +56,8 @@ class CrawlerController extends AbstractController
             if ($code = $request->request->get('code')) {
                 if (!$episode = $this->episodeRepository->findOneByCode($code)) {
                     $this->addFlash('danger', sprintf('Invalid episode: %s', $code));
+
+                    return $this->redirect($url);
                 }
             }
 
@@ -72,19 +80,14 @@ class CrawlerController extends AbstractController
             return $this->redirect($url);
         }
 
-        $path = implode('/', [$_SERVER['APP_STORAGE_PATH'], 'crawler_logs']);
-        $files = $this->getAvailableLogs($path);
-
-        return $this->render('admin/chat_logs.html.twig', [
-            'files' => $files,
-            'current_file' => $date,
-            'logs' => $this->getLogs($files, $date),
-        ]);
+        return $this->render('admin/crawler.html.twig');
     }
 
-    #[Route('/livestream_recordings/{date}', name: 'admin_Livestream_recordings', defaults: ['date' => 'today'])]
-    public function livestreamRecordings(string $date): Response
+    #[Route('/livestream_recordings/{date}', name: 'admin_livestream_recordings', defaults: ['date' => 'today'])]
+    public function livestreamRecordings(Request $request, string $date): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
         $path = implode('/', [$_SERVER['APP_STORAGE_PATH'], 'livestream_recordings']);
 
         $finder = Finder::create()
@@ -159,6 +162,8 @@ class CrawlerController extends AbstractController
     #[Route('/livestream_recordings/download/{date}/{time}', name: 'admin_livestream_recordings_download')]
     public function livestreamRecordingsDownload(string $date, string $time): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
         $recordingPath = sprintf('%s/livestream_recordings/recording_%s%s.asf', $_SERVER['APP_STORAGE_PATH'], $date, $time);
 
         return $this->file($recordingPath);
@@ -167,6 +172,8 @@ class CrawlerController extends AbstractController
     #[Route('/archive/credits/{page}', name: 'admin_archive_credits')]
     public function archiveCredits(int $page): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
         // todo fix pagination
 
         $collection = [];
@@ -206,10 +213,6 @@ class CrawlerController extends AbstractController
 
     private function getLogs(array $files, string $date): string
     {
-        if ('today' === $date) {
-            $date = (new \DateTime())->format('Ymd');
-        }
-
         if (!isset($files[$date])) {
             return 'No logs found for this date.';
         }

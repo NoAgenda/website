@@ -1,7 +1,6 @@
-{% extends '@EasyAdmin/default/layout.html.twig' %}
+{% extends '@EasyAdmin/page/content.html.twig' %}
 
-{% block content_title %}Credits Archive{% endblock %}
-
+{% block content_title 'Credits Archive' %}
 {% block main %}
   <div class="m-3">
     {% for code, shownote in shownotes %}
