@@ -2,14 +2,7 @@
 
 namespace App\MessageHandler;
 
-use App\Crawling\EpisodeChatArchiveMatcher;
-use App\Crawling\EpisodeCoverCrawler;
-use App\Crawling\EpisodeDurationCrawler;
-use App\Crawling\EpisodeRecordingTimeMatcher;
-use App\Crawling\EpisodeShownotesCrawler;
-use App\Crawling\EpisodeTranscriptCrawler;
 use App\Message\Crawl;
-use App\Message\CrawlFile;
 use App\Message\GenerateEpisodeReport;
 use App\Message\PrepareEpisode;
 use App\Message\PublishEpisode;
@@ -28,17 +21,17 @@ class PrepareEpisodeHandler implements MessageHandlerInterface
     {
         $episode = $this->episodeRepository->findOneByCode($code = $message->code);
 
-        $this->messenger->dispatch(new CrawlFile(EpisodeCoverCrawler::class, $code));
-        $this->messenger->dispatch(new CrawlFile(EpisodeShownotesCrawler::class, $code));
-        $this->messenger->dispatch(new CrawlFile(EpisodeTranscriptCrawler::class, $code));
-        $this->messenger->dispatch(new CrawlFile(EpisodeDurationCrawler::class, $code));
+        $this->messenger->dispatch(new Crawl('cover', $code));
+        $this->messenger->dispatch(new Crawl('shownotes', $code));
+        $this->messenger->dispatch(new Crawl('transcript', $code));
+        $this->messenger->dispatch(new Crawl('duration', $code));
 
         if (!$episode->isPublished()) {
             $this->messenger->dispatch(new PublishEpisode($code));
         }
 
-        $this->messenger->dispatch(new Crawl(EpisodeRecordingTimeMatcher::class, $code));
-        $this->messenger->dispatch(new Crawl(EpisodeChatArchiveMatcher::class, $code));
+        $this->messenger->dispatch(new Crawl('recording_time', $code));
+        $this->messenger->dispatch(new Crawl('chat_archive', $code));
 
         $this->messenger->dispatch(new GenerateEpisodeReport($code));
     }
