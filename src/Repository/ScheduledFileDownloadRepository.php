@@ -20,10 +20,10 @@ class ScheduledFileDownloadRepository extends ServiceEntityRepository
         parent::__construct($registry, ScheduledFileDownload::class);
     }
 
-    public function findDownload(string $crawler, Episode $episode): ?ScheduledFileDownload
+    public function findDownload(string $data, Episode $episode): ?ScheduledFileDownload
     {
         return $this->findOneBy([
-            'crawler' => $crawler,
+            'data' => $data,
             'episode' => $episode,
         ]);
     }
