@@ -74,10 +74,10 @@ class CrawlCommand extends Command
                     return Command::INVALID;
                 }
 
-                $jobs[] = [$episode];
+                $jobs[] = $episode;
             }
         } else {
-            $jobs[] = [null];
+            $jobs[] = null;
         }
 
         $this->preCrawl($data, $style);

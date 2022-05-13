@@ -60,7 +60,8 @@ class CrawlingProcessor
 
     public function enqueue(string $data, Episode $episode = null): void
     {
-        $crawlerName = $this->getCrawlerName($data, $episode);
+        $this->getCrawlerName($data, $episode);
+
         $code = $episode?->getCode();
 
         $this->messenger->dispatch(new Crawl($data, $code));
@@ -72,7 +73,7 @@ class CrawlingProcessor
             throw new \InvalidArgumentException(sprintf('Invalid data type: %s', $data));
         }
 
-        if (is_subclass_of($crawlerName, CrawlerInterface::class) && !$episode) {
+        if (!is_subclass_of($crawlerName, CrawlerInterface::class) && !$episode) {
             throw new \InvalidArgumentException(sprintf('Crawling of %s requires an episode.', $data));
         }
 
