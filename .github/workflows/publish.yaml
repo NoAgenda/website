@@ -26,7 +26,7 @@ jobs:
         name: Build Images
         run: |
           export APP_TAG=${{ steps.extract-branch.outputs.APP_TAG }}
-          docker-compose build --build-arg GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
+          docker-compose -f docker-compose.yaml -f docker-compose.services.yaml build --build-arg GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
       -
         name: Login to GitHub Packages
         uses: docker/login-action@v1
@@ -38,4 +38,4 @@ jobs:
         name: Push Images
         run: |
           export APP_TAG=${{ steps.extract-branch.outputs.APP_TAG }}
-          docker-compose push
+          docker-compose -f docker-compose.yaml -f docker-compose.services.yaml push
