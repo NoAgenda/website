@@ -10,6 +10,7 @@ use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
 use Symfony\Component\Messenger\MessageBusInterface;
 use function Sentry\captureException;
+use function Symfony\Component\String\u;
 
 class CrawlingProcessor
 {
@@ -52,7 +53,7 @@ class CrawlingProcessor
                 $crawler->crawl();
             }
         } catch (\Throwable $exception) {
-            $this->logger->error(sprintf('An error occurred: %s', $exception->getMessage()));
+            $this->logger->error(sprintf('An error occurred while crawling %s: %s', u($data)->folded(), $exception->getMessage()));
 
             captureException($exception);
         }

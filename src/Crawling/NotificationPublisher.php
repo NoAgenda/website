@@ -7,6 +7,7 @@ use Http\Client\Common\HttpMethodsClientInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
 use Symfony\Component\Routing\RouterInterface;
+use function Sentry\captureException;
 
 class NotificationPublisher
 {
@@ -35,16 +36,22 @@ class NotificationPublisher
             return;
         }
 
-        $code = $episode->getCode();
-        $title = sprintf('No Agenda Episode %s - %s', $code, $episode->getName());
-        $path = $this->router->generate('player', ['episode' => $code], RouterInterface::ABSOLUTE_URL);
+        try {
+            $code = $episode->getCode();
+            $title = sprintf('No Agenda Episode %s - %s', $code, $episode->getName());
+            $path = $this->router->generate('player', ['episode' => $code], RouterInterface::ABSOLUTE_URL);
 
-        $response = $this->mastodonClient->post('/statuses', [], http_build_query([
-            'status' => "$title $path",
-        ]));
+            $response = $this->mastodonClient->post('/statuses', [], http_build_query([
+                'status' => "$title $path",
+            ]));
 
-        if (200 !== $statusCode = $response->getStatusCode()) {
-            $this->logger->warning(sprintf('Failed to publish episode notification to Mastodon. Response code: %s', $statusCode));
+            if (200 !== $statusCode = $response->getStatusCode()) {
+                $this->logger->warning(sprintf('Failed to publish episode notification to Mastodon. Response code: %s', $statusCode));
+            }
+        } catch (\Throwable $exception) {
+            $this->logger->critical('Failed to publish episode on Mastodon.', ['exception' => $exception]);
+
+            captureException($exception);
         }
     }
 }

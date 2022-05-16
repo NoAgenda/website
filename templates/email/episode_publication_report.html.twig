@@ -1,0 +1,13 @@
+<p>Episode {{ episode }} has been published.</p>
+
+<a href="{{ path('player', {episode: episode.code}) }}">Click here to view the episode on the website.</a>
+
+<h1>Logs</h1>
+<table>
+  {% for log in logs %}
+    <tr>
+      <td>{{ log.level }}</td>
+      <td>{{ log.message }}</td>
+    </tr>
+  {% endfor %}
+</table>

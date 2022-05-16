@@ -34,7 +34,7 @@ class FeedbackExtension extends AbstractExtension
             } else if ($entity->getCreatorToken()) {
                 return 'Guest producer';
             } else {
-                return 'Woodstock';
+                return $_SERVER['APP_ADMIN_USER'];
             }
         }
 
@@ -89,7 +89,7 @@ class FeedbackExtension extends AbstractExtension
         }
 
         if ($output === '') {
-            $output = 'Woodstock';
+            $output = $_SERVER['APP_ADMIN_USER'];
         }
 
         return $output;

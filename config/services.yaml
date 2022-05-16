@@ -19,9 +19,9 @@ services:
 
     App\Crawling\:
         resource: '../src/Crawling/'
-        exclude: '../src/Crawling/{Shownotes}'
+        exclude: '../src/Crawling/{CrawlingLogger.php,Shownotes}'
         calls:
-            - ['setLogger', ['@monolog.logger.crawler']]
+            - ['setLogger', ['@App\Crawling\CrawlingLogger']]
         bind:
             $mastodonAccessToken: '%env(MASTODON_ACCESS_TOKEN)%'
             $mastodonAccountId: '%env(MASTODON_ACCOUNT_ID)%'
@@ -29,6 +29,9 @@ services:
             $youtubeKey: '%env(YOUTUBE_KEY)%'
             $youtubePlaylistId: '%env(YOUTUBE_PLAYLIST_ID)%'
         tags: ['crawler']
+
+    App\Crawling\CrawlingLogger:
+        arguments: ['@monolog.logger.crawler']
 
     App\EventListener\Doctrine\:
         resource: '../src/EventListener/Doctrine/'

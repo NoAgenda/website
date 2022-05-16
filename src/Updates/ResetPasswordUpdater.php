@@ -18,7 +18,7 @@ class ResetPasswordUpdater extends AbstractUpdater
             ->from($this->getAuthorEmail(), $this->getAuthorName())
             ->to($user->getEmail(), $user->getUsername())
             ->subject('Reset password')
-            ->htmlTemplate('emails/reset_password.html.twig')
+            ->htmlTemplate('email/reset_password.html.twig')
             ->context([
                 'user' => $user,
                 'remote_address' => $this->requestStack->getCurrentRequest()->getClientIp(),

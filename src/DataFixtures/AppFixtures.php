@@ -50,9 +50,12 @@ class AppFixtures extends Fixture
                 ->setChatArchivePath($data['chatArchivePath'])
             ;
 
+            /** @var User $user */
+            $user = $this->getReference(sprintf('user-%s', $_SERVER['APP_ADMIN_USER']));
+
             $chapter = (new EpisodeChapter())
                 ->setEpisode($episode)
-                ->setCreator($this->getReference('user-Woodstock'))
+                ->setCreator($user)
                 ->setName('Start of Show')
                 ->setStartsAt(0)
             ;
@@ -189,7 +192,7 @@ class AppFixtures extends Fixture
 
     public function loadUsers(): iterable
     {
-        yield ['Woodstock', 'admin@noagendaexperience.com', 'test', ['ROLE_SUPER_ADMIN']];
+        yield [$_SERVER['APP_ADMIN_USER'], $_SERVER['APP_ADMIN_EMAIL'] ?? 'admin@noagendaexperience.com', 'test', ['ROLE_SUPER_ADMIN']];
     }
 
     public function loadVideos(): iterable

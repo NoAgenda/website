@@ -2,18 +2,24 @@
 
 namespace App\MessageHandler;
 
-use App\Message\Crawl;
-use App\Message\GenerateEpisodeReport;
+use App\Crawling\CrawlingLogger;
+use App\Crawling\CrawlingProcessor;
+use App\Crawling\NotificationPublisher;
 use App\Message\PrepareEpisode;
-use App\Message\PublishEpisode;
 use App\Repository\EpisodeRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
-use Symfony\Component\Messenger\MessageBusInterface;
 
 class PrepareEpisodeHandler implements MessageHandlerInterface
 {
     public function __construct(
-        private MessageBusInterface $messenger,
+        private EntityManagerInterface $entityManager,
+        private CrawlingProcessor $crawlingProcessor,
+        private NotificationPublisher $publisher,
+        private MailerInterface $mailer,
+        private CrawlingLogger $logger,
         private EpisodeRepository $episodeRepository,
     ) {}
 
@@ -21,18 +27,41 @@ class PrepareEpisodeHandler implements MessageHandlerInterface
     {
         $episode = $this->episodeRepository->findOneByCode($code = $message->episodeCode);
 
-        $this->messenger->dispatch(new Crawl('cover', $code));
-        $this->messenger->dispatch(new Crawl('shownotes', $code));
-        $this->messenger->dispatch(new Crawl('transcript', $code));
-        $this->messenger->dispatch(new Crawl('duration', $code));
+        $this->logger->collect();
+
+        $this->crawlingProcessor->crawl('cover', $episode);
+        $this->crawlingProcessor->crawl('shownotes', $episode);
+        $this->crawlingProcessor->crawl('transcript', $episode);
+        $this->crawlingProcessor->crawl('duration', $episode);
 
         if (!$episode->isPublished()) {
-            $this->messenger->dispatch(new PublishEpisode($code));
+            $episode->setPublished(true);
+
+            $this->entityManager->persist($episode);
+            $this->entityManager->flush();
+
+            $this->publisher->publish($episode);
         }
 
-        $this->messenger->dispatch(new Crawl('recording_time', $code));
-        $this->messenger->dispatch(new Crawl('chat_archive', $code));
+        $this->crawlingProcessor->crawl('recording_time', $episode);
+        $this->crawlingProcessor->crawl('chat_archive', $episode);
 
-        $this->messenger->dispatch(new GenerateEpisodeReport($code));
+        $logs = $this->logger->retrieve();
+
+        if (!$adminEmail = $_SERVER['APP_ADMIN_EMAIL'] ?? null) {
+            return;
+        }
+
+        $message = (new TemplatedEmail())
+            ->from($_SERVER['MAILER_FROM'], $_SERVER['MAILER_FROM_AUTHOR'])
+            ->to($adminEmail, $_SERVER['APP_ADMIN_USER'])
+            ->subject(sprintf('Episode Publication Report: %s', $code))
+            ->htmlTemplate('email/episode_publication_report.html.twig')
+            ->context([
+                'episode' => $episode,
+                'logs' => $logs,
+            ]);
+
+        $this->mailer->send($message);
     }
 }
