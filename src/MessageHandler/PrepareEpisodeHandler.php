@@ -19,7 +19,7 @@ class PrepareEpisodeHandler implements MessageHandlerInterface
 
     public function __invoke(PrepareEpisode $message): void
     {
-        $episode = $this->episodeRepository->findOneByCode($code = $message->code);
+        $episode = $this->episodeRepository->findOneByCode($code = $message->episodeCode);
 
         $this->messenger->dispatch(new Crawl('cover', $code));
         $this->messenger->dispatch(new Crawl('shownotes', $code));

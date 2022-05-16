@@ -23,7 +23,7 @@ class PublishEpisodeHandler implements MessageHandlerInterface
 
     public function __invoke(PublishEpisode $message): void
     {
-        $episode = $this->episodeRepository->findOneByCode($message->code);
+        $episode = $this->episodeRepository->findOneByCode($message->episodeCode);
 
         if ($episode->isPublished()) {
             // An episode can only be published once
