@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Crawling\CrawlingProcessor;
+use App\Crawling\CrawlingResult;
 use App\Crawling\EpisodeCrawlerInterface;
 use App\Crawling\EpisodeFileCrawlerInterface;
 use App\Entity\Episode;
@@ -80,49 +81,67 @@ class CrawlCommand extends Command
             $jobs[] = null;
         }
 
-        $this->preCrawl($data, $style);
+        $this->preCrawl();
+
+        $results = [];
 
         foreach ($jobs as $episode) {
             if ($episode) {
-                $this->crawlEpisode($data, $episode, $style);
+                $results[] = $this->crawlEpisode($data, $episode, $style);
             } else {
-                $this->crawl($data, $style);
+                $results[] = $this->crawl($data, $style);
             }
         }
 
-        $this->postCrawl($data, $style);
+        $this->postCrawl($results, $style);
 
         return Command::SUCCESS;
     }
 
-    protected function preCrawl(string $data, OutputInterface $output): void
+    protected function preCrawl(): void
     {
         $this->entityManager->beginTransaction();
     }
 
-    protected function postCrawl(string $data, StyleInterface $style): void
+    protected function postCrawl(array $results, StyleInterface $style): void
     {
         $this->entityManager->flush();
         $this->entityManager->commit();
 
-        $style->success(sprintf('Finished crawling %s.', $data));
+        $faultyResults = 0;
+
+        foreach ($results as $result) {
+            if ($result instanceof CrawlingResult && !$result->success) {
+                $faultyResults++;
+            }
+        }
+
+        if ($faultyResults > 0) {
+            $style->warning(sprintf('Crawling finished with %s error(s)', $faultyResults));
+        } else {
+            $style->success('Crawling finished');
+        }
     }
 
-    protected function crawl(string $data, StyleInterface $style): void
+    protected function crawl(string $data, StyleInterface $style): ?CrawlingResult
     {
-        $style->note(sprintf('Crawling %s...', $data));
+        $style->info(sprintf('Crawling %s...', $data));
 
-        $this->crawlingProcessor->crawl($data);
+        $result = $this->crawlingProcessor->crawl($data);
 
         $style->writeln('');
+
+        return $result;
     }
 
-    protected function crawlEpisode(string $data, Episode $episode, StyleInterface $style): void
+    protected function crawlEpisode(string $data, Episode $episode, StyleInterface $style): ?CrawlingResult
     {
-        $style->note(sprintf('Crawling %s for episode %s...', $data, $episode->getCode()));
+        $style->info(sprintf('Crawling %s for episode %s...', $data, $episode->getCode()));
 
-        $this->crawlingProcessor->crawl($data, $episode);
+        $result = $this->crawlingProcessor->crawl($data, $episode);
 
         $style->writeln('');
+
+        return $result;
     }
 }

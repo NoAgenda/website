@@ -37,7 +37,7 @@ class CrawlingProcessor
         $this->logger = new NullLogger();
     }
 
-    public function crawl(string $data, Episode $episode = null, \DateTimeInterface $lastModifiedAt = null, \DateTimeInterface $initializedAt = null): void
+    public function crawl(string $data, Episode $episode = null, \DateTimeInterface $lastModifiedAt = null, \DateTimeInterface $initializedAt = null): CrawlingResult
     {
         $crawlerName = $this->getCrawlerName($data, $episode);
         $crawler = $this->crawlers->get($crawlerName);
@@ -52,10 +52,14 @@ class CrawlingProcessor
             } else {
                 $crawler->crawl();
             }
+
+            return new CrawlingResult(true);
         } catch (\Throwable $exception) {
             $this->logger->error(sprintf('An error occurred while crawling %s: %s', u($data)->folded(), $exception->getMessage()));
 
             captureException($exception);
+
+            return new CrawlingResult(false, $exception);
         }
     }
 
