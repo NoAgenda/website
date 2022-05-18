@@ -1,39 +1,119 @@
-# No Agenda
-
-<img src="https://circleci.com/gh/NoAgenda/website.svg?style=shield" alt="CircleCI status">
-<img src="https://noagenda.semaphoreci.com/badges/website/branches/develop.svg" alt="Semaphore status">
+# No Agenda Website
 
 The source code of [noagendashow.net](https://www.noagendashow.net),
 a [Symfony](https://symfony.com/) application.
 
+This application is an online media player and archive specifically made for
+The No Agenda Show podcast. The project started in 2016 as a fan project with
+the intention to aggregate all resources related to the show into one
+easy-to-use interface. It is now the official No Agenda Show's website.
+
+Because the podcast and many producer-made resources are published separately
+this application has a built-in crawler to fetch data from different sources.
+To control the flow of crawling jobs the application uses a messenger queue
+wich requires to be run separately from the main application.
+
 ## Installation
 
 You need [Docker](https://www.docker.com/) to run this application. For more
-information on managing the application, see the [Symfony 4.4 documentation](https://symfony.com/doc/4.4/index.html).
+information on managing the application, see the [Symfony 5.4 documentation](https://symfony.com/doc/5.4/index.html).
 
-See `.env` for configuration options (create `.env.local` to override configuration).
+See `.env` for configuration options (create `.env.local` to override options).
 
 To initialize the application, simply start it with Docker Compose:
 
 ```bash
-# Start the Docker containers
-docker-compose up -d
+# Start the Docker project with locally built containers
+docker compose up -d
+
+# or start with production containers from the web
+APP_TAG=latest docker compose up -d
+
+# or start the expanded configuration with extra services
+docker compose -f docker-compose.yaml -f docker-compose.services.yaml up -d
+
+# View container logs
+docker compose logs -f
+```
+
+After a short setup, the application should be running on [http://localhost:8033](http://localhost:8033).
+
+## CLI Commands
+
+Useful commands:
+
+```bash
+# Start a Terminal session inside the main Docker container
+docker compose exec app bash
 
 # Load demo data
-docker exec -it noagenda_app_1 bin/console doctrine:fixtures:load
+docker compose exec app bin/console doctrine:fixtures:load
 
 # Create resized versions of the episode covers
-docker exec noagenda_app_1 bin/console app:refresh-cover-cache
+docker compose exec app bin/console refresh-cover-cache
 ```
 
-After a short setup, the application should be running on http://localhost:8033
+### Crawling
 
-To start a Terminal session inside the main Docker container, run:
+Crawling can be done in one of two ways: by manual execution or through the
+Messenger queue.
+
+Types of data to crawl:
+* bat_signal
+* chat_archive (requires episode code)
+* cover (requires episode code)
+* duration (requires episode code)
+* feed
+* recording_time (requires episode code)
+* shownotes (requires episode code)
+* transcript (requires episode code)
+* youtube
+
 ```bash
-docker exec -it noagenda_app_1 bash
+# Crawl directly from the command line
+docker compose exec app bin/console crawl <data>
+docker compose exec app bin/console crawl <data> --episode <code>
+
+# Add a crawling job to the messenger queue
+docker compose exec app bin/console enqueue <data>
+docker compose exec app bin/console enqueue <data> --episode <code>
 ```
+
+### Recording
+
+While there are separate services defined for recording tasks in the `docker-compose.services.yaml`
+file, it's still possible to manually run these commands.
+
+```bash
+# Manually record the IRC chat room
+docker compose exec app bin/console record chat
+
+# Manually record chuncks of the livestream to determine episode recording times
+docker compose exec app bin/console record livestream
+```
+
+### Messenger Queue
+
+While the messenger queue is currently only used for crawling jobs, it's
+important to always have the queue running in a live environment because
+crawling jobs can schedule new jobs, like re-downloading a resource or
+crawling the resources for a new episode.
+
+Like with recording services, there is a separate service defined for the
+messenger in the `docker-compose.services.yaml` file, but it's still possible
+to manually run the messenger queue. Note that the messenger needs the ability
+to handle large files so there's a separate image with an increased memory
+limit specifically for crawling.
+
+```bash
+docker compose exec app bin/console messenger:consume crawler
+```
+
+See the [Symfony Messenger documentation](https://symfony.com/doc/4.4/messenger.html)
+for information on the messenger queue.
 
 ## Testing
+
 ### PHP
 To execute the PHP/Symfony unit tests run:
 ```bash
@@ -49,65 +129,4 @@ docker exec -t noagenda_assets_1 npm run test
 You can also have the test run automatically when a file changes while developing by running:
 ```bash
 docker exec -t noagenda_assets_1 npm run test-watch
-```
-
-## Crawling
-
-Crawling can be done in one of two ways: by manual execution or through the 
-Messenger queue. 
-
-```bash
-# Crawl the podcast feed
-bin/console app:crawl feed
-
-# Crawl natrascripts.online for new transcript URIs
-bin/console app:crawl transcripts
-
-# Crawl Adam's Mastodon feed for the latest bat signal
-bin/console app:crawl bat_signal
-
-# Crawl Youtube for new Animated No Agenda videos
-bin/console app:crawl youtube
-
-# Download an episode's cover and recording file
-bin/console app:crawl files --episode <code>
-
-# Crawl an episode's shownotes
-bin/console app:crawl shownotes --episode <code>
-
-# Crawl an episode's transcript
-bin/console app:crawl transcript --episode <code>
-
-# Match an episode's recording time
-bin/console app:crawl recording_time --episode <code>
-
-# Match an episode's chat archive
-bin/console app:crawl chat_archive --episode <code>
-
-# Record a chunk of the livestream
-bin/console app:record livestream
-
-# Record the live chat messages
-bin/console app:record chat
-```
-
-### Running the queue
-
-See the [Symfony Messenger documentation](https://symfony.com/doc/4.4/messenger.html)
-for details.
-
-When running the Docker setup, the queue is automatically processed by the 
-`crawler` container, but you can run it manually with:
-
-```bash
-bin/console messenger:consume crawler
-```
-
-You can also enqueue a task from Terminal with one of the following commands:
-
-```bash
-bin/console app:enqueue bat_signal
-bin/console app:enqueue feed
-bin/console app:enqueue transcripts
-bin/console app:enqueue youtube
 ```
