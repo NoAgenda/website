@@ -87,7 +87,7 @@ class FileDownloader
     {
         $scheduledFileDownload = $this->scheduledFileDownloadRepository->findDownload($data, $episode);
 
-        if ($scheduledFileDownload && $initializedAt !== $scheduledFileDownload->getInitializedAt()) {
+        if ($scheduledFileDownload && $initializedAt->getTimestamp() !== $scheduledFileDownload->getInitializedAt()->getTimestamp()) {
             $this->logger->debug('File download has already been rescheduled');
             return;
         }
