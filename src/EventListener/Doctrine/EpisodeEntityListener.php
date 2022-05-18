@@ -20,11 +20,11 @@ class EpisodeEntityListener implements EventSubscriber
     public function getSubscribedEvents(): array
     {
         return [
-            'prePersist',
+            'postPersist',
         ];
     }
 
-    public function prePersist(LifecycleEventArgs $event): void
+    public function postPersist(LifecycleEventArgs $event): void
     {
         $episode = $event->getEntity();
         $entityManager = $event->getEntityManager();
