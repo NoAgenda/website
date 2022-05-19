@@ -54,7 +54,7 @@ class FileDownloader
             $headers = [];
 
             if (null !== $ifModifiedSince) {
-                $headers['If-Modified-Since'] = $ifModifiedSince->format('D, M d Y H:i:s O+');
+                $headers['If-Modified-Since'] = $ifModifiedSince->format(\DateTimeInterface::RFC1123);
             }
 
             try {
