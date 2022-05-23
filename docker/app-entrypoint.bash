@@ -13,7 +13,7 @@ if [ "$1" = 'php-fpm' ] || [ "$1" = 'bin/console' ]; then
   fi
 
   >&2 echo "Waiting for database to be ready..."
-  until bin/console doctrine:query:sql "select 1" >/dev/null 2>&1; do
+  until bin/console dbal:run-sql "select 1" >/dev/null 2>&1; do
     sleep 1
   done
 
