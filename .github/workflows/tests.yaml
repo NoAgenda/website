@@ -1,21 +1,73 @@
-name: Run Project Tests
+name: Run Tests
 
 on: push
+
+env:
+  APP_ENV: test
+  APP_STORAGE_PATH: "${{ github.workspace }}/tests/fixtures"
+  DATABASE_URL: mysql://dudenamedben:dudettenamedbernadette@127.0.0.1:3306/noagenda?serverVersion=8
+  SYMFONY_DEPRECATIONS_HELPER: disabled
 
 jobs:
   run-tests:
     name: Run Tests
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-version: ['8.1']
+    services:
+      database:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: InTheMorning
+          MYSQL_DATABASE: noagenda_test
+          MYSQL_USER: dudenamedben
+          MYSQL_PASSWORD: dudettenamedbernadette
+        ports:
+          - 3306:3306
     steps:
       -
         name: Checkout
         uses: actions/checkout@v2
       -
-        name: Build Docker Images
-        run: docker-compose build --build-arg GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
+        name: Set up PHP
+        uses: shivammathur/setup-php@2.18.1
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: imagick
+          tools: composer:v2
       -
-        name: Run JavaScript Tests
-        run: docker run --entrypoint docker-entrypoint.sh ghcr.io/noagenda/website/assets:local npm run build && npm run test
+        name: Set Composer cache directory
+        id: composer-cache
+        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
       -
-        name: Run PHP Tests
-        run: docker run ghcr.io/noagenda/website/app:local bin/phpunit
+        name: Cache Composer
+        uses: actions/cache@v2.1.2
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ matrix.php-version }}-composer-${{ hashFiles('composer.lock') }}
+          restore-keys: ${{ matrix.php-version }}-composer-
+      -
+        name: Install Composer dependencies
+        run: composer install --no-progress
+      -
+        name: Set up database
+        run: |
+          bin/console doctrine:migrations:migrate --no-interaction
+          bin/console messenger:setup-transports
+          bin/console doctrine:fixtures:load --no-interaction
+      -
+        name: Set up Node
+        uses: actions/setup-node@v1
+      -
+        name: Install NPM dependencies
+        run: npm ci
+      -
+        name: Build assets
+        run: npm run build
+      -
+        name: Run PHP tests
+        run: bin/phpunit -v
+      -
+        name: Run Node tests
+        run: npm run test

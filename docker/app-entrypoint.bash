@@ -6,7 +6,7 @@ if [ "$1" = 'php-fpm' ] || [ "$1" = 'bin/console' ]; then
   mkdir -p public/media var/cache var/log
 
   if [ "$APP_ENV" != 'prod' ]; then
-    composer install --prefer-dist --no-autoloader --no-progress --no-scripts --no-interaction
+    composer install --no-autoloader --no-progress --no-scripts --no-interaction
     composer clear-cache --no-interaction
     composer dump-autoload --no-interaction
     composer run-script post-install-cmd --no-interaction

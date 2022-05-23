@@ -133,7 +133,7 @@ COPY --from=assets --chown=ben:ben /srv/app/public public/
 
 # Run Composer commands
 RUN set -eux; \
-    composer install --no-autoloader --no-dev --no-progress --no-scripts --prefer-dist; \
+    composer install --no-autoloader --no-dev --no-progress --no-scripts; \
     composer clear-cache; \
     composer dump-autoload --classmap-authoritative; \
     chmod +x bin/console; \
