@@ -15,10 +15,13 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Stamp\DelayStamp;
+use function Symfony\Component\String\u;
 
 class FileDownloader
 {
     use LoggerAwareTrait;
+
+    private const DATE_FORMAT = 'Y-m-d H:i:s';
 
     public function __construct(
         private EntityManagerInterface $entityManager,
@@ -36,16 +39,15 @@ class FileDownloader
 
         if ($staticPath = $this->getStaticPath($uri)) {
             $lastModifiedAt = (new \DateTime())->setTimestamp(filemtime($staticPath));
+            $at = $lastModifiedAt->format(self::DATE_FORMAT);
 
             if ($ifModifiedSince && ($lastModifiedAt->getTimestamp() - $ifModifiedSince->getTimestamp()) <= 0) {
-                $lastModifiedAt = $ifModifiedSince;
-
-                $this->logger->debug(sprintf('No changes to file "%s". Last modified at %s.', $uri, $lastModifiedAt->format('Y-m-d H:i:s')));
+                $this->logger->debug(sprintf('No changes to file "%s". Last modified at %s.', $uri, $at));
             } else {
                 if ($ifModifiedSince) {
-                    $this->logger->info(sprintf('File "%s" was changed. Last modified at %s.', $uri, $lastModifiedAt->format('Y-m-d H:i:s')));
+                    $this->logger->info(sprintf('File "%s" was changed. Last modified at %s.', $uri, $at));
                 } else {
-                    $this->logger->info(sprintf('File "%s" has been (re)downloaded. Last modified at %s.', $uri, $lastModifiedAt->format('Y-m-d H:i:s')));
+                    $this->logger->info(sprintf('File "%s" has been (re)downloaded. Last modified at %s.', $uri, $at));
                 }
 
                 $filesystem->copy($staticPath, $path);
@@ -65,15 +67,17 @@ class FileDownloader
 
             if (304 === $response->getStatusCode()) {
                 $lastModifiedAt = $ifModifiedSince;
+                $at = $lastModifiedAt->format(self::DATE_FORMAT);
 
-                $this->logger->debug(sprintf('No changes to file "%s". Last modified at %s.', $uri, $lastModifiedAt->format('Y-m-d H:i:s')));
+                $this->logger->debug(sprintf('No changes to file "%s". Last modified at %s.', $uri, $at));
             } else {
                 $lastModifiedAt = new \DateTime($response->getHeaderLine('Last-Modified'));
+                $at = $lastModifiedAt->format(self::DATE_FORMAT);
 
                 if ($ifModifiedSince) {
-                    $this->logger->info(sprintf('File "%s" was changed. Last modified at %s.', $uri, $lastModifiedAt->format('Y-m-d H:i:s')));
+                    $this->logger->info(sprintf('File "%s" was changed. Last modified at %s.', $uri, $at));
                 } else {
-                    $this->logger->info(sprintf('File "%s" has been (re)downloaded. Last modified at %s.', $uri, $lastModifiedAt->format('Y-m-d H:i:s')));
+                    $this->logger->info(sprintf('File "%s" has been (re)downloaded. Last modified at %s.', $uri, $at));
                 }
 
                 $filesystem->dumpFile($path, $response->getBody()->getContents());
@@ -97,7 +101,7 @@ class FileDownloader
                 $this->entityManager->remove($scheduledFileDownload);
             }
 
-            $this->logger->debug('File download doesn\'t have to be rescheduled');
+            $this->logger->debug('End of file download cycle has been reached');
             return;
         }
 
@@ -115,7 +119,7 @@ class FileDownloader
             $this->entityManager->persist($scheduledFileDownload);
         }
 
-        $this->logger->debug('Rescheduling file download');
+        $this->logger->debug(u('Rescheduled file download in ')->append($interval->format($interval->h > 0 ? '%h hours' : '%i minutes')));
         $message = new Crawl($data, $episode->getCode(), $lastModifiedAt, $initializedAt);
         $envelope = new Envelope($message, [
             DelayStamp::delayFor($interval),
@@ -141,6 +145,11 @@ class FileDownloader
         }
 
         return new \DateInterval('PT30M');
+    }
+
+    private function formatDate(\DateTimeInterface $date): string
+    {
+        return $date->format('Y-m-d H:i:s');
     }
 
     private function getStaticPath(string $uri): ?string
