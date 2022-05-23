@@ -55,9 +55,10 @@ class BatSignalCrawler implements CrawlerInterface
     private function crawlBatSignal(): ?BatSignal
     {
         $response = $this->mastodonClient->get(sprintf('/accounts/%s/statuses', $this->mastodonAccountId));
+        $responseCode = $response->getStatusCode();
 
-        if ($response->getStatusCode() > 200) {
-            $this->logger->critical('Failed to fetch messages from No Agenda Social.');
+        if ($responseCode >= 300) {
+            $this->logger->warning(sprintf('Failed to crawl bat signal feed (status code: %s)', $responseCode));
 
             return null;
         }
@@ -65,13 +66,13 @@ class BatSignalCrawler implements CrawlerInterface
         $entries = json_decode($response->getBody()->getContents(), true);
 
         foreach ($entries as $entry) {
-            if (str_contains($entry['content'], '#@pocketnoagenda')) {
+            if (str_contains($entry['content'] ?? '', '#@pocketnoagenda')) {
                 preg_match('/episode (\d+)/', $entry['content'],$matches);
                 list(, $code) = $matches;
 
                 return (new BatSignal())
                     ->setCode($code)
-                    ->setDeployedAt(new \DateTime($entry['created_at']))
+                    ->setDeployedAt(new \DateTime($entry['created_at'] ?? null))
                 ;
             }
         }

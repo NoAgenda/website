@@ -54,11 +54,14 @@ class FeedCrawler implements CrawlerInterface
         }
 
         $response = $this->httpClient->get('http://feed.nashownotes.com/rss.xml', $headers);
+        $responseCode = $response->getStatusCode();
 
-        if (304 === $response->getStatusCode()) {
+        if (304 === $responseCode) {
             $this->logger->debug(sprintf('No changes to feed. Last modified at %s.', $lastModifiedAt));
 
             return null;
+        } elseif ($responseCode >= 300) {
+            $this->logger->warning(sprintf('Failed to crawl feed (status code: %s)', $responseCode));
         }
 
         $lastModifiedAt = $response->getHeaderLine('Last-Modified');
