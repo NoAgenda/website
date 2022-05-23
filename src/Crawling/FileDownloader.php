@@ -23,14 +23,22 @@ class FileDownloader
 
     private const DATE_FORMAT = 'Y-m-d H:i:s';
 
+    private array $staticSources = [];
+
     public function __construct(
         private EntityManagerInterface $entityManager,
         private ScheduledFileDownloadRepository $scheduledFileDownloadRepository,
         private HttpMethodsClientInterface $httpClient,
         private MessageBusInterface $messenger,
-        private array $staticSources = [],
     ) {
         $this->logger = new NullLogger();
+
+        if ($staticSources = $_SERVER['STATIC_SOURCES'] ?? false) {
+            foreach (explode(',', $staticSources) as $staticSource) {
+                $staticSource = explode('>', $staticSource);
+                $this->staticSources[$staticSource[0]] = $staticSource[1];
+            }
+        }
     }
 
     public function download(string $uri, string $path, \DateTime $ifModifiedSince = null): \DateTime
