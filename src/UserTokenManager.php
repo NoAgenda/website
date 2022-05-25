@@ -58,7 +58,7 @@ class UserTokenManager
             }
         }
 
-        $request = $this->requestStack->getMasterRequest();
+        $request = $this->requestStack->getMainRequest();
 
         if ($request) {
             $tokenValue = $request->cookies->get('guest_token');
