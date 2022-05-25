@@ -54,7 +54,7 @@ when@prod:
                 buffer_size: 50 # How many messages should be saved? Prevent memory leaks
             nested:
                 type: rotating_file
-                level: debug
+                level: info
                 channels: ["!crawler"]
                 path: "%kernel.logs_dir%/application.log"
                 max_files: 28
