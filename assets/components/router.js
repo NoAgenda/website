@@ -37,6 +37,11 @@ class RouterElement extends HTMLElement {
       this.updateLinks();
       this.updateBullshit();
 
+      const _paq = window._paq || [];
+      _paq.push(['setDocumentTitle', event.state.title]);
+      _paq.push(['setCustomUrl', window.location.toString()]);
+      _paq.push(['trackPageView']);
+
       this.dispatchEvent(new Event('navigated'));
     };
   }
