@@ -1,9 +1,11 @@
 parameters:
     sentry_environment: '%kernel.environment%'
 
-when@prod:
+when@prod: &sentry_prod
     sentry:
         dsn: '%env(SENTRY_DSN)%'
         options:
             before_send: App\EventListener\Sentry\BeforeSendListener
             environment: '%env(string:default:sentry_environment:SENTRY_ENVIRONMENT)%'
+
+when@staging: *sentry_prod

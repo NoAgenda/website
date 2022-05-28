@@ -62,6 +62,40 @@ when@prod:
                 type: console
                 channels: ["!event", "!doctrine", "!crawler"]
                 process_psr_3_messages: false
+            crawler_console:
+                type: console
+                channels: [crawler]
+                verbosity_levels:
+                    VERBOSITY_QUIET: NOTICE
+                    VERBOSITY_NORMAL: INFO
+                    VERBOSITY_VERBOSE: DEBUG
+                    VERBOSITY_VERY_VERBOSE: DEBUG
+            crawler_file:
+                type: rotating_file
+                level: debug
+                channels: [crawler]
+                path: "%kernel.logs_dir%/crawler.log"
+                max_files: 28
+
+when@staging:
+    monolog:
+        handlers:
+            main:
+                type: fingers_crossed
+                action_level: error
+                handler: nested
+                excluded_http_codes: [404, 405]
+                buffer_size: 50 # How many messages should be saved? Prevent memory leaks
+            nested:
+                type: rotating_file
+                level: debug
+                channels: ["!crawler"]
+                path: "%kernel.logs_dir%/application.log"
+                max_files: 28
+            console:
+                type: console
+                channels: ["!event", "!doctrine", "!crawler"]
+                process_psr_3_messages: false
             deprecation:
                 type: rotating_file
                 channels: [deprecation]

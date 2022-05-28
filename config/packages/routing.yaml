@@ -6,7 +6,9 @@ framework:
         # See https://symfony.com/doc/current/routing.html#generating-urls-in-commands
         default_uri: '%env(APP_HOST)%'
 
-when@prod:
+when@prod: &routing_prod
     framework:
         router:
             strict_requirements: null
+
+when@staging: *routing_prod
