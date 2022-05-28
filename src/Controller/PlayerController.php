@@ -14,8 +14,10 @@ use Benlipp\SrtParser\Parser as SrtParser;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 class PlayerController extends AbstractController
@@ -98,9 +100,11 @@ class PlayerController extends AbstractController
      */
     public function audio(Episode $episode): Response
     {
-        $path = sprintf('%s/episode_recordings/%s.mp3', $_SERVER['APP_STORAGE_PATH'], $episode->getCode());
+        if (null === $recordingUri = $episode->getRecordingUri()) {
+            throw new NotFoundHttpException();
+        }
 
-        return new BinaryFileResponse($path);
+        return new RedirectResponse($recordingUri, Response::HTTP_MOVED_PERMANENTLY);
     }
 
     /**
