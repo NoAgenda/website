@@ -139,13 +139,6 @@ RUN set -eux; \
     chmod +x bin/console; \
     APP_ENV=prod composer run-script post-install-cmd
 
-FROM app AS crawler
-
-COPY docker/php/conf.d/crawler.ini /usr/local/etc/php/conf.d
-
-ENTRYPOINT ["app-php-entrypoint"]
-CMD ["bin/console", "messenger:consume", "--sleep", "30", "--time-limit", "3600", "crawler"]
-
 FROM nginx:alpine AS web
 
 ENV FPM_HOST=app

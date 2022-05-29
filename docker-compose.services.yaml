@@ -15,12 +15,11 @@ services:
       - php
 
   crawler:
-    build:
-      context: .
-      target: crawler
-    image: ghcr.io/noagenda/website/crawler:${APP_TAG:-local}
+    image: ghcr.io/noagenda/website/app:${APP_TAG:-local}
     restart: unless-stopped
     tty: true
+    entrypoint: app-php-entrypoint
+    command: bin/console messenger:consume --sleep 30 --time-limit 3600 crawler
     depends_on:
       - app
     volumes:
