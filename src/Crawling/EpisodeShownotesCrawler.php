@@ -5,9 +5,9 @@ namespace App\Crawling;
 use App\Entity\Episode;
 use App\Exception\FileDownloadException;
 use Doctrine\ORM\EntityManagerInterface;
-use Http\Client\Common\HttpMethodsClientInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class EpisodeShownotesCrawler implements EpisodeFileCrawlerInterface
 {
@@ -15,7 +15,7 @@ class EpisodeShownotesCrawler implements EpisodeFileCrawlerInterface
 
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private HttpMethodsClientInterface $shownotesClient,
+        private HttpClientInterface $httpClient,
         private FileDownloader $fileDownloader,
     ) {
         $this->logger = new NullLogger();
@@ -23,13 +23,12 @@ class EpisodeShownotesCrawler implements EpisodeFileCrawlerInterface
 
     public function crawl(Episode $episode, \DateTime $ifModifiedSince = null): ?\DateTime
     {
-        $frontResponse = $this->shownotesClient->get(sprintf('http://%s.noagendanotes.com', $episode->getCode()));
-        $publicUri = $frontResponse->getHeaderLine('Location');
+        $publicResponse = $this->httpClient->request('GET', sprintf('http://%s.noagendanotes.com', $episode->getCode()));
 
-        if ($publicUri !== $episode->getPublicShownotesUri()) {
-            $publicResponse = $this->shownotesClient->get($publicUri);
-            $publicContents = $publicResponse->getBody()->getContents();
+        $publicContents = $publicResponse->getContent(); // Execute request
+        $publicUri = $publicResponse->getInfo('url');
 
+        if (null !== $publicUri && $publicUri !== $episode->getPublicShownotesUri()) {
             libxml_use_internal_errors(true);
 
             $publicDom = new \DOMDocument();

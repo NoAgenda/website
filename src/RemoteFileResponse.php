@@ -2,8 +2,8 @@
 
 namespace App;
 
-use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Contracts\HttpClient\ResponseInterface;
 
 class RemoteFileResponse extends Response
 {
@@ -13,9 +13,9 @@ class RemoteFileResponse extends Response
     {
         $this->file = $file;
 
-        $headers = $file->getHeaders();
+        $headers = $file->getHeaders(false);
 
-        parent::__construct(null, 200, $headers);
+        parent::__construct(null, $file->getStatusCode(), $headers);
     }
 
     public function sendContent()
@@ -24,7 +24,7 @@ class RemoteFileResponse extends Response
             return parent::sendContent();
         }
 
-        echo $this->file->getBody()->getContents();
+        echo $this->file->getContent();
 
         return $this;
     }

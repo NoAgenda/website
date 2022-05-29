@@ -5,9 +5,9 @@ namespace App\Crawling;
 use App\Entity\Video;
 use App\Repository\VideoRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Http\Client\Common\HttpMethodsClientInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class YoutubeCrawler implements CrawlerInterface
 {
@@ -16,7 +16,7 @@ class YoutubeCrawler implements CrawlerInterface
     public function __construct(
         private EntityManagerInterface $entityManager,
         private VideoRepository $videoRepository,
-        private HttpMethodsClientInterface $httpClient,
+        private HttpClientInterface $httpClient,
         private ?string $youtubeKey = null,
         private ?string $youtubePlaylistId = null,
     ) {
@@ -47,8 +47,8 @@ class YoutubeCrawler implements CrawlerInterface
             'maxResults' => 10,
         ]));
 
-        $response = $this->httpClient->get($uri);
-        $contents = json_decode($response->getBody()->getContents(), true);
+        $response = $this->httpClient->request('GET', $uri);
+        $contents = json_decode($response->getContent(), true);
 
         foreach ($contents['items'] as $item) {
             yield $item['contentDetails']['videoId'];
@@ -69,13 +69,15 @@ class YoutubeCrawler implements CrawlerInterface
             $headers['If-None-Match'] = $etag;
         }
 
-        $response = $this->httpClient->get($uri, $headers);
+        $response = $this->httpClient->request('GET', $uri, [
+            'headers' => $headers,
+        ]);
 
         if (304 === $response->getStatusCode()) {
             return;
         }
 
-        $contents = json_decode($response->getBody()->getContents(), true);
+        $contents = json_decode($response->getContent(), true);
         $data = $contents['items'][0];
 
         $video
@@ -84,7 +86,7 @@ class YoutubeCrawler implements CrawlerInterface
             ->setYoutubeEtag($contents['etag'])
         ;
 
-        if (!$video->getId()) {
+        if (!$this->entityManager->contains($video)) {
             $this->logger->info(sprintf('Found new Animated NA video: %s', $video->getTitle()));
         } else {
             $this->logger->info(sprintf('Updated Animated NA video: %s', $video->getTitle()));

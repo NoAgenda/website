@@ -8,13 +8,13 @@ use App\Exception\FileDownloadException;
 use App\Message\Crawl;
 use App\Repository\ScheduledFileDownloadRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Http\Client\Common\HttpMethodsClientInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Stamp\DelayStamp;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 use function Symfony\Component\String\u;
 
 class FileDownloader
@@ -28,7 +28,7 @@ class FileDownloader
     public function __construct(
         private EntityManagerInterface $entityManager,
         private ScheduledFileDownloadRepository $scheduledFileDownloadRepository,
-        private HttpMethodsClientInterface $httpClient,
+        private HttpClientInterface $httpClient,
         private MessageBusInterface $messenger,
     ) {
         $this->logger = new NullLogger();
@@ -67,19 +67,19 @@ class FileDownloader
                 $headers['If-Modified-Since'] = $ifModifiedSince->format(\DateTimeInterface::RFC1123);
             }
 
-            try {
-                $response = $this->httpClient->get($uri, $headers);
-            } catch (\Throwable $exception) {
-                throw new FileDownloadException(sprintf('Failed to download "%s": %s', $uri, $exception->getMessage()), 0, $exception);
-            }
+            $response = $this->httpClient->request('GET', $uri, [
+                'headers' => $headers,
+            ]);
 
-            if (304 === $response->getStatusCode()) {
+            if (304 === $responseCode = $response->getStatusCode()) {
                 $lastModifiedAt = $ifModifiedSince;
                 $at = $lastModifiedAt->format(self::DATE_FORMAT);
 
                 $this->logger->debug(sprintf('No changes to file "%s". Last modified at %s.', $uri, $at));
+            } elseif ($responseCode >= 300) {
+                throw new FileDownloadException(sprintf('Failed to download file "%s". HTTP response code: %s', $uri, $responseCode));
             } else {
-                $lastModifiedAt = new \DateTime($response->getHeaderLine('Last-Modified'));
+                $lastModifiedAt = new \DateTime($response->getHeaders()['last-modified'][0] ?? null);
                 $at = $lastModifiedAt->format(self::DATE_FORMAT);
 
                 if ($ifModifiedSince) {
@@ -88,7 +88,7 @@ class FileDownloader
                     $this->logger->info(sprintf('File "%s" has been (re)downloaded. Last modified at %s.', $uri, $at));
                 }
 
-                $filesystem->dumpFile($path, $response->getBody()->getContents());
+                $filesystem->dumpFile($path, $response->toStream());
             }
         }
 

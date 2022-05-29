@@ -5,11 +5,10 @@ namespace App\Tests\Crawling;
 use App\Crawling\BatSignalCrawler;
 use App\Repository\BatSignalRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Http\Client\Common\HttpMethodsClientInterface;
-use Nyholm\Psr7\Factory\Psr17Factory;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpClient\MockHttpClient;
+use Symfony\Component\HttpClient\Response\MockResponse;
 
 class BatSignalCrawlerTest extends TestCase
 {
@@ -23,7 +22,7 @@ class BatSignalCrawlerTest extends TestCase
     {
         $this->entityManager = $this->getMockBuilder(EntityManagerInterface::class)->getMock();
         $this->repository = $this->getMockBuilder(BatSignalRepository::class)->disableOriginalConstructor()->getMock();
-        $this->httpClient = $this->getMockBuilder(HttpMethodsClientInterface::class)->getMock();
+        $this->httpClient = new MockHttpClient();
         $this->logger = $this->getMockBuilder(LoggerInterface::class)->getMock();
 
         $this->crawler = new BatSignalCrawler($this->entityManager, $this->repository, $this->httpClient, 'foo', 1);
@@ -32,13 +31,12 @@ class BatSignalCrawlerTest extends TestCase
 
     public function testNewSignal(): void
     {
-        $response = $this->createResponse([[
-            'content' => 'We\'re live now at noagendastream.com/ with No Agenda episode 33 #@pocketnoagenda',
-            'created_at' => '2022-02-02 12:00:00',
-        ]]);
-        $this->httpClient->expects($this->once())->method('get')
-            ->willReturn($response)
-        ;
+        $this->httpClient->setResponseFactory([
+            $this->createResponse([[
+                'content' => 'We\'re live now at noagendastream.com/ with No Agenda episode 33 #@pocketnoagenda',
+                'created_at' => '2022-02-02 12:00:00',
+            ]]),
+        ]);
 
         $this->repository->expects($this->once())->method('exists')
             ->willReturn(false)
@@ -69,13 +67,12 @@ class BatSignalCrawlerTest extends TestCase
 
     public function testInvalidResponse(): void
     {
-        $response = $this->createResponse([], 400);
-        $this->httpClient->expects($this->once())->method('get')
-            ->willReturn($response)
-        ;
+        $this->httpClient->setResponseFactory([
+            $this->createResponse([], 400),
+        ]);
 
-        $this->logger->expects($this->once())->method('critical')
-            ->with('Failed to fetch messages from No Agenda Social.')
+        $this->logger->expects($this->once())->method('warning')
+            ->with('Failed to crawl bat signal feed. HTTP response code: 400')
         ;
 
         $this->logger->expects($this->once())->method('debug')
@@ -89,10 +86,9 @@ class BatSignalCrawlerTest extends TestCase
 
     public function testNoSignal(): void
     {
-        $response = $this->createResponse([]);
-        $this->httpClient->expects($this->once())->method('get')
-            ->willReturn($response)
-        ;
+        $this->httpClient->setResponseFactory([
+            $this->createResponse([]),
+        ]);
 
         $this->logger->expects($this->once())->method('debug')
             ->with('No bat signal found.')
@@ -105,13 +101,12 @@ class BatSignalCrawlerTest extends TestCase
 
     public function testSignalExists(): void
     {
-        $response = $this->createResponse([[
-            'content' => 'We\'re live now at noagendastream.com/ with No Agenda episode 33 #@pocketnoagenda',
-            'created_at' => '2022-02-02 12:00:00',
-        ]]);
-        $this->httpClient->expects($this->once())->method('get')
-            ->willReturn($response)
-        ;
+        $this->httpClient->setResponseFactory([
+            $this->createResponse([[
+                'content' => 'We\'re live now at noagendastream.com/ with No Agenda episode 33 #@pocketnoagenda',
+                'created_at' => '2022-02-02 12:00:00',
+            ]]),
+        ]);
 
         $this->repository->expects($this->once())->method('exists')
             ->willReturn(true)
@@ -126,14 +121,10 @@ class BatSignalCrawlerTest extends TestCase
         $this->crawler->crawl();
     }
 
-    private function createResponse(array $body, int $statusCode = 200): ResponseInterface
+    private function createResponse(array $body, int $statusCode = 200): MockResponse
     {
-        $httpFactory = new Psr17Factory();
-        $stream = $httpFactory->createStream(json_encode($body));
-        $response = $httpFactory->createResponse($statusCode)->withBody($stream);
-
-        $stream->rewind();
-
-        return $response;
+        return new MockResponse(json_encode($body), [
+            'http_code' => $statusCode,
+        ]);
     }
 }

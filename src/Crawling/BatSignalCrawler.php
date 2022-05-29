@@ -5,9 +5,9 @@ namespace App\Crawling;
 use App\Entity\BatSignal;
 use App\Repository\BatSignalRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Http\Client\Common\HttpMethodsClientInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class BatSignalCrawler implements CrawlerInterface
 {
@@ -16,7 +16,7 @@ class BatSignalCrawler implements CrawlerInterface
     public function __construct(
         private EntityManagerInterface $entityManager,
         private BatSignalRepository $batSignalRepository,
-        private HttpMethodsClientInterface $mastodonClient,
+        private HttpClientInterface $mastodonClient,
         private ?string $mastodonAccessToken,
         private int $mastodonAccountId,
     ) {
@@ -54,16 +54,16 @@ class BatSignalCrawler implements CrawlerInterface
 
     private function crawlBatSignal(): ?BatSignal
     {
-        $response = $this->mastodonClient->get(sprintf('/accounts/%s/statuses', $this->mastodonAccountId));
+        $response = $this->mastodonClient->request('GET', sprintf('accounts/%s/statuses', $this->mastodonAccountId));
         $responseCode = $response->getStatusCode();
 
         if ($responseCode >= 300) {
-            $this->logger->warning(sprintf('Failed to crawl bat signal feed (status code: %s)', $responseCode));
+            $this->logger->warning(sprintf('Failed to crawl bat signal feed. HTTP response code: %s', $responseCode));
 
             return null;
         }
 
-        $entries = json_decode($response->getBody()->getContents(), true);
+        $entries = json_decode($response->getContent(), true);
 
         foreach ($entries as $entry) {
             if (str_contains($entry['content'] ?? '', '#@pocketnoagenda')) {

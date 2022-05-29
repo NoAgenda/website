@@ -3,11 +3,11 @@
 namespace App\Controller;
 
 use App\RemoteFileResponse;
-use Http\Client\Common\HttpMethodsClientInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class ProxyController extends AbstractController
 {
@@ -17,7 +17,7 @@ class ProxyController extends AbstractController
     ];
 
     public function __construct(
-        private HttpMethodsClientInterface $httpClient,
+        private HttpClientInterface $httpClient,
     ) {}
 
     #[Route('/proxy/{domain}/{url}', name: 'proxy', requirements: ['url' => '.+'])]
@@ -29,7 +29,7 @@ class ProxyController extends AbstractController
 
         $uri = sprintf('http://%s/%s', $this->domains[$domain], $url);
 
-        $file = $this->httpClient->get($uri);
+        $file = $this->httpClient->request('GET', $uri);
 
         return new RemoteFileResponse($file);
     }

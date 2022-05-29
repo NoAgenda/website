@@ -28,7 +28,7 @@ class Video
     private string $youtubeId;
 
     #[Column(type: 'string', length: 255, nullable: true)]
-    private ?string $youtubeEtag;
+    private ?string $youtubeEtag = null;
 
     public function __construct(string $youtubeId)
     {

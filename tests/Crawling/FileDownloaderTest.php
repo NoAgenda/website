@@ -6,12 +6,11 @@ use App\Crawling\FileDownloader;
 use App\Exception\FileDownloadException;
 use App\Repository\ScheduledFileDownloadRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Http\Client\Common\HttpMethodsClientInterface;
-use Nyholm\Psr7\Factory\Psr17Factory;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpClient\MockHttpClient;
+use Symfony\Component\HttpClient\Response\MockResponse;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 class FileDownloaderTest extends TestCase
@@ -27,7 +26,7 @@ class FileDownloaderTest extends TestCase
     {
         $entityManager = $this->getMockBuilder(EntityManagerInterface::class)->getMock();
         $repository = $this->getMockBuilder(ScheduledFileDownloadRepository::class)->disableOriginalConstructor()->getMock();
-        $this->httpClient = $this->getMockBuilder(HttpMethodsClientInterface::class)->getMock();
+        $this->httpClient = new MockHttpClient();
         $messenger = $this->getMockBuilder(MessageBusInterface::class)->getMock();
         $this->logger = $this->getMockBuilder(LoggerInterface::class)->getMock();
 
@@ -45,10 +44,9 @@ class FileDownloaderTest extends TestCase
 
     public function testHttpDownload(): void
     {
-        $response = $this->createResponse();
-        $this->httpClient->expects($this->once())->method('get')
-            ->willReturn($response)
-        ;
+        $this->httpClient->setResponseFactory([
+            $this->createResponse(),
+        ]);
 
         $this->logger->expects($this->once())->method('info')
             ->with('File "https://www.example.com/foo" has been (re)downloaded. Last modified at 2022-02-02 02:22:20.')
@@ -62,10 +60,9 @@ class FileDownloaderTest extends TestCase
 
     public function testHttpModified(): void
     {
-        $response = $this->createResponse();
-        $this->httpClient->expects($this->once())->method('get')
-            ->willReturn($response)
-        ;
+        $this->httpClient->setResponseFactory([
+            $this->createResponse(),
+        ]);
 
         $this->logger->expects($this->once())->method('info')
             ->with('File "https://www.example.com/foo" was changed. Last modified at 2022-02-02 02:22:20.')
@@ -79,10 +76,9 @@ class FileDownloaderTest extends TestCase
 
     public function testHttpNotModified(): void
     {
-        $response = $this->createResponse(304);
-        $this->httpClient->expects($this->once())->method('get')
-            ->willReturn($response)
-        ;
+        $this->httpClient->setResponseFactory([
+            $this->createResponse(304),
+        ]);
 
         $this->logger->expects($this->once())->method('debug')
             ->with('No changes to file "https://www.example.com/foo". Last modified at 2022-02-02 02:22:20.')
@@ -97,9 +93,9 @@ class FileDownloaderTest extends TestCase
 
     public function testHttpFailed(): void
     {
-        $this->httpClient->expects($this->once())->method('get')
-            ->willThrowException(new \Exception())
-        ;
+        $this->httpClient->setResponseFactory([
+            $this->createResponse(404),
+        ]);
 
         $this->expectException(FileDownloadException::class);
 
@@ -108,17 +104,13 @@ class FileDownloaderTest extends TestCase
         $this->assertFalse(file_exists($this->path));
     }
 
-    private function createResponse(int $statusCode = 200): ResponseInterface
+    private function createResponse(int $statusCode = 200): MockResponse
     {
-        $httpFactory = new Psr17Factory();
-        $stream = $httpFactory->createStream('itm');
-        $response = $httpFactory->createResponse($statusCode)
-            ->withHeader('Last-Modified', (new \DateTime('2022-02-02 02:22:20'))->format('D M d Y H:i:s O'))
-            ->withBody($stream)
-        ;
-
-        $stream->rewind();
-
-        return $response;
+        return new MockResponse('itm', [
+            'http_code' => $statusCode,
+            'response_headers' => [
+                'Last-Modified: ' . (new \DateTime('2022-02-02 02:22:20'))->format('D M d Y H:i:s O'),
+            ],
+        ]);
     }
 }

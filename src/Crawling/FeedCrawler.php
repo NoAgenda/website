@@ -4,7 +4,6 @@ namespace App\Crawling;
 
 use App\Entity\Episode;
 use Doctrine\ORM\EntityManagerInterface;
-use Http\Client\Common\HttpMethodsClientInterface;
 use Laminas\Feed\Reader\Entry\Rss as RssEntry;
 use Laminas\Feed\Reader\Feed\Rss as RssFeed;
 use Laminas\Feed\Reader\Extension\Podcast\Entry as PodcastEntry;
@@ -13,6 +12,7 @@ use Laminas\Feed\Reader\Reader;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
 use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class FeedCrawler implements CrawlerInterface
 {
@@ -20,7 +20,7 @@ class FeedCrawler implements CrawlerInterface
 
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private HttpMethodsClientInterface $httpClient,
+        private HttpClientInterface $httpClient,
         private CacheInterface $cache,
     ) {
         $this->logger = new NullLogger();
@@ -53,25 +53,28 @@ class FeedCrawler implements CrawlerInterface
             $headers['If-Modified-Since'] = $lastModifiedAt;
         }
 
-        $response = $this->httpClient->get('http://feed.nashownotes.com/rss.xml', $headers);
-        $responseCode = $response->getStatusCode();
+        $response = $this->httpClient->request('GET', 'http://feed.nashownotes.com/rss.xml', [
+            'headers' => $headers,
+        ]);
 
-        if (304 === $responseCode) {
+        if (304 === $responseCode = $response->getStatusCode()) {
             $this->logger->debug(sprintf('No changes to feed. Last modified at %s.', $lastModifiedAt));
 
             return null;
         } elseif ($responseCode >= 300) {
-            $this->logger->warning(sprintf('Failed to crawl feed (status code: %s)', $responseCode));
+            $this->logger->warning(sprintf('Failed to crawl feed. HTTP response code: %s', $responseCode));
+
+            return null;
         }
 
-        $lastModifiedAt = $response->getHeaderLine('Last-Modified');
+        $lastModifiedAt = $response->getHeaders()['last-modified'][0];
 
         $this->logger->debug(sprintf('Feed has been changed. Modified at %s.', $lastModifiedAt));
 
         $lastModifiedCache->set($lastModifiedAt);
         $this->cache->save($lastModifiedCache);
 
-        $source = $response->getBody()->getContents();
+        $source = $response->getContent();
 
         $entries = [];
 

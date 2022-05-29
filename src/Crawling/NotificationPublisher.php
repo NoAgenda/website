@@ -3,10 +3,10 @@
 namespace App\Crawling;
 
 use App\Entity\Episode;
-use Http\Client\Common\HttpMethodsClientInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 use function Sentry\captureException;
 
 class NotificationPublisher
@@ -14,7 +14,7 @@ class NotificationPublisher
     use LoggerAwareTrait;
 
     public function __construct(
-        private HttpMethodsClientInterface $mastodonClient,
+        private HttpClientInterface $mastodonClient,
         private RouterInterface $router,
         private ?string $mastodonAccessToken,
         private bool $mastodonPublish,
@@ -41,9 +41,11 @@ class NotificationPublisher
             $title = sprintf('No Agenda Episode %s - %s', $code, $episode->getName());
             $path = $this->router->generate('player', ['episode' => $code], RouterInterface::ABSOLUTE_URL);
 
-            $response = $this->mastodonClient->post('/statuses', [], http_build_query([
-                'status' => "$title $path",
-            ]));
+            $response = $this->mastodonClient->request('POST', 'statuses', [
+                'body' => http_build_query([
+                    'status' => "$title $path",
+                ]),
+            ]);
 
             if (200 !== $statusCode = $response->getStatusCode()) {
                 $this->logger->warning(sprintf('Failed to publish episode notification to Mastodon. Response code: %s', $statusCode));
