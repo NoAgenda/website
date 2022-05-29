@@ -56,18 +56,9 @@ class UserToken
 
     public function addIpAddress(string $ipAddress): self
     {
-        if (false !== array_search($ipAddress, $this->ipAddresses)) {
-            return $this;
+        if (!in_array($ipAddress, $this->ipAddresses)) {
+            $this->ipAddresses[] = $ipAddress;
         }
-
-        $this->ipAddresses[] = $ipAddress;
-
-        return $this;
-    }
-
-    public function addCurrentIpAddress(): self
-    {
-        $this->addIpAddress($_SERVER['REMOTE_ADDR'] ?? 'null');
 
         return $this;
     }
