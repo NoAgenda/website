@@ -4,6 +4,7 @@ namespace App\Updates;
 
 use App\Entity\User;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Symfony\Component\Mime\Address;
 
 class ResetPasswordUpdater extends AbstractUpdater
 {
@@ -15,8 +16,8 @@ class ResetPasswordUpdater extends AbstractUpdater
         }
 
         $message = (new TemplatedEmail())
-            ->from($this->getAuthorEmail(), $this->getAuthorName())
-            ->to($user->getEmail(), $user->getUsername())
+            ->from(new Address($this->getAuthorEmail(), $this->getAuthorName()))
+            ->to(new Address($user->getEmail(), $user->getUsername()))
             ->subject('Reset password')
             ->htmlTemplate('email/reset_password.html.twig')
             ->context([
