@@ -9,7 +9,6 @@
       {% for date in dates %}
         {% set date_url = ea_url().setRoute('admin_chat_logs', {date: date}) %}
         <option value="{{ date_url }}" {% if current_date == date %}selected{% endif %}>
-          {% dump [current_date, date] %}
           {{ date|desimplifyDate }}
         </option>
       {% endfor %}
