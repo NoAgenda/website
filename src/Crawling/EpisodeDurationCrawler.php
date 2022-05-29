@@ -32,7 +32,7 @@ class EpisodeDurationCrawler implements EpisodeFileCrawlerInterface
         $lastModifiedAt = $this->fileDownloader->download($episode->getRecordingUri(), $path, $ifModifiedSince);
 
         // The file is not downloaded if there are no changes
-        if ($lastModifiedAt !== $ifModifiedSince) {
+        if ($lastModifiedAt->getTimestamp() !== $ifModifiedSince?->getTimestamp()) {
             $duration = $this->fetchRecordingDuration($path);
 
             if ($duration !== $episode->getDuration()) {
@@ -47,6 +47,7 @@ class EpisodeDurationCrawler implements EpisodeFileCrawlerInterface
         return $lastModifiedAt;
     }
 
+    // todo not working when called from API
     private function fetchRecordingDuration(string $path): int
     {
         $command = 'ffmpeg -i $RECORDING 2>&1 | grep "Duration"';

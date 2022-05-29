@@ -49,7 +49,7 @@ class FileDownloaderTest extends TestCase
         ]);
 
         $this->logger->expects($this->once())->method('info')
-            ->with('File "https://www.example.com/foo" has been (re)downloaded. Last modified at 2022-02-02 02:22:20.')
+            ->with('File "https://www.example.com/foo" will be (re)downloaded. Last modified at 2022-02-02 02:22:20.')
         ;
 
         $this->downloader->download($this->uri, $this->path);
@@ -109,7 +109,7 @@ class FileDownloaderTest extends TestCase
         return new MockResponse('itm', [
             'http_code' => $statusCode,
             'response_headers' => [
-                'Last-Modified: ' . (new \DateTime('2022-02-02 02:22:20'))->format('D M d Y H:i:s O'),
+                'Last-Modified' => (new \DateTime('2022-02-02 02:22:20'))->format('D M d Y H:i:s O'),
             ],
         ]);
     }

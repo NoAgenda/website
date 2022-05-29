@@ -55,7 +55,7 @@ class FileDownloader
                 if ($ifModifiedSince) {
                     $this->logger->info(sprintf('File "%s" was changed. Last modified at %s.', $uri, $at));
                 } else {
-                    $this->logger->info(sprintf('File "%s" has been (re)downloaded. Last modified at %s.', $uri, $at));
+                    $this->logger->info(sprintf('File "%s" will be (re)downloaded. Last modified at %s.', $uri, $at));
                 }
 
                 $filesystem->copy($staticPath, $path);
@@ -85,7 +85,7 @@ class FileDownloader
                 if ($ifModifiedSince) {
                     $this->logger->info(sprintf('File "%s" was changed. Last modified at %s.', $uri, $at));
                 } else {
-                    $this->logger->info(sprintf('File "%s" has been (re)downloaded. Last modified at %s.', $uri, $at));
+                    $this->logger->info(sprintf('File "%s" will be (re)downloaded. Last modified at %s.', $uri, $at));
                 }
 
                 $filesystem->dumpFile($path, $response->toStream());
