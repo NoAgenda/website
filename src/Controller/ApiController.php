@@ -7,6 +7,7 @@ use App\Crawling\EpisodeCrawlerInterface;
 use App\Crawling\EpisodeFileCrawlerInterface;
 use App\Entity\Episode;
 use App\Repository\EpisodeRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Monolog\Handler\StreamHandler;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -22,6 +23,7 @@ use function Symfony\Component\String\u;
 class ApiController extends AbstractController
 {
     public function __construct(
+        private EntityManagerInterface $entityManager,
         private EpisodeRepository $episodeRepository,
         private CrawlingProcessor $crawlingProcessor,
         private LoggerInterface $crawlerLogger,
@@ -56,7 +58,18 @@ class ApiController extends AbstractController
                 '',
             ]);
 
-            $this->crawlingProcessor->crawl($data, $episode);
+            $this->entityManager->beginTransaction();
+
+            try {
+                $this->crawlingProcessor->crawl($data, $episode);
+                $this->entityManager->flush();
+
+                $this->entityManager->commit();
+            } catch (\Throwable $exception) {
+                $this->crawlerLogger->error(sprintf('An exception occurred: %s', $exception->getMessage()));
+
+                $this->entityManager->rollback();
+            }
 
             echo implode(PHP_EOL, [
                 '',
