@@ -40,15 +40,21 @@ class EpisodeRecordingTimeMatcher implements EpisodeCrawlerInterface
             return;
         }
 
+        $this->logger->info(sprintf('Found matching bat signal published at %s.', $signal->getDeployedAt()->format('Y-m-d H:i:s')));
+
         if (!count($recordings = $this->findLivestreamRecordings($signal))) {
             $this->logger->warning(sprintf('No livestream recordings found matching episode %s.', $episode->getCode()));
 
             return;
         }
 
+        $this->logger->debug('Splitting episode recording into parts');
+
         $parts = $this->splitEpisodeRecording($episode);
 
-        if (!$matrix = $this->buildMatrix($episode, $recordings, $parts)) {
+        $this->logger->debug('Building recording matrix');
+
+        if (!$matrix = $this->buildMatrix($recordings, $parts)) {
             $this->logger->warning(sprintf('Unable to build a recording time matrix for episode %s.', $episode->getCode()));
 
             return;
@@ -65,7 +71,7 @@ class EpisodeRecordingTimeMatcher implements EpisodeCrawlerInterface
         $this->entityManager->persist($episode);
     }
 
-    private function buildMatrix(Episode $episode, Finder $recordings, Finder $parts): ?array
+    private function buildMatrix(Finder $recordings, Finder $parts): ?array
     {
         $matrix = [];
 
@@ -80,8 +86,7 @@ class EpisodeRecordingTimeMatcher implements EpisodeCrawlerInterface
 
                 $command = 'audio-offset-finder --not-generate "$PART" "$RECORDING"';
                 $process = Process::fromShellCommandline($command)
-                    ->setTimeout(600)
-                ;
+                    ->setTimeout(600);
 
                 $process->mustRun(null, [
                     'PART' => $part->getPathname(),
@@ -195,17 +200,16 @@ class EpisodeRecordingTimeMatcher implements EpisodeCrawlerInterface
                     return false;
                 }
 
-                $recordedBefore = (new \DateTime($signal->getDeployedAt()->format('YmdHis')))->add(new \DateInterval('PT3H'));
+                $recordedBefore = (new \DateTime($signal->getDeployedAt()->format('YmdHis')))->add(new \DateInterval('PT2H'));
 
-                // Filter out files that are recorded more than 3 hours after the bat signal
+                // Filter out files that are recorded more than 2 hours after the bat signal
                 if ($recordedAt > $recordedBefore) {
                     return false;
                 }
 
                 return true;
             })
-            ->sortByName()
-            ;
+            ->sortByName();
     }
 
     private function splitEpisodeRecording(Episode $episode): Finder
@@ -224,21 +228,22 @@ class EpisodeRecordingTimeMatcher implements EpisodeCrawlerInterface
             ->in($outputPath)
         );
 
-        $command = 'bin/scripts/split-recording.bash "$SOURCE_PATH" "$OUTPUT_PREFIX"';
-        $process = Process::fromShellCommandline($command)
-            ->setTimeout(1800)
-        ;
+        foreach ([0, 300, 600, 900, 1200] as $offset) {
+            $command = 'ffmpeg -ss $OFFSET -t 600 -i "$SOURCE_PATH" "$OUTPUT_PREFIX$OFFSET".mp3';
+            $process = Process::fromShellCommandline($command)
+                ->setTimeout(300);
 
-        $process->mustRun(null, [
-            'SOURCE_PATH' => $sourcePath,
-            'OUTPUT_PREFIX' => $outputPrefix,
-        ]);
+            $process->mustRun(null, [
+                'OFFSET' => $offset,
+                'SOURCE_PATH' => $sourcePath,
+                'OUTPUT_PREFIX' => $outputPrefix,
+            ]);
+        }
 
         return (new Finder())
             ->files()
             ->in($outputPath)
-            ->name(sprintf('%s_*.mp3', $episode->getCode()))
-        ;
+            ->name(sprintf('%s_*.mp3', $episode->getCode()));
     }
 
     public static function printMatrix(array $matrix): string
