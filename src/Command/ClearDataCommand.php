@@ -32,7 +32,7 @@ class ClearDataCommand extends Command
     {
         $files = (new Finder())
             ->files()
-            ->date('< now - 90 days')
+            ->date('< now - 28 days')
             ->in(implode('/', [$_SERVER['APP_STORAGE_PATH'], $path]))
         ;
 
