@@ -7,10 +7,11 @@
     <p class="my-3">
       Welcome to the home of The No Agenda Show, an award-winning podcast where Adam Curry and John C. Dvorak, two experts
       from the media industry, discuss news &amp; politics. Twice a week they deconstruct the news cycle and give insights
-      into the narrative of the mainstream media, governments and political campaigns.
+      into the narrative of the mainstream media, governments and political campaigns. For more information, please read
+      <a class="text-underline" href="{{ path('mission_statement') }}">our mission statement</a>.
     </p>
 
-    <div class="my-3">
+    <div class="my-4">
       <div class="row">
         <div class="col-md md-separator">
           <a href="{{ path('podcast') }}">
@@ -41,7 +42,7 @@
       </div>
     </div>
   </div>
-  <div class="section-dark py-3">
+  <div class="section-dark pt-4 pb-3">
     <div class="container">
       <h2 class="mb-3">Latest Episodes</h2>
       <div class="row mt-3">
@@ -60,7 +61,7 @@
   </div>
 
   <div class="container">
-    <div class="my-3">
+    <div class="mt-4 mb-3">
       <div class="row">
         <div class="col-md md-separator">
           <a href="{{ path('mission_statement') }}">
@@ -91,7 +92,7 @@
       </div>
     </div>
 
-    <h2 class="my-3">Animated No Agenda</h2>
+    <h2 class="mt-4 mb-3">Animated No Agenda</h2>
     <div class="row">
       {% for video in videos %}
         <div class="col-md-4">
@@ -118,7 +119,7 @@
           <a href="https://noagendasocial.com/@adam" target="_blank">
             <div class="d-flex justify-content-between">
               <div class="my-2">
-                <div class="h3 mb-0">Follow Adam Curry on NA Social</div>
+                <div class="h3 mb-0">Follow Adam Curry</div>
                 <span>@adam@noagendasocial.com</span>
               </div>
               <div class="d-flex align-items-center">
@@ -137,7 +138,7 @@
           <a href="https://noagendasocial.com/@johncdvorak" target="_blank">
             <div class="d-flex justify-content-between">
               <div class="my-2">
-                <div class="h3 mb-0">Follow John C. Dvorak on NA Social</div>
+                <div class="h3 mb-0">Follow John C. Dvorak</div>
                 <span>@johncdvorak@noagendasocial.com</span>
               </div>
               <div class="d-flex align-items-center">
@@ -155,7 +156,7 @@
       </div>
     </div>
 
-    <h2 class="my-3">Community Network</h2>
+    <h2 class="mt-4 mb-3">Community Network</h2>
     <div class="my-3">
       <div class="row">
         {% for site in network_sites %}
@@ -184,19 +185,47 @@
       </a>
     </div>
 
-    <h2 class="my-3">Website contributions</h2>
-    <div class="my-3">
-      {% include 'feedback/parts/list.html.twig' with {items: feedback_items} %}
-    </div>
-    <div class="d-flex justify-content-end">
-      <a class="btn btn-link" href="{{ path('contributions_open') }}">
-        View more website contributions <span class="fas fa-angle-right ml-1" aria-hidden="true"></span>
-      </a>
-    </div>
+    {% if feedback_items|length %}
+      <h2 class="mt-4 mb-3">Website Contributions</h2>
+      <div class="my-3">
+        {% include 'feedback/parts/list.html.twig' with {items: feedback_items} %}
+      </div>
+      <div class="d-flex justify-content-end">
+        <a class="btn btn-link" href="{{ path('contributions_open') }}">
+          View more website contributions <span class="fas fa-angle-right ml-1" aria-hidden="true"></span>
+        </a>
+      </div>
+    {% endif %}
 
-    <div class="text-right mt-3 pb-3">
-      <a href="https://github.com/NoAgenda/website">Source code</a>.
-      Built with ☕ by <a href="https://noagendasocial.com/@woodstock">@woodstock@noagendasocial.com</a>.
+    <div class="mt-4 pb-5">
+      <div class="row">
+        <div class="col-md md-separator">
+          <a href="https://noagendasocial.com/@woodstock" target="_blank">
+            <div class="d-flex justify-content-between">
+              <div class="my-2">
+                <div class="h3 mb-0">&copy; Created by a Dude Named Ben</div>
+                <span>Learn more about this site by following Ben on No Agenda Social</span>
+              </div>
+              <div class="d-flex align-items-center">
+                <span class="fab fa-mastodon fa-3x fa-fw ml-2 text-mastodon" aria-hidden="true"></span>
+              </div>
+            </div>
+          </a>
+        </div>
+        <div class="col-md">
+          <a href="https://github.com/NoAgenda/website" target="_blank">
+            <div class="d-flex justify-content-between">
+              <div class="my-2">
+                <div class="h3 mb-0">Under the Value for Value Model</div>
+                <span>View the source code, it's free!</span>
+              </div>
+              <div class="d-flex align-items-center">
+                <span class="fas fa-code fa-3x fa-fw ml-2 text-mastodon" aria-hidden="true"></span>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
     </div>
 
     <na-audio-toolbar-spacer></na-audio-toolbar-spacer>
