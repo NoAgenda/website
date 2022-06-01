@@ -29,13 +29,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \Serial
     #[Column(type: 'string', length: 255, unique: true, nullable: true)]
     private ?string $email;
 
-    private ?string $plainPassword;
+    private ?string $plainPassword = null;
 
     #[Column(type: 'string', length: 255, nullable: true)]
     private ?string $password;
 
     #[Column(type: 'string', length: 255, nullable: true)]
-    private ?string $salt;
+    private ?string $salt = null;
 
     #[Column(type: 'array')]
     private ?array $roles = ['ROLE_USER'];
@@ -44,10 +44,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \Serial
     private bool $hidden = false;
 
     #[Column(type: 'string', length: 255, nullable: true)]
-    private ?string $activationToken;
+    private ?string $activationToken = null;
 
     #[Column(type: 'datetime_immutable', nullable: true)]
-    private ?\DateTimeImmutable $activationTokenExpiresAt;
+    private ?\DateTimeImmutable $activationTokenExpiresAt = null;
 
     #[Column(type: 'datetime_immutable')]
     private \DateTimeImmutable $createdAt;
