@@ -6,7 +6,7 @@
 {% set navigationLinks = [
   {
     href: path('player_latest'),
-    title: 'Latest episode',
+    title: 'Latest Episode',
     active: false,
     external: false,
   },
@@ -51,7 +51,7 @@
 {% else %}
   {% set authenticationLinks = authenticationLinks|merge([{
     path: 'security_login',
-    title: 'Sign in',
+    title: 'Sign In',
     active: app.request.attributes.get('_route') == 'security_login',
   }]) %}
 {% endif %}
