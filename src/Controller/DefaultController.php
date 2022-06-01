@@ -40,4 +40,10 @@ class DefaultController extends AbstractController
     {
         return $this->render('default/podcast.html.twig');
     }
+
+    #[Route('/mission-statement', name: 'mission_statement')]
+    public function missionStatement(): Response
+    {
+        return $this->render('default/mission_statement.html.twig');
+    }
 }
