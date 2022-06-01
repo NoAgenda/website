@@ -95,10 +95,10 @@ class EpisodeRepository extends AbstractRepository
 
         $builder
             ->select('episode', 'chapter')
-            ->where($builder->expr()->andX([
+            ->where($builder->expr()->andX(
                 $builder->expr()->eq('episode.published', true),
                 $builder->expr()->eq('episode.special', true),
-            ]))
+            ))
             ->leftJoin('episode.chapters', 'chapter')
             ->orderBy('episode.publishedAt', 'desc')
         ;
