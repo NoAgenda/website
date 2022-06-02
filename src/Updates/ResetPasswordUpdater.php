@@ -18,14 +18,13 @@ class ResetPasswordUpdater extends AbstractUpdater
         $message = (new TemplatedEmail())
             ->from(new Address($this->getAuthorEmail(), $this->getAuthorName()))
             ->to(new Address($user->getEmail(), $user->getUsername()))
-            ->subject('Reset password')
+            ->subject('Reset Password')
             ->htmlTemplate('email/reset_password.html.twig')
             ->context([
                 'user' => $user,
                 'remote_address' => $this->requestStack->getCurrentRequest()->getClientIp(),
                 'activation_url' => $this->generateUrl('security_reset_password', ['token' => $user->getActivationToken()])
-            ])
-        ;
+            ]);
 
         $this->mailer->send($message);
 
