@@ -5,14 +5,17 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Form\UserRegistrationType;
 use App\Repository\UserRepository;
-use App\Updates\ResetPasswordUpdater;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Address;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
@@ -20,11 +23,11 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 class SecurityController extends AbstractController
 {
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        private UserRepository $repository,
-        private AuthorizationCheckerInterface $authChecker,
-        private AuthenticationUtils $authenticationUtils,
-        private ResetPasswordUpdater $resetPasswordUpdater,
+        private readonly EntityManagerInterface $entityManager,
+        private readonly UserRepository $repository,
+        private readonly AuthorizationCheckerInterface $authChecker,
+        private readonly AuthenticationUtils $authenticationUtils,
+        private readonly MailerInterface $mailer,
     ) {}
 
     #[Route('/login', name: 'login', methods: ['GET', 'POST'])]
@@ -131,7 +134,7 @@ class SecurityController extends AbstractController
                     $this->entityManager->persist($user);
                     $this->entityManager->flush();
 
-                    $this->resetPasswordUpdater->update($user);
+                    $this->sendResetPasswordEmail($user);
                 }
             }
         }
@@ -202,5 +205,30 @@ class SecurityController extends AbstractController
         return $this->createForm(UserRegistrationType::class, null, [
             'action' => $this->generateUrl('security_registration'),
         ]);
+    }
+
+    private function sendResetPasswordEmail(User $user): void
+    {
+        if (!$user->getEmail()) {
+            // If the user doesn't have an email, act like the email was sent for security purposes
+            return;
+        }
+
+        $message = (new TemplatedEmail())
+            ->from(new Address($_SERVER['MAILER_FROM'], $_SERVER['MAILER_FROM_AUTHOR']))
+            ->to(new Address($user->getEmail(), $user->getUsername()))
+            ->subject('Reset Password')
+            ->htmlTemplate('email/reset_password.html.twig')
+            ->context([
+                'user' => $user,
+                'remote_address' => $this->container->get('request_stack')->getCurrentRequest()->getClientIp(),
+                'activation_url' => $this->generateUrl(
+                    'security_reset_password',
+                    ['token' => $user->getActivationToken()],
+                    UrlGeneratorInterface::ABSOLUTE_URL
+                ),
+            ]);
+
+        $this->mailer->send($message);
     }
 }
