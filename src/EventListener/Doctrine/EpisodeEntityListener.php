@@ -8,13 +8,15 @@ use App\Message\PrepareEpisode;
 use App\Repository\UserRepository;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LifecycleEventArgs;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 class EpisodeEntityListener implements EventSubscriber
 {
     public function __construct(
-        private MessageBusInterface $messenger,
-        private UserRepository $userRepository,
+        private readonly MessageBusInterface $messenger,
+        private readonly UserRepository $userRepository,
+        private readonly LoggerInterface $logger,
     ) {}
 
     public function getSubscribedEvents(): array
@@ -33,7 +35,15 @@ class EpisodeEntityListener implements EventSubscriber
             return;
         }
 
-        $adminUser = $this->userRepository->findOneBy(['username' => $_SERVER['APP_ADMIN_USER']]);
+        $adminUsername = $_SERVER['APP_ADMIN_USER'];
+        $adminUser = $this->userRepository->findOneBy(['username' => $adminUsername]);
+
+        if (!$adminUser) {
+            $this->logger->warning(sprintf('Unable to create automatic chapter because the admin user "%s" does not exist.', $adminUsername));
+
+            return;
+        }
+
         $chapter = (new EpisodeChapter())
             ->setEpisode($episode)
             ->setCreator($adminUser)

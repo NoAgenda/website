@@ -3,7 +3,6 @@
 namespace App\DataFixtures;
 
 use App\Entity\Episode;
-use App\Entity\EpisodeChapter;
 use App\Entity\NetworkSite;
 use App\Entity\User;
 use App\Entity\Video;
@@ -25,10 +24,10 @@ class AppFixtures extends Fixture
                 $user->addRole($role);
             }
 
-            $this->setReference('user-' . $username, $user);
-
             $manager->persist($user);
         }
+
+        $manager->flush();
 
         foreach ($this->loadEpisodes() as $data) {
             $episode = (new Episode())
@@ -50,18 +49,7 @@ class AppFixtures extends Fixture
                 ->setChatArchivePath($data['chatArchivePath'])
             ;
 
-            /** @var User $user */
-            $user = $this->getReference(sprintf('user-%s', $_SERVER['APP_ADMIN_USER']));
-
-            $chapter = (new EpisodeChapter())
-                ->setEpisode($episode)
-                ->setCreator($user)
-                ->setName('Start of Show')
-                ->setStartsAt(0)
-            ;
-
             $manager->persist($episode);
-            $manager->persist($chapter);
         }
 
         foreach ($this->loadNetworkSites() as $data) {
