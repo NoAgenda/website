@@ -3,7 +3,6 @@
 namespace App\Controller\Admin;
 
 use App\Crawling\CrawlingProcessor;
-use App\Crawling\Shownotes\ShownotesParserFactory;
 use App\Repository\EpisodeRepository;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -17,10 +16,9 @@ use function Sentry\captureException;
 class CrawlerController extends AbstractController
 {
     public function __construct(
-        private EpisodeRepository $episodeRepository,
-        private AdminUrlGenerator $adminUrlGenerator,
-        private CrawlingProcessor $crawlingProcessor,
-        private ShownotesParserFactory $shownotesParserFactory,
+        private readonly EpisodeRepository $episodeRepository,
+        private readonly AdminUrlGenerator $adminUrlGenerator,
+        private readonly CrawlingProcessor $crawlingProcessor,
     ) {}
 
     #[Route('/chat_logs/{date}', name: 'admin_chat_logs', defaults: ['date' => 'today'])]
@@ -35,15 +33,15 @@ class CrawlerController extends AbstractController
             $date = (new \DateTime())->format('Ymd');
         }
 
-        return $this->render('admin/chat_logs.html.twig', [
+        return $this->render('admin/crawler/chat_logs.html.twig', [
             'dates' => array_keys($files),
             'current_date' => $date,
             'logs' => $this->getLogs($files, $date),
         ]);
     }
 
-    #[Route('/crawler', name: 'admin_crawler')]
-    public function crawler(Request $request): Response
+    #[Route('/', name: 'admin_crawler')]
+    public function index(Request $request): Response
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
 
@@ -80,7 +78,7 @@ class CrawlerController extends AbstractController
             return $this->redirect($url);
         }
 
-        return $this->render('admin/crawler.html.twig');
+        return $this->render('admin/crawler/index.html.twig');
     }
 
     #[Route('/livestream_recordings/{date}', name: 'admin_livestream_recordings', defaults: ['date' => 'today'])]
@@ -152,7 +150,7 @@ class CrawlerController extends AbstractController
             });
         }
 
-        return $this->render('admin/livestream_recordings.html.twig', [
+        return $this->render('admin/crawler/livestream_recordings.html.twig', [
             'dates' => $dates,
             'current_date' => $date,
             'recordings' => $recordings,
@@ -167,31 +165,6 @@ class CrawlerController extends AbstractController
         $recordingPath = sprintf('%s/livestream_recordings/recording_%s%s.asf', $_SERVER['APP_STORAGE_PATH'], $date, $time);
 
         return $this->file($recordingPath);
-    }
-
-    #[Route('/archive/credits/{page}', name: 'admin_archive_credits')]
-    public function archiveCredits(int $page): Response
-    {
-        $this->denyAccessUnlessGranted('ROLE_ADMIN');
-
-        // todo fix pagination
-
-        $collection = [];
-
-        $start = $page * 100;
-        $end = $start + 99;
-
-        for ($i = $start; $i <= $end; $i++) {
-            $episode = $this->episodeRepository->findOneByCode($i);
-
-            if ($episode && $shownotes = $this->shownotesParserFactory->get($episode)) {
-                $collection[$episode->getCode()] = $shownotes->getCredits();
-            }
-        }
-
-        return $this->render('admin/archive_credits.html.twig', [
-            'shownotes' => $collection,
-        ]);
     }
 
     private function getAvailableLogs(string $path): array

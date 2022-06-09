@@ -3,7 +3,6 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Episode;
-use App\Message\Crawl;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -18,17 +17,10 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\UrlField;
-use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Messenger\MessageBusInterface;
 
 class EpisodeCrudController extends AbstractCrudController
 {
-    public function __construct(
-        private MessageBusInterface $messenger,
-        private AdminUrlGenerator $adminUrlGenerator,
-    ) {}
-
     public static function getEntityFqcn(): string
     {
         return Episode::class;
@@ -148,13 +140,13 @@ class EpisodeCrudController extends AbstractCrudController
     {
         $episode = $context->getEntity()->getInstance();
 
-        if (!$episode->getChatMessagesExist()) {
+        if (!$episode->hasChatArchive()) {
             return $this->render('admin/error.html.twig', [
                 'error' => sprintf('The chat archive for episode "%s" could not be found.', $episode),
             ]);
         }
 
-        $chatArchive = json_decode(file_get_contents($episode->getChatMessagesPath()));
+        $chatArchive = json_decode(file_get_contents($episode->getChatArchivePath()));
 
         return $this->render('admin/episode/chat_archive.html.twig', [
             'episode' => $episode,
@@ -182,56 +174,5 @@ class EpisodeCrudController extends AbstractCrudController
             'episode' => $episode,
             'contents' => $contents,
         ]);
-    }
-
-    public function crawlTranscript(AdminContext $context): Response
-    {
-        $episode = $context->getEntity()->getInstance();
-
-        $message = new Crawl('transcript', $episode->getCode());
-        $this->messenger->dispatch($message);
-
-        $this->addFlash('success', sprintf('Scheduled crawling of transcript for episode %s.', $episode->getCode()));
-
-        return $this->redirect($this->adminUrlGenerator
-            ->setController(self::class)
-            ->setAction('detail')
-            ->setEntityId($episode->getId())
-            ->generateUrl()
-        );
-    }
-
-    public function matchChatMessages(AdminContext $context): Response
-    {
-        $episode = $context->getEntity()->getInstance();
-
-        $message = new Crawl('chat_archive', $episode->getCode());
-        $this->messenger->dispatch($message);
-
-        $this->addFlash('success', sprintf('Scheduled crawling of chat_messages for episode %s.', $episode->getCode()));
-
-        return $this->redirect($this->adminUrlGenerator
-            ->setController(self::class)
-            ->setAction('detail')
-            ->setEntityId($episode->getId())
-            ->generateUrl()
-        );
-    }
-
-    public function matchRecordingTime(AdminContext $context): Response
-    {
-        $episode = $context->getEntity()->getInstance();
-
-        $message = new Crawl('recording_time', $episode->getCode());
-        $this->messenger->dispatch($message);
-
-        $this->addFlash('success', sprintf('Scheduled crawling of recording_time for episode %s.', $episode->getCode()));
-
-        return $this->redirect($this->adminUrlGenerator
-            ->setController(self::class)
-            ->setAction('detail')
-            ->setEntityId($episode->getId())
-            ->generateUrl()
-        );
     }
 }

@@ -91,7 +91,7 @@ class RouterElement extends HTMLElement {
 
     links.forEach(link => {
       const path = link.href;
-      const internal = path.startsWith(rootPath) && !path.startsWith(rootPath + '/admin');
+      const internal = path.startsWith(rootPath) && !path.startsWith(rootPath + '/console');
       let tab = false;
 
       if (path.includes('#')) {

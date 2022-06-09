@@ -25,9 +25,11 @@
     <div class="col-md-6">
       <div class="row">
         <div class="col-6 col-xl-4">
-          <div class="bg-light text-center p-3">
-            <div class="h1">{{ unresolved_feedback_count }}</div>
-            <span>Open contributions</span>
+          <div class="card">
+            <div class="card-body">
+              <div class="h1">{{ unresolved_feedback_count }}</div>
+              <span>Open Contributions</span>
+            </div>
           </div>
         </div>
       </div>
@@ -64,6 +66,13 @@
               </div>
               <div class="d-flex">
                 <div
+                  class="text-{{ episode.published ? 'success' : 'danger' }} px-1 me-1"
+                  title="{{ episode.published ? 'Published' : 'Not Published' }}"
+                  data-bs-toggle="tooltip"
+                >
+                  <span class="fas fa-circle fa-fw" aria-hidden="true"></span>
+                </div>
+                <div
                   class="text-{{ episode.shownotes ? 'success' : 'danger' }} px-1 me-1"
                   title="{{ episode.shownotes ? 'Shownotes' : 'No Shownotes' }}"
                   data-bs-toggle="tooltip"
@@ -98,11 +107,4 @@
       </div>
     </div>
   </div>
-{% endblock %}
-
-{% block head_javascript %}
-  {{ parent() }}
-  <script type="text/javascript">
-    {% include 'admin/script.js.twig' %}
-  </script>
 {% endblock %}

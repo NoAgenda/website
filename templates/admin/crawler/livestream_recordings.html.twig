@@ -3,16 +3,18 @@
 {% block content_title 'Livestream Recordings' %}
 {% block main %}
   <div class="m-3">
-    <select class="form-control" onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);">
-      {% set today_url = ea_url().setRoute('admin_livestream_recordings') %}
-      <option value="{{ today_url }}">Today</option>
-      {% for date in dates %}
-        {% set date_url = ea_url().setRoute('admin_livestream_recordings', {date: date}) %}
-        <option value="{{ date_url }}" {% if current_date == date %}selected{% endif %}>
-          {{ date|desimplifyDate }}
-        </option>
-      {% endfor %}
-    </select>
+    <div class="form-widget">
+      <select class="form-select" onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);">
+        {% set today_url = ea_url().setRoute('admin_livestream_recordings') %}
+        <option value="{{ today_url }}">Today</option>
+        {% for date in dates %}
+          {% set date_url = ea_url().setRoute('admin_livestream_recordings', {date: date}) %}
+          <option value="{{ date_url }}" {% if current_date == date %}selected{% endif %}>
+            {{ date|desimplifyDate }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
 
     <hr>
 

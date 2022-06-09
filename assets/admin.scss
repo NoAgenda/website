@@ -1,0 +1,14 @@
+.ea-dark-scheme {
+  .card {
+    background-color: var(--sidebar-bg);
+  }
+
+  .list-group-item {
+    color: var(--text-primary-color);
+    background-color: var(--true-gray-700);
+  }
+
+  .text-body {
+    color: var(--text-primary-color) !important;
+  }
+}

@@ -8,6 +8,8 @@ use App\Entity\NetworkSite;
 use App\Entity\User;
 use App\Repository\EpisodeRepository;
 use App\Repository\FeedbackItemRepository;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Asset;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
@@ -18,15 +20,20 @@ use Symfony\Component\Routing\Annotation\Route;
 class DashboardController extends AbstractDashboardController
 {
     public function __construct(
-        private EpisodeRepository $episodeRepository,
-        private FeedbackItemRepository $feedbackItemRepository,
+        private readonly EpisodeRepository $episodeRepository,
+        private readonly FeedbackItemRepository $feedbackItemRepository,
     ) {}
 
     public function configureDashboard(): Dashboard
     {
         return Dashboard::new()
-            ->setTitle('No Agenda Website Console')
-        ;
+            ->setTitle('No Agenda Website Console');
+    }
+
+    public function configureAssets(): Assets
+    {
+        return Assets::new()
+            ->addWebpackEncoreEntry(Asset::new('admin'));
     }
 
     public function configureCrud(): Crud
@@ -37,7 +44,6 @@ class DashboardController extends AbstractDashboardController
     public function configureMenuItems(): iterable
     {
         yield MenuItem::linkToDashboard('Dashboard', 'fas fa-home');
-        //yield MenuItem::linkToRoute('Contributions', 'fas fa-comment-alt', 'admin_feedback');
         yield MenuItem::linkToCrud('Episodes', 'fas fa-podcast', Episode::class);
         //yield MenuItem::linkToCrud('Chapters', 'fas fa-bookmark', EpisodeChapter::class);
         yield MenuItem::linkToCrud('Network Sites', 'fas fa-globe', NetworkSite::class);
@@ -53,22 +59,14 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToRoute('Back to Site', 'fas fa-door-open', 'homepage');
     }
 
-    #[Route('/admin', name: 'admin')]
+    #[Route('/console', name: 'admin')]
     public function index(): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
         return $this->render('admin/dashboard.html.twig', [
             'latest_episodes' => $this->episodeRepository->findLatestEpisodes(8, false),
             'unresolved_feedback_count' => $this->feedbackItemRepository->countUnresolvedItems(),
-        ]);
-    }
-
-    /* Concept of feedback management in the admin panel */
-    #[Route('/admin/feedback', name: 'admin_feedback')]
-    public function feedback(): Response
-    {
-        return $this->render('admin/feedback.html.twig', [
-            'latest_episodes' => $this->episodeRepository->findLatestEpisodes(8),
-            'latest_feedback_items' => $this->feedbackItemRepository->findOpenFeedbackItems(8),
         ]);
     }
 }

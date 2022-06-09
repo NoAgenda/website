@@ -1,0 +1,23 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block content_title 'Chat Logs' %}
+{% block main %}
+  <div class="m-3">
+    <div class="form-widget">
+      <select class="form-select" onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);">
+        {% set today_url = ea_url().setRoute('admin_chat_logs') %}
+        <option value="{{ today_url }}">Today</option>
+        {% for date in dates %}
+          {% set date_url = ea_url().setRoute('admin_chat_logs', {date: date}) %}
+          <option value="{{ date_url }}" {% if current_date == date %}selected{% endif %}>
+            {{ date|desimplifyDate }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <hr>
+
+    <div>{{ logs|nl2br }}</div>
+  </div>
+{% endblock %}
