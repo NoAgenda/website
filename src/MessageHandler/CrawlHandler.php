@@ -18,6 +18,10 @@ class CrawlHandler implements MessageHandlerInterface
     {
         $episode = $message->episodeCode ? $this->episodeRepository->findOneByCode($message->episodeCode) : null;
 
-        $this->crawlingProcessor->crawl($message->data, $episode, $message->lastModifiedAt, $message->initializedAt);
+        $result = $this->crawlingProcessor->crawl($message->data, $episode, $message->lastModifiedAt, $message->initializedAt);
+
+        if (null !== $result->exception) {
+            throw $result->exception;
+        }
     }
 }

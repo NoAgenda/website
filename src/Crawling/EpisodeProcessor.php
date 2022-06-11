@@ -3,12 +3,16 @@
 namespace App\Crawling;
 
 use App\Entity\Episode;
+use App\Message\Crawl;
 use App\Repository\EpisodeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Messenger\Envelope;
+use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Messenger\Stamp\DelayStamp;
 use Symfony\Component\Mime\Address;
 
 /**
@@ -19,11 +23,12 @@ class EpisodeProcessor
     use LoggerAwareTrait;
 
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        private CrawlingProcessor $crawlingProcessor,
-        private NotificationPublisher $publisher,
-        private MailerInterface $mailer,
-        private EpisodeRepository $episodeRepository,
+        private readonly EntityManagerInterface $entityManager,
+        private readonly EpisodeRepository $episodeRepository,
+        private readonly CrawlingProcessor $crawlingProcessor,
+        private readonly MessageBusInterface $messenger,
+        private readonly NotificationPublisher $publisher,
+        private readonly MailerInterface $mailer,
     ) {
         $this->logger = new NullLogger();
     }
@@ -32,10 +37,10 @@ class EpisodeProcessor
     {
         $this->logger->collect();
 
-        $this->crawlingProcessor->crawl('cover', $episode);
-        $this->crawlingProcessor->crawl('shownotes', $episode);
-        $this->crawlingProcessor->crawl('transcript', $episode);
-        $this->crawlingProcessor->crawl('duration', $episode);
+        $this->crawl($episode, 'cover');
+        $this->crawl($episode, 'shownotes');
+        $this->crawl($episode, 'transcript');
+        $this->crawl($episode, 'duration');
 
         if (!$episode->isPublished()) {
             $episode->setPublished(true);
@@ -51,8 +56,8 @@ class EpisodeProcessor
             $this->publisher->publish($episode);
         }
 
-        $this->crawlingProcessor->crawl('recording_time', $episode);
-        $this->crawlingProcessor->crawl('chat_archive', $episode);
+        $this->crawl($episode, 'recording_time');
+        $this->crawl($episode, 'chat_archive');
 
         $logs = $this->logger->retrieve();
 
@@ -73,5 +78,19 @@ class EpisodeProcessor
             ]);
 
         $this->mailer->send($message);
+    }
+
+    private function crawl(Episode $episode, string $data): void
+    {
+        $result = $this->crawlingProcessor->crawl($data, $episode);
+
+        if ($result->exception) {
+            $message = new Crawl($data, $episode->getCode());
+            $envelope = new Envelope($message, [
+                DelayStamp::delayFor(new \DateInterval('15M')),
+            ]);
+
+            $this->messenger->dispatch($envelope);
+        }
     }
 }
