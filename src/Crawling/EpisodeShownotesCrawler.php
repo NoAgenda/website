@@ -31,19 +31,18 @@ class EpisodeShownotesCrawler implements EpisodeFileCrawlerInterface
         if (null !== $publicUri && $publicUri !== $episode->getPublicShownotesUri()) {
             libxml_use_internal_errors(true);
 
-            $publicDom = new \DOMDocument();
-            $publicDom->loadHTML($publicContents);
-
-            $uri = (new \DOMXPath($publicDom))
+            $publicDom = (new \DOMDocument())
+                ->loadHTML($publicContents);
+            $linkElement = (new \DOMXPath($publicDom))
                 ->query('.//link[@title="OPML"]')
-                ->item(0)
-                ->getAttribute('href')
-            ;
+                ->item(0);
 
-            $episode->setPublicShownotesUri($publicUri);
-            $episode->setShownotesUri($uri);
+            if ($linkElement && $uri = $linkElement->getAttribute('href')) {
+                $episode->setPublicShownotesUri($publicUri);
+                $episode->setShownotesUri($uri);
 
-            $this->entityManager->persist($episode);
+                $this->entityManager->persist($episode);
+            }
         }
 
         if (!$episode->getShownotesUri()) {
