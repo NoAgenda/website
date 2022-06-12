@@ -30,7 +30,7 @@ class EpisodeChapter
     #[JoinColumn(nullable: false)]
     private ?Episode $episode;
 
-    #[OneToMany(mappedBy: 'chapters', targetEntity: EpisodeChapterDraft::class)]
+    #[OneToMany(mappedBy: 'chapter', targetEntity: EpisodeChapterDraft::class)]
     private Collection $drafts;
 
     #[Column(type: 'datetime_immutable')]
