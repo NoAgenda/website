@@ -20,7 +20,7 @@ class TokenManager {
       button.prop('disabled', true);
       button.html(button.html() + ' <span class="fas fa-spinner fa-spin ml-2" aria-hidden="true"></span>');
 
-      fetch('/token', {
+      fetch('/generate-token', {
         method: 'post',
         credentials: 'same-origin',
       })

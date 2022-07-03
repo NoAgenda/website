@@ -1,36 +1,41 @@
 {% extends 'account/layout.html.twig' %}
 
-{% set status = 'Activated' %}
-{% if app.user.hidden %}{% set status = 'Disabled' %}{% endif %}
+{% set banned = app.user.user.banned %}
+{% set hidden = app.user.user.hidden %}
+{% set status = banned ? 'Banned' : (hidden ? 'Disabled' : 'Activated') %}
 
 {% block account_content %}
-<p>Current account status: <strong>{{ status }}</strong></p>
+  <p>Current Account Status: <strong>{{ status }}</strong></p>
 
-{% if not app.user.hidden %}
-<p>
-  You can hide your account details across the website by disabling your account. Note that you'll be unable to access
-  other features of the website while your account is disabled.
-</p>
-<form action="{{ url('account_status') }}" method="post">
-  <input type="hidden" name="action" value="hide"/>
-  <input type="hidden" name="token" value="{{ csrf_token('update-status') }}"/>
-  <button type="submit" class="btn btn-outline-warning">
-    <span class="fas fa-ban mr-2" aria-hidden="true"></span>
-    Disable my account
-  </button>
-</form>
-{% else %}
-<p>
-  Your account is currently disabled. Enabling your account will expose your account information to other users and
-  allows you to fully access the website again.
-</p>
-<form action="{{ url('account_status') }}" method="post">
-  <input type="hidden" name="action" value="expose"/>
-  <input type="hidden" name="token" value="{{ csrf_token('update-status') }}"/>
-  <button type="submit" class="btn btn-outline-success">
-    <span class="fas fa-circle mr-2" aria-hidden="true"></span>
-    Enable my account
-  </button>
-</form>
-{% endif %}
+  {% if banned %}
+    <p>
+      You're account has been banned.
+    </p>
+  {% elseif hidden %}
+    <p>
+      Your account is currently disabled. Enabling your account will expose your account information to other users and
+      allows you to fully access the website again.
+    </p>
+    <form action="{{ url('account_status') }}" method="post">
+      <input type="hidden" name="action" value="expose"/>
+      <input type="hidden" name="_csrf_token" value="{{ csrf_token('update-status') }}"/>
+      <button type="submit" class="btn btn-outline-success">
+        <span class="fas fa-circle mr-2" aria-hidden="true"></span>
+        Enable my account
+      </button>
+    </form>
+  {% else %}
+    <p>
+      You can hide your account details across the website by disabling your account. Note that you'll be unable to access
+      other features of the website while your account is disabled.
+    </p>
+    <form action="{{ url('account_status') }}" method="post">
+      <input type="hidden" name="action" value="hide"/>
+      <input type="hidden" name="_csrf_token" value="{{ csrf_token('update-status') }}"/>
+      <button type="submit" class="btn btn-outline-warning">
+        <span class="fas fa-ban mr-2" aria-hidden="true"></span>
+        Disable my account
+      </button>
+    </form>
+  {% endif %}
 {% endblock %}

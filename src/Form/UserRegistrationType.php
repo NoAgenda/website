@@ -2,7 +2,7 @@
 
 namespace App\Form;
 
-use App\Entity\User;
+use App\Entity\UserAccount;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -43,10 +43,11 @@ class UserRegistrationType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'constraints' => new UniqueEntity([
-                'fields' => 'username',
-            ]),
-            'data_class' => User::class,
+            'constraints' => [
+                new UniqueEntity('usernameCanonical', message: 'An account with this username already exists.', errorPath: 'username'),
+                new UniqueEntity('emailCanonical', message: 'An account with this email already exists.', errorPath: 'email'),
+            ],
+            'data_class' => UserAccount::class,
         ]);
     }
 }

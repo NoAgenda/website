@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping\Table;
 
 #[Entity(repositoryClass: EpisodeChapterDraftRepository::class)]
 #[Table(name: 'na_episode_chapter_draft')]
-class EpisodeChapterDraft
+class EpisodeChapterDraft implements UserCreatedInterface
 {
     use CreatorTrait;
     use EpisodeChapterTrait;
@@ -22,14 +22,18 @@ class EpisodeChapterDraft
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
-    private ?int $id;
+    private ?int $id = null;
 
     #[ManyToOne(targetEntity: Episode::class, inversedBy: 'chapters')]
     #[JoinColumn(nullable: false)]
-    private ?Episode $episode;
+    private ?Episode $episode = null;
 
     #[ManyToOne(targetEntity: EpisodeChapter::class, inversedBy: 'drafts')]
-    private ?EpisodeChapter $chapter;
+    private ?EpisodeChapter $chapter = null;
+
+    #[ManyToOne(targetEntity: User::class)]
+    #[JoinColumn(nullable: false)]
+    private ?User $creator = null;
 
     #[Column(type: 'datetime_immutable')]
     private \DateTimeImmutable $createdAt;
@@ -66,11 +70,6 @@ class EpisodeChapterDraft
         $this->chapter = $chapter;
 
         return $this;
-    }
-
-    public function getCreatedAt(): \DateTimeImmutable
-    {
-        return $this->createdAt;
     }
 
     public function isDraft(): bool

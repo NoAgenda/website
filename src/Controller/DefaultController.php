@@ -23,7 +23,7 @@ class DefaultController extends AbstractController
     public function index(): Response
     {
         $episodes = $this->episodeRepository->getHomepageEpisodes();
-        $feedbackItems = $this->feedbackItemRepository->findOpenFeedbackItems(8);
+        $feedbackItems = $this->feedbackItemRepository->findPublicUnresolvedItems(8);
         $networkSites = $this->networkSiteRepository->getHomepageSites();
         $videos = $this->videoRepository->findLatest();
 

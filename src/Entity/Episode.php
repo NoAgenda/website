@@ -19,7 +19,7 @@ class Episode
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
-    private ?int $id;
+    private ?int $id = null;
 
     #[OneToMany(mappedBy: 'episode', targetEntity: EpisodeChapter::class)]
     private Collection $chapters;

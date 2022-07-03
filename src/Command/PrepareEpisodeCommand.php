@@ -4,7 +4,6 @@ namespace App\Command;
 
 use App\Crawling\EpisodeProcessor;
 use App\Repository\EpisodeRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -17,9 +16,8 @@ class PrepareEpisodeCommand extends Command
     protected static $defaultDescription = 'Prepare an episode for publication';
 
     public function __construct(
-        protected EntityManagerInterface $entityManager,
-        protected EpisodeRepository $episodeRepository,
-        protected EpisodeProcessor $episodeProcessor,
+        private readonly EpisodeRepository $episodeRepository,
+        private readonly EpisodeProcessor $episodeProcessor,
     ) {
         parent::__construct();
     }

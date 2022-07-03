@@ -5,10 +5,7 @@ services:
         bind:
             $crawlers: '@crawler_locator'
             $httpClient: '@http_client'
-            $mastodonClient: '@Symfony\Contracts\HttpClient\HttpClientInterface $mastodon'
-            $messenger: '@crawler_bus'
             $securityToken: '%env(API_SECURITY_TOKEN)%'
-            $shownotesClient: '@Symfony\Contracts\HttpClient\HttpClientInterface $shownotes'
 
     App\:
         resource: '../src/'

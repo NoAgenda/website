@@ -23,9 +23,9 @@ class CrawlCommand extends Command
     protected static $defaultDescription = 'Execute a crawling command';
 
     public function __construct(
-        protected EntityManagerInterface $entityManager,
-        protected EpisodeRepository $episodeRepository,
-        protected CrawlingProcessor $crawlingProcessor,
+        protected readonly EntityManagerInterface $entityManager,
+        protected readonly EpisodeRepository $episodeRepository,
+        protected readonly CrawlingProcessor $crawlingProcessor,
     ) {
         parent::__construct();
     }

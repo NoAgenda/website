@@ -1,24 +1,24 @@
 {% extends 'account/layout.html.twig' %}
 
 {% block account_content %}
-{% set alerts = app.flashes %}
-{% if alerts %}
-<div class="row">
-  <div class="col-lg-6">
-    {% include 'blocks/alerts.html.twig' %}
-  </div>
-</div>
-{% endif %}
+  {% set alerts = app.flashes %}
+  {% if alerts %}
+    <div class="row">
+      <div class="col-lg-6">
+        {% include 'blocks/alerts.html.twig' %}
+      </div>
+    </div>
+  {% endif %}
 
-{% if app.user.email %}
-<p>Your current email address is {{ app.user.email }}.</p>
-{% else %}
-<p>Your currently haven't registered an email address.</p>
-{% endif %}
+  {% if app.user.email %}
+    <p>Your current email address is {{ app.user.email }}.</p>
+  {% else %}
+    <p>Your currently haven't registered an email address.</p>
+  {% endif %}
 
-<div class="row">
-  <div class="col-lg-6">
-    {{ form(form) }}
+  <div class="row">
+    <div class="col-lg-6">
+      {{ form(form) }}
+    </div>
   </div>
-</div>
 {% endblock %}

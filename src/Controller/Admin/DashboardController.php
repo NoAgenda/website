@@ -5,7 +5,7 @@ namespace App\Controller\Admin;
 use App\Entity\BatSignal;
 use App\Entity\Episode;
 use App\Entity\NetworkSite;
-use App\Entity\User;
+use App\Entity\UserAccount;
 use App\Repository\EpisodeRepository;
 use App\Repository\FeedbackItemRepository;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Asset;
@@ -45,9 +45,8 @@ class DashboardController extends AbstractDashboardController
     {
         yield MenuItem::linkToDashboard('Dashboard', 'fas fa-home');
         yield MenuItem::linkToCrud('Episodes', 'fas fa-podcast', Episode::class);
-        //yield MenuItem::linkToCrud('Chapters', 'fas fa-bookmark', EpisodeChapter::class);
         yield MenuItem::linkToCrud('Network Sites', 'fas fa-globe', NetworkSite::class);
-        yield MenuItem::linkToCrud('Users', 'fas fa-user', User::class);
+        yield MenuItem::linkToCrud('Users', 'fas fa-user', UserAccount::class);
 
         yield MenuItem::section('Processing');
         yield MenuItem::linkToRoute('Crawler', 'fas fa-bug', 'admin_crawler');

@@ -2,18 +2,16 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping\JoinColumn;
-use Doctrine\ORM\Mapping\ManyToOne;
-
+/**
+ * @property \DateTimeImmutable $createdAt
+ * @property User $creator
+ */
 trait CreatorTrait
 {
-    #[ManyToOne(targetEntity: User::class)]
-    #[JoinColumn(nullable: true)]
-    private ?User $creator;
-
-    #[ManyToOne(targetEntity: UserToken::class)]
-    #[JoinColumn(nullable: true)]
-    private ?UserToken $creatorToken;
+    public function getCreatedAt(): \DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
 
     public function getCreator(): ?User
     {
@@ -23,18 +21,6 @@ trait CreatorTrait
     public function setCreator(?User $creator): self
     {
         $this->creator = $creator;
-
-        return $this;
-    }
-
-    public function getCreatorToken(): ?UserToken
-    {
-        return $this->creatorToken;
-    }
-
-    public function setCreatorToken(?UserToken $creatorToken): self
-    {
-        $this->creatorToken = $creatorToken;
 
         return $this;
     }

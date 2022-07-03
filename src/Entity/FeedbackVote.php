@@ -13,18 +13,22 @@ use Doctrine\ORM\Mapping\Table;
 
 #[Entity(repositoryClass: FeedbackVoteRepository::class)]
 #[Table(name: 'na_feedback_vote')]
-class FeedbackVote
+class FeedbackVote implements UserCreatedInterface
 {
     use CreatorTrait;
 
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
-    private ?int $id;
+    private ?int $id = null;
 
     #[ManyToOne(targetEntity: FeedbackItem::class, inversedBy: 'votes')]
     #[JoinColumn(nullable: false)]
-    private ?FeedbackItem $item;
+    private ?FeedbackItem $item = null;
+
+    #[ManyToOne(targetEntity: User::class)]
+    #[JoinColumn(nullable: false)]
+    private ?User $creator = null;
 
     #[Column(type: 'boolean')]
     private bool $supported = false;
@@ -81,10 +85,5 @@ class FeedbackVote
         $this->rejected = true;
 
         return $this;
-    }
-
-    public function getCreatedAt(): \DateTimeImmutable
-    {
-        return $this->createdAt;
     }
 }

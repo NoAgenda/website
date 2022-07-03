@@ -3,63 +3,61 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Uid\Uuid;
 
 #[Entity(repositoryClass: UserRepository::class)]
 #[Table(name: 'na_user')]
-#[UniqueEntity('username')]
-#[UniqueEntity('email')]
-class User implements UserInterface, PasswordAuthenticatedUserInterface, \Serializable
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
-    private ?int $id;
+    private ?int $id = null;
 
-    #[Column(type: 'string', length: 255, unique: true)]
-    private ?string $username;
+    #[ManyToOne(targetEntity: User::class)]
+    private ?User $master = null;
 
-    #[Column(type: 'string', length: 255, unique: true, nullable: true)]
-    private ?string $email;
+    #[OneToOne(mappedBy: 'user', targetEntity: UserAccount::class, cascade: ['persist', 'remove'])]
+    private ?UserAccount $account = null;
 
-    private ?string $plainPassword = null;
+    #[OneToMany(mappedBy: 'user', targetEntity: UserToken::class, orphanRemoval: true)]
+    private Collection $tokens;
 
-    #[Column(type: 'string', length: 255, nullable: true)]
-    private ?string $password;
+    #[Column(type: 'uuid', unique: true)]
+    private string $userIdentifier;
 
-    #[Column(type: 'string', length: 255, nullable: true)]
-    private ?string $salt = null;
-
-    #[Column(type: 'array')]
-    private ?array $roles = ['ROLE_USER'];
+    #[Column(type: 'boolean')]
+    private bool $banned = false;
 
     #[Column(type: 'boolean')]
     private bool $hidden = false;
 
-    #[Column(type: 'string', length: 255, nullable: true)]
-    private ?string $activationToken = null;
+    #[Column(type: 'boolean')]
+    private bool $reviewed = false;
 
-    #[Column(type: 'datetime_immutable', nullable: true)]
-    private ?\DateTimeImmutable $activationTokenExpiresAt = null;
+    #[Column(type: 'boolean')]
+    private bool $needsReview = false;
 
     #[Column(type: 'datetime_immutable')]
     private \DateTimeImmutable $createdAt;
 
     public function __construct()
     {
+        $this->tokens = new ArrayCollection();
+        $this->userIdentifier = Uuid::v4();
         $this->createdAt = new \DateTimeImmutable();
-    }
-
-    public function __toString(): string
-    {
-        return $this->getUsername();
     }
 
     public function getId(): ?int
@@ -67,98 +65,76 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \Serial
         return $this->id;
     }
 
-    public function getUserIdentifier(): string
+    public function getMaster(): ?User
     {
-        return $this->username;
+        return $this->master;
     }
 
-    public function getUsername(): ?string
+    public function setMaster(?User $master): self
     {
-        return $this->username;
-    }
-
-    public function setUsername(string $username): self
-    {
-        $this->username = $username;
+        $this->master = $master;
 
         return $this;
     }
 
-    public function getEmail(): ?string
+    public function getAccount(): ?UserAccount
     {
-        return $this->email;
+        return $this->account;
     }
 
-    public function setEmail(?string $email): self
+    public function setAccount(UserAccount $account): self
     {
-        $this->email = $email;
+        if ($account->getUser() !== $this) {
+            $account->setUser($this);
+        }
+
+        $this->account = $account;
 
         return $this;
     }
 
-    public function getPlainPassword(): ?string
+    /**
+     * @return Collection<int, UserToken>
+     */
+    public function getTokens(): Collection
     {
-        return $this->plainPassword;
+        return $this->tokens;
     }
 
-    public function setPlainPassword(?string $password): self
+    public function addToken(UserToken $token): self
     {
-        $this->plainPassword = $password;
-        $this->password = null;
-
-        return $this;
-    }
-
-    public function getPassword(): ?string
-    {
-        return $this->password;
-    }
-
-    public function setPassword(?string $password): self
-    {
-        $this->password = $password;
-
-        return $this;
-    }
-
-    public function getSalt(): ?string
-    {
-        return $this->salt;
-    }
-
-    public function generateSalt(): self
-    {
-        $this->salt = md5(random_bytes(10));
-
-        return $this;
-    }
-
-    public function eraseCredentials()
-    {
-        $this->plainPassword = null;
-    }
-
-    public function getRoles(): array
-    {
-        return $this->roles;
-    }
-
-    public function addRole(string $role): self
-    {
-        if (!in_array($role, $this->roles)) {
-            $this->roles[] = $role;
+        if (!$this->tokens->contains($token)) {
+            $this->tokens[] = $token;
+            $token->setUser($this);
         }
 
         return $this;
     }
 
-    public function removeRole(string $role): self
+    public function removeToken(UserToken $token): self
     {
-        $key = array_search($role, $this->roles);
-
-        if ($key !== false) {
-            unset($this->roles[$key]);
+        if ($this->tokens->removeElement($token)) {
+            if ($token->getUser() === $this) {
+                $token->setUser(null);
+            }
         }
+
+        return $this;
+    }
+
+    public function getUserIdentifier(): ?string
+    {
+        return $this->userIdentifier;
+    }
+
+    public function isBanned(): bool
+    {
+        return $this->banned;
+    }
+
+    public function setBanned(bool $banned): self
+    {
+        $this->banned = $banned;
 
         return $this;
     }
@@ -168,126 +144,99 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \Serial
         return $this->hidden;
     }
 
-    public function hide(): self
+    public function setHidden(bool $hidden): self
     {
-        $this->hidden = true;
+        $this->hidden = $hidden;
 
         return $this;
     }
 
-    public function expose(): self
+    public function isReviewed(): bool
     {
-        $this->hidden = false;
+        return $this->reviewed;
+    }
+
+    public function setReviewed(bool $reviewed): self
+    {
+        $this->reviewed = $reviewed;
+
+        if ($this->reviewed) {
+            $this->needsReview = false;
+        }
 
         return $this;
     }
 
-    public function getActivationToken(): ?string
+    public function getNeedsReview(): bool
     {
-        return $this->activationToken;
+        return $this->needsReview;
     }
 
-    public function activationTokenIsValid(): bool
+    public function setNeedsReview(bool $needsReview): self
     {
-        return $this->activationTokenExpiresAt > new \DateTime;
-    }
-
-    public function generateActivationToken(): self
-    {
-        $this->activationToken = md5(random_bytes(10));
-        $this->activationTokenExpiresAt = new \DateTimeImmutable('+1 hour');
+        $this->needsReview = $needsReview;
 
         return $this;
     }
 
-    public function clearActivationToken(): self
-    {
-        $this->activationToken = null;
-        $this->activationTokenExpiresAt = null;
-
-        return $this;
-    }
-
-    public function getCreatedAt(): \DateTimeImmutable
+    public function getCreatedAt(): \DateTimeInterface
     {
         return $this->createdAt;
     }
 
-    public function isAdmin(): bool
+    public function getRoles(): array
     {
-        return in_array('ROLE_ADMIN', $this->roles) || in_array('ROLE_SUPER_ADMIN', $this->roles);
+        return $this->account?->getRoles() ?? ['ROLE_USER'];
     }
 
-    public function setAdmin(bool $admin): self
+    public function getPassword(): ?string
     {
-        if (!in_array('ROLE_SUPER_ADMIN', $this->roles)) {
-            if ($admin) {
-                $this->roles = ['ROLE_ADMIN'];
-            } else {
-                $this->roles = ['ROLE_USER'];
-            }
-        }
+        return $this->account?->getPassword();
+    }
 
-        return $this;
+    public function getSalt(): ?string
+    {
+        return null;
+    }
+
+    public function eraseCredentials(): void
+    {
+        $this->account?->eraseCredentials();
+    }
+
+    public function getUsername(): string
+    {
+        return $this->account?->getUsername() ?? 'Anonymous Producer';
+    }
+
+    public function isRegistered(): bool
+    {
+        return null !== $this->account;
+    }
+
+    public function isPublic(): bool
+    {
+        return $this->reviewed && !$this->hidden && !$this->banned;
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->account?->isAdmin() ?? false;
     }
 
     public function isMod(): bool
     {
-        return in_array('ROLE_MOD', $this->roles) || $this->isAdmin();
+        return $this->account?->isMod() ?? false;
     }
 
-    public function setMod(bool $mod): self
+    public function getIpAddresses(): array
     {
-        if (!$this->isAdmin()) {
-            if ($mod) {
-                $this->roles = ['ROLE_MOD'];
-            } else {
-                $this->roles = ['ROLE_USER'];
-            }
+        $collection = [];
+
+        foreach ($this->getTokens() as $token) {
+            $collection = array_merge($collection, $token->getIpAddresses());
         }
 
-        return $this;
-    }
-
-    /** @see \Serializable::serialize() */
-    public function serialize()
-    {
-        return serialize(array(
-            $this->id,
-            $this->username,
-            $this->password,
-            $this->salt,
-        ));
-    }
-
-    /** @see \Serializable::unserialize() */
-    public function unserialize($serialized)
-    {
-        list (
-            $this->id,
-            $this->username,
-            $this->password,
-            $this->salt
-        ) = unserialize($serialized, ['allowed_classes' => false]);
-    }
-
-    public function __serialize(): array
-    {
-        return [
-            $this->id,
-            $this->username,
-            $this->password,
-            $this->salt,
-        ];
-    }
-
-    public function __unserialize($serialized): void
-    {
-        list (
-            $this->id,
-            $this->username,
-            $this->password,
-            $this->salt
-        ) = $serialized;
+        return array_unique($collection);
     }
 }

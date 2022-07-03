@@ -20,9 +20,10 @@ final class Version20220222202233 extends AbstractMigration
 
         $this->addSql('CREATE TABLE na_file_download (id INT AUTO_INCREMENT NOT NULL, episode_id INT NOT NULL, crawling_data VARCHAR(32) NOT NULL, last_modified_at DATETIME NOT NULL, initialized_at DATETIME NOT NULL, INDEX IDX_B91C9A76362B62A0 (episode_id), PRIMARY KEY(id))');
         $this->addSql('ALTER TABLE na_file_download ADD CONSTRAINT FK_B91C9A76362B62A0 FOREIGN KEY (episode_id) REFERENCES na_episode (id)');
-        $this->addSql('ALTER TABLE na_episode ADD published TINYINT(1) NOT NULL, ADD cover_path LONGTEXT DEFAULT NULL, ADD public_shownotes_uri LONGTEXT DEFAULT NULL, ADD shownotes_path LONGTEXT DEFAULT NULL, ADD transcript_path LONGTEXT DEFAULT NULL, ADD chat_archive_path LONGTEXT DEFAULT NULL, ADD recording_time_matrix JSON DEFAULT NULL');
 
-        $this->addSql('UPDATE na_episode SET published = 1');
+        $this->addSql('ALTER TABLE na_episode ADD published TINYINT(1) DEFAULT NULL, ADD cover_path LONGTEXT DEFAULT NULL, ADD public_shownotes_uri LONGTEXT DEFAULT NULL, ADD shownotes_path LONGTEXT DEFAULT NULL, ADD transcript_path LONGTEXT DEFAULT NULL, ADD chat_archive_path LONGTEXT DEFAULT NULL, ADD recording_time_matrix JSON DEFAULT NULL');
+        $this->addSql('UPDATE na_episode SET published = 1 WHERE 1');
+        $this->addSql('ALTER TABLE na_episode CHANGE published published TINYINT(1) NOT NULL');
 
         $statement = $this->connection->executeQuery('SELECT id, code, cover, shownotes_uri, chat_messages, transcript, transcript_type FROM na_episode');
 
@@ -41,8 +42,6 @@ final class Version20220222202233 extends AbstractMigration
 
     public function down(Schema $schema): void
     {
-        // This rollback is incomplete, make sure you have a backup of the episode table
-        $this->addSql('DROP TABLE na_file_download');
-        $this->addSql('ALTER TABLE na_episode ADD chat_messages TINYINT(1) NOT NULL, ADD transcript TINYINT(1) NOT NULL, DROP cover_path, DROP public_shownotes_uri, DROP shownotes_path, DROP transcript_path, DROP chat_archive_path, DROP recording_time_matrix');
+        // Not enough investment was made to make a rollback possible
     }
 }

@@ -1,9 +1,9 @@
 <div class="mb-3 no-select">
   {% include 'blocks/sharing.html.twig' with {title: 'No Agenda ' ~ episode.code ~ ': ' ~ episode.name, url: url('player', {episode: episode.code})} %}
 
-  {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MOD') %}
+  {% if is_granted('ROLE_MOD') %}
   <div class="action-box rounded">
-    <span title="Administration Box">
+    <span title="Moderation Box">
       <span class="fas fa-cog fa-fw fa-lg" aria-hidden="true"></span>
     </span>
     {% if is_granted('ROLE_ADMIN') %}
@@ -11,11 +11,9 @@
         <span class="fas fa-file-alt fa-fw fa-lg" aria-hidden="true"></span>
       </a>
     {% endif %}
-    {% if is_granted('ROLE_MOD') %}
-      <a class="cursor-pointer d-inline-block" href="{{ path('episode_chapter_accept_all', {episode: episode.code}) }}" target="_blank" title="Accept all chapter suggestions">
-        <span class="fas fa-check fa-fw fa-lg" aria-hidden="true"></span>
-      </a>
-    {% endif %}
+    <a class="cursor-pointer d-inline-block" href="{{ path('episode_chapter_accept_all', {episode: episode.code}) }}" target="_blank" title="Accept all chapter suggestions">
+      <span class="fas fa-check fa-fw fa-lg" aria-hidden="true"></span>
+    </a>
   </div>
   {% endif %}
 

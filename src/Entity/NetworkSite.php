@@ -16,7 +16,7 @@ class NetworkSite
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
-    private ?int $id;
+    private ?int $id = null;
 
     #[Column(type: 'string', length: 255)]
     private ?string $name;

@@ -5,6 +5,7 @@ namespace App\DataFixtures;
 use App\Entity\Episode;
 use App\Entity\NetworkSite;
 use App\Entity\User;
+use App\Entity\UserAccount;
 use App\Entity\Video;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -15,16 +16,19 @@ class AppFixtures extends Fixture
     {
         foreach ($this->loadUsers() as list($username, $email, $plainPassword, $roles)) {
             $user = (new User())
+                ->setReviewed(true);
+
+            $account = (new UserAccount())
                 ->setUsername($username)
+                ->setUser($user)
                 ->setEmail($email)
-                ->setPlainPassword($plainPassword)
-            ;
+                ->setPlainPassword($plainPassword);
 
             foreach ($roles as $role) {
-                $user->addRole($role);
+                $account->addRole($role);
             }
 
-            $manager->persist($user);
+            $manager->persist($account);
         }
 
         $manager->flush();
@@ -46,8 +50,7 @@ class AppFixtures extends Fixture
                 ->setTranscriptUri($data['transcriptUri'])
                 ->setTranscriptPath($data['transcriptPath'])
                 ->setTranscriptType('json')
-                ->setChatArchivePath($data['chatArchivePath'])
-            ;
+                ->setChatArchivePath($data['chatArchivePath']);
 
             $manager->persist($episode);
         }
@@ -59,8 +62,7 @@ class AppFixtures extends Fixture
                 ->setDescription($data['description'])
                 ->setUri($data['uri'])
                 ->setDisplayUri($data['displayUri'])
-                ->setPriority($data['priority'])
-            ;
+                ->setPriority($data['priority']);
 
             $manager->persist($site);
         }
@@ -68,8 +70,7 @@ class AppFixtures extends Fixture
         foreach ($this->loadVideos() as $data) {
             $video = (new Video($data['youtubeId']))
                 ->setTitle($data['title'])
-                ->setPublishedAt(new \DateTime($data['publishedAt']))
-            ;
+                ->setPublishedAt(new \DateTime($data['publishedAt']));
 
             $manager->persist($video);
         }

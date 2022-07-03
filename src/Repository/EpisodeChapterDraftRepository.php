@@ -24,25 +24,29 @@ class EpisodeChapterDraftRepository extends ServiceEntityRepository
     /**
      * @return EpisodeChapterDraft[]
      */
-    public function findNewSuggestionsByEpisode(Episode $episode): array
+    public function findNewSuggestionsByEpisode(Episode $episode, bool $unreviewed = false): array
     {
         $builder = $this->createQueryBuilder('draft');
 
-        $builder
+        $whereClauses = [
+            $builder->expr()->eq('draft.episode', ':episode'),
+            $builder->expr()->eq('feedbackItem.accepted', 0),
+            $builder->expr()->eq('feedbackItem.rejected', 0),
+            $builder->expr()->eq('creator.banned', 0),
+            $builder->expr()->eq('creator.hidden', 0),
+        ];
+
+        if (!$unreviewed) {
+            $whereClauses[] = $builder->expr()->eq('creator.reviewed', 1);
+        }
+
+        return $builder
             ->leftJoin('draft.feedbackItem', 'feedbackItem')
-            ->andWhere($builder->expr()->andX(
-                $builder->expr()->eq('draft.episode', ':episode'),
-                // $builder->expr()->isNull('draft.chapter'),
-                $builder->expr()->eq('feedbackItem.accepted', ':unhandled'),
-                $builder->expr()->eq('feedbackItem.rejected', ':unhandled')
-            ))
+            ->leftJoin('draft.creator', 'creator')
+            ->andWhere($builder->expr()->andX(...$whereClauses))
             ->setParameter('episode', $episode->getId())
-            ->setParameter('unhandled', '0')
-        ;
-
-        $query = $builder->getQuery();
-
-        return $query->getResult();
+            ->getQuery()
+            ->getResult();
     }
 
     /**
@@ -52,7 +56,7 @@ class EpisodeChapterDraftRepository extends ServiceEntityRepository
     {
         $builder = $this->createQueryBuilder('draft');
 
-        $builder
+        return $builder
             ->leftJoin('draft.feedbackItem', 'feedbackItem')
             ->andWhere($builder->expr()->andX(
                 $builder->expr()->eq('draft.chapter', ':chapter'),
@@ -60,10 +64,7 @@ class EpisodeChapterDraftRepository extends ServiceEntityRepository
             ))
             ->setParameter('chapter', $chapter->getId())
             ->setParameter('handled', '1')
-        ;
-
-        $query = $builder->getQuery();
-
-        return $query->getResult();
+            ->getQuery()
+            ->getResult();
     }
 }

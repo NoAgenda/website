@@ -1,57 +1,45 @@
 {% extends 'layout.html.twig' %}
 
-{% set page_title = 'Website contributions' %}
+{% set page_title = 'Manage Contributions' %}
 
 {% block content %}
   <div class="container">
-    <h1 class="my-3">Manage website contributions</h1>
+    <h1 class="my-3">Waiting for Review</h1>
 
-    <div class="list-group list-group-flush">
-      {% for item in items %}
+    <div class="list-group list-group-flush my-3">
+      {% for user in unreviewed_users %}
+        <a class="list-group-item" href="{{ path('feedback_user', {user: user.id}) }}">
+          {{ user.username }}
+        </a>
+      {% else %}
         <div class="list-group-item">
-          {% set item_creator = item.entity.creator ? item.entity.creator.username : 'A guest producer' %}
+          <em>There are currently no users waiting for review.</em>
+        </div>
+      {% endfor %}
+    </div>
+
+    <h1 class="my-3">Open Contributions</h1>
+
+    <div class="list-group list-group-flush my-3">
+      {% for item in unresolved_items %}
+        <div class="list-group-item">
           {% set item_description = not item.entity.chapter ? 'a new chapter' : 'an improvement to a chapter' %}
+
+          {% set episode_url = path('player', {episode: item.entity.episode.code }) %}
+          {% set user_url = path('feedback_user', {user: item.entity.creator.id}) %}
+          {% apply spaceless %}
           <div>
-            <a href="{{ path('player', {episode: item.entity.episode.code }) }}">{{ item_creator }} suggested {{ item_description }} for episode {{ item.entity.episode.code }} at {{ item.entity.startsAt|prettyTimestamp }}:</a>
+            <a href="{{ user_url }}">{{ item.entity.creator.username }}</a>
+            suggested {{ item_description }} for episode
+            <a href="{{ episode_url }}">{{ item.entity.episode.code }}</a>
+            at {{ item.entity.startsAt|prettyTimestamp }}:
           </div>
+          {% endapply %}
 
           <div class="d-flex justify-content-between align-items-center">
             <strong class="flex-grow-1">{{ item.entity.name }}</strong>
 
-            {% set chapter = item.entity %}
-            {% set episode = chapter.episode %}
-
-            {% set chapter_creator = chapter.creator is not null ? chapter.creator : chapter.creatorToken %}
-            {% set chapter_votes = feedback_vote_count(item.votes ?? []) %}
-
-            <div class="mr-3">
-              {% set support_flavor_text = chapter_votes.supported == 1 ? 'producer agrees with this suggestion' : 'producers agree with this suggestion' %}
-              <span class="text-success" title="{{ chapter_votes.supported }} {{ support_flavor_text }}">{{ chapter_votes.supported }}</span>
-
-              {% set reject_flavor_text = chapter_votes.supported == 1 ? 'producer questions this suggestion' : 'producers question this suggestion' %}
-              <span class="text-danger" title="{{ chapter_votes.rejected }} {{ reject_flavor_text }}">{{ chapter_votes.rejected }}</span>
-            </div>
-
-            <div class="action-box rounded">
-              <span title="Moderation Box">
-                <span class="fas fa-cog fa-fw fa-lg" aria-hidden="true"></span>
-              </span>
-              {% if not chapter.draft %}
-                <a class="cursor-pointer d-inline-block" href="{{ path('episode_chapter_edit', {episode: episode.code, chapter: chapter.id, referral: 'mod'}) }}" title="Edit chapter">
-                  <span class="fas fa-pencil-alt fa-fw fa-lg" aria-hidden="true"></span>
-                </a>
-                <a class="cursor-pointer d-inline-block" href="{{ path('episode_chapter_delete', {episode: episode.code, chapter: chapter.id, referral: 'mod'}) }}" title="Delete chapter">
-                  <span class="fas fa-trash fa-fw fa-lg" aria-hidden="true"></span>
-                </a>
-              {% else %}
-                <a class="cursor-pointer d-inline-block" href="{{ path('episode_chapter_accept', {episode: episode.code, draft: chapter.id, referral: 'mod'}) }}" title="Accept suggestion">
-                  <span class="fas fa-check fa-fw fa-lg text-success" aria-hidden="true"></span>
-                </a>
-                <a class="cursor-pointer d-inline-block" href="{{ path('episode_chapter_reject', {episode: episode.code, draft: chapter.id, referral: 'mod'}) }}" title="Reject suggestion">
-                  <span class="fas fa-times fa-fw fa-lg text-danger" aria-hidden="true"></span>
-                </a>
-              {% endif %}
-            </div>
+            {% include 'feedback/parts/actions.html.twig' with {referral: 'mod'} %}
           </div>
         </div>
       {% else %}

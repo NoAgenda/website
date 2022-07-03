@@ -2,7 +2,8 @@
 
 namespace App\Controller;
 
-use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\UserAccountRepository;
+use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
@@ -20,41 +21,48 @@ use Symfony\Component\Security\Core\User\UserInterface;
 class AccountController extends AbstractController
 {
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        private UserPasswordHasherInterface $passwordHasher,
+        private readonly UserPasswordHasherInterface $passwordHasher,
+        private readonly UserAccountRepository $userAccountRepository,
+        private readonly UserRepository $userRepository,
     ) {}
 
     #[Route('', name: 'index', methods: ['GET'])]
     public function index(): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_REGISTERED_USER');
+
         return $this->render('account/index.html.twig');
     }
 
     #[Route('/email', name: 'email', methods: ['GET', 'POST'])]
     public function email(Request $request, ?UserInterface $user): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_REGISTERED_USER');
+
+        $account = $user->getAccount();
+
         $form = $this->createFormBuilder()
             ->add('email', EmailType::class, [
                 'label' => 'New email address (or leave empty to clear)',
                 'required' => false,
                 'attr' => [
-                    'placeholder' => $user->getEmail(),
+                    'placeholder' => $account->getEmail(),
                 ],
             ])
             ->add('submit', SubmitType::class)
-            ->getForm()
-        ;
+            ->getForm();
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $email = $form->get('email')->getData();
-            $user->setEmail($email);
+            $account->setEmail($email);
 
-            $this->entityManager->persist($user);
-            $this->entityManager->flush();
+            $this->userAccountRepository->persist($account, true);
 
             $this->addFlash('success', 'Your email address has been updated.');
+
+            return $this->redirectToRoute('account_email');
         }
 
         return $this->render('account/email.html.twig', [
@@ -68,6 +76,10 @@ class AccountController extends AbstractController
     #[Route('/password', name: 'password', methods: ['GET', 'POST'])]
     public function password(Request $request, ?UserInterface $user): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_REGISTERED_USER');
+
+        $account = $user->getAccount();
+
         $form = $this->createFormBuilder()
             ->add('password', RepeatedType::class, [
                 'type' => PasswordType::class,
@@ -77,14 +89,13 @@ class AccountController extends AbstractController
             ])
             ->add('oldPassword', PasswordType::class)
             ->add('submit', SubmitType::class)
-            ->getForm()
-        ;
+            ->getForm();
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted()) {
             $oldPassword = $form->get('oldPassword')->getData();
-            $isPasswordValid = $this->passwordHasher->isPasswordValid($user, $oldPassword);
+            $isPasswordValid = $this->passwordHasher->isPasswordValid($account, $oldPassword);
 
             if (!$isPasswordValid) {
                 $form->get('oldPassword')->addError(new FormError('Incorrect password.'));
@@ -92,12 +103,13 @@ class AccountController extends AbstractController
 
             if ($form->isValid()) {
                 $password = $form->get('password')->getData();
-                $user->setPlainPassword($password);
+                $account->setPlainPassword($password);
 
-                $this->entityManager->persist($user);
-                $this->entityManager->flush();
+                $this->userAccountRepository->persist($account, true);
 
                 $this->addFlash('success', 'Your password has been updated.');
+
+                return $this->redirectToRoute('account_password');
             }
         }
 
@@ -109,21 +121,14 @@ class AccountController extends AbstractController
     #[Route('/status', name: 'status', methods: ['GET', 'POST'])]
     public function status(Request $request, ?UserInterface $user): Response
     {
-        $submittedToken = $request->request->get('token');
+        $this->denyAccessUnlessGranted('ROLE_USER');
 
-        if ($this->isCsrfTokenValid('update-status', $submittedToken)) {
+        if ($this->isCsrfTokenValid('update-status', $request->request->get('_csrf_token'))) {
             $action = $request->request->get('action');
 
-            if ($action == 'hide' && !$user->isHidden()) {
-                $user->hide();
-            }
+            $user->setHidden('hide' === $action);
 
-            if ($action == 'expose' && $user->isHidden()) {
-                $user->expose();
-            }
-
-            $this->entityManager->persist($user);
-            $this->entityManager->flush();
+            $this->userRepository->persist($user, true);
         }
 
         return $this->render('account/status.html.twig');

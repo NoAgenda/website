@@ -26,18 +26,18 @@
 
 {% set authenticationLinks = [] %}
 
-{% if app.user %}
+{% if app.user.registered|default(false) %}
   {% set authenticationLinks = authenticationLinks|merge([{
     path: 'account_index',
-    title: app.user.userIdentifier,
+    title: app.user.username,
     active: app.request.attributes.get('_route') starts with 'account_',
   }]) %}
 
   {% if is_granted('ROLE_MOD') %}
     {% set authenticationLinks = authenticationLinks|merge([{
-      path: 'contributions_manage',
+      path: 'feedback_manage',
       title: 'Contributions',
-      active: app.request.attributes.get('_route') == 'contributions_manage',
+      active: app.request.attributes.get('_route') == 'feedback_manage',
     }]) %}
   {% endif %}
 

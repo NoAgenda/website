@@ -1,10 +1,10 @@
 framework:
     http_client:
         scoped_clients:
-            mastodon:
+            mastodon.client:
                 base_uri: '%env(MASTODON_DOMAIN)%/api/v1/'
                 headers:
                     'Authorization': 'Bearer %env(MASTODON_ACCESS_TOKEN)%'
-            shownotes:
+            shownotes.client:
                 base_uri: 'http://noagendanotes.com'
                 max_redirects: 0

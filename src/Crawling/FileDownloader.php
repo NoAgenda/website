@@ -29,7 +29,7 @@ class FileDownloader
         private EntityManagerInterface $entityManager,
         private ScheduledFileDownloadRepository $scheduledFileDownloadRepository,
         private HttpClientInterface $httpClient,
-        private MessageBusInterface $messenger,
+        private MessageBusInterface $crawlingBus,
     ) {
         $this->logger = new NullLogger();
 
@@ -133,7 +133,7 @@ class FileDownloader
             DelayStamp::delayFor($interval),
         ]);
 
-        $this->messenger->dispatch($envelope);
+        $this->crawlingBus->dispatch($envelope);
     }
 
     private function calculateCrawlingInterval(\DateTime $lastModifiedAt): ?\DateInterval

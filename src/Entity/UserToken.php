@@ -7,7 +7,10 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
+use Symfony\Component\Uid\Uuid;
 
 #[Entity(repositoryClass: UserTokenRepository::class)]
 #[Table(name: 'na_user_token')]
@@ -16,10 +19,14 @@ class UserToken
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
-    private ?int $id;
+    private ?int $id = null;
+
+    #[ManyToOne(targetEntity: User::class, cascade: ['persist'], inversedBy: 'tokens')]
+    #[JoinColumn(nullable: false)]
+    private ?User $user = null;
 
     #[Column(type: 'string', length: 255)]
-    private ?string $token;
+    private string $publicToken;
 
     #[Column(type: 'array')]
     private array $ipAddresses = [];
@@ -29,6 +36,7 @@ class UserToken
 
     public function __construct()
     {
+        $this->publicToken = Uuid::v4();
         $this->createdAt = new \DateTimeImmutable();
     }
 
@@ -37,14 +45,26 @@ class UserToken
         return $this->id;
     }
 
-    public function getToken(): ?string
+    public function getUser(): ?User
     {
-        return $this->token;
+        return $this->user;
     }
 
-    public function setToken(string $token): self
+    public function setUser(?User $user): self
     {
-        $this->token = $token;
+        $this->user = $user;
+
+        return $this;
+    }
+
+    public function getPublicToken(): ?string
+    {
+        return $this->publicToken;
+    }
+
+    public function setPublicToken(string $publicToken): self
+    {
+        $this->publicToken = $publicToken;
 
         return $this;
     }

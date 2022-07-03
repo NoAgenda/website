@@ -2,8 +2,8 @@
 
 namespace App\Twig;
 
-use App\UserTokenManager;
 use App\Utilities;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Twig\Extension\AbstractExtension;
 use Twig\Extension\GlobalsInterface;
 use Twig\TwigFilter;
@@ -12,7 +12,7 @@ use Twig\TwigFunction;
 class AppExtension extends AbstractExtension implements GlobalsInterface
 {
     public function __construct(
-        private UserTokenManager $userTokenManager,
+        private TokenStorageInterface $tokenStorage,
         private string $securityToken,
     ) {}
 
@@ -39,7 +39,7 @@ class AppExtension extends AbstractExtension implements GlobalsInterface
     public function getGlobals(): array
     {
         return [
-            'authenticated' => $this->userTokenManager->isAuthenticated(),
+            'authenticated' => null !== $this->tokenStorage->getToken()?->getUser(),
             'security_token' => $this->securityToken,
             'analytics_domain' => $_SERVER['ANALYTICS_DOMAIN'] ?? null,
             'analytics_id' => $_SERVER['ANALYTICS_ID'] ?? null,

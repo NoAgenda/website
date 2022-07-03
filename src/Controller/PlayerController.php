@@ -60,7 +60,7 @@ class PlayerController extends AbstractController
 
         $chapters = array_merge(
             $this->episodeChapterRepository->findByEpisode($episode),
-            $this->episodeChapterDraftRepository->findNewSuggestionsByEpisode($episode)
+            $this->episodeChapterDraftRepository->findNewSuggestionsByEpisode($episode, $this->getUser()?->isMod() ?? false)
         );
 
         uasort($chapters, function ($a, $b) {

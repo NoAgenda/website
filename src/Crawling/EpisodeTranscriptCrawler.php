@@ -6,7 +6,6 @@ use App\Entity\Episode;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
-use Symfony\Component\Messenger\MessageBusInterface;
 
 class EpisodeTranscriptCrawler implements EpisodeFileCrawlerInterface
 {
@@ -14,7 +13,6 @@ class EpisodeTranscriptCrawler implements EpisodeFileCrawlerInterface
 
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private MessageBusInterface $messenger,
         private FileDownloader $fileDownloader,
     ) {
         $this->logger = new NullLogger();

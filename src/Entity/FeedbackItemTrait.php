@@ -23,9 +23,9 @@ trait FeedbackItemTrait
         return $this;
     }
 
-    public function getAccepted(): bool
+    public function isAccepted(): bool
     {
-        return $this->feedbackItem->getAccepted();
+        return $this->feedbackItem->isAccepted();
     }
 
     public function setAccepted(bool $accepted): self
@@ -35,9 +35,9 @@ trait FeedbackItemTrait
         return $this;
     }
 
-    public function getRejected(): bool
+    public function isRejected(): bool
     {
-        return $this->feedbackItem->getRejected();
+        return $this->feedbackItem->isRejected();
     }
 
     public function setRejected(bool $rejected): self

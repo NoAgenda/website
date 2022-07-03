@@ -5,6 +5,11 @@ framework:
 
         transports:
             # https://symfony.com/doc/current/messenger.html#transport-configuration
+            async:
+                dsn: 'doctrine://default'
+                options:
+                    queue_name: async
+                    auto_setup: false
             crawler:
                 dsn: 'doctrine://default'
                 options:
@@ -18,11 +23,20 @@ framework:
 
         routing:
             'App\Message\Crawl': crawler
+            'App\Message\MergeUser': async
             'App\Message\PrepareEpisode': crawler
 
-        default_bus: crawler_bus
+        default_bus: command.bus
         buses:
-            crawler_bus:
+            command.bus:
+                middleware:
+                    -
+                        dispatch_after_current_bus
+                    -
+                        doctrine_ping_connection
+                    -
+                        doctrine_close_connection
+            crawling.bus:
                 middleware:
                     -
                         dispatch_after_current_bus

@@ -30,7 +30,7 @@ class CrawlingProcessor
 
     public function __construct(
         private EpisodeRepository $episodeRepository,
-        private MessageBusInterface $messenger,
+        private MessageBusInterface $crawlingBus,
         private FileDownloader $fileDownloader,
         private ContainerInterface $crawlers,
     ) {
@@ -69,7 +69,7 @@ class CrawlingProcessor
 
         $code = $episode?->getCode();
 
-        $this->messenger->dispatch(new Crawl($data, $code));
+        $this->crawlingBus->dispatch(new Crawl($data, $code));
     }
 
     private function getCrawlerName(string $data, ?Episode $episode): string

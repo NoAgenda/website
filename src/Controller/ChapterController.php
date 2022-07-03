@@ -9,7 +9,6 @@ use App\Entity\FeedbackItem;
 use App\Entity\FeedbackVote;
 use App\Form\EpisodeChapterType;
 use App\Repository\EpisodeChapterDraftRepository;
-use App\UserTokenManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -18,13 +17,13 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class ChapterController extends AbstractController
 {
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        private EpisodeChapterDraftRepository $episodeChapterDraftRepository,
-        private UserTokenManager $userTokenManager,
+        private readonly EntityManagerInterface $entityManager,
+        private readonly EpisodeChapterDraftRepository $episodeChapterDraftRepository,
     ) {}
 
     #[Route('/guidelines/chapters', name: 'chapter_guidelines')]
@@ -33,13 +32,11 @@ class ChapterController extends AbstractController
         return $this->render('chapter/guidelines.html.twig');
     }
 
-    /**
-     * @ParamConverter("episode", class="App\Entity\Episode", options={"mapping": {"episode": "code"}})
-     */
     #[Route('/episode/{episode}/chapters/new', name: 'episode_chapter_new')]
-    public function draftNew(Request $request, Episode $episode): Response
+    #[ParamConverter('episode', class: Episode::class, options: ['mapping' => ['episode' => 'code']])]
+    public function draftNew(Request $request, Episode $episode, ?UserInterface $user): Response
     {
-        if ($request->getMethod() === 'POST' && !$this->userTokenManager->isAuthenticated()) {
+        if ($request->getMethod() === 'POST' && !$user) {
             throw new AccessDeniedException();
         }
 
@@ -50,13 +47,14 @@ class ChapterController extends AbstractController
         $draft->setFeedbackItem($feedbackItem);
         $draft->setEpisode($episode);
 
-        $this->userTokenManager->fill($draft);
-
         $form = $this->createForm(EpisodeChapterType::class, $draft);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $feedbackItem->setCreator($user);
+            $draft->setCreator($user);
+
             $this->entityManager->persist($draft);
             $this->entityManager->flush();
 
@@ -74,13 +72,11 @@ class ChapterController extends AbstractController
         ]);
     }
 
-    /**
-     * @ParamConverter("episode", class="App\Entity\Episode", options={"mapping": {"episode": "code"}})
-     */
     #[Route('/episode/{episode}/chapters/{chapter}/improve', name: 'episode_chapter_refactor')]
-    public function draftRefactor(Request $request, Episode $episode, EpisodeChapter $chapter): Response
+    #[ParamConverter('episode', class: Episode::class, options: ['mapping' => ['episode' => 'code']])]
+    public function draftRefactor(Request $request, Episode $episode, EpisodeChapter $chapter, ?UserInterface $user): Response
     {
-        if ($request->getMethod() === 'POST' && !$this->userTokenManager->isAuthenticated()) {
+        if ($request->getMethod() === 'POST' && !$user) {
             throw new AccessDeniedException();
         }
 
@@ -96,13 +92,14 @@ class ChapterController extends AbstractController
         $draft->setStartsAt($chapter->getStartsAt());
         $draft->setDuration($chapter->getDuration());
 
-        $this->userTokenManager->fill($draft);
-
         $form = $this->createForm(EpisodeChapterType::class, $draft);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $feedbackItem->setCreator($user);
+            $draft->setCreator($user);
+
             $this->entityManager->persist($draft);
             $this->entityManager->flush();
 
@@ -121,10 +118,8 @@ class ChapterController extends AbstractController
         ]);
     }
 
-    /**
-     * @ParamConverter("episode", class="App\Entity\Episode", options={"mapping": {"episode": "code"}})
-     */
     #[Route('/episode/{episode}/chapter/{chapter}/edit', name: 'episode_chapter_edit')]
+    #[ParamConverter('episode', class: Episode::class, options: ['mapping' => ['episode' => 'code']])]
     public function edit(Request $request, Episode $episode, EpisodeChapter $chapter): Response
     {
         $this->denyAccessUnlessGranted('ROLE_MOD');
@@ -147,10 +142,8 @@ class ChapterController extends AbstractController
         ]);
     }
 
-    /**
-     * @ParamConverter("episode", class="App\Entity\Episode", options={"mapping": {"episode": "code"}})
-     */
     #[Route('/episode/{episode}/chapter/{chapter}/delete', name: 'episode_chapter_delete')]
+    #[ParamConverter('episode', class: Episode::class, options: ['mapping' => ['episode' => 'code']])]
     public function delete(Episode $episode, EpisodeChapter $chapter): Response
     {
         $this->denyAccessUnlessGranted('ROLE_MOD');
@@ -165,10 +158,8 @@ class ChapterController extends AbstractController
         return $this->redirectToReferral();
     }
 
-    /**
-     * @ParamConverter("episode", class="App\Entity\Episode", options={"mapping": {"episode": "code"}})
-     */
     #[Route('/episode/{episode}/draft/{draft}/accept', name: 'episode_chapter_accept')]
+    #[ParamConverter('episode', class: Episode::class, options: ['mapping' => ['episode' => 'code']])]
     public function accept(Episode $episode, EpisodeChapterDraft $draft): Response
     {
         $this->denyAccessUnlessGranted('ROLE_MOD');
@@ -180,10 +171,8 @@ class ChapterController extends AbstractController
         return $this->redirectToReferral();
     }
 
-    /**
-     * @ParamConverter("episode", class="App\Entity\Episode", options={"mapping": {"episode": "code"}})
-     */
     #[Route('/episode/{episode}/draft/{draft}/accept_edit', name: 'episode_chapter_accept_edit')]
+    #[ParamConverter('episode', class: Episode::class, options: ['mapping' => ['episode' => 'code']])]
     public function acceptEdit(Episode $episode, EpisodeChapterDraft $draft): Response
     {
         $this->denyAccessUnlessGranted('ROLE_MOD');
@@ -198,10 +187,8 @@ class ChapterController extends AbstractController
         ]);
     }
 
-    /**
-     * @ParamConverter("episode", class="App\Entity\Episode", options={"mapping": {"episode": "code"}})
-     */
     #[Route('/episode/{episode}/accept_all', name: 'episode_chapter_accept_all')]
+    #[ParamConverter('episode', class: Episode::class, options: ['mapping' => ['episode' => 'code']])]
     public function acceptAll(Episode $episode): Response
     {
         $this->denyAccessUnlessGranted('ROLE_MOD');
@@ -217,10 +204,8 @@ class ChapterController extends AbstractController
         return $this->redirectToReferral();
     }
 
-    /**
-     * @ParamConverter("episode", class="App\Entity\Episode", options={"mapping": {"episode": "code"}})
-     */
     #[Route('/episode/{episode}/draft/{draft}/reject', name: 'episode_chapter_reject')]
+    #[ParamConverter('episode', class: Episode::class, options: ['mapping' => ['episode' => 'code']])]
     public function reject(Episode $episode, EpisodeChapterDraft $draft): Response
     {
         $this->denyAccessUnlessGranted('ROLE_MOD');
@@ -233,21 +218,18 @@ class ChapterController extends AbstractController
         return $this->redirectToReferral();
     }
 
-    /**
-     * @ParamConverter("episode", class="App\Entity\Episode", options={"mapping": {"episode": "code"}})
-     */
     #[Route('/episode/{episode}/draft/{draft}/vote/{vote?support|reject}', name: 'episode_chapter_vote')]
-    public function vote(EpisodeChapterDraft $draft, string $vote): Response
+    #[ParamConverter('episode', class: Episode::class, options: ['mapping' => ['episode' => 'code']])]
+    public function vote(EpisodeChapterDraft $draft, string $vote, ?UserInterface $user): Response
     {
-        if (!$this->userTokenManager->isAuthenticated()) {
+        if (!$user) {
             throw new AccessDeniedException();
         }
 
         $voteValue = $vote;
         $vote = new FeedbackVote();
         $vote->setItem($draft->getFeedbackItem());
-
-        $this->userTokenManager->fill($vote);
+        $vote->setCreator($user);
 
         if ($voteValue === 'support') {
             $vote->setSupported();
@@ -273,6 +255,7 @@ class ChapterController extends AbstractController
             $chapter = new EpisodeChapter();
 
             $draft->setChapter($chapter);
+            $chapter->setCreator($draft->getCreator());
             $chapter->setEpisode($draft->getEpisode());
         }
 
@@ -292,7 +275,9 @@ class ChapterController extends AbstractController
         $referral = $request->query->get('referral', 'episode');
 
         if ($referral === 'mod') {
-            return $this->redirectToRoute('contributions_manage');
+            return $this->redirectToRoute('feedback_manage');
+        } elseif ($referral === 'user') {
+            return $this->redirectToRoute('feedback_user', ['user' => $request->attributes->get('draft')->getCreator()->getId()]);
         } else {
             return $this->redirectToRoute('player', ['episode' => $request->attributes->get('episode')->getCode()]);
         }

@@ -8,7 +8,6 @@ use Liip\ImagineBundle\Imagine\Filter\FilterManager;
 use Liip\ImagineBundle\Service\FilterService;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
-use Symfony\Component\Messenger\MessageBusInterface;
 
 class EpisodeCoverCrawler implements EpisodeFileCrawlerInterface
 {
@@ -16,7 +15,6 @@ class EpisodeCoverCrawler implements EpisodeFileCrawlerInterface
 
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private MessageBusInterface $messenger,
         private FileDownloader $fileDownloader,
         private ?FilterManager $filterManager = null,
         private ?FilterService $filterService = null,

@@ -20,7 +20,7 @@ class ScheduledFileDownload
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
-    private ?int $id;
+    private ?int $id = null;
 
     #[ManyToOne(targetEntity: Episode::class)]
     #[JoinColumn(nullable: false)]

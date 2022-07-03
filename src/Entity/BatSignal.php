@@ -16,7 +16,7 @@ class BatSignal
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
-    private ?int $id;
+    private ?int $id = null;
 
     #[Column(type: 'string', length: 16)]
     private ?string $code;

@@ -9,17 +9,25 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 
 #[Entity(repositoryClass: FeedbackItemRepository::class)]
 #[Table(name: 'na_feedback_item')]
-class FeedbackItem
+class FeedbackItem implements UserCreatedInterface
 {
+    use CreatorTrait;
+
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
-    private ?int $id;
+    private ?int $id = null;
+
+    #[ManyToOne(targetEntity: User::class)]
+    #[JoinColumn(nullable: false)]
+    private ?User $creator = null;
 
     #[OneToMany(mappedBy: 'item', targetEntity: FeedbackVote::class)]
     private $votes;
@@ -109,7 +117,7 @@ class FeedbackItem
         return $this;
     }
 
-    public function getAccepted(): bool
+    public function isAccepted(): bool
     {
         return $this->accepted;
     }
@@ -121,7 +129,7 @@ class FeedbackItem
         return $this;
     }
 
-    public function getRejected(): bool
+    public function isRejected(): bool
     {
         return $this->rejected;
     }
@@ -131,11 +139,6 @@ class FeedbackItem
         $this->rejected = $rejected;
 
         return $this;
-    }
-
-    public function getCreatedAt(): \DateTimeImmutable
-    {
-        return $this->createdAt;
     }
 
     public function getEntity(): ?object
@@ -148,5 +151,10 @@ class FeedbackItem
         $this->entity = $entity;
 
         return $this;
+    }
+
+    public function isResolved(): bool
+    {
+        return $this->accepted || $this->rejected;
     }
 }

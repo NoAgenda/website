@@ -26,7 +26,7 @@ class EpisodeProcessor
         private readonly EntityManagerInterface $entityManager,
         private readonly EpisodeRepository $episodeRepository,
         private readonly CrawlingProcessor $crawlingProcessor,
-        private readonly MessageBusInterface $messenger,
+        private readonly MessageBusInterface $crawlingBus,
         private readonly NotificationPublisher $publisher,
         private readonly MailerInterface $mailer,
     ) {
@@ -90,7 +90,7 @@ class EpisodeProcessor
                 DelayStamp::delayFor(new \DateInterval('15M')),
             ]);
 
-            $this->messenger->dispatch($envelope);
+            $this->crawlingBus->dispatch($envelope);
         }
     }
 }

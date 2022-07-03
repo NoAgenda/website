@@ -2,19 +2,22 @@
 
 namespace App\Twig;
 
+use App\Entity\EpisodeChapter;
+use App\Entity\EpisodeChapterDraft;
 use App\Entity\FeedbackVote;
 use App\Entity\User;
-use App\Entity\UserToken;
 use App\Repository\EpisodeChapterDraftRepository;
-use App\UserTokenManager;
+use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
 class FeedbackExtension extends AbstractExtension
 {
     public function __construct(
-        private EpisodeChapterDraftRepository $episodeChapterDraftRepository,
-        private UserTokenManager $userTokenManager,
+        private readonly RouterInterface $router,
+        private readonly EpisodeChapterDraftRepository $episodeChapterDraftRepository,
+        private readonly TokenStorageInterface $tokenStorage,
     ) {}
 
     public function getFunctions(): array
@@ -22,74 +25,61 @@ class FeedbackExtension extends AbstractExtension
         return [
             new TwigFunction('feedback_vote_count', [$this, 'getVoteCount']),
             new TwigFunction('feedback_can_vote', [$this, 'canVote']),
-            new TwigFunction('feedback_creators', [$this, 'getCreators']),
+            new TwigFunction('feedback_creators', [$this, 'getCreators'], ['is_safe' => ['html']]),
         ];
     }
 
-    public function getCreators($entity): string
+    public function getCreators(EpisodeChapter|EpisodeChapterDraft $entity): string
     {
         if ($entity->isDraft()) {
-            if ($entity->getCreator()) {
-                return $entity->getCreator()->getUsername();
-            } else if ($entity->getCreatorToken()) {
-                return 'Guest producer';
-            } else {
-                return $_SERVER['APP_ADMIN_USER'];
-            }
+            return $this->renderUsername($entity->getCreator());
         }
 
-        $creators = [];
-        $anonymousCreators = [];
-
-        if ($entity->getCreator()) {
-            $creators[] = $entity->getCreator();
-        } else if ($entity->getCreatorToken()) {
-            $anonymousCreators[] = $entity->getCreatorToken();
-        }
+        $creators = [$entity->getCreator()];
 
         foreach ($this->episodeChapterDraftRepository->findAcceptedDraftsByChapter($entity) as $draft) {
             if ($draft->getCreator()) {
                 $creators[] = $draft->getCreator();
-            } else if ($draft->getCreatorToken()) {
-                $anonymousCreators[] = $draft->getCreatorToken();
             }
         }
 
-        $creators = array_unique($creators);
-        $anonymousCreators = array_unique($anonymousCreators);
+        $creators = array_unique($creators, SORT_REGULAR);
 
         $output = '';
+        $anonymous = 0;
 
         if (count($creators) > 0) {
             foreach ($creators as $creator) {
-                if ($output !== '') {
-                    $output .= ', ';
-                }
+                if ($creator->isPublic() || $this->getUser()?->isMod()) {
+                    if ($output !== '') {
+                        $output .= ', ';
+                    }
 
-                $output .= $creator->getUsername();
+
+                    $output .= $this->renderUsername($creator);
+                } else {
+                    $anonymous++;
+                }
             }
+
         }
 
-        if (count($anonymousCreators) > 0) {
+        if ($anonymous > 0 && !$this->getUser()?->isMod()) {
             if ($output !== '') {
                 $output .= ' & ';
 
-                if (count($anonymousCreators) === 1) {
-                    $output .= 'a guest producer';
+                if ($anonymous === 1) {
+                    $output .= 'an Anonymous Producer';
                 } else {
-                    $output .= count($anonymousCreators) . ' guest producers';
+                    $output .= $anonymous . ' Anonymous Producers';
                 }
             } else {
-                if (count($anonymousCreators) === 1) {
-                    $output .= 'Guest producer';
+                if ($anonymous === 1) {
+                    $output .= 'Anonymous Producer';
                 } else {
-                    $output .= count($anonymousCreators) . ' guest producers';
+                    $output .= $anonymous . ' Anonymous Producers';
                 }
             }
-        }
-
-        if ($output === '') {
-            $output = $_SERVER['APP_ADMIN_USER'];
         }
 
         return $output;
@@ -115,29 +105,38 @@ class FeedbackExtension extends AbstractExtension
     }
 
     /**
-     * @param User|UserToken $creator
      * @param FeedbackVote[] $votes
      */
-    public function canVote($creator, iterable $votes): bool
+    public function canVote(EpisodeChapterDraft $draft): bool
     {
-        $token = $this->userTokenManager->getCurrent();
-
-        if ($token === $creator) {
+        if (!$this->getUser() || $draft->getCreator() === $this->getUser()) {
             return false;
         }
 
-        foreach ($votes as $vote) {
-            if ($vote->getCreator() instanceof User) {
-                if ($token === $vote->getCreator()) {
-                    return false;
-                }
-            } else if ($vote->getCreatorToken() instanceof UserToken) {
-                if ($token === $vote->getCreatorToken()) {
-                    return false;
-                }
+        foreach ($draft->getFeedbackItem()->getVotes() as $vote) {
+            if ($draft->getCreator() === $vote->getCreator()) {
+                return false;
             }
         }
 
         return true;
+    }
+
+    private function getUser(): ?User
+    {
+        return $this->tokenStorage->getToken()?->getUser();
+    }
+
+    private function renderUsername(User $creator): string
+    {
+        if ($this->getUser()?->isMod()) {
+            return sprintf(
+                '<a href="%s">%s</a>',
+                $this->router->generate('feedback_user', ['user'=> $creator->getId()]),
+                $creator->getUsername(),
+            );
+        }
+
+        return $creator->getUsername();
     }
 }

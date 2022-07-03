@@ -16,7 +16,7 @@ use Doctrine\ORM\Mapping\Table;
 
 #[Entity(repositoryClass: EpisodeChapterRepository::class)]
 #[Table(name: 'na_episode_chapter')]
-class EpisodeChapter
+class EpisodeChapter implements UserCreatedInterface
 {
     use CreatorTrait;
     use EpisodeChapterTrait;
@@ -24,11 +24,15 @@ class EpisodeChapter
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
-    private ?int $id;
+    private ?int $id = null;
 
     #[ManyToOne(targetEntity: Episode::class, inversedBy: 'chapters')]
     #[JoinColumn(nullable: false)]
-    private ?Episode $episode;
+    private ?Episode $episode = null;
+
+    #[ManyToOne(targetEntity: User::class)]
+    #[JoinColumn(nullable: false)]
+    private ?User $creator = null;
 
     #[OneToMany(mappedBy: 'chapter', targetEntity: EpisodeChapterDraft::class)]
     private Collection $drafts;
@@ -38,8 +42,8 @@ class EpisodeChapter
 
     public function __construct()
     {
-        $this->createdAt = new \DateTimeImmutable();
         $this->drafts = new ArrayCollection();
+        $this->createdAt = new \DateTimeImmutable();
     }
 
     public function __toString(): string
@@ -84,21 +88,13 @@ class EpisodeChapter
 
     public function removeDraft(EpisodeChapterDraft $draft): self
     {
-        if ($this->drafts->contains($draft)) {
-            $this->drafts->removeElement($draft);
-
-            // set the owning side to null (unless already changed)
+        if ($this->drafts->removeElement($draft)) {
             if ($draft->getChapter() === $this) {
                 $draft->setChapter(null);
             }
         }
 
         return $this;
-    }
-
-    public function getCreatedAt(): \DateTimeImmutable
-    {
-        return $this->createdAt;
     }
 
     public function isDraft(): bool

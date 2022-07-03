@@ -1,0 +1,97 @@
+{% extends 'layout.html.twig' %}
+
+{% set page_title = "User Contributions" %}
+
+{% block content %}
+  <div class="container">
+    <h1 class="mt-3 mb-1">{{ page_title }}</h1>
+    <h3 class="mb-3 mt-1">{{ creator.username }}</h3>
+
+    <div class="btn-toolbar mb-3">
+      {% if not creator.reviewed %}
+        <a class="btn btn-outline-success mr-2" href="{{ path('feedback_review', {user: creator.id}) }}">Authorise</a>
+      {% endif %}
+      {% if not creator.banned %}
+        <a class="btn btn-outline-danger mr-2" href="{{ path('feedback_ban', {user: creator.id}) }}">Ban</a>
+      {% else %}
+        <a class="btn btn-outline-warning mr-2" href="{{ path('feedback_unban', {user: creator.id}) }}">Unban</a>
+      {% endif %}
+    </div>
+
+    <div class="row my-3">
+      <div class="col-md">
+        <div>Status</div>
+        {% if creator.banned %}
+          <div class="h2 text-danger">Banned</div>
+        {% elseif creator.hidden %}
+          <div class="h2 text-warning">Hidden</div>
+        {% elseif creator.reviewed %}
+          <div class="h2 text-success">Authorized</div>
+        {% else %}
+          <div class="h2 text-warning">Unauthorized</div>
+        {% endif %}
+      </div>
+      {% if creator.master %}
+        <div class="col-md">
+          <div>Master</div>
+          <a class="h2" href="{{ path('feedback_user', {user: creator.master.id}) }}">{{ creator.master.username }}</a>
+        </div>
+      {% endif %}
+      <div class="col-md">
+        <div>Submissions</div>
+        <div class="h2">{{ items|length }}</div>
+      </div>
+      <div class="col-md">
+        <div>Approval Ratio</div>
+        <div class="h2">{{ acceptance_ratio }}%</div>
+      </div>
+    </div>
+
+    {% if creator.master %}
+      <div class="alert alert-warning my-3">This user has a master, it's scheduled to be deleted and merged into its master account.</div>
+    {% elseif creator.banned %}
+      <div class="alert alert-danger my-3">This user has been banned, suggestions of this user will not be shown to other visitors.</div>
+    {% elseif creator.hidden %}
+      <div class="alert alert-warning my-3">This user was hidden by the user themself, suggestions of this user will not be shown to other visitors.</div>
+    {% elseif creator.needsReview %}
+      <div class="alert alert-warning my-3">This user hasn't been reviewed, suggestions of this user will not be shown to other visitors until the user is reviewed.</div>
+    {% endif %}
+
+    {% if creator.ipAddresses|length %}
+      <div class="my-3">
+        <div class="h4">IP Addresses</div>
+        {{ creator.ipAddresses|join(', ') }}
+      </div>
+    {% endif %}
+
+    <div class="mt-3">
+      <div class="h4">Contributions</div>
+      <div class="list-group list-group-flush">
+        {% for item in items %}
+          <div class="list-group-item">
+            <div class="d-flex justify-content-between align-items-center">
+              <strong class="flex-grow-1">
+                {{ item.entity.name }}
+                {% if item.accepted %}
+                  <div class="badge badge-success">Accepted</div>
+                {% elseif item.rejected %}
+                  <div class="badge badge-danger">Rejected</div>
+                {% endif %}
+              </strong>
+
+              {% if not item.resolved %}
+                {% include 'feedback/parts/actions.html.twig' with {referral: 'user'} %}
+              {% endif %}
+            </div>
+          </div>
+        {% else %}
+          <div class="list-group-item">
+            This user hasn't made any contributions.
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <na-audio-toolbar-spacer></na-audio-toolbar-spacer>
+  </div>
+{% endblock %}

@@ -10,7 +10,6 @@ use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
-use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Process\Process;
 
 class EpisodeRecordingTimeMatcher implements EpisodeCrawlerInterface
@@ -20,7 +19,6 @@ class EpisodeRecordingTimeMatcher implements EpisodeCrawlerInterface
     public function __construct(
         private EntityManagerInterface $entityManager,
         private BatSignalRepository $batSignalRepository,
-        private MessageBusInterface $messenger,
         private FileDownloader $fileDownloader,
     ) {
         $this->logger = new NullLogger();
