@@ -133,10 +133,11 @@ COPY --from=assets --chown=ben:ben /srv/app/public public/
 
 # Run Composer commands
 RUN set -eux; \
+    chmod +x bin/console; \
     composer install --no-autoloader --no-dev --no-progress --no-scripts; \
     composer clear-cache; \
     composer dump-autoload --classmap-authoritative; \
-    chmod +x bin/console; \
+    APP_ENV=prod bin/console cache:warmup; \
     APP_ENV=prod composer run-script post-install-cmd
 
 FROM nginx:alpine AS web
