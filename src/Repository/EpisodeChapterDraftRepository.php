@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Episode;
 use App\Entity\EpisodeChapter;
 use App\Entity\EpisodeChapterDraft;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -24,7 +25,7 @@ class EpisodeChapterDraftRepository extends ServiceEntityRepository
     /**
      * @return EpisodeChapterDraft[]
      */
-    public function findNewSuggestionsByEpisode(Episode $episode, bool $unreviewed = false): array
+    public function findNewSuggestionsByEpisode(Episode $episode, ?User $user): array
     {
         $builder = $this->createQueryBuilder('draft');
 
@@ -36,13 +37,26 @@ class EpisodeChapterDraftRepository extends ServiceEntityRepository
             $builder->expr()->eq('creator.hidden', 0),
         ];
 
-        if (!$unreviewed) {
-            $whereClauses[] = $builder->expr()->eq('creator.reviewed', 1);
+        if (!$user?->isMod()) {
+            $clause = $builder->expr()->eq('creator.reviewed', 1);
+
+            if ($user) {
+                $whereClauses[] = $builder->expr()->orX(
+                    $clause,
+                    $builder->expr()->eq('creator.id', ':creator'),
+                    $builder->expr()->eq('master.id', ':creator'),
+                );
+
+                $builder->setParameter('creator', $user->getId());
+            } else {
+                $whereClauses[] = $clause;
+            }
         }
 
         return $builder
             ->leftJoin('draft.feedbackItem', 'feedbackItem')
             ->leftJoin('draft.creator', 'creator')
+            ->leftJoin('creator.master', 'master')
             ->andWhere($builder->expr()->andX(...$whereClauses))
             ->setParameter('episode', $episode->getId())
             ->getQuery()

@@ -239,4 +239,33 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return array_unique($collection);
     }
+
+    public function getStatus(): string
+    {
+        if ($this->master) {
+            return 'Waiting to be Merged';
+        }
+
+        if ($this->banned) {
+            return 'Banned';
+        } elseif ($this->hidden) {
+            return 'Hidden';
+        } elseif ($this->needsReview) {
+            return 'Waiting for Review';
+        } elseif (!$this->reviewed) {
+            return 'Douchebag';
+        }
+
+        if (!$this->account) {
+            return 'Anonymous';
+        }
+
+        if ($this->isAdmin()) {
+            return 'Administrator';
+        } elseif ($this->isMod()) {
+            return 'Moderator';
+        }
+
+        return 'Registered';
+    }
 }

@@ -23,24 +23,7 @@
     <div class="list-group list-group-flush my-3">
       {% for item in unresolved_items %}
         <div class="list-group-item">
-          {% set item_description = not item.entity.chapter ? 'a new chapter' : 'an improvement to a chapter' %}
-
-          {% set episode_url = path('player', {episode: item.entity.episode.code }) %}
-          {% set user_url = path('feedback_user', {user: item.entity.creator.id}) %}
-          {% apply spaceless %}
-          <div>
-            <a href="{{ user_url }}">{{ item.entity.creator.username }}</a>
-            suggested {{ item_description }} for episode
-            <a href="{{ episode_url }}">{{ item.entity.episode.code }}</a>
-            at {{ item.entity.startsAt|prettyTimestamp }}:
-          </div>
-          {% endapply %}
-
-          <div class="d-flex justify-content-between align-items-center">
-            <strong class="flex-grow-1">{{ item.entity.name }}</strong>
-
-            {% include 'feedback/parts/actions.html.twig' with {referral: 'mod'} %}
-          </div>
+          {% include 'feedback/parts/item.html.twig' with {referral: 'mod'} %}
         </div>
       {% else %}
         <div class="list-group-item">

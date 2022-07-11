@@ -1,7 +1,7 @@
 {% extends 'account/layout.html.twig' %}
 
-{% set banned = app.user.user.banned %}
-{% set hidden = app.user.user.hidden %}
+{% set banned = app.user.banned %}
+{% set hidden = app.user.hidden %}
 {% set status = banned ? 'Banned' : (hidden ? 'Disabled' : 'Activated') %}
 
 {% block account_content %}

@@ -19,7 +19,8 @@ class UserAccountCrudController extends AbstractCrudController
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
-            ->setEntityLabelInPlural('Users')
+            ->setEntityLabelInSingular('User Account')
+            ->setEntityLabelInPlural('User Accounts')
             ->showEntityActionsInlined();
     }
 
@@ -31,14 +32,9 @@ class UserAccountCrudController extends AbstractCrudController
         yield TextField::new('plainPassword', 'New password')
             ->onlyOnForms();
         yield EmailField::new('email');
-        yield BooleanField::new('hidden', 'Account is disabled by the user')
-            ->onlyOnForms();
         yield BooleanField::new('admin', 'Is administrator')
             ->renderAsSwitch(!$isIndex);
         yield BooleanField::new('mod', 'Is moderator')
             ->renderAsSwitch(!$isIndex);
-        yield BooleanField::new('hidden', 'Disabled')
-            ->renderAsSwitch(false)
-            ->onlyOnIndex();
     }
 }

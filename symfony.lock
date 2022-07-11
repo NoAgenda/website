@@ -685,6 +685,15 @@
     "symfony/string": {
         "version": "v5.4.3"
     },
+    "symfony/telegram-notifier": {
+        "version": "5.4",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "5.0",
+            "ref": "5cf5c19e8fdcbf922de680cdf8d65fa7d77758ae"
+        }
+    },
     "symfony/translation": {
         "version": "5.4",
         "recipe": {

@@ -5,7 +5,7 @@ services:
         bind:
             $crawlers: '@crawler_locator'
             $httpClient: '@http_client'
-            $securityToken: '%env(API_SECURITY_TOKEN)%'
+            $securityToken: '%env(APP_SECURITY_TOKEN)%'
 
     App\:
         resource: '../src/'

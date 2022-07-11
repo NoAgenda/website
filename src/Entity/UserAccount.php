@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\String\Slugger\AsciiSlugger;
@@ -18,6 +19,8 @@ use function Symfony\Component\String\u;
 
 #[Entity(repositoryClass: UserAccountRepository::class)]
 #[Table(name: 'na_user_account')]
+#[UniqueEntity('usernameCanonical', message: 'An account with this username already exists.', errorPath: 'username')]
+#[UniqueEntity('emailCanonical', message: 'An account with this email already exists.', errorPath: 'email')]
 class UserAccount implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[Id]
@@ -172,27 +175,6 @@ class UserAccount implements UserInterface, PasswordAuthenticatedUserInterface
         if ($key !== false) {
             unset($this->roles[$key]);
         }
-
-        return $this;
-    }
-
-    public function isHidden(): bool
-    {
-        return $this->hidden;
-    }
-
-
-
-    public function hide(): self
-    {
-        $this->hidden = true;
-
-        return $this;
-    }
-
-    public function expose(): self
-    {
-        $this->hidden = false;
 
         return $this;
     }

@@ -64,4 +64,13 @@ class UserRepository extends ServiceEntityRepository implements UserLoaderInterf
             'needsReview' => true,
         ]);
     }
+
+    public function countUnreviewedUsers(): int
+    {
+        return $this->count([
+            'banned' => false,
+            'hidden' => false,
+            'needsReview' => true,
+        ]);
+    }
 }

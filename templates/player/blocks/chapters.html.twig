@@ -9,7 +9,7 @@
   </div>
   <div class="site-episode-chapters list-group-flush">
     {% for chapter in chapters %}
-      {% set item_classes = chapter.draft and not chapter.creator.reviewed ? 'bg-secondary' %}
+      {% set item_classes = chapter.draft and app.user.mod|default(false) and not chapter.creator.reviewed ? 'bg-secondary' %}
       {% set text_classes = chapter.draft ? 'text-muted' :'' %}
       <div class="list-group-item list-group-item-action flex-column align-items-start p-2 {{ item_classes }}" data-chapter data-timestamp="{{ chapter.startsAt }}" {% if chapter.draft %}data-draft{% endif %}>
         <div class="d-flex w-100 justify-content-between">
@@ -34,7 +34,7 @@
                 {% endif %}
               </h5>
 
-              {% if not chapter.creator.reviewed %}
+              {% if not chapter.creator.reviewed and app.user.mod|default(false) %}
                 <em><span class="fas fa-exclamation-triangle mr-1" aria-hidden="true"></span> User is unreviewed</em>
               {% elseif chapter.draft and chapter.chapter %}
                 <em><span class="fas fa-lightbulb mr-1" aria-hidden="true"></span> This is a suggested improvement for: {{ chapter.chapter.name }}</em>
