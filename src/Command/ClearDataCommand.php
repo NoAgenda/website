@@ -44,5 +44,7 @@ class ClearDataCommand extends Command
 
             $filesystem->remove($file->getPathname());
         }
+
+        $style->success(sprintf('Removed %s files', count($files)));
     }
 }

@@ -80,6 +80,10 @@ class FeedbackController extends AbstractController
     {
         $this->denyAccessUnlessGranted('ROLE_MOD');
 
+        if ($user->isMod()) {
+            $this->createAccessDeniedException();
+        }
+
         $user->setBanned(true);
 
         $this->userRepository->persist($user, true);

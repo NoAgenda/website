@@ -12,21 +12,27 @@
     </h1>
     <h3 class="mb-3 mt-1">{{ creator.username }}</h3>
 
-    <div class="btn-toolbar mb-3">
-      {% if not creator.reviewed %}
-        <a class="btn btn-outline-success mr-2" href="{{ path('feedback_review', {user: creator.id}) }}">Authorise</a>
-      {% endif %}
-      {% if not creator.banned %}
-        <a class="btn btn-outline-danger mr-2" href="{{ path('feedback_ban', {user: creator.id}) }}">Ban</a>
-      {% else %}
-        <a class="btn btn-outline-warning mr-2" href="{{ path('feedback_unban', {user: creator.id}) }}">Unban</a>
-      {% endif %}
-    </div>
+    {% if not creator.mod %}
+      <div class="btn-toolbar mb-3">
+        {% if not creator.reviewed %}
+          <a class="btn btn-outline-success mr-2" href="{{ path('feedback_review', {user: creator.id}) }}">Authorise</a>
+        {% endif %}
+        {% if not creator.banned %}
+          <a class="btn btn-outline-danger mr-2" href="{{ path('feedback_ban', {user: creator.id}) }}">Ban</a>
+        {% else %}
+          <a class="btn btn-outline-warning mr-2" href="{{ path('feedback_unban', {user: creator.id}) }}">Unban</a>
+        {% endif %}
+      </div>
+    {% endif %}
 
     <div class="row my-3">
       <div class="col-md">
         <div>Status</div>
-        {% if creator.banned %}
+        {% if creator.admin %}
+          <div class="h2 text-success">Administrator</div>
+        {% elseif creator.mod %}
+          <div class="h2 text-success">Moderator</div>
+        {% elseif creator.banned %}
           <div class="h2 text-danger">Banned</div>
         {% elseif creator.hidden %}
           <div class="h2 text-warning">Hidden</div>

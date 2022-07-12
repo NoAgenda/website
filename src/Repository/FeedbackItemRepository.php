@@ -49,7 +49,7 @@ class FeedbackItemRepository extends ServiceEntityRepository
 
         $items = $builder
             ->leftJoin('item.creator', 'creator')
-            ->andWhere($builder->expr()->andX(...$whereClauses))
+            ->andWhere(...$whereClauses)
             ->orderBy('item.createdAt', 'desc')
             ->setMaxResults($limit)
             ->getQuery()

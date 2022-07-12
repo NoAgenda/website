@@ -104,12 +104,9 @@ class FeedbackExtension extends AbstractExtension
         return $results;
     }
 
-    /**
-     * @param FeedbackVote[] $votes
-     */
     public function canVote(EpisodeChapterDraft $draft): bool
     {
-        if (!$this->getUser() || $draft->getCreator() === $this->getUser()) {
+        if ($draft->getCreator() === $this->getUser()) {
             return false;
         }
 

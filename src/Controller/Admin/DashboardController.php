@@ -6,6 +6,7 @@ use App\Entity\BatSignal;
 use App\Entity\Episode;
 use App\Entity\NetworkSite;
 use App\Entity\User;
+use App\Entity\UserAccount;
 use App\Repository\EpisodeRepository;
 use App\Repository\FeedbackItemRepository;
 use App\Repository\UserRepository;
@@ -51,6 +52,7 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('Episodes', 'fas fa-podcast', Episode::class);
         yield MenuItem::linkToCrud('Network Sites', 'fas fa-globe', NetworkSite::class);
         yield MenuItem::linkToCrud('Users', 'fas fa-user', User::class);
+        yield MenuItem::linkToCrud('User Accounts', 'fas fa-user-circle', UserAccount::class);
 
         yield MenuItem::section('Processing');
         yield MenuItem::linkToRoute('Crawler', 'fas fa-bug', 'admin_crawler');

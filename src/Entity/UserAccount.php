@@ -219,6 +219,9 @@ class UserAccount implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if (!in_array('ROLE_SUPER_ADMIN', $this->roles)) {
             if ($admin) {
+                $this->getUser()->setNeedsReview(false);
+                $this->getUser()->setReviewed(true);
+
                 $this->roles = ['ROLE_ADMIN'];
             } else {
                 $this->roles = ['ROLE_USER'];
@@ -237,6 +240,9 @@ class UserAccount implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if (!$this->isAdmin()) {
             if ($mod) {
+                $this->getUser()->setNeedsReview(false);
+                $this->getUser()->setReviewed(true);
+
                 $this->roles = ['ROLE_MOD'];
             } else {
                 $this->roles = ['ROLE_USER'];
