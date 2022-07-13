@@ -2,6 +2,8 @@
 
 namespace App\Repository;
 
+use App\Entity\EpisodeChapter;
+use App\Entity\EpisodeChapterDraft;
 use App\Entity\FeedbackItem;
 use App\Entity\FeedbackVote;
 use App\Entity\User;
@@ -36,11 +38,15 @@ class UserRepository extends ServiceEntityRepository implements UserLoaderInterf
         $users = $builder
             ->leftJoin('user.account', 'account')
             ->leftJoin(User::class, 'delegate', Join::WITH, $builder->expr()->eq('delegate.master', 'user.id'))
+            ->leftJoin(EpisodeChapter::class, 'chapter', Join::WITH, $builder->expr()->eq('chapter.creator', 'user.id'))
+            ->leftJoin(EpisodeChapterDraft::class, 'chapter_draft', Join::WITH, $builder->expr()->eq('chapter_draft.creator', 'user.id'))
             ->leftJoin(FeedbackItem::class, 'feedback_item', Join::WITH, $builder->expr()->eq('feedback_item.creator', 'user.id'))
             ->leftJoin(FeedbackVote::class, 'feedback_vote', Join::WITH, $builder->expr()->eq('feedback_vote.creator', 'user.id'))
             ->andWhere(
                 $builder->expr()->isNull('user.master'),
                 $builder->expr()->isNull('delegate'),
+                $builder->expr()->isNull('chapter'),
+                $builder->expr()->isNull('chapter_draft'),
                 $builder->expr()->isNull('feedback_item'),
                 $builder->expr()->isNull('feedback_vote'),
             )

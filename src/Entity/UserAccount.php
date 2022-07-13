@@ -35,13 +35,13 @@ class UserAccount implements UserInterface, PasswordAuthenticatedUserInterface
     #[Column(type: 'string', length: 255)]
     private ?string $username = null;
 
-    #[Column(type: 'string', length: 255, unique: true)]
+    #[Column(type: 'string', length: 255)]
     private ?string $usernameCanonical = null;
 
     #[Column(type: 'string', length: 255, nullable: true)]
     private ?string $email = null;
 
-    #[Column(type: 'string', length: 255, unique: true, nullable: true)]
+    #[Column(type: 'string', length: 255, nullable: true)]
     private ?string $emailCanonical = null;
 
     private ?string $plainPassword = null;
