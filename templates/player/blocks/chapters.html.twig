@@ -34,8 +34,12 @@
                 {% endif %}
               </h5>
 
-              {% if not chapter.creator.reviewed and app.user.mod|default(false) %}
-                <em><span class="fas fa-exclamation-triangle mr-1" aria-hidden="true"></span> User is unreviewed</em>
+              {% if not chapter.creator.reviewed %}
+                {% if app.user.mod|default(false) %}
+                  <em><span class="fas fa-exclamation-triangle mr-1" aria-hidden="true"></span> User is unreviewed</em>
+                {% else %}
+                  <em><span class="fas fa-exclamation-triangle mr-1" aria-hidden="true"></span> Suggestion is waiting for review</em>
+                {% endif %}
               {% elseif chapter.draft and chapter.chapter %}
                 <em><span class="fas fa-lightbulb mr-1" aria-hidden="true"></span> This is a suggested improvement for: {{ chapter.chapter.name }}</em>
               {% elseif chapter.draft %}

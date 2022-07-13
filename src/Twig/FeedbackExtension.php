@@ -111,7 +111,7 @@ class FeedbackExtension extends AbstractExtension
         }
 
         foreach ($draft->getFeedbackItem()->getVotes() as $vote) {
-            if ($draft->getCreator() === $vote->getCreator()) {
+            if ($this->getUser() === $vote->getCreator()) {
                 return false;
             }
         }
