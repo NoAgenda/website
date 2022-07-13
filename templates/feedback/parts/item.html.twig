@@ -3,14 +3,10 @@
 
 {% set chapter_votes = feedback_vote_count(item.votes ?? []) %}
 
-
 <div class="d-flex justify-content-between align-items-center">
   <div>
-    <div><strong class="flex-grow-1">{{ item.entity.name }}</strong></div>
+    <div><strong class="flex-grow-1">{{ item.entity.name ?? ('<em>Untitled</em>'|raw) }}</strong></div>
     <div>
-      {% set item_description = not item.entity.chapter ? 'New Chapter' : 'Chapter Change' %}
-      <div class="badge badge-info">{{ item_description }}</div>
-
       {% set episode_url = path('player', {episode: item.entity.episode.code }) %}
       <a href="{{ episode_url }}"><div class="badge badge-info" title="Episode">{{ item.entity.episode.code }}</div></a>
 

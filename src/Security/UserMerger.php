@@ -43,6 +43,7 @@ class UserMerger
             $transferredCounts[UserToken::class] = $this->transferTokens($user, $master);
 
             $this->entityManager->remove($user);
+            $this->entityManager->flush();
 
             $this->entityManager->getConnection()->commit();
         } catch (\Exception $exception) {
