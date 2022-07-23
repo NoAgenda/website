@@ -40,28 +40,35 @@ class ChapterController extends AbstractController
             throw new AccessDeniedException();
         }
 
-        $feedbackItem = new FeedbackItem();
-        $feedbackItem->setEntityName(EpisodeChapterDraft::class);
+        if ($user->isMod()) {
+            $entity = new EpisodeChapter();
+        } else {
+            $entity = new EpisodeChapterDraft();
 
-        $draft = new EpisodeChapterDraft();
-        $draft->setFeedbackItem($feedbackItem);
-        $draft->setEpisode($episode);
+            $feedbackItem = new FeedbackItem();
+            $feedbackItem->setEntityName(EpisodeChapterDraft::class);
+            $entity->setFeedbackItem($feedbackItem);
+        }
 
-        $form = $this->createForm(EpisodeChapterType::class, $draft);
+        $entity->setEpisode($episode);
+
+        $form = $this->createForm(EpisodeChapterType::class, $entity);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $feedbackItem->setCreator($user);
-            $draft->setCreator($user);
+            $entity->setCreator($user);
 
-            $this->entityManager->persist($draft);
+            $this->entityManager->persist($entity);
             $this->entityManager->flush();
 
-            $feedbackItem->setEntityId($draft->getId());
+            if (isset($feedbackItem)) {
+                $feedbackItem->setCreator($user);
+                $feedbackItem->setEntityId($entity->getId());
 
-            $this->entityManager->persist($feedbackItem);
-            $this->entityManager->flush();
+                $this->entityManager->persist($feedbackItem);
+                $this->entityManager->flush();
+            }
 
             return $this->redirectToReferral();
         }
@@ -193,7 +200,7 @@ class ChapterController extends AbstractController
     {
         $this->denyAccessUnlessGranted('ROLE_MOD');
 
-        $drafts = $this->episodeChapterDraftRepository->findNewSuggestionsByEpisode($episode);
+        $drafts = $this->episodeChapterDraftRepository->findNewSuggestionsByEpisode($episode, $this->getUser());
 
         foreach ($drafts as $draft) {
             $this->doAcceptDraft($draft);
