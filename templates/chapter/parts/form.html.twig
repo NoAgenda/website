@@ -10,7 +10,7 @@
         {{ form_label(form.startsAt) }}
         <na-timestamp-input data-target="episodeSource">
           <div class="d-md-flex align-items-center">
-            {{ form_widget(form.startsAt, {attr: {class: 'w-auto mb-2 mr-0 mr-md-2', placeholder: '0:00:00'}}) }}
+            {{ form_widget(form.startsAt, {attr: {class: 'w-auto mb-2 mr-0 mr-md-2', placeholder: '0:00:00', autocomplete: 'off'}}) }}
             <div class="btn btn-primary cursor-pointer mb-2" style="display: none;" data-retrieve>
               Grab current player time
             </div>
@@ -24,7 +24,7 @@
         </na-timestamp-input>
       </div>
 
-      {{ form_row(form.name) }}
+      {{ form_row(form.name, {attr: {autocomplete: 'off'}}) }}
 
       <button type="submit" class="btn btn-primary">{{ submit_label|default('Submit') }}</button>
     {{ form_end(form) }}
