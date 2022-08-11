@@ -90,7 +90,7 @@ final class Version20220303030333 extends AbstractMigration
 
         $this->addSql('ALTER TABLE na_episode_chapter_draft DROP FOREIGN KEY FK_1C1DB3351638C025');
         $this->addSql('DROP INDEX IDX_1C1DB3351638C025 ON na_episode_chapter_draft');
-        $this->addSql('ALTER TABLE na_episode_chapter_draft DROP creator_token_id, CHANGE creator_id creator_id INT NOT NULL');
+        $this->addSql('ALTER TABLE na_episode_chapter_draft DROP creator_token_id, CHANGE creator_id creator_id INT NOT NULL, CHANGE feedback_item_id feedback_item_id INT DEFAULT NULL');
 
         $this->addSql('ALTER TABLE na_feedback_vote DROP FOREIGN KEY FK_EFE4F3761638C025');
         $this->addSql('DROP INDEX IDX_EFE4F3761638C025 ON na_feedback_vote');

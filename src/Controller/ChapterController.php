@@ -40,14 +40,13 @@ class ChapterController extends AbstractController
             throw new AccessDeniedException();
         }
 
-        if ($user->isMod()) {
+        if ($user?->isMod()) {
             $entity = new EpisodeChapter();
         } else {
             $entity = new EpisodeChapterDraft();
 
             $feedbackItem = new FeedbackItem();
             $feedbackItem->setEntityName(EpisodeChapterDraft::class);
-            $entity->setFeedbackItem($feedbackItem);
         }
 
         $entity->setEpisode($episode);
@@ -63,6 +62,8 @@ class ChapterController extends AbstractController
             $this->entityManager->flush();
 
             if (isset($feedbackItem)) {
+                $entity->setFeedbackItem($feedbackItem);
+
                 $feedbackItem->setCreator($user);
                 $feedbackItem->setEntityId($entity->getId());
 

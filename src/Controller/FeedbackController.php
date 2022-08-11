@@ -33,7 +33,7 @@ class FeedbackController extends AbstractController
     {
         $this->denyAccessUnlessGranted('ROLE_MOD');
 
-        $unresolvedItems = $this->feedbackItemRepository->findUnresolvedItems(null, true);
+        $unresolvedItems = $this->feedbackItemRepository->findUnresolvedItems(333);
         $unreviewedUsers = $this->userRepository->findUnreviewedUsers();
 
         return $this->render('feedback/manage.html.twig', [

@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping\OneToOne;
 trait FeedbackItemTrait
 {
     #[OneToOne(targetEntity: FeedbackItem::class, cascade: ['all'])]
-    #[JoinColumn(nullable: false)]
+    #[JoinColumn(nullable: true)]
     private ?FeedbackItem $feedbackItem;
 
     public function getFeedbackItem(): ?FeedbackItem

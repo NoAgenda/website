@@ -15,8 +15,13 @@ class UserMerger
         private readonly LoggerInterface $logger,
     ) {}
 
-    public function merge(User $user): void
+    public function merge(?User $user): void
     {
+        if (null === $user) {
+            // If the user doesn't exist it was likely already merged manually
+            return;
+        }
+
         if (null === $master = $user->getMaster()) {
             throw new \RuntimeException(sprintf('User %s could not be merged because it doesn\'t have a master.', $user->getUserIdentifier()));
         }
