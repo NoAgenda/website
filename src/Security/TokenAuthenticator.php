@@ -28,7 +28,12 @@ class TokenAuthenticator extends AbstractAuthenticator
         $publicToken = $request->cookies->get('auth_token') ?? $request->cookies->get('guest_token');
 
         return new SelfValidatingPassport(new UserBadge($publicToken, function ($publicToken) {
-            return $this->userTokenRepository->findOneByPublicToken($publicToken)?->getUser();
+            $token = $this->userTokenRepository->findOneByPublicToken($publicToken);
+            $user = $token->getUser();
+
+            $user->setCurrentToken($token);
+
+            return $user;
         }));
     }
 

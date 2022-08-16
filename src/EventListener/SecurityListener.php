@@ -38,6 +38,11 @@ class SecurityListener implements EventSubscriberInterface
         private readonly TokenStorageInterface $tokenStorage,
     ) {}
 
+    /**
+     * For each request, do some authentication checks:
+     * - If the user is anonymous, add the current IP to their known IPs
+     * - If the user is banned or hidden, redirect to the account status page
+     */
     public function onKernelRequest(RequestEvent $event): void
     {
         /** @var User $user */
@@ -47,9 +52,7 @@ class SecurityListener implements EventSubscriberInterface
 
         $request = $event->getRequest();
 
-        if (null === $user->getAccount()) {
-            $userToken = $this->userTokenRepository->findOneByPublicToken($request->cookies->get('auth_token'));
-
+        if ($userToken = $user->getCurrentToken()) {
             if (!in_array($currentIp = $request->getClientIp(), $userToken->getIpAddresses())) {
                 $userToken->addIpAddress($currentIp);
 
@@ -66,6 +69,10 @@ class SecurityListener implements EventSubscriberInterface
         }
     }
 
+    /**
+     * If the authentication listener below gets activated, the obsolete cookie
+     * for the anonymous user can be removed in the response.
+     */
     public function onKernelResponse(ResponseEvent $event): void
     {
         if (!$this->revoke) {
@@ -76,6 +83,11 @@ class SecurityListener implements EventSubscriberInterface
         $event->getResponse()->headers->clearCookie('guest_token');
     }
 
+    /**
+     * When a user with an account authenticates, check for an existing user
+     * token associated with the current session. If found, merge the anonymous
+     * user into the user with an account.
+     */
     public function onAuthenticationSuccess(AuthenticationSuccessEvent $event): void
     {
         $request = $this->requestStack->getMainRequest();
@@ -87,7 +99,7 @@ class SecurityListener implements EventSubscriberInterface
         }
 
         $delegateUser = $this->userTokenRepository
-            ->findOneByPublicToken($request->cookies->get('auth_token') ?? $request->cookies->has('guest_token'))
+            ->findOneByPublicToken($request->cookies->get('auth_token') ?? $request->cookies->get('guest_token'))
             ?->getUser();
 
         if ($delegateUser) {

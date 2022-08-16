@@ -53,6 +53,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Column(type: 'datetime_immutable')]
     private \DateTimeImmutable $createdAt;
 
+    private ?UserToken $currentToken = null;
+
     public function __construct()
     {
         $this->tokens = new ArrayCollection();
@@ -182,6 +184,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getCreatedAt(): \DateTimeInterface
     {
         return $this->createdAt;
+    }
+
+    public function getCurrentToken(): ?UserToken
+    {
+        return $this->currentToken;
+    }
+
+    public function setCurrentToken(?UserToken $currentToken): self
+    {
+        $this->currentToken = $currentToken;
+
+        return $this;
     }
 
     public function getRoles(): array
