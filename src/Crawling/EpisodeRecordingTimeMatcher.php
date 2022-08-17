@@ -222,10 +222,20 @@ class EpisodeRecordingTimeMatcher implements EpisodeCrawlerInterface
             return $this->findLivestreamRecordings($episode, $signal);
         }
 
+        $recordedAfter = $signal->getDeployedAt();
+        $recordedBefore = (new \DateTime('@'.$recordedAfter->getTimestamp()))
+            ->add(new \DateInterval('PT2H'));
+
         return (new Finder())
             ->files()
             ->in($episodeLivestreamRecordingsPath)
             ->name('recording_*.asf')
+            ->filter(function(\SplFileInfo $file) use ($recordedAfter, $recordedBefore)  {
+                $timestamp = substr($file->getFilename(), strlen('recording_'), 14);
+                $recordedAt = new \DateTime($timestamp);
+
+                return $recordedAt > $recordedAfter && $recordedAt < $recordedBefore;
+            })
             ->sortByName();
     }
 
