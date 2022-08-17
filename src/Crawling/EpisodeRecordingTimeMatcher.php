@@ -40,7 +40,7 @@ class EpisodeRecordingTimeMatcher implements EpisodeCrawlerInterface
 
         $this->logger->info(sprintf('Found matching bat signal published at %s.', $signal->getDeployedAt()->format('Y-m-d H:i:s')));
 
-        if (!count($recordings = $this->findLivestreamRecordings($signal))) {
+        if (!$recordings = $this->getLivestreamRecordings($episode, $signal)) {
             $this->logger->warning(sprintf('No livestream recordings found matching episode %s.', $episode->getCode()));
 
             return;
@@ -139,19 +139,14 @@ class EpisodeRecordingTimeMatcher implements EpisodeCrawlerInterface
         // Group similar timestamps
         foreach ($matrix as $key => $scores) {
             foreach ($matrix as $matchKey => $matchScores) {
-                // Found similar timestamps
                 if ($matchKey > $key && $matchKey < ($key + 5)) {
-                    // The latter has more scores
                     if (count($matchScores) > count($scores)) {
                         unset($matrix[$key]);
                         $matrix[$matchKey] = array_merge($scores, $matchScores);
-
-                        continue 2;
+                    } else {
+                        unset($matrix[$matchKey]);
+                        $matrix[$key] = array_merge($scores, $matchScores);
                     }
-
-                    // The first one has more or equal scores
-                    unset($matrix[$matchKey]);
-                    $matrix[$key] = array_merge($scores, $matchScores);
                 }
             }
         }
@@ -181,32 +176,56 @@ class EpisodeRecordingTimeMatcher implements EpisodeCrawlerInterface
         return $matrix;
     }
 
-    private function findLivestreamRecordings(BatSignal $signal): Finder
+    private function findLivestreamRecordings(Episode $episode, BatSignal $signal): ?Finder
     {
-        $livePath = sprintf('%s/livestream_recordings', $_SERVER['APP_STORAGE_PATH']);
+        $episodeLivestreamRecordingsPath = sprintf('%s/episode_livestream_recordings/%s', $_SERVER['APP_STORAGE_PATH'], $episode->getCode());
+        $livestreamRecordingsPath = sprintf('%s/livestream_recordings', $_SERVER['APP_STORAGE_PATH']);
 
-        return (new Finder())
+        // Calculate approximate recording time
+        $recordingPadding = $episode->getDuration();
+        $recordingPadding += 60 * 60; // 60 minutes
+
+        $recordedAfter = $signal->getDeployedAt();
+        $recordedBefore = (new \DateTime('@'.$recordedAfter->getTimestamp()))
+            ->add(new \DateInterval(sprintf('PT%dS', $recordingPadding)));
+
+        $files = (new Finder())
             ->files()
-            ->in($livePath)
-            ->name('recording_*.asf')
-            ->filter(function(\SplFileInfo $file) use ($signal) {
+            ->in($livestreamRecordingsPath)
+            ->name('recording_*')
+            ->filter(function(\SplFileInfo $file) use ($recordedAfter, $recordedBefore) {
                 $timestamp = substr($file->getFilename(), strlen('recording_'), 14);
                 $recordedAt = new \DateTime($timestamp);
 
-                // Filter out files that are recorded before the bat signal
-                if ($recordedAt < $signal->getDeployedAt()) {
-                    return false;
-                }
+                return $recordedAt > $recordedAfter && $recordedAt < $recordedBefore;
+            });
 
-                $recordedBefore = (new \DateTime($signal->getDeployedAt()->format('YmdHis')))->add(new \DateInterval('PT2H'));
+        if (!count($files)) {
+            return null;
+        }
 
-                // Filter out files that are recorded more than 2 hours after the bat signal
-                if ($recordedAt > $recordedBefore) {
-                    return false;
-                }
+        $filesystem = new Filesystem();
+        $filesystem->mkdir($episodeLivestreamRecordingsPath);
 
-                return true;
-            })
+        foreach ($files as $file) {
+            $filesystem->copy($file->getPathname(), $episodeLivestreamRecordingsPath . '/' . $file->getFilename());
+        }
+
+        return $this->getLivestreamRecordings($episode, $signal);
+    }
+
+    private function getLivestreamRecordings(Episode $episode, BatSignal $signal): ?Finder
+    {
+        $episodeLivestreamRecordingsPath = sprintf('%s/episode_livestream_recordings/%s', $_SERVER['APP_STORAGE_PATH'], $episode->getCode());
+
+        if (!file_exists($episodeLivestreamRecordingsPath)) {
+            return $this->findLivestreamRecordings($episode, $signal);
+        }
+
+        return (new Finder())
+            ->files()
+            ->in($episodeLivestreamRecordingsPath)
+            ->name('recording_*.asf')
             ->sortByName();
     }
 
