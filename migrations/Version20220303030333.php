@@ -86,7 +86,7 @@ final class Version20220303030333 extends AbstractMigration
 
         $this->addSql('ALTER TABLE na_episode_chapter DROP FOREIGN KEY FK_8F56643D1638C025');
         $this->addSql('DROP INDEX IDX_8F56643D1638C025 ON na_episode_chapter');
-        $this->addSql('ALTER TABLE na_episode_chapter DROP creator_token_id, CHANGE creator_id creator_id INT NOT NULL');
+        $this->addSql('ALTER TABLE na_episode_chapter DROP creator_token_id, CHANGE creator_id creator_id INT NOT NULL, ADD deleted_at DATETIME DEFAULT NULL COMMENT \'(DC2Type:datetime_immutable)\'');
 
         $this->addSql('ALTER TABLE na_episode_chapter_draft DROP FOREIGN KEY FK_1C1DB3351638C025');
         $this->addSql('DROP INDEX IDX_1C1DB3351638C025 ON na_episode_chapter_draft');

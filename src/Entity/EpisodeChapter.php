@@ -40,6 +40,9 @@ class EpisodeChapter implements UserCreatedInterface
     #[Column(type: 'datetime_immutable')]
     private \DateTimeImmutable $createdAt;
 
+    #[Column(type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $deletedAt = null;
+
     public function __construct()
     {
         $this->drafts = new ArrayCollection();
@@ -93,6 +96,18 @@ class EpisodeChapter implements UserCreatedInterface
                 $draft->setChapter(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getDeletedAt(): ?\DateTimeImmutable
+    {
+        return $this->deletedAt;
+    }
+
+    public function delete(): self
+    {
+        $this->deletedAt = new \DateTimeImmutable();
 
         return $this;
     }

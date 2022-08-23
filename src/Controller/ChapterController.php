@@ -156,11 +156,9 @@ class ChapterController extends AbstractController
     {
         $this->denyAccessUnlessGranted('ROLE_MOD');
 
-        foreach ($chapter->getDrafts() as $draft) {
-            $draft->setChapter(null);
-        }
+        $chapter->delete();
 
-        $this->entityManager->remove($chapter);
+        $this->entityManager->persist($chapter);
         $this->entityManager->flush();
 
         return $this->redirectToReferral();

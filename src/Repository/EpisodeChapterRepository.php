@@ -25,6 +25,6 @@ class EpisodeChapterRepository extends ServiceEntityRepository
      */
     public function findByEpisode(Episode $episode): array
     {
-        return $this->findBy(['episode' => $episode], ['startsAt' => 'ASC']);
+        return $this->findBy(['episode' => $episode, 'deletedAt' => null], ['startsAt' => 'ASC']);
     }
 }
