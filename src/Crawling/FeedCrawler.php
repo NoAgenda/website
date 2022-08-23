@@ -14,6 +14,8 @@ use Psr\Log\NullLogger;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
+// todo migration
+
 class FeedCrawler implements CrawlerInterface
 {
     use LoggerAwareTrait;
@@ -108,7 +110,6 @@ class FeedCrawler implements CrawlerInterface
                 'recordingUri' => $feedItem->getEnclosure()->url,
                 'publishedAt' => $feedItem->getDateCreated(),
                 'transcriptUri' => $xpath->evaluate('string(' . $feedItem->getXpathPrefix() . '/podcast:transcript/@url)'), // todo podcasting 2.0 support in library
-                'transcriptType' => 'srt',
             ];
         }
 
@@ -135,9 +136,7 @@ class FeedCrawler implements CrawlerInterface
             ->setCoverUri($entry['coverUri'])
             ->setRecordingUri($entry['recordingUri'])
             ->setTranscriptUri($entry['transcriptUri'])
-            ->setTranscriptType('srt')
-            ->setCrawlerOutput($entry)
-        ;
+            ->setCrawlerOutput($entry);
 
         $this->entityManager->persist($episode);
     }

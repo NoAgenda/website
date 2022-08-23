@@ -51,11 +51,7 @@ class PlayerController extends AbstractController
         }
 
         if ($episode->hasTranscript()) {
-            if ('srt' === $episode->getTranscriptType()) {
-                $transcriptLines = (new SrtParser())->loadString(file_get_contents($episode->getTranscriptPath()))->parse();
-            } else if ('json' === $episode->getTranscriptType()) {
-                $transcriptLines = json_decode(file_get_contents($episode->getTranscriptPath()));
-            }
+            $transcriptLines = (new SrtParser())->loadString(file_get_contents($episode->getTranscriptPath()))->parse();
         }
 
         $chapters = array_merge(

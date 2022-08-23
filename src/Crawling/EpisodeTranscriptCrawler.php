@@ -26,7 +26,7 @@ class EpisodeTranscriptCrawler implements EpisodeFileCrawlerInterface
             return null;
         }
 
-        $path = sprintf('%s/transcripts/%s.%s', $_SERVER['APP_STORAGE_PATH'], $episode->getCode(), $episode->getTranscriptType());
+        $path = sprintf('%s/transcripts/%s.srt', $_SERVER['APP_STORAGE_PATH'], $episode->getCode());
         $lastModifiedAt = $this->fileDownloader->download($episode->getTranscriptUri(), $path, $ifModifiedSince);
 
         if ($path !== $episode->getTranscriptPath()) {

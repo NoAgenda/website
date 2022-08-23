@@ -72,9 +72,6 @@ class Episode
     #[Column(type: 'text', nullable: true)]
     private ?string $transcriptPath = null;
 
-    #[Column(type: 'string', length: 16, nullable: true)]
-    private ?string $transcriptType = null;
-
     #[Column(type: 'text', nullable: true)]
     private ?string $chatArchivePath = null;
 
@@ -340,18 +337,6 @@ class Episode
     public function hasTranscript(): bool
     {
         return $this->transcriptPath && file_exists($this->transcriptPath);
-    }
-
-    public function getTranscriptType(): ?string
-    {
-        return $this->transcriptType;
-    }
-
-    public function setTranscriptType(?string $transcriptType): self
-    {
-        $this->transcriptType = $transcriptType;
-
-        return $this;
     }
 
     public function getChatArchivePath(): ?string

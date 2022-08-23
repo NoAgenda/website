@@ -1,113 +1,57 @@
 <ul class="site-transcript-lines list-unstyled" data-episode-transcripts>
-  {% if episode.transcriptType == 'srt' %}
-    {% for line in transcriptLines %}
-      <li
-        class="site-transcript-line"
-        data-timestamp="{{ line.startTime }}"
-        {# data-duration="{{ line.duration }}" #}
+  {% for line in transcriptLines %}
+    <li
+      class="site-transcript-line"
+      data-timestamp="{{ line.startTime }}"
+      {# data-duration="{{ line.duration }}" #}
+    >
+      <div
+        class="media py-1"
+        onclick="" {# Force iOS to activate hover event #}
       >
-        <div
-          class="media py-1"
-          onclick="" {# Force iOS to activate hover event #}
-        >
-          <div class="transcript-action text-right mr-3">
-            <span class="transcript-focus-md float-left">
-              <span
-                class="cursor-pointer"
-                role="button"
-                title="Copy link for transcript to clipboard"
-                data-clipboard-text="{{ url('player', {episode: episode.code, transcript: line.startTime|prettyTimestamp}) }}"
-              >
-                <span class="fas fa-sm fa-link fa-fw" aria-hidden="true"></span>
-              </span>
-              <span class="d-inline-block ml-2">
-                <na-audio-timestamp data-target="episodeSource" data-timestamp="{{ line.startTime }}">
-                  <span class="cursor-pointer" role="button" title="Start playing at this position">
-                    <span class="fas fa-sm fa-play" aria-hidden="true"></span>
-                  </span>
-                </na-audio-timestamp>
-              </span>
+        <div class="transcript-action text-right mr-3">
+          <span class="transcript-focus-md float-left">
+            <span
+              class="cursor-pointer"
+              role="button"
+              title="Copy link for transcript to clipboard"
+              data-clipboard-text="{{ url('player', {episode: episode.code, transcript: line.startTime|prettyTimestamp}) }}"
+            >
+              <span class="fas fa-sm fa-link fa-fw" aria-hidden="true"></span>
             </span>
-            <span class="transcript-text">{{ line.startTime|prettyTimestamp }}</span>
-          </div>
-          <div class="media-body" data-transcript-contents>
-            {{ line.text }}
-          </div>
-        </div>
-        <div class="transcript-focus text-center">
-          <span
-            class="cursor-pointer"
-            role="button"
-            title="Copy link for transcript to clipboard"
-            data-clipboard-text="{{ url('player', {episode: episode.code, transcript: line.startTime|prettyTimestamp}) }}"
-          >
-            <span class="fas fa-link fa-fw" aria-hidden="true"></span>
-          </span>
-          <span class="ml-3">
-            <na-audio-timestamp data-target="episodeSource" data-timestamp="{{ line.startTime }}">
-              <span class="cursor-pointer" role="button" title="Start playing at this position">
-                <span class="fas fa-play" aria-hidden="true"></span>
-              </span>
-            </na-audio-timestamp>
-          </span>
-        </div>
-      </li>
-    {% endfor %}
-  {% elseif episode.transcriptType == 'json' %}
-    {% for line in transcriptLines %}
-      <li
-        class="site-transcript-line"
-        data-timestamp="{{ line.timestamp }}"
-        {# data-duration="{{ line.duration }}" #}
-      >
-        <div
-          class="media py-1"
-          onclick="" {# Force iOS to activate hover event #}
-        >
-          <div class="transcript-action text-right mr-3">
-            <span class="transcript-focus-md float-left">
-              <span
-                class="cursor-pointer"
-                role="button"
-                title="Copy link for transcript to clipboard"
-                data-clipboard-text="{{ url('player', {episode: episode.code, transcript: line.timestamp|prettyTimestamp}) }}"
-              >
-                <span class="fas fa-sm fa-link fa-fw" aria-hidden="true"></span>
-              </span>
-              <span class="d-inline-block ml-2">
-                <na-audio-timestamp data-target="episodeSource" data-timestamp="{{ line.timestamp }}">
-                  <span class="cursor-pointer" role="button" title="Start playing at this position">
-                    <span class="fas fa-sm fa-play" aria-hidden="true"></span>
-                  </span>
-                </na-audio-timestamp>
-              </span>
+            <span class="d-inline-block ml-2">
+              <na-audio-timestamp data-target="episodeSource" data-timestamp="{{ line.startTime }}">
+                <span class="cursor-pointer" role="button" title="Start playing at this position">
+                  <span class="fas fa-sm fa-play" aria-hidden="true"></span>
+                </span>
+              </na-audio-timestamp>
             </span>
-            <span class="transcript-text">{{ line.timestamp|prettyTimestamp }}</span>
-          </div>
-          <div class="media-body" data-transcript-contents>
-            {{ line.text }}
-          </div>
-        </div>
-        <div class="transcript-focus text-center">
-          <span
-            class="cursor-pointer"
-            role="button"
-            title="Copy link for transcript to clipboard"
-            data-clipboard-text="{{ url('player', {episode: episode.code, transcript: line.timestamp|prettyTimestamp}) }}"
-          >
-            <span class="fas fa-link fa-fw" aria-hidden="true"></span>
           </span>
-          <span class="ml-3">
-            <na-audio-timestamp data-target="episodeSource" data-timestamp="{{ line.timestamp }}">
-              <span class="cursor-pointer" role="button" title="Start playing at this position">
-                <span class="fas fa-play" aria-hidden="true"></span>
-              </span>
-            </na-audio-timestamp>
-          </span>
+          <span class="transcript-text">{{ line.startTime|prettyTimestamp }}</span>
         </div>
-      </li>
-    {% endfor %}
-  {% endif %}
+        <div class="media-body" data-transcript-contents>
+          {{ line.text }}
+        </div>
+      </div>
+      <div class="transcript-focus text-center">
+        <span
+          class="cursor-pointer"
+          role="button"
+          title="Copy link for transcript to clipboard"
+          data-clipboard-text="{{ url('player', {episode: episode.code, transcript: line.startTime|prettyTimestamp}) }}"
+        >
+          <span class="fas fa-link fa-fw" aria-hidden="true"></span>
+        </span>
+        <span class="ml-3">
+          <na-audio-timestamp data-target="episodeSource" data-timestamp="{{ line.startTime }}">
+            <span class="cursor-pointer" role="button" title="Start playing at this position">
+              <span class="fas fa-play" aria-hidden="true"></span>
+            </span>
+          </na-audio-timestamp>
+        </span>
+      </div>
+    </li>
+  {% endfor %}
 </ul>
 
 <div class="position-sticky text-center" style="bottom: 150px;">

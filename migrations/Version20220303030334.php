@@ -42,5 +42,4 @@ final class Version20220303030334 extends AbstractMigration
         // Not enough investment was made to make a rollback possible
     }
 }
-//ALTER TABLE na_feedback_item RENAME INDEX fk_aaef530c61220ea6 TO IDX_AAEF530C61220EA6;
 

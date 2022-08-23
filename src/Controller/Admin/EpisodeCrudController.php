@@ -101,11 +101,6 @@ class EpisodeCrudController extends AbstractCrudController
                 ->setTemplatePath('admin/field/transcript_uri.html.twig');
             yield TextField::new('transcriptPath')
                 ->setTemplatePath('admin/field/transcript_path.html.twig');
-            yield ChoiceField::new('transcriptType')
-                ->setChoices([
-                    'SRT' => 'srt',
-                    'JSON' => 'json',
-                ]);
 
             yield FormField::addPanel('Live Chat')
                 ->setIcon('fas fa-comments')
@@ -147,10 +142,6 @@ class EpisodeCrudController extends AbstractCrudController
         }
 
         $contents = file_get_contents($episode->getTranscriptPath());
-
-        if ('json' === $episode->getTranscriptType()) {
-            $contents = json_encode(json_decode($contents), JSON_PRETTY_PRINT);
-        }
 
         return $this->render('admin/episode/transcript.html.twig', [
             'episode' => $episode,

@@ -49,7 +49,6 @@ class AppFixtures extends Fixture
                 ->setShownotesPath($data['shownotesPath'])
                 ->setTranscriptUri($data['transcriptUri'])
                 ->setTranscriptPath($data['transcriptPath'])
-                ->setTranscriptType('json')
                 ->setChatArchivePath($data['chatArchivePath']);
 
             $manager->persist($episode);
@@ -93,7 +92,7 @@ class AppFixtures extends Fixture
             'shownotesUri' => 'http://adam.curry.com/opml/NoAgendaEpisode1240M-F99GP9GcZq67jjGxnmDW106bKW3pr4.opml',
             'shownotesPath' => '/srv/app/docker/storage/shownotes/1240.xml',
             'transcriptUri' => 'https://natranscript.online/tr/wp-content/uploads/2020/05/1240-transcript.opml',
-            'transcriptPath' => '/srv/app/docker/storage/transcripts/1240.json',
+            'transcriptPath' => '/srv/app/docker/storage/transcripts/1240.beta.srt',
             'chatArchivePath' => '/srv/app/docker/storage/chat_archives/1240.json',
         ];
 
@@ -110,7 +109,7 @@ class AppFixtures extends Fixture
             'shownotesUri' => 'http://adam.curry.com/opml/NoAgendaEpisode1241C-XqBF4nm8G2R4WRK2hHftm0Pw1PBrgg.opml',
             'shownotesPath' => '/srv/app/docker/storage/shownotes/1241.xml',
             'transcriptUri' => 'https://natranscript.online/tr/wp-content/uploads/2020/05/1241-transcript.opml',
-            'transcriptPath' => '/srv/app/docker/storage/transcripts/1241.json',
+            'transcriptPath' => '/srv/app/docker/storage/transcripts/1241.beta.srt',
             'chatArchivePath' => '/srv/app/docker/storage/chat_archives/1241.json',
         ];
 
@@ -127,7 +126,7 @@ class AppFixtures extends Fixture
             'shownotesUri' => 'http://adam.curry.com/opml/NoAgendaEpisode1242S-dHMsL7fj385gtjDwVNn7422WDQblG4.opml',
             'shownotesPath' => '/srv/app/docker/storage/shownotes/1242.xml',
             'transcriptUri' => 'https://natranscript.online/tr/wp-content/uploads/2020/05/1242-transcript.opml',
-            'transcriptPath' => '/srv/app/docker/storage/transcripts/1242.json',
+            'transcriptPath' => '/srv/app/docker/storage/transcripts/1242.beta.srt',
             'chatArchivePath' => '/srv/app/docker/storage/chat_archives/1242.json',
         ];
 
@@ -144,7 +143,7 @@ class AppFixtures extends Fixture
             'shownotesUri' => 'http://adam.curry.com/opml/NoAgendaEpisode1243O-XVFr4Sf7Jhh9ddD5WsZQM3C70ZCgZb.opml',
             'shownotesPath' => '/srv/app/docker/storage/shownotes/1243.xml',
             'transcriptUri' => 'https://natranscript.online/tr/wp-content/uploads/2020/05/1243-transcript.opml',
-            'transcriptPath' => '/srv/app/docker/storage/transcripts/1243.json',
+            'transcriptPath' => '/srv/app/docker/storage/transcripts/1243.beta.srt',
             'chatArchivePath' => '/srv/app/docker/storage/chat_archives/1243.json',
         ];
     }
