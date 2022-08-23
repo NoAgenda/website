@@ -29,7 +29,7 @@ class ClearUsersCommand extends Command
         foreach ($users as $key => $user) {
             $output->writeln(sprintf('Removing user: %s (%s)', $user->getId(), $user->getUsername()));
 
-            $this->userRepository->remove($user, $key === $lastUserKey);
+            $this->userRepository->remove($user, $key === $lastUserKey || $key % 100 === 0);
         }
 
         $style->success(sprintf('Cleared %s users', count($users)));
