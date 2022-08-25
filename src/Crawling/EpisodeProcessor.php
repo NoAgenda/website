@@ -87,7 +87,7 @@ class EpisodeProcessor
         if ($result->exception) {
             $message = new Crawl($data, $episode->getCode());
             $envelope = new Envelope($message, [
-                DelayStamp::delayFor(new \DateInterval('15M')),
+                DelayStamp::delayFor(new \DateInterval('PT15M')),
             ]);
 
             $this->crawlingBus->dispatch($envelope);
