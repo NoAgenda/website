@@ -35,6 +35,9 @@ class UserRepository extends ServiceEntityRepository implements UserLoaderInterf
     {
         $builder = $this->createQueryBuilder('user');
 
+        $createdBefore = new \DateTime();
+        $createdBefore->sub(new \DateInterval('P1M'));
+
         $users = $builder
             ->leftJoin('user.account', 'account')
             ->leftJoin(User::class, 'delegate', Join::WITH, $builder->expr()->eq('delegate.master', 'user.id'))
@@ -43,6 +46,7 @@ class UserRepository extends ServiceEntityRepository implements UserLoaderInterf
             ->leftJoin(FeedbackItem::class, 'feedback_item', Join::WITH, $builder->expr()->eq('feedback_item.creator', 'user.id'))
             ->leftJoin(FeedbackVote::class, 'feedback_vote', Join::WITH, $builder->expr()->eq('feedback_vote.creator', 'user.id'))
             ->andWhere(
+                $builder->expr()->lt('user.createdAt', ':createdBefore'),
                 $builder->expr()->isNull('user.master'),
                 $builder->expr()->isNull('delegate'),
                 $builder->expr()->isNull('chapter'),
@@ -50,6 +54,7 @@ class UserRepository extends ServiceEntityRepository implements UserLoaderInterf
                 $builder->expr()->isNull('feedback_item'),
                 $builder->expr()->isNull('feedback_vote'),
             )
+            ->setParameter('createdBefore', $createdBefore->format('Y-m-d'))
             ->getQuery()
             ->getResult();
 

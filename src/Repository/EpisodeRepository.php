@@ -31,10 +31,9 @@ class EpisodeRepository extends AbstractRepository
         $builder = $this->createQueryBuilder('episode');
 
         $query = $builder
-            ->where($builder->expr()->gte('episode.publishedAt', ':date'))
+            ->andWhere($builder->expr()->gte('episode.publishedAt', ':date'))
             ->setParameter('date', $date->format('Y-m-d'))
-            ->getQuery()
-        ;
+            ->getQuery();
 
         $episodes = [];
 
@@ -83,8 +82,7 @@ class EpisodeRepository extends AbstractRepository
             ->select('episode', 'chapter')
             ->where($builder->expr()->eq('episode.published', true))
             ->leftJoin('episode.chapters', 'chapter')
-            ->orderBy('episode.publishedAt', 'desc')
-        ;
+            ->orderBy('episode.publishedAt', 'desc');
 
         return $this->createPaginator($builder->getQuery(), $page);
     }
@@ -100,8 +98,7 @@ class EpisodeRepository extends AbstractRepository
                 $builder->expr()->eq('episode.special', true),
             ))
             ->leftJoin('episode.chapters', 'chapter')
-            ->orderBy('episode.publishedAt', 'desc')
-        ;
+            ->orderBy('episode.publishedAt', 'desc');
 
         return $this->createPaginator($builder->getQuery(), $page);
     }

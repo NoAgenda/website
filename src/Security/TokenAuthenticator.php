@@ -2,6 +2,8 @@
 
 namespace App\Security;
 
+use App\Entity\User;
+use App\Entity\UserToken;
 use App\Repository\UserTokenRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,10 +30,16 @@ class TokenAuthenticator extends AbstractAuthenticator
         $publicToken = $request->cookies->get('auth_token') ?? $request->cookies->get('guest_token');
 
         return new SelfValidatingPassport(new UserBadge($publicToken, function ($publicToken) {
-            $token = $this->userTokenRepository->findOneByPublicToken($publicToken);
-            $user = $token->getUser();
+            if (!$userToken = $this->userTokenRepository->findOneByPublicToken($publicToken)) {
+                $userToken = (new UserToken())
+                    ->setUser(new User())
+                    ->setPublicToken($publicToken);
 
-            $user->setCurrentToken($token);
+                $this->userTokenRepository->addCurrentIpAddress($userToken);
+            }
+
+            $user = $userToken->getUser();
+            $user->setCurrentToken($userToken);
 
             return $user;
         }));

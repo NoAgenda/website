@@ -50,14 +50,8 @@ class SecurityListener implements EventSubscriberInterface
             return;
         }
 
-        $request = $event->getRequest();
-
         if ($userToken = $user->getCurrentToken()) {
-            if (!in_array($currentIp = $request->getClientIp(), $userToken->getIpAddresses())) {
-                $userToken->addIpAddress($currentIp);
-
-                $this->userTokenRepository->persist($userToken, true);
-            }
+            $this->userTokenRepository->addCurrentIpAddress($userToken);
         }
 
         if ($user->isBanned() || $user->isHidden()) {
