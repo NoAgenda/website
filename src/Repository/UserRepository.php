@@ -12,6 +12,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * @extends ServiceEntityRepository<User>
@@ -102,12 +103,16 @@ class UserRepository extends ServiceEntityRepository implements UserLoaderInterf
 
     public function loadUserByIdentifier(string $identifier): ?User
     {
-        $canonical = UserAccount::canonicalize($identifier);
-        $userAccount = $this->getEntityManager()
-            ->getRepository(UserAccount::class)
-            ->findOneByUsernameCanonical($canonical);
+        if (Uuid::isValid($identifier)) {
+            return $this->findOneBy([
+                'userIdentifier' => Uuid::fromString($identifier)->toBinary(),
+            ]);
+        }
 
-        return $userAccount?->getUser();
+        return $this->getEntityManager()
+            ->getRepository(UserAccount::class)
+            ->loadUserByIdentifier($identifier)
+            ?->getUser();
     }
 
     public function loadUserByUsername(string $username): ?User
