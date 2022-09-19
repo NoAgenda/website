@@ -3,31 +3,16 @@
 namespace App\Crawling\Shownotes;
 
 use App\Entity\Episode;
+use Psr\Log\LoggerInterface;
 
 class ShownotesParserFactory
 {
-    private $parsers;
-
-    public function __construct()
+    public function __construct(private readonly LoggerInterface $logger)
     {
-        $this->parsers = [
-            Shownotes612Parser::class,
-        ];
     }
 
-    public function get(Episode $episode): ?ShownotesParserInterface
+    public function create(Episode $episode): ?ShownotesParser
     {
-        foreach ($this->parsers as $parser) {
-            if ($parser::supports($episode)) {
-                return new $parser($episode);
-            }
-        }
-
-        return null;
-    }
-
-    public static function getShownotesPath(Episode $episode): string
-    {
-        return sprintf('%s/shownotes/%s.xml', $_SERVER['APP_STORAGE_PATH'], $episode->getCode());
+        return new ShownotesParser($episode, $this->logger);
     }
 }

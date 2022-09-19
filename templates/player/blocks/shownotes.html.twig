@@ -21,7 +21,7 @@
 {% endmacro %}
 
 <div data-episode-shownotes>
-  {% for category in shownotes.shownotes|filter(category => category['@outlines'] is defined) %}
+  {% for category in shownotes.outlines %}
     <details class="mb-3">
       <summary>{{ category.text|raw }}</summary>
       {% for outline in category['@outlines'] %}

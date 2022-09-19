@@ -69,7 +69,9 @@ class PlayerController extends AbstractController
             return $a->getStartsAt() - $b->getStartsAt();
         });
 
-        $shownotes = $this->shownotesParserFactory->get($episode);
+        if ($episode->hasShownotes()) {
+            $shownotes = $this->shownotesParserFactory->create($episode);
+        }
 
         return $this->render('player/episode.html.twig', [
             'timestamp' => $timestamp,
@@ -77,7 +79,7 @@ class PlayerController extends AbstractController
 
             'episode' => $episode,
             'chapters' => $chapters,
-            'shownotes' => $shownotes,
+            'shownotes' => $shownotes ?? null,
             'transcriptLines' => $transcriptLines ?? [],
         ]);
     }
