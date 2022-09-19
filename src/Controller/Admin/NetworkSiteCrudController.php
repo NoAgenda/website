@@ -23,28 +23,22 @@ class NetworkSiteCrudController extends AbstractCrudController
             ->setPageTitle(Crud::PAGE_INDEX, 'Network Sites')
             ->setDefaultSort(['priority' => 'ASC'])
             ->setSearchFields(['id', 'name', 'icon', 'description', 'uri', 'displayUri', 'priority'])
-            ->showEntityActionsInlined()
-        ;
+            ->showEntityActionsInlined();
     }
 
     public function configureFields(string $pageName): iterable
     {
         yield IntegerField::new('id', 'ID')
-            ->onlyOnDetail()
-        ;
+            ->onlyOnDetail();
         yield TextField::new('name');
-
         yield TextField::new('icon')
-            ->onlyOnDetail()
-        ;
+            ->onlyOnDetail();
         yield TextareaField::new('description')
-            ->onlyOnDetail()
-        ;
+            ->onlyOnDetail();
         yield TextField::new('displayUri');
         yield TextField::new('uri');
         yield IntegerField::new('priority');
         yield DateTimeField::new('createdAt')
-            ->onlyOnDetail()
-        ;
+            ->onlyOnDetail();
     }
 }

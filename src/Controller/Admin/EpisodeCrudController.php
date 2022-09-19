@@ -31,8 +31,7 @@ class EpisodeCrudController extends AbstractCrudController
         return $crud
             ->setEntityLabelInPlural('Episodes')
             ->setDefaultSort(['publishedAt' => 'DESC'])
-            ->showEntityActionsInlined()
-        ;
+            ->showEntityActionsInlined();
     }
 
     public function configureActions(Actions $actions): Actions
@@ -41,13 +40,11 @@ class EpisodeCrudController extends AbstractCrudController
             ->linkToRoute('player', function (Episode $episode): array {
                 return ['episode' => $episode->getCode()];
             })
-            ->setHtmlAttributes(['target' => '_blank'])
-        ;
+            ->setHtmlAttributes(['target' => '_blank']);
 
         return $actions
             ->add(Crud::PAGE_INDEX, Action::DETAIL)
-            ->add(Crud::PAGE_DETAIL, $episodeUrl)
-        ;
+            ->add(Crud::PAGE_DETAIL, $episodeUrl);
     }
 
     public function configureFields(string $pageName): iterable
@@ -65,26 +62,21 @@ class EpisodeCrudController extends AbstractCrudController
         if (!$isIndex) {
             yield TextField::new('author');
             yield IntegerField::new('duration')
-                ->setTemplatePath('admin/field/duration.html.twig')
-            ;
+                ->setTemplatePath('admin/field/duration.html.twig');
         }
 
         yield DateField::new('publishedAt')
-            ->renderAsText()
-        ;
+            ->renderAsText();
         yield BooleanField::new('special', $isIndex ? 'Special' : 'Special Episode')
-            ->renderAsSwitch(!$isIndex)
-        ;
+            ->renderAsSwitch(!$isIndex);
         yield BooleanField::new('published')
             ->setHelp('Whether the episode is published on the website. Data for the episode is crawled before the episode is published.')
-            ->renderAsSwitch(!$isIndex)
-        ;
+            ->renderAsSwitch(!$isIndex);
 
         if (!$isIndex) {
             yield FormField::addPanel('Crawler')
                 ->setIcon('fas fa-bug')
-                ->setHelp('Data used for crawling and processing metadata related to the show.')
-            ;
+                ->setHelp('Data used for crawling and processing metadata related to the show.');
 
             yield UrlField::new('recordingUri');
             yield DateTimeField::new('recordedAt')
@@ -92,47 +84,37 @@ class EpisodeCrudController extends AbstractCrudController
                 ->setFormTypeOptions([
                     'format' => 'yyyy-MM-dd HH:mm:ss',
                 ])
-                ->setTemplatePath('admin/field/recorded_at.html.twig')
-            ;
+                ->setTemplatePath('admin/field/recorded_at.html.twig');
             yield UrlField::new('coverUri')
-                ->setTemplatePath('admin/field/cover_uri.html.twig')
-            ;
+                ->setTemplatePath('admin/field/cover_uri.html.twig');
             yield TextField::new('coverPath');
             yield UrlField::new('publicShownotesUri');
             yield UrlField::new('shownotesUri')
-                ->setTemplatePath('admin/field/shownotes_uri.html.twig')
-            ;
+                ->setTemplatePath('admin/field/shownotes_uri.html.twig');
             yield TextField::new('shownotesPath');
 
             yield FormField::addPanel('Transcript')
                 ->setIcon('fas fa-bars')
-                ->setHelp('Data used for crawling and processing metadata related to the transcript.')
-            ;
+                ->setHelp('Data used for crawling and processing metadata related to the transcript.');
 
             yield UrlField::new('transcriptUri')
-                ->setTemplatePath('admin/field/transcript_uri.html.twig')
-            ;
+                ->setTemplatePath('admin/field/transcript_uri.html.twig');
             yield TextField::new('transcriptPath')
-                ->setTemplatePath('admin/field/transcript_path.html.twig')
-            ;
+                ->setTemplatePath('admin/field/transcript_path.html.twig');
             yield ChoiceField::new('transcriptType')
                 ->setChoices([
                     'SRT' => 'srt',
                     'JSON' => 'json',
-                ])
-            ;
+                ]);
 
             yield FormField::addPanel('Live Chat')
                 ->setIcon('fas fa-comments')
-                ->setHelp('Data used for crawling and processing metadata related to live chat logs.')
-            ;
+                ->setHelp('Data used for crawling and processing metadata related to live chat logs.');
 
             yield TextField::new('chatArchivePath')
-                ->setTemplatePath('admin/field/chat_archive_path.html.twig')
-            ;
+                ->setTemplatePath('admin/field/chat_archive_path.html.twig');
             yield TextField::new('chatNotice')
-                ->setHelp('Message displayed above the chat archive in case of a problem, like being out of sync for a few minutes.')
-            ;
+                ->setHelp('Message displayed above the chat archive in case of a problem, like being out of sync for a few minutes.');
         }
     }
 

@@ -21,8 +21,7 @@ class BatSignalCrudController extends AbstractCrudController
             ->setEntityLabelInPlural('Bat Signals')
             ->setEntityLabelInSingular('Bat Signal')
             ->setDefaultSort(['deployedAt' => 'DESC'])
-            ->showEntityActionsInlined()
-        ;
+            ->showEntityActionsInlined();
     }
 
     public function configureFields(string $pageName): iterable
@@ -32,7 +31,6 @@ class BatSignalCrudController extends AbstractCrudController
             ->renderAsText()
             ->setFormTypeOptions([
                 'format' => 'yyyy-MM-dd HH:mm:ss',
-            ])
-        ;
+            ]);
     }
 }
