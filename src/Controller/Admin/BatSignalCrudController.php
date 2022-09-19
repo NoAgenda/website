@@ -20,6 +20,7 @@ class BatSignalCrudController extends AbstractCrudController
         return $crud
             ->setEntityLabelInPlural('Bat Signals')
             ->setEntityLabelInSingular('Bat Signal')
+            ->setDefaultSort(['deployedAt' => 'DESC'])
             ->showEntityActionsInlined()
         ;
     }

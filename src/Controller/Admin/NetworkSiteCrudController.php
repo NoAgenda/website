@@ -21,6 +21,7 @@ class NetworkSiteCrudController extends AbstractCrudController
     {
         return $crud
             ->setPageTitle(Crud::PAGE_INDEX, 'Network Sites')
+            ->setDefaultSort(['priority' => 'ASC'])
             ->setSearchFields(['id', 'name', 'icon', 'description', 'uri', 'displayUri', 'priority'])
             ->showEntityActionsInlined()
         ;
