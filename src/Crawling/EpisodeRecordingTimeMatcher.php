@@ -176,12 +176,16 @@ class EpisodeRecordingTimeMatcher implements EpisodeCrawlerInterface
         return $matrix;
     }
 
-    private function findLivestreamRecordings(Episode $episode, BatSignal $signal): ?Finder
+    private function findLivestreamRecordings(Episode $episode, BatSignal $signal): bool
     {
         $episodeLivestreamRecordingsPath = sprintf('%s/episode_livestream_recordings/%s', $_SERVER['APP_STORAGE_PATH'], $episode->getCode());
         $livestreamRecordingsPath = sprintf('%s/livestream_recordings', $_SERVER['APP_STORAGE_PATH']);
 
-        // Calculate approximate recording time
+        if (file_exists($episodeLivestreamRecordingsPath)) {
+            return true;
+        }
+
+        // Approximate recording time
         $recordingPadding = $episode->getDuration();
         $recordingPadding += 60 * 60; // 60 minutes
 
@@ -201,7 +205,7 @@ class EpisodeRecordingTimeMatcher implements EpisodeCrawlerInterface
             });
 
         if (!count($files)) {
-            return null;
+            return false;
         }
 
         $filesystem = new Filesystem();
@@ -211,15 +215,15 @@ class EpisodeRecordingTimeMatcher implements EpisodeCrawlerInterface
             $filesystem->copy($file->getPathname(), $episodeLivestreamRecordingsPath . '/' . $file->getFilename());
         }
 
-        return $this->getLivestreamRecordings($episode, $signal);
+        return true;
     }
 
     private function getLivestreamRecordings(Episode $episode, BatSignal $signal): ?Finder
     {
         $episodeLivestreamRecordingsPath = sprintf('%s/episode_livestream_recordings/%s', $_SERVER['APP_STORAGE_PATH'], $episode->getCode());
 
-        if (!file_exists($episodeLivestreamRecordingsPath)) {
-            return $this->findLivestreamRecordings($episode, $signal);
+        if (!$this->findLivestreamRecordings($episode, $signal)) {
+            return null;
         }
 
         $recordedAfter = $signal->getDeployedAt();
