@@ -40,7 +40,6 @@ class UserCrudController extends AbstractCrudController
     {
         yield NumberField::new('id');
         yield AssociationField::new('account');
-        yield TextField::new('status', 'Status')
-            ->onlyOnIndex();
+        yield TextField::new('status', 'Status');
     }
 }

@@ -5,7 +5,6 @@ namespace App\Controller\Admin;
 use App\Entity\NetworkSite;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
-use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
@@ -28,17 +27,13 @@ class NetworkSiteCrudController extends AbstractCrudController
 
     public function configureFields(string $pageName): iterable
     {
-        yield IntegerField::new('id', 'ID')
-            ->onlyOnDetail();
         yield TextField::new('name');
         yield TextField::new('icon')
-            ->onlyOnDetail();
+            ->hideOnIndex();
         yield TextareaField::new('description')
-            ->onlyOnDetail();
+            ->hideOnIndex();
         yield TextField::new('displayUri');
         yield TextField::new('uri');
         yield IntegerField::new('priority');
-        yield DateTimeField::new('createdAt')
-            ->onlyOnDetail();
     }
 }
