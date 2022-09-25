@@ -14,6 +14,9 @@ use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Stamp\DelayStamp;
 use Symfony\Component\Mime\Address;
+use Symfony\Component\Notifier\Notification\Notification;
+use Symfony\Component\Notifier\NotifierInterface;
+use Symfony\Component\Routing\RouterInterface;
 
 /**
  * @property CrawlingLogger $logger
@@ -28,7 +31,9 @@ class EpisodeProcessor
         private readonly CrawlingProcessor $crawlingProcessor,
         private readonly MessageBusInterface $crawlingBus,
         private readonly NotificationPublisher $publisher,
+        private readonly RouterInterface $router,
         private readonly MailerInterface $mailer,
+        private readonly NotifierInterface $notifier,
     ) {
         $this->logger = new NullLogger();
     }
@@ -54,6 +59,9 @@ class EpisodeProcessor
             }
 
             $this->publisher->publish($episode);
+
+            $episodeUri = $this->router->generate('player', ['episode' => $episode->getCode()]);
+            $this->notifier->send(new Notification(sprintf("Episode %s has been published.\n\n%s", $episode->getCode(), $episodeUri)));
         }
 
         $this->crawl($episode, 'recording_time');
