@@ -6,11 +6,13 @@ use App\Crawling\CrawlingProcessor;
 use App\Crawling\EpisodeCrawlerInterface;
 use App\Crawling\EpisodeFileCrawlerInterface;
 use App\Entity\Episode;
-use App\Repository\EpisodeRepository;
+use App\Entity\FeedbackItem;
+use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Monolog\Handler\StreamHandler;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -24,7 +26,6 @@ class ApiController extends AbstractController
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private EpisodeRepository $episodeRepository,
         private CrawlingProcessor $crawlingProcessor,
         private LoggerInterface $crawlerLogger,
         private string $securityToken,
@@ -107,6 +108,19 @@ class ApiController extends AbstractController
         ]));
     }
 
+    #[Route('/stats', name: 'stats')]
+    private function stats(): Response
+    {
+        $this->prepare();
+
+        $stats = [
+            'unresolved_feedback_items' => $this->entityManager->getRepository(FeedbackItem::class)->countUnresolvedItems(),
+            'unreviewed_users' => $this->entityManager->getRepository(User::class)->countUnreviewedUsers(),
+        ];
+
+        return new JsonResponse($stats);
+    }
+
     private function prepare(): void
     {
         $request = $this->container->get('request_stack')->getCurrentRequest();
@@ -129,7 +143,7 @@ class ApiController extends AbstractController
                 throw new BadRequestHttpException();
             }
 
-            if (!$episode = $this->episodeRepository->findOneByCode($episodeCode)) {
+            if (!$episode = $this->entityManager->getRepository(Episode::class)->findOneByCode($episodeCode)) {
                 throw new BadRequestHttpException();
             }
         }
