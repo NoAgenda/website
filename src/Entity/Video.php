@@ -30,9 +30,13 @@ class Video
     #[Column(type: 'string', length: 255, nullable: true)]
     private ?string $youtubeEtag = null;
 
+    #[Column]
+    private \DateTimeImmutable $lastModifiedAt;
+
     public function __construct(string $youtubeId)
     {
         $this->youtubeId = $youtubeId;
+        $this->lastModifiedAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -84,6 +88,18 @@ class Video
     public function setYoutubeEtag(?string $youtubeEtag): self
     {
         $this->youtubeEtag = $youtubeEtag;
+
+        return $this;
+    }
+
+    public function getLastModifiedAt(): \DateTimeImmutable
+    {
+        return $this->lastModifiedAt;
+    }
+
+    public function modified(): self
+    {
+        $this->lastModifiedAt = new \DateTimeImmutable();
 
         return $this;
     }

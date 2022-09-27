@@ -14,11 +14,11 @@ class YoutubeCrawler implements CrawlerInterface
     use LoggerAwareTrait;
 
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        private VideoRepository $videoRepository,
-        private HttpClientInterface $httpClient,
-        private ?string $youtubeKey = null,
-        private ?string $youtubePlaylistId = null,
+        private readonly EntityManagerInterface $entityManager,
+        private readonly VideoRepository $videoRepository,
+        private readonly HttpClientInterface $httpClient,
+        private readonly ?string $youtubeKey = null,
+        private readonly ?string $youtubePlaylistId = null,
     ) {
         $this->logger = new NullLogger();
     }
@@ -84,7 +84,7 @@ class YoutubeCrawler implements CrawlerInterface
             ->setTitle($data['snippet']['title'])
             ->setPublishedAt(new \DateTime($data['snippet']['publishedAt']))
             ->setYoutubeEtag($contents['etag'])
-        ;
+            ->modified();
 
         if (!$this->entityManager->contains($video)) {
             $this->logger->info(sprintf('Found new Animated NA video: %s', $video->getTitle()));

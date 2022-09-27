@@ -84,9 +84,13 @@ class Episode
     #[Column(type: 'json', nullable: true)]
     private ?array $recordingTimeMatrix = null;
 
+    #[Column]
+    private \DateTimeImmutable $lastModifiedAt;
+
     public function __construct()
     {
         $this->chapters = new ArrayCollection();
+        $this->lastModifiedAt = new \DateTimeImmutable();
     }
 
     public function __toString(): string
@@ -388,6 +392,18 @@ class Episode
     public function setRecordingTimeMatrix(?array $recordingTimeMatrix): self
     {
         $this->recordingTimeMatrix = $recordingTimeMatrix;
+
+        return $this;
+    }
+
+    public function getLastModifiedAt(): \DateTimeImmutable
+    {
+        return $this->lastModifiedAt;
+    }
+
+    public function modified(): self
+    {
+        $this->lastModifiedAt = new \DateTimeImmutable();
 
         return $this;
     }

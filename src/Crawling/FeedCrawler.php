@@ -136,7 +136,8 @@ class FeedCrawler implements CrawlerInterface
             ->setCoverUri($entry['coverUri'])
             ->setRecordingUri($entry['recordingUri'])
             ->setTranscriptUri($entry['transcriptUri'])
-            ->setCrawlerOutput($entry);
+            ->setCrawlerOutput($entry)
+            ->modified();
 
         $this->entityManager->persist($episode);
     }
