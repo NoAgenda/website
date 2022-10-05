@@ -34,7 +34,7 @@ class ApiController extends AbstractController
     #[Route('/crawl/{data}', name: 'crawl')]
     public function crawl(Request $request, string $data): Response
     {
-        $this->prepare();
+        $this->denyAccessUnlessAuthenticated();
 
         $episode = $this->validateCrawlRequest($request, $data);
 
@@ -85,7 +85,7 @@ class ApiController extends AbstractController
     #[Route('/queue/{data}', name: 'queue')]
     public function queue(Request $request, string $data): Response
     {
-        $this->prepare();
+        $this->denyAccessUnlessAuthenticated();
 
         $episode = $this->validateCrawlRequest($request, $data);
 
@@ -109,9 +109,9 @@ class ApiController extends AbstractController
     }
 
     #[Route('/stats', name: 'stats')]
-    private function stats(): Response
+    public function stats(): Response
     {
-        $this->prepare();
+        $this->denyAccessUnlessAuthenticated();
 
         $stats = [
             'unresolved_feedback_items' => $this->entityManager->getRepository(FeedbackItem::class)->countUnresolvedItems(),
@@ -121,7 +121,7 @@ class ApiController extends AbstractController
         return new JsonResponse($stats);
     }
 
-    private function prepare(): void
+    private function denyAccessUnlessAuthenticated(): void
     {
         $request = $this->container->get('request_stack')->getCurrentRequest();
 
