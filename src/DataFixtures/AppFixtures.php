@@ -91,8 +91,8 @@ class AppFixtures extends Fixture
             'publicShownotesUri' => 'http://adam.curry.com/html/NoAgendaEpisode1240M-F99GP9GcZq67jjGxnmDW106bKW3pr4.html',
             'shownotesUri' => 'http://adam.curry.com/opml/NoAgendaEpisode1240M-F99GP9GcZq67jjGxnmDW106bKW3pr4.opml',
             'shownotesPath' => '/srv/app/docker/storage/shownotes/1240.xml',
-            'transcriptUri' => 'https://natranscript.online/tr/wp-content/uploads/2020/05/1240-transcript.opml',
-            'transcriptPath' => '/srv/app/docker/storage/transcripts/1240.beta.srt',
+            'transcriptUri' => 'https://www.noagendashow.net/media/transcripts/NA-1240-2020-05-07-Final.srt',
+            'transcriptPath' => '/srv/app/docker/storage/transcripts/1240.srt',
             'chatArchivePath' => '/srv/app/docker/storage/chat_archives/1240.json',
         ];
 
@@ -108,8 +108,8 @@ class AppFixtures extends Fixture
             'publicShownotesUri' => 'http://adam.curry.com/html/NoAgendaEpisode1241C-XqBF4nm8G2R4WRK2hHftm0Pw1PBrgg.html',
             'shownotesUri' => 'http://adam.curry.com/opml/NoAgendaEpisode1241C-XqBF4nm8G2R4WRK2hHftm0Pw1PBrgg.opml',
             'shownotesPath' => '/srv/app/docker/storage/shownotes/1241.xml',
-            'transcriptUri' => 'https://natranscript.online/tr/wp-content/uploads/2020/05/1241-transcript.opml',
-            'transcriptPath' => '/srv/app/docker/storage/transcripts/1241.beta.srt',
+            'transcriptUri' => 'https://www.noagendashow.net/media/transcripts/NA-1241-2020-05-10-Final.srt',
+            'transcriptPath' => '/srv/app/docker/storage/transcripts/1241.srt',
             'chatArchivePath' => '/srv/app/docker/storage/chat_archives/1241.json',
         ];
 
@@ -125,8 +125,8 @@ class AppFixtures extends Fixture
             'publicShownotesUri' => 'http://adam.curry.com/html/NoAgendaEpisode1242S-dHMsL7fj385gtjDwVNn7422WDQblG4.html',
             'shownotesUri' => 'http://adam.curry.com/opml/NoAgendaEpisode1242S-dHMsL7fj385gtjDwVNn7422WDQblG4.opml',
             'shownotesPath' => '/srv/app/docker/storage/shownotes/1242.xml',
-            'transcriptUri' => 'https://natranscript.online/tr/wp-content/uploads/2020/05/1242-transcript.opml',
-            'transcriptPath' => '/srv/app/docker/storage/transcripts/1242.beta.srt',
+            'transcriptUri' => 'https://www.noagendashow.net/media/transcripts/NA-1242-2020-05-14-Final.srt',
+            'transcriptPath' => '/srv/app/docker/storage/transcripts/1242.srt',
             'chatArchivePath' => '/srv/app/docker/storage/chat_archives/1242.json',
         ];
 
@@ -142,8 +142,8 @@ class AppFixtures extends Fixture
             'publicShownotesUri' => 'http://adam.curry.com/html/NoAgendaEpisode1243O-XVFr4Sf7Jhh9ddD5WsZQM3C70ZCgZb.html',
             'shownotesUri' => 'http://adam.curry.com/opml/NoAgendaEpisode1243O-XVFr4Sf7Jhh9ddD5WsZQM3C70ZCgZb.opml',
             'shownotesPath' => '/srv/app/docker/storage/shownotes/1243.xml',
-            'transcriptUri' => 'https://natranscript.online/tr/wp-content/uploads/2020/05/1243-transcript.opml',
-            'transcriptPath' => '/srv/app/docker/storage/transcripts/1243.beta.srt',
+            'transcriptUri' => 'https://www.noagendashow.net/media/transcripts/NA-1243-2020-05-17-Final.srt',
+            'transcriptPath' => '/srv/app/docker/storage/transcripts/1243.srt',
             'chatArchivePath' => '/srv/app/docker/storage/chat_archives/1243.json',
         ];
     }
