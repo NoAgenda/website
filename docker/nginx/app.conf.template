@@ -21,4 +21,8 @@ server {
         try_files $uri $uri/ /index.php?$query_string;
         gzip_static on;
     }
+
+    location /media {
+        add_header Access-Control-Allow-Origin *;
+    }
 }
