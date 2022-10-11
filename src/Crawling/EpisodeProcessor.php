@@ -16,6 +16,7 @@ use Symfony\Component\Messenger\Stamp\DelayStamp;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Notifier\Notification\Notification;
 use Symfony\Component\Notifier\NotifierInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
@@ -60,7 +61,7 @@ class EpisodeProcessor
 
             $this->publisher->publish($episode);
 
-            $episodeUri = $this->router->generate('player', ['episode' => $episode->getCode()]);
+            $episodeUri = $this->router->generate('player', ['episode' => $episode->getCode()], UrlGeneratorInterface::ABSOLUTE_URL);
             $this->notifier->send(new Notification(sprintf("Episode %s has been published.\n\n%s", $episode->getCode(), $episodeUri)));
         }
 
