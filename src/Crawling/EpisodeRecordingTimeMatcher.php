@@ -271,6 +271,8 @@ class EpisodeRecordingTimeMatcher implements EpisodeCrawlerInterface
             ]);
         }
 
+        (new Filesystem())->remove($sourcePath);
+
         return (new Finder())
             ->files()
             ->in($outputPath)
