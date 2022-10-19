@@ -8,6 +8,8 @@ use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use function Sentry\captureException;
+use function Sentry\captureMessage;
 
 class BatSignalCrawler implements CrawlerInterface
 {
@@ -49,7 +51,27 @@ class BatSignalCrawler implements CrawlerInterface
             $signal->getDeployedAt()->format('Y-m-d H:i:s'),
         ));
 
+        $this->boostBatSignal($signal);
+
         $this->entityManager->persist($signal);
+    }
+
+    private function boostBatSignal(BatSignal $signal): void
+    {
+        try {
+            $response = $this->mastodonClient->request('POST', sprintf('status/%s/reblog', $signal->postId));
+
+            if (200 !== $statusCode = $response->getStatusCode()) {
+                $message = sprintf('Failed to boost bat signal on Mastodon: Response code %s', $statusCode);
+                $this->logger->warning($message);
+
+                captureMessage($message);
+            }
+        } catch (\Throwable $exception) {
+            $this->logger->critical(sprintf('An exception occurred while boosting the bat signal on Mastodon: %s', $exception->getMessage()), ['exception' => $exception]);
+
+            captureException($exception);
+        }
     }
 
     private function crawlBatSignal(): ?BatSignal
@@ -58,7 +80,10 @@ class BatSignalCrawler implements CrawlerInterface
         $responseCode = $response->getStatusCode();
 
         if ($responseCode >= 300) {
-            $this->logger->warning(sprintf('Failed to crawl bat signal feed. HTTP response code: %s', $responseCode));
+            $message = sprintf('Failed to crawl bat signal on Mastodon: Response code %s', $responseCode);
+            $this->logger->warning($message);
+
+            captureMessage($message);
 
             return null;
         }
@@ -70,10 +95,13 @@ class BatSignalCrawler implements CrawlerInterface
                 preg_match('/episode (\d+)/', $entry['content'],$matches);
                 list(, $code) = $matches;
 
-                return (new BatSignal())
+                $signal = (new BatSignal())
                     ->setCode($code)
-                    ->setDeployedAt(new \DateTime($entry['created_at'] ?? null))
-                ;
+                    ->setDeployedAt(new \DateTime($entry['created_at'] ?? null));
+
+                $signal->postId = $entry['id'];
+
+                return $signal;
             }
         }
 

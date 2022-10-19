@@ -24,6 +24,8 @@ class BatSignal
     #[Column(type: 'datetime')]
     private ?\DateTimeInterface $deployedAt;
 
+    public ?string $postId = null;
+
     public function getId(): ?int
     {
         return $this->id;
