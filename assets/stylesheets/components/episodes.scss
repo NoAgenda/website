@@ -1,0 +1,154 @@
+.section.episode-hero {
+  margin: 0;
+  background-color: var(--accent-1);
+  overflow: hidden;
+
+  .btn-resume {
+    display: none !important;
+  }
+
+  .hero-text > * {
+    margin: 0;
+  }
+
+  .section-content {
+    gap: $gap-huge;
+    padding: $gap-huge 0;
+  }
+
+  @include breakpoint-medium-down {
+    &:not(.episode-hero-small) {
+      img {
+        max-width: 75%;
+        width: auto;
+        max-height: 320px;
+      }
+
+      .btn {
+        display: block;
+        padding: $gap-small;
+      }
+
+      .hero-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: $gap-small;
+        width: 75%;
+      }
+
+      .hero-details {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: $gap;
+        width: 100%;
+      }
+
+      .hero-text {
+        text-align: center;
+      }
+
+      .section-content {
+        align-items: center;
+      }
+    }
+
+    &.episode-hero-small {
+      h1 {
+        font-size: 1.5em;
+      }
+
+      img {
+        max-width: 30%;
+      }
+
+      .hero-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: start;
+        gap: $gap-tiny;
+      }
+
+      .hero-details {
+        display: flex;
+        flex-direction: column;
+        gap: $gap-small;
+      }
+
+      .section-content {
+        align-items: center;
+        flex-direction: row;
+      }
+    }
+  }
+
+  @include breakpoint-medium-up {
+    img {
+      max-width: 25vw;
+      width: 250px;
+    }
+
+    .btn {
+      min-width: 160px;
+      padding: $gap-small $gap-large;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: $gap-small;
+    }
+
+    .hero-details {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: $gap;
+    }
+
+    .section-content {
+      flex-direction: row;
+    }
+  }
+}
+
+.episodes {
+  display: flex;
+  flex-direction: row;
+  overflow-x: scroll;
+  overflow-y: hidden;
+
+  @include breakpoint-full {
+    max-width: $container-max-width;
+    width: $container-width;
+    margin: 0 auto;
+    overflow-x: hidden;
+  }
+
+  .episode {
+    display: inline-block;
+    text-decoration: none;
+
+    h3 {
+      margin: 6px 0 0;
+      width: 256px;
+    }
+
+    img {
+      max-height: 256px;
+      width: 256px;
+    }
+
+    &+ .episode {
+      margin-left: 16px;
+    }
+  }
+
+  .episode-spacer {
+    display: inline-block;
+    min-width: 6.25vw;
+
+    @include breakpoint-full {
+      display: none;
+    }
+  }
+}

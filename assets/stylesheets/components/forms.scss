@@ -1,0 +1,56 @@
+@import "../mixins";
+@import "../variables";
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: $gap-small;
+  max-width: 400px;
+  width: 75%;
+
+  > * {
+    margin: 0;
+  }
+}
+
+.form-buttons {
+  display: flex;
+  gap: $gap-small;
+}
+
+.form-input {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  input[type="email"],
+  input[type="password"],
+  input[type="text"] {
+    width: 100%;
+    padding: $gap-small;
+    border: 1px solid var(--accent-1);
+    border-radius: 4px;
+  }
+}
+
+.form-timestamp {
+  .input {
+    display: flex;
+    align-items: center;
+    gap: $gap;
+    margin-bottom: $gap-small;
+
+    input {
+      max-width: 150px;
+    }
+
+    .btn {
+      align-self: stretch;
+    }
+  }
+
+  .buttons {
+    display: flex;
+    gap: $gap-tiny;
+  }
+}

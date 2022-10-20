@@ -1,7 +1,48 @@
 twig:
     default_path: '%kernel.project_dir%/templates'
-    form_themes:
-        - 'bootstrap_4_layout.html.twig'
+    form_themes: ['form_theme.html.twig']
+    globals:
+        analytics_id: '%env(ANALYTICS_ID)%'
+        analytics_domain: '%env(ANALYTICS_DOMAIN)%'
+        security_token: '%env(APP_SECURITY_TOKEN)%'
+        vapid_key: '%env(VAPID_PUBLIC_KEY)%'
+
+        recording_times:
+            - [4, 11] # Thursday at 11:00 PT
+            - [7, 11] # Sunday at 11:00 PT
+
+        adam_email: 'adam@curry.com'
+        adam_social: 'https://noagendasocial.com/@adam'
+        john_email: 'john@dvorak.org'
+        john_social: 'https://noagendasocial.com/@johncdvorak'
+
+        artgenerator_url: 'https://noagendaartgenerator.com'
+        artgenerator_artworks_url: 'https://noagendaartgenerator.com/artworks'
+        chat_embed_url: 'http://webchat.zeronode.net?channels=%23NoAgenda&uio=d4'
+        davejones_url: 'https://podcastindex.social/@dave'
+        donate_url: 'http://dvorak.org/na/'
+        drebscott_url: 'https://noagendasocial.com/@drebscott'
+        dudenamedben_url: 'https://www.dudenamedben.blog'
+        dudenamedben_donate_url: 'https://www.dudenamedben.blog/donate'
+        dudenamedben_team_url: 'https://www.dudenamedben.blog/about'
+        github_url: 'https://github.com/NoAgenda/website'
+        knightring_url: 'https://shop.noagendanation.com'
+        meetups_url: 'https://noagendameetups.com'
+        meetups_events_url: 'https://noagendameetups.com/events/list/'
+        meetups_resources_url: 'https://noagendameetups.com/resources/'
+        newpodcastapps_url: 'https://podcastindex.org/apps'
+        newsletter_signup_url: 'http://www.gitmonation.com/signup.htm'
+        podcast_namespace_url: 'https://github.com/Podcastindex-org/podcast-namespace'
+        podcastindex_url: 'https://podcastindex.org'
+        podcastindex_social_url: 'https://podcastindex.social'
+        podcasting20_podcast_url: 'https://web.podfriend.com/podcast/podcasting-20'
+        shop_url: 'https://noagendashop.com'
+        social_url: 'https://noagendasocial.com'
+        social_profile_url: 'https://noagendasocial.com/@woodstock'
+        social_timeline_url: 'https://noagendasocial.com/public'
+        trollroom_url: 'https://kiwiirc.com/nextclient/irc.zeronode.net/?nick=webtroll?#NoAgenda'
+        valueforvalue_url: 'https://value4value.info/'
+        voidzero_url: 'https://noagendasocial.com/@voidzero'
 
 when@test:
     twig:

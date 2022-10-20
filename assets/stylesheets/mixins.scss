@@ -1,0 +1,96 @@
+@import "variables";
+
+@mixin breakpoint-tiny-down {
+  @media screen and (max-width: #{$breakpoint-tiny - 0.02}) {
+    @content;
+  }
+}
+
+@mixin breakpoint-tiny-only {
+  @media screen and (min-width: #{$breakpoint-tiny}) and (max-width: #{$breakpoint-small - 0.02}) {
+    @content;
+  }
+}
+
+@mixin breakpoint-tiny-up {
+  @media screen and (min-width: #{$breakpoint-tiny}) {
+    @content;
+  }
+}
+
+@mixin breakpoint-small-down {
+  @media screen and (max-width: #{$breakpoint-small - 0.02}) {
+    @content;
+  }
+}
+
+@mixin breakpoint-small-only {
+  @media screen and (min-width: #{$breakpoint-small}) and (max-width: #{$breakpoint-medium - 0.02}) {
+    @content;
+  }
+}
+
+@mixin breakpoint-small-up {
+  @media screen and (min-width: #{$breakpoint-small}) {
+    @content;
+  }
+}
+
+@mixin breakpoint-medium-down {
+  @media screen and (max-width: #{$breakpoint-medium - 0.02}) {
+    @content;
+  }
+}
+
+@mixin breakpoint-medium-only {
+  @media screen and (min-width: #{$breakpoint-medium}) and (max-width: #{$breakpoint-large - 0.02}) {
+    @content;
+  }
+}
+
+@mixin breakpoint-medium-up {
+  @media screen and (min-width: #{$breakpoint-medium}) {
+    @content;
+  }
+}
+
+@mixin breakpoint-large-down {
+  @media screen and (max-width: #{$breakpoint-large - 0.02}) {
+    @content;
+  }
+}
+
+@mixin breakpoint-large-only {
+  @media screen and (min-width: #{$breakpoint-large}) and (max-width: #{$breakpoint-full - 0.02}) {
+    @content;
+  }
+}
+
+@mixin breakpoint-large-up {
+  @media screen and (min-width: #{$breakpoint-large}) {
+    @content;
+  }
+}
+
+@mixin breakpoint-full-down {
+  @media screen and (max-width: #{$breakpoint-full - 0.02}) {
+    @content;
+  }
+}
+
+@mixin breakpoint-full {
+  @media screen and (min-width: #{$breakpoint-full}) {
+    @content;
+  }
+}
+
+@mixin button-colors($color, $active-color, $text-color) {
+  background-color: $color;
+  border-color: $color;
+  color: $text-color;
+
+  &:hover, &:active {
+    border-color: $active-color;
+    background-color: $active-color;
+  }
+}

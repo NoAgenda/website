@@ -33,10 +33,9 @@ class ChatRecorder implements RecorderInterface
             ->setServerPort(6667)
             ->setHostname('irc.zeronode.net')
             ->setServername('irc.zeronode.net')
-            ->setNickname($nickname = $this->getRandomName())
+            ->setNickname($nickname = self::getRandomName())
             ->setUsername($nickname)
-            ->setRealname($nickname)
-        ;
+            ->setRealname($nickname);
 
         $client = new Client();
 
@@ -57,14 +56,16 @@ class ChatRecorder implements RecorderInterface
                 return;
             }
 
-            $messageText = $message['message'];
-            $messageText = preg_replace('/[[:cntrl:]]/', '', $messageText);
-            $messageText = mb_convert_encoding($messageText, 'UTF-8', 'UTF-8');
+            $rawMessage = $message['message'];
+            $rawMessage = preg_replace('/[[:cntrl:]]/', '', $rawMessage);
+            $rawMessage = mb_convert_encoding($rawMessage, 'UTF-8', 'UTF-8');
 
             $path = sprintf('%s/%s.log', $basePath, $lastUpdatedAt->format('Ymd'));
-            $log = sprintf('%s >>> %s', $lastUpdatedAt->format('Y-m-d H:i:s'), $messageText);
+            $log = sprintf('%s >>> %s', $lastUpdatedAt->format('Y-m-d H:i:s'), $rawMessage);
 
             file_put_contents($path, "$log\n", FILE_APPEND | LOCK_EX);
+
+            $this->updateLivestreamInfo($rawMessage);
         });
 
         $client->on('irc.tick', function () {
@@ -78,28 +79,45 @@ class ChatRecorder implements RecorderInterface
         $client->run($connection);
     }
 
-    private function getRandomName(): string
+    private function updateLivestreamInfo(string $rawMessage): void
     {
-        $adjectives = [
-            'tiny',
-            'delicious',
-            'gentle',
-            'cool',
-            'brave',
-            'grumpy',
-            'fierce',
-            'angry',
-        ];
-        $nouns = [
-            'bee',
-            'pizza',
-            'chef',
-            'puppy',
-            'gnome',
-            'panda',
-            'koala',
+        $message = self::parseMessage($rawMessage);
+
+        if ('Doug' !== $message['username'] || !str_starts_with($message['contents'], 'Now playing: ')) {
+            return;
+        }
+
+        $nowPlaying = substr($message['contents'], strlen('Now playing: '));
+
+        $info = [
+            'now_playing' => $nowPlaying,
         ];
 
-        return sprintf('%s%s', ucfirst($adjectives[array_rand($adjectives)]), ucfirst($nouns[array_rand($nouns)]));
+        $livestreamInfoPath = sprintf('%s/livestream_info.json', $_SERVER['APP_STORAGE_PATH']);
+        file_put_contents($livestreamInfoPath, json_encode($info));
+    }
+
+    public static function getRandomName(): string
+    {
+        $adjectives = ['tiny', 'delicious', 'gentle', 'cool', 'brave', 'grumpy', 'fierce', 'angry'];
+        $nouns = ['bee', 'pizza', 'chef', 'puppy', 'gnome', 'panda', 'koala'];
+
+        return ucfirst($adjectives[array_rand($adjectives)]) . ucfirst($nouns[array_rand($nouns)]);
+    }
+
+    public static function parseMessage(string $rawMessage): ?array
+    {
+        preg_match('/:([^!]+)!([^@]+)@(\S+) PRIVMSG #NoAgenda :(.+)/', $rawMessage, $matches);
+
+        if (!isset($matches[0])) {
+            return null;
+        }
+
+        list(, $username, $client, $ip, $contents) = $matches;
+
+        return [
+            'username' => $username,
+            'contents' => nl2br($contents),
+        ];
     }
 }

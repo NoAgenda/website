@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% import 'podcast/macro.html.twig' as podcast %}
+
+{% set page_title = 'No Agenda Specials' %}
+{% set page_description = 'Special episodes of The No Agenda Show' %}
+
+{% block content %}
+  <nav class="link-group link-group-full">
+    <a href="{{ path('podcast') }}" class="link">
+      <span>Back to Podcast</span>
+      <span class="fa-solid fa-podcast fa-fw" aria-hidden="true"></span>
+    </a>
+  </nav>
+
+  <section class="section">
+    <div class="section-content">
+      <h1>Specials</h1>
+      <p>
+        More than 1500 episodes have been recorded over the 15 years that the show is running, and they all have a
+        special place in our heart. Some of them are extra special though, ranging from episodes explaining the origin
+        of the show to compilations of the show.
+      </p>
+    </div>
+  </section>
+
+  {{ podcast.archive(episodes) }}
+{% endblock %}

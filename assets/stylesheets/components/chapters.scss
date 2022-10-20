@@ -1,0 +1,134 @@
+@import "../mixins";
+@import "../variables";
+
+.chapters {
+  display: flex;
+  flex-direction: column;
+
+  > :not(:last-child) {
+    border-bottom: 1px solid var(--accent-1);
+  }
+
+  .chapters-action {
+    display: flex;
+    justify-content: space-between;
+    padding: $gap-small $gap;
+    text-decoration: none;
+
+    &:active, &:hover {
+      background: var(--accent-1);
+    }
+  }
+
+  .chapter {
+    .chapter-header {
+      display: flex;
+
+      .chapter-resize {
+        display: flex;
+        justify-content: center;
+        padding: $gap-small $gap;
+        line-height: 32px;
+      }
+
+      .chapter-timestamp {
+        min-width: 64px;
+        padding: $gap-small $gap-tiny;
+        text-align: right;
+
+        &.clipboard-animate {
+          transition: background-color 1s;
+        }
+
+        &.clipboard-error {
+          background-color: var(--warning);
+        }
+
+        &.clipboard-success {
+          background-color: var(--success);
+        }
+      }
+
+      .chapter-title {
+        flex-grow: 1;
+        padding: $gap-small;
+      }
+
+      .chapter-title,
+      .chapter-resize,
+      .chapter-timestamp {
+        &:active, &:hover {
+          background: var(--accent-1);
+        }
+      }
+    }
+
+    .chapter-info {
+      display: flex;
+      flex-direction: column;
+      background: var(--accent-1);
+
+      .chapter-info-text {
+        padding: $gap-small;
+      }
+
+      .chapter-buttons {
+        display: flex;
+        flex-direction: column;
+
+        > * {
+          display: flex;
+          justify-content: flex-start;
+          align-items: center;
+          min-width: 48px;
+          height: 48px;
+          padding: 0 $gap-small;
+          text-decoration: none;
+          user-select: none;
+
+          .btn-icon:not(:only-child) {
+            &:first-child {
+              margin-right: $gap-tiny;
+            }
+
+            &:last-child {
+              margin-left: $gap-tiny;
+            }
+          }
+
+          &:active,
+          &:hover {
+            background-color: var(--accent-2);
+          }
+        }
+      }
+    }
+
+    &.chapter-draft .chapter-header {
+      opacity: 0.6;
+    }
+  }
+}
+
+@include breakpoint-small-up {
+  .chapters {
+    .chapter {
+      .chapter-info {
+        .chapter-buttons {
+          flex-direction: row;
+        }
+      }
+    }
+  }
+}
+
+@include breakpoint-large-up {
+  .chapters {
+    .chapter {
+      .chapter-info {
+        flex-direction: row;
+        justify-content: space-between;
+      }
+    }
+  }
+}

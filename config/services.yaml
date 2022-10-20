@@ -5,7 +5,6 @@ services:
         bind:
             $crawlers: '@crawler_locator'
             $httpClient: '@http_client'
-            $securityToken: '%env(APP_SECURITY_TOKEN)%'
 
     App\:
         resource: '../src/'
@@ -34,7 +33,16 @@ services:
         resource: '../src/EventListener/Doctrine/'
         tags: ['doctrine.event_subscriber']
 
+    Minishlink\WebPush\WebPush:
+        arguments:
+            - VAPID:
+                subject: '%env(VAPID_SUBJECT)%'
+                privateKey: '%env(VAPID_PRIVATE_KEY)%'
+                publicKey: '%env(VAPID_PUBLIC_KEY)%'
+
     crawler_locator:
         class: Symfony\Component\DependencyInjection\ServiceLocator
         arguments:
             - !tagged_iterator crawler
+
+    Symfony\Bridge\Twig\Extension\AssetExtension: '@twig.extension.assets'

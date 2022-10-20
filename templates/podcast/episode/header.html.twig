@@ -1,0 +1,85 @@
+{% set is_overview = current_page == 'overview' %}
+
+<section class="section episode-hero {% if not is_overview %}episode-hero-small{% endif %}">
+  <div class="section-content">
+    <img src="{{ episode|episode_cover('large') }}" alt="Cover for No Agenda Show {{ episode }}"/>
+
+    <div class="hero-details">
+      <div class="hero-text">
+        <div>{{ episode.publishedAt|prettyDate }} &bull; {{ episode.duration|visualTimestamp }}</div>
+        <h1>{{ episode }}</h1>
+      </div>
+
+      <div class="hero-buttons">
+        <a
+          href="{{ episode.recordingUri }}"
+          class="btn btn-resume"
+          data-controller="resume"
+          data-action="resume#clicked"
+          data-resume-metadata-value="{{ episode|player_metadata|json_encode|e('html') }}"
+        >
+          <span class="btn-icon fa-solid fa-fw fa-play" aria-hidden="true" data-resume-target="icon"></span>
+          <span data-resume-target="text"></span>
+        </a>
+
+        <a
+          href="{{ episode.recordingUri }}"
+          class="btn"
+          title="Play from Start"
+          data-controller="play"
+          data-action="play#clicked"
+          data-play-metadata-value="{{ episode|player_metadata|json_encode|e('html') }}"
+          {% if autoplay_timestamp %}data-play-timestamp-value="{{ autoplay_timestamp }}"{% endif %}
+        >
+          <span class="btn-icon fa-solid fa-fw fa-play" aria-hidden="true" data-play-target="icon"></span>
+          <span data-play-target="text">Play</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<nav class="link-group link-group-full">
+  {% if not is_overview %}
+    <a href="{{ path('podcast_episode', {code: episode.code}) }}" class="link collapse-show">
+      <span>Back to Episode</span>
+      <span class="fa-solid fa-headphones fa-fw" aria-hidden="true"></span>
+    </a>
+  {% endif %}
+  <a
+    href="{{ path('podcast_episode', {code: episode.code}) }}"
+    title="{{ episode }}"
+    class="link collapse-hide {% if current_page == 'overview' %}active{% endif %}"
+  >
+    <span>{{ episode }}</span>
+    <span class="fa-solid fa-info-circle fa-fw" aria-hidden="true"></span>
+  </a>
+  {% if episode.shownotes %}
+    <a
+      href="{{ path('podcast_episode_shownotes', {code: episode.code}) }}"
+      title="Shownotes"
+      class="link {% if not is_overview %}collapse-hide{% endif %} {% if current_page == 'shownotes' %}active{% endif %}"
+    >
+      <span>Shownotes</span>
+      <span class="fa-solid fa-file-alt fa-fw" aria-hidden="true"></span>
+    </a>
+  {% endif %}
+  {% if episode.transcript %}
+    <a
+      href="{{ path('podcast_episode_transcript', {code: episode.code}) }}"
+      title="Transcript"
+      class="link {% if not is_overview %}collapse-hide{% endif %} {% if current_page == 'transcript' %}active{% endif %}"
+    >
+      <span>Transcript</span>
+      <span class="fa-solid fa-closed-captioning fa-fw" aria-hidden="true"></span>
+    </a>
+  {% endif %}
+  <a
+    href="{{ path('podcast_episode_chapters', {code: episode.code}) }}"
+    title="Website Chapters"
+    class="link {% if not is_overview %}collapse-hide{% endif %} {% if current_page == 'website_chapters' %}active{% endif %}"
+  >
+    <span>Website Chapters</span>
+    <span class="fa-solid fa-book fa-fw" aria-hidden="true"></span>
+  </a>
+</nav>

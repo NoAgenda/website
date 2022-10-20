@@ -1,0 +1,22 @@
+@import "variables";
+
+.emphasis {
+  font-style: italic;
+}
+
+.sr-text {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  top: auto;
+  overflow: hidden;
+}
+
+.hide {
+  display: none !important;
+}
+
+.rounded {
+  border-radius: $border-radius;
+}

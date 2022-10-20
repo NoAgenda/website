@@ -1,0 +1,56 @@
+{% set nav_links = [
+  {route: 'root', label: 'Home', icon: 'home'},
+  {route: 'podcast', label: 'Podcast', icon: 'podcast'},
+  {route: 'livestream', label: 'Livestream', icon: 'radio'},
+  {route: 'producers', label: 'Our Producers'},
+] %}
+
+<input id="menuToggle" type="checkbox" class="navbar-menu-toggle">
+<div class="navbar-container" data-controller="navbar" data-action="click->navbar#hide">
+  <nav class="navbar">
+    <div class="navbar-content">
+      <a class="navbar-brand" href="{{ path('root') }}">
+        <img src="{{ asset('build/images/website-logo.svg', 'app') }}" alt="No Agenda Logo">
+        <span>No Agenda Show</span>
+      </a>
+      <div class="navbar-actions">
+        {% for link in nav_links %}
+          <a href="{{ path(link.route) }}" class="action action-collapse-hide">
+            <span>{{ link.label }}</span>
+          </a>
+        {% endfor %}
+
+        <div role="button" class="action js" title="Toggle Settings" data-navbar-target="controlsButton" data-action="click->navbar#toggleControls">
+          <span class="fa-solid fa-fw fa-cog" aria-hidden="true"></span>
+        </div>
+        <div role="button" class="action action-collapse-show js" title="Toggle Menu" data-navbar-target="menuButton" data-action="click->navbar#toggleMenu">
+          <span class="fa-solid fa-fw fa-bars" aria-hidden="true"></span>
+        </div>
+        <label for="menuToggle" role="button" class="action action-collapse-show noscript-flex" title="Toggle Menu">
+          <span class="fa-solid fa-fw fa-bars" aria-hidden="true"></span>
+        </label>
+      </div>
+    </div>
+  </nav>
+
+  <div class="navbar-controls hide" data-navbar-target="controls">
+    <div class="navbar-controls-content">
+      <div class="controls" data-controller="controls"></div>
+    </div>
+  </div>
+
+  <div class="navbar-menu hide" data-navbar-target="menu">
+    <nav class="navbar-links">
+      {% for link in nav_links %}
+      <a href="{{ path(link.route) }}" class="link">
+        <span>{{ link.label }}</span>
+        {% if link.icon is defined %}
+          <span class="fa-solid fa-{{ link.icon}} fa-fw" aria-hidden="true"></span>
+        {% endif %}
+      </a>
+      {% endfor %}
+    </nav>
+  </div>
+</div>
+
+<div class="navbar-spacer"></div>

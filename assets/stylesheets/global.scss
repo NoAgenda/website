@@ -1,0 +1,54 @@
+@import "variables";
+
+*, ::after, ::before {
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  background: var(--bg-color);
+  color: var(--text-color);
+  font-family: Mukta, sans-serif;
+  font-size: 17px;
+  line-height: 1.4em;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  line-height: 1.2em;
+  margin-bottom: $gap-small;
+}
+
+a {
+  color: var(--text-color);
+}
+
+[role="button"] {
+  cursor: pointer;
+}
+
+.noscript-flex {
+  display: none !important;
+}
+
+.swup-progress-bar {
+  height: 3px;
+  background-color: var(--primary);
+  box-shadow: inset 0 0 8px var(--primary);
+}
+
+.swup-transition {
+  transition: 0.4s;
+  opacity: 1;
+}
+
+html.is-animating {
+  .swup-transition, .navbar {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+}
+
+.notifications-hide {
+  display: none !important;
+}

@@ -112,15 +112,27 @@ docker compose exec app bin/console messenger:consume crawler
 See the [Symfony Messenger documentation](https://symfony.com/doc/4.4/messenger.html)
 for information on the messenger queue.
 
+## Push notifications
+
+To enable push notification support you'll need to generate VAPID keys.
+
+```shell
+npx web-push generate-vapid-keys
+```
+
+Add the keys to your `.env.local` file.
+
 ## Testing
 
 ### PHP
+
 To execute the PHP/Symfony unit tests run:
 ```bash
 php bin/phpunit
 ```
 
 ### JavaScript
+
 To execute the JavaScript unit tests run:
 ```bash
 docker exec -t noagenda_assets_1 npm run test

@@ -1,0 +1,88 @@
+@import "../mixins";
+@import "../variables";
+
+.archive {
+  .archive-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: $gap;
+
+    .episode {
+      text-decoration: none;
+
+      @include breakpoint-small-down {
+        width: calc(50% - ($gap * (1 / 2)));
+      }
+
+      @include breakpoint-small-only {
+        width: calc(33.3% - ($gap * (2 / 3)));
+      }
+
+      @include breakpoint-medium-only {
+        width: calc(33.3% - ($gap * (2 / 3)));
+      }
+
+      @include breakpoint-large-up {
+        width: calc(25% - ($gap * (3 / 4)));
+      }
+
+      h3 {
+        margin: 6px 0 0;
+      }
+
+      img {
+        max-width: 100%;
+      }
+    }
+  }
+
+  .archive-pager {
+    display: flex;
+    justify-content: center;
+    gap: $gap-tiny;
+
+    .pagination__item--current-page {
+      @include button-colors(var(--primary-accent), var(--primary-accent), var(--primary-contrast));
+
+      cursor: initial;
+    }
+
+    .pagination__item--disabled,
+    .pagination__item--separator {
+      @include button-colors(var(--accent-3), var(--accent-3), var(--text-color));
+
+      cursor: initial;
+    }
+  }
+
+  .archive-list {
+    .episode {
+      display: flex;
+      justify-content: space-between;
+      padding: $gap-small;
+      text-decoration: none;
+
+      &:active,
+      &:hover {
+        background-color: var(--accent-1);
+      }
+    }
+
+    .episode + .episode {
+      border-top: 1px solid var(--accent-1);
+    }
+  }
+}
+
+@include breakpoint-medium-down {
+  .archive-pager-large {
+    display: none !important;
+  }
+}
+
+@include breakpoint-medium-up {
+  .archive-pager-small {
+    display: none !important;
+  }
+}

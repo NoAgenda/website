@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% set page_title = 'Offline' %}
+
+{% block content %}
+  <section class="section">
+    <div class="section-content">
+      <h1>Oops, you're not connected</h1>
+      <p>We were unable to serve your request, most likely because you're not connected to the internet.</p>
+      <p>
+        If you're connected to the internet but still see this message, <a href="{{ social_profile_url }}">Let us know</a>
+        on No Agenda Social.
+      </p>
+    </div>
+  </section>
+{% endblock %}

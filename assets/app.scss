@@ -1,102 +1,23 @@
-@import "stylesheets/bootstrap";
-@import "stylesheets/fontawesome";
+@import "~normalize.css";
 
-@import "stylesheets/archive";
-@import "stylesheets/masthead-player";
-@import "stylesheets/interactive-player";
+@import "stylesheets/fonts";
+@import "stylesheets/global";
+@import "stylesheets/helpers";
+@import "stylesheets/icons";
 
-@import url('https://fonts.googleapis.com/css2?family=Mukta');
-
-body {
-  min-height: 100vh;
-  box-shadow: 0 0 50px rgba(0, 0, 0, 0.1) inset;
-}
-
-.section-dark {
-  background: $tertiary;
-  color: $white;
-
-  h1, h2, h3, h4, h5, h6,
-  .h1, .h2, .h3, .h4, .h5, .h6 {
-    color: $white;
-  }
-
-  a {
-    color: $white;
-
-    &:hover, &:active {
-      color: $link-hover-color;
-
-      h1, h2, h3, h4, h5, h6,
-      .h1, .h2, .h3, .h4, .h5, .h6 {
-        color: $link-hover-color;
-      }
-    }
-  }
-}
-
-details {
-  summary {
-    border: 1px solid $separator-color;
-    padding: map_get($spacers, 2) $spacer,
-  }
-}
-
-na-chapter-list .list-group-item-action {
-  &:hover, &:active {
-    color: inherit;
-  }
-}
-
-.bottom-holder {
-  background: $secondary;
-  border-top-left-radius: .25rem;
-  border-top-right-radius: .25rem;
-  box-shadow: 0 0 2px rgba(119, 119, 119, 0.5);
-}
-
-.action-box {
-  display: inline-block;
-  margin: map-get($spacers, 1) 0;
-  padding: map-get($spacers, 1);
-  background: $secondary;
-  box-shadow: 0 0 2px rgba(119, 119, 119, 0.5);
-
-  &+ .action-box {
-    margin-left: map-get($spacers, 2);
-  }
-}
-
-.loading-bar {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  overflow: hidden;
-  z-index: 2000;
-
-  span {
-    display: block;
-    height: 100%;
-  }
-
-  .progress {
-    background-color: $highlight;
-    box-shadow: $box-shadow-sm;
-    animation: progressBar 3s ease-in-out;
-    animation-fill-mode: both;
-  }
-}
-
-@keyframes progressBar {
-  0% { width: 0; }
-  100% { width: 100%; }
-}
-
-@include media-breakpoint-up(md) {
-  .md-separator {
-    border-right: 1px solid $separator-color;
-  }
-}
+@import "stylesheets/components/alert";
+@import "stylesheets/components/archive";
+@import "stylesheets/components/buttons";
+@import "stylesheets/components/call2action";
+@import "stylesheets/components/chapters";
+@import "stylesheets/components/chat";
+@import "stylesheets/components/episodes";
+@import "stylesheets/components/forms";
+@import "stylesheets/components/link-group";
+@import "stylesheets/components/notice";
+@import "stylesheets/components/player";
+@import "stylesheets/components/navbar";
+@import "stylesheets/components/sections";
+@import "stylesheets/components/shownotes";
+@import "stylesheets/components/sites";
+@import "stylesheets/components/transcript";

@@ -1,0 +1,89 @@
+{% extends 'base.html.twig' %}
+
+{% import 'call2action.html.twig' as call2action %}
+
+{% set page_title = 'Subscribe to No Agenda' %}
+{% set page_description = 'Never miss an episode by subscribing to The No Agenda Show!' %}
+
+{% block content %}
+  <section class="section">
+    <div class="section-content">
+      <h1>Subscribe to No Agenda</h1>
+      <p>
+        No Agenda is a real podcast available in most podcast apps available online. Episodes are distributed from
+        our own infrastructure for free to ensure anybody can listen and enjoy our show, a staple of the value for value model.
+      </p>
+    </div>
+  </section>
+
+  <div class="section-row">
+    <section class="section js" data-controller="notifications" data-notifications-type-value="episode">
+      <div class="section-content">
+        <h2>Notifications</h2>
+        <p>Get notified when a new episode of the show is available so you'll never miss an episode again!</p>
+        <p class="emphasis hide" data-notifications-target="help"></p>
+      </div>
+      <div class="section-buttons">
+        <button
+          class="btn btn-wide"
+          title="Receive a notification when a new episode is available"
+          data-notifications-target="button"
+          data-action="notifications#toggle"
+        >
+          <span class="btn-icon fa-solid fa-bell fa-fw" aria-hidden="true"></span>
+          <span>Notify Me</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-content">
+        <h2 id="feed">Podcast Feed</h2>
+        <p>
+          Use the podcast feed URL to manually add the show to a podcast app or an app supporting RSS feeds. Our feed
+          is available at:
+        </p>
+        <p>
+          <a href="http://feed.nashownotes.com/rss.xml" class="btn btn-accent">http://feed.nashownotes.com/rss.xml</a>
+        </p>
+      </div>
+    </section>
+  </div>
+
+  <div class="section-gutter"></div>
+
+  <section class="section">
+    <div class="section-content">
+      <h2>Podcast Apps</h2>
+      <p>
+        Podcast apps make it easier for frequent podcast listeners to find recent episodes of their favorite shows
+        by aggregating podcasts they're subscribed to, with a user interface optimized for podcast playback.
+        Subscribing to No Agenda through apps is easy, but not every app is allowed to play episodes of our show.
+      </p>
+      <h3>Apps Allowed to Play our Show</h3>
+      <p>
+        All podcast apps supporting the open podcasting ecosystem can play No Agenda. Either search for "No Agenda"
+        from within the app or add the <a href="#feed">podcast feed</a> shown above directly to your list of
+        podcasts. If you can't subscribe to a podcast feed from the app, it's likely not built with the podcasting
+        ecosystem in mind.
+      </p>
+      <h3>Apps Not Allowed to Play our Show</h3>
+      <p>
+        Big media platforms like Spotify and YouTube have created podcast-like experiences in their apps but use their
+        infrastructure to republish existing podcasts while filling them with advertisements and trackers. Meanwhile,
+        they're getting stricter about which content is allowed on their platforms every day. No Agenda does not
+        support this practice, as it goes against the nature of the open podcasting ecosystem, one of the few remaining
+        media platforms not controlled by big corporations. That's why we forbid these platforms from publishing our
+        show to their audience. Read more about who we are and what we do in our
+        <a href="{{ path('mission_statement') }}">mission statement</a>.
+      </p>
+    </div>
+  </section>
+
+  <div class="section-gutter"></div>
+
+  <div class="section-row">
+    {{ call2action.podcasting20() }}
+    {{ call2action.producers() }}
+  </div>
+{% endblock %}

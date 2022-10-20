@@ -68,10 +68,12 @@ class EpisodeRepository extends AbstractRepository
         ]);
     }
 
-    /** @return Episode[] */
-    public function getHomepageEpisodes(): array
+    public function findSpecialEpisodes(): array
     {
-        return $this->findLatestEpisodes();
+        return $this->findBy([
+            'published' => true,
+            'special' => true,
+        ]);
     }
 
     public function paginateEpisodes($page = 1): Pagerfanta
@@ -81,22 +83,6 @@ class EpisodeRepository extends AbstractRepository
         $builder
             ->select('episode', 'chapter')
             ->where($builder->expr()->eq('episode.published', true))
-            ->leftJoin('episode.chapters', 'chapter')
-            ->orderBy('episode.publishedAt', 'desc');
-
-        return $this->createPaginator($builder->getQuery(), $page);
-    }
-
-    public function paginateSpecialEpisodes($page = 1): Pagerfanta
-    {
-        $builder = $this->createQueryBuilder('episode');
-
-        $builder
-            ->select('episode', 'chapter')
-            ->where($builder->expr()->andX(
-                $builder->expr()->eq('episode.published', true),
-                $builder->expr()->eq('episode.special', true),
-            ))
             ->leftJoin('episode.chapters', 'chapter')
             ->orderBy('episode.publishedAt', 'desc');
 

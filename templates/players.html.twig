@@ -1,0 +1,132 @@
+<div
+  class="player player-small hide"
+  data-controller="player player--progress"
+>
+  <div class="player-content">
+    <div role="button" class="player-cover" data-action="click->player#expand">
+      <octopod-cover
+        image="{{ asset('build/images/placeholder_large.jpg', 'app') }}"
+        data-player-target="cover"
+      ></octopod-cover>
+    </div>
+
+    <div role="button" class="player-details" data-action="click->player#expand">
+      <div class="player-title" data-player-target="title"></div>
+    </div>
+
+    <button
+      title="Loading"
+      class="player-play player-action"
+      data-action="player#play"
+      data-player-target="playButton"
+    >
+      <span class="player-action-icon fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true" data-player-target="playIcon"></span>
+    </button>
+
+    <div class="player-progress">
+      <div class="progressbar" data-player--progress-target="container">
+        <div class="progressbar-elapsed" data-player--progress-target="elapsed"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  class="player player-large player-hide hide"
+  data-controller="player player--progress"
+>
+  <div class="player-content">
+    <div class="player-cover" data-action="click->player#resizeCover" title="Resize Artwork">
+      <octopod-cover
+        image="{{ asset('build/images/placeholder_large.jpg', 'app') }}"
+        data-player-target="cover"
+      ></octopod-cover>
+    </div>
+
+    <div class="player-details">
+      <div class="player-title" data-player-target="title"></div>
+      <div
+        class="player-transcript"
+        data-controller="player--transcript"
+        data-player-target="transcript"
+      ></div>
+    </div>
+
+    <button
+      title="Loading"
+      class="player-play player-action"
+      data-action="player#play"
+      data-player-target="playButton"
+    >
+      <span class="player-action-icon fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true" data-player-target="playIcon"></span>
+    </button>
+
+    <div class="player-progress player-playback-control" data-player--progress-target="area">
+      <div class="player-timestamps">
+        <span data-player--progress-target="progress">0:00</span>
+        <span aria-hidden="true">&nbsp;</span>
+        <span data-player--progress-target="remaining">0:00</span>
+        <span class="seek-timestamp" data-player--progress-target="seek"></span>
+      </div>
+      <div class="progressbar" data-player--progress-target="container">
+        <div class="progressbar-elapsed" data-player--progress-target="elapsed"></div>
+        <div class="progressbar-pointer hide" data-player--progress-target="pointer"></div>
+      </div>
+    </div>
+
+    <button
+      class="player-resize player-action"
+      data-action="player#minimize"
+    >
+      <span class="player-action-icon fa-solid fa-times fa-fw" aria-hidden="true"></span>
+      <span class="player-action-text">Close</span>
+    </button>
+
+    <button
+      title="Skip Backward 15 Seconds"
+      class="player-seek-backward player-action player-playback-control"
+      data-action="player#seekBackward"
+      data-player-target="skipBackwardButton"
+    >
+      <div aria-hidden="true">
+        <span class="player-action-icon fa-solid fa-rotate-backward fa-fw"></span>
+        <span class="player-action-text" data-player-target="skipBackwardButtonText">15s</span>
+      </div>
+    </button>
+
+    <button
+      title="Skip Forward 15 Seconds"
+      class="player-seek-forward player-action player-playback-control"
+      data-action="player#seekForward"
+      data-player-target="skipForwardButton"
+    >
+      <div aria-hidden="true">
+        <span class="player-action-icon fa-solid fa-rotate-forward fa-fw"></span>
+        <span class="player-action-text" data-player-target="skipForwardButtonText">15s</span>
+      </div>
+    </button>
+
+    <button
+      title="Playback Speed: Times 1"
+      class="player-speed player-action player-playback-control"
+      data-action="player#changePlaybackSpeed"
+      data-player-target="playbackSpeedButton"
+    >
+      <div aria-hidden="true">
+        <span class="player-action-icon fa-solid fa-tachometer fa-fw"></span>
+        <span class="player-action-text" data-player-target="playbackSpeedButtonText">1&times;</span>
+      </div>
+    </button>
+
+    <button
+      title="Show Live Transcript"
+      class="player-transcript player-action player-playback-control"
+      data-player-target="transcriptButton"
+      data-action="player#toggleTranscript"
+    >
+      <span class="player-action-icon fa-solid fa-closed-captioning fa-fw" aria-hidden="true"></span>
+    </button>
+  </div>
+</div>
+
+<div class="player-spacer"></div>

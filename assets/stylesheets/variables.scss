@@ -1,0 +1,91 @@
+/*
+https://coolors.co/palette/e63946-f1faee-a8dadc-457b9d-1d3557
+*/
+
+$primary: #457b9d;
+$donate: #e63946;
+
+$light-bg: #eeeeee;
+$dark-bg: #36393e;
+
+$light-text: #444444;
+$dark-text: #d0d0d0;
+
+$container-width: 87.5vw;
+$container-max-width: 1072px;
+$container-spacer: calc((100vw - $container-width) / 2);
+
+$progressbar-height-small: 4px;
+$progressbar-height-large: 16px;
+
+$player-width: 90vw;
+$player-max-width: calc($container-max-width * 1.025);
+$player-height-small: #{64px + $progressbar-height-small};
+
+$breakpoint-tiny: 432px;
+$breakpoint-small: 576px;
+$breakpoint-medium: 768px;
+$breakpoint-large: 992px;
+$breakpoint-full: calc($container-max-width / 87.5 * 100);
+
+$gap-tiny: 8px;
+$gap-small: 12px;
+$gap: 16px;
+$gap-large: 20px;
+$gap-huge: 24px;
+
+$border-radius: 6px;
+
+:root {
+  --primary: #{$primary};
+  --primary-accent: #{darken($primary, 10)};
+  --primary-contrast: #eeeeee;
+  --donate: #{$donate};
+  --donate-accent: #{darken($donate, 10)};
+  --donate-contrast: #eeeeee;
+
+  --success: #51d4a3;
+  --warning: #b65a54;
+}
+
+@mixin light-scheme() {
+  --bg-color: #{$light-bg};
+  --text-color: #{$light-text};
+  --highlight-color: #{lighten($light-text, 20)};
+
+  --accent-1: #{darken($light-bg, 8)};
+  --accent-2: #{darken($light-bg, 16)};
+  --accent-3: #{darken($light-bg, 24)};
+
+  --shadow-color: #{rgba($light-text, .3)};
+}
+
+@mixin dark-scheme() {
+  --bg-color: #{$dark-bg};
+  --text-color: #{$dark-text};
+  --highlight-color: #{darken($dark-text, 20)};
+
+  --accent-1: #{lighten($dark-bg, 10)};
+  --accent-2: #{lighten($dark-bg, 20)};
+  --accent-3: #{lighten($dark-bg, 30)};
+
+  --shadow-color: #{rgba($dark-text, .3)};
+}
+
+:root {
+  @include light-scheme();
+}
+
+.na-dark {
+  @include dark-scheme();
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    @include dark-scheme();
+  }
+
+  .na-light {
+    @include light-scheme();
+  }
+}

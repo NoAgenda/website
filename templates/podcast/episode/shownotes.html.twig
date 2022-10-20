@@ -1,0 +1,103 @@
+{% extends 'base.html.twig' %}
+
+{% import _self as macro %}
+
+{% set page_title = "No Agenda #{episode.code} Shownotes" %}
+
+{% block metatags %}
+  {{ parent() }}
+  <meta property="og:title" content="No Agenda Show {{ episode.code }} Shownotes"/>
+  <meta property="og:description" content="Browse the shownotes for No Agenda Show {{ episode }}."/>
+  <meta property="og:url" content="{{ url('podcast_episode_shownotes', {code: episode.code}) }}"/>
+  <meta property="og:image" content="{{ episode|episode_cover('small') }}"/>
+{% endblock %}
+
+{% macro render_outline_list(outline) %}
+  <details>
+    <summary>{{ outline.text|raw }}</summary>
+    <div class="shownotes">
+      {% for child_outline in outline['@outlines'] %}
+        {{ macro.render_outline(child_outline) }}
+      {% endfor %}
+    </div>
+  </details>
+{% endmacro %}
+
+{% macro render_outline(outline) %}
+  {% import _self as macro %}
+  {% if outline['@outlines'] is defined %}
+    {{ macro.render_outline_list(outline) }}
+  {% elseif outline.type|default('text') == 'link' and outline.text|trim|slice(0, 2) != '<a' %}
+    <div class="outline">
+      <a href="{{ outline.url|default('#') }}">{{ outline.text|trim }}</a>
+    </div>
+  {% elseif outline.text|trim|raw %}
+    <div class="outline">{{ outline.text|trim|raw }}</div>
+  {% endif %}
+{% endmacro %}
+
+{% block content %}
+  {% include 'podcast/episode/header.html.twig' with {current_page: 'shownotes'} %}
+
+  <div class="section-row section-promo-row">
+    <section class="section">
+      <div class="section-content">
+        <h2>Shownotes</h2>
+        <p>
+          Every new episode of No Agenda is accompanied by a comprehensive list of shownotes curated by Adam while
+          preparing for the show. Clips played by the hosts during the show can also be found here.
+        </p>
+      </div>
+      <div class="section-buttons-full">
+        <a href="{{ episode.publicShownotesUri }}" class="btn btn-accent">View Shownotes on adam.curry.com</a>
+        <a href="{{ path('podcast_shownotes') }}" class="btn btn-link">Learn More</a>
+      </div>
+    </section>
+    <div class="section-promo section-promo-filler">
+      <span class="fa-solid fa-file-alt fa-5x" aria-hidden="true"></span>
+    </div>
+  </div>
+
+  <div data-controller="shownotes">
+    <section class="section">
+      <div class="section-content">
+        <div class="shownotes">
+          {% for outline in shownotes.outlines %}
+            {{ macro.render_outline_list(outline) }}
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-content">
+        <h2>Clips & Documents</h2>
+
+        <div class="shownotes">
+          {% for category, clips in shownotes.clips %}
+            <details>
+              <summary>{{ category }}</summary>
+              <div class="shownotes">
+                {% for clip in clips %}
+                  <details data-shownotes-details="{{ clip|json_encode|e('html') }}">
+                    <summary>{{ clip.title }}</summary>
+                    <div class="permalink"><a href="{{ clip.uri }}">Permalink</a></div>
+                    {% if clip.type == 'audio' %}
+                      <noscript>
+                        <audio src="{{ clip.uri }}" preload="none" controls></audio>
+                      </noscript>
+                    {% elseif clip.type == 'image' %}
+                      <noscript>
+                        <img src="{{ clip.uri }}" alt="Shownotes Image">
+                      </noscript>
+                    {% endif %}
+                  </details>
+                {% endfor %}
+              </div>
+            </details>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+  </div>
+{% endblock %}

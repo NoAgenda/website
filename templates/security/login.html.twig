@@ -1,21 +1,60 @@
-{% extends 'layout.html.twig' %}
+{% extends 'base.html.twig' %}
 
-{% set page_title = 'Sign In - No Agenda Show' %}
+{% import 'call2action.html.twig' as call2action %}
+{% import 'components.html.twig' as components %}
+{% import 'security/macro.html.twig' as security %}
+
+{% set page_title = 'Sign In - No Agenda Website' %}
 
 {% block content %}
-<div class="container my-md-5">
-  {% include 'security/parts/notice.html.twig' %}
+  <div class="section-row">
+    <section class="section">
+      <div class="section-content">
+        <h2>Sign In</h2>
+        <p>Welcome back producer.</p>
 
-  <div class="row flex-md-row-reverse">
-    <div class="col-md-6">
-      {% include 'security/parts/login_form.html.twig' %}
-    </div>
+        <form action="{{ path('security_login') }}" method="post" class="form" data-login-form>
+          {% if authenticationError %}
+            {{ components.alert(authenticationError.message) }}
+          {% endif %}
+          {% for message in app.flashes('authentication') %}
+            {{ components.alert(message) }}
+          {% endfor %}
 
-    <div class="col-md-6 border-right">
-      {% include 'security/parts/registration_form.html.twig' %}
-    </div>
+          <div class="form-input">
+            <label for="inputUsername">Enter your username</label>
+            <input type="text" id="inputUsername" name="_username" placeholder="Username" {% if lastUsername %}value="{{ lastUsername }}"{% endif %} required autofocus>
+          </div>
+
+          <div class="form-input">
+            <label for="inputPassword">Enter your password</label>
+            <input type="password" id="inputPassword" name="_password" placeholder="Password" required>
+          </div>
+
+          <div class="form-checkbox">
+            <label>
+              <input type="checkbox" name="_remember_me" checked>
+              <span>Keep me signed in</span>
+            </label>
+          </div>
+
+          <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+          <div class="form-buttons">
+            <button type="submit" class="btn">Sign In</button>
+            <a href="{{ path('security_forgot_password') }}" class="btn btn-link">Forgot Password?</a>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    {{ security.explanation() }}
   </div>
 
-  {% include 'security/parts/rules.html.twig' %}
-</div>
+  <div class="section-gutter"></div>
+
+  <div class="section-row">
+    {{ call2action.website() }}
+    {{ call2action.valueForValue() }}
+  </div>
 {% endblock %}

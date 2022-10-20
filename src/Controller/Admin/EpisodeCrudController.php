@@ -36,10 +36,8 @@ class EpisodeCrudController extends AbstractCrudController
 
     public function configureActions(Actions $actions): Actions
     {
-        $episodeUrl = Action::new('player', 'Go To Episode', 'fas fa-external-link-alt')
-            ->linkToRoute('player', function (Episode $episode): array {
-                return ['episode' => $episode->getCode()];
-            })
+        $episodeUrl = Action::new('view', 'Go To Episode', 'fas fa-external-link-alt')
+            ->linkToRoute('podcast_episode', fn (Episode $episode) => ['code' => $episode->getCode()])
             ->setHtmlAttributes(['target' => '_blank']);
 
         return $actions

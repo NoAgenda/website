@@ -1,19 +1,15 @@
-{% extends 'layout.html.twig' %}
+{% extends 'base.html.twig' %}
+
+{% set page_title = 'Glitch - No Agenda Website' %}
 
 {% block content %}
-  <div class="container">
-    <div class="my-5">
-      <h3>Oops, the page you requested could not be found.</h3>
+  <section class="section">
+    <div class="section-content">
+      <h2>Oops, the page you requested could not be found.</h2>
       <p>
-        If you think this is a mistake, feel free to contact our resident Dude Named Ben on
-        <a href="https://noagendasocial.com/@woodstock" title="Woodstock on NA Social (Mastodon)">NA Social (@woodstock)</a>
-        for help.
-      </p>
-      <p>
-        <a href="/" class="btn-link">Go to the homepage</a>
+        If you think this glitch is a mistake, feel free to contact our resident Dude Named Ben on No Agenda Social
+        (<a href="https://noagendasocial.com/@woodstock">@woodstock@noagendasocial.com</a>) for help.
       </p>
     </div>
-
-    <na-audio-toolbar-spacer></na-audio-toolbar-spacer>
-  </div>
+  </section>
 {% endblock %}

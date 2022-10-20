@@ -1,0 +1,73 @@
+{% extends 'base.html.twig' %}
+
+{% set page_title = "No Agenda #{episode}" %}
+{% set page_url = url('podcast_episode', {code: episode.code}) %}
+
+{% block metatags %}
+  {{ parent() }}
+  <meta property="og:title" content="No Agenda Show {{ episode }}"/>
+  <meta property="og:description" content="Listen to No Agenda Show {{ episode }}."/>
+  <meta property="og:url" content="{{ page_url }}"/>
+  <meta property="og:image" content="{{ episode|episode_cover('small') }}"/>
+{% endblock %}
+
+{% block content %}
+  {% include 'podcast/episode/header.html.twig' with {current_page: 'overview'} %}
+
+  <section class="section">
+    <div class="section-content">
+      <h2>Credits</h2>
+      <h3>Hosts</h3>
+      <p><a href="{{ path('adam') }}">Adam Curry</a> & <a href="{{ path('john') }}">John C. Dvorak</a></p>
+
+      {% if shownotes %}
+        {% for credit_title, credits in shownotes.credits %}
+          <h3>{{ credit_title }}</h3>
+          <p>{{ credits|join(', ')|raw }}</p>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-content">
+      <h2>Information</h2>
+      <p>Episode "{{ episode }}" was recorded on {{ episode.publishedAt|prettyDate }}.</p>
+    </div>
+    <div class="section-buttons-full">
+      <a href="{{ episode.recordingUri }}" class="btn btn-accent">
+        <span class="btn-icon fa-solid fa-download fa-fw" aria-hidden="true"></span>
+        <span>Direct Link to Audio (Download)</span>
+      </a>
+      {% if episode.publicShownotesUri %}
+        <a href="{{ episode.publicShownotesUri }}" class="btn btn-accent">
+          <span>View Episode on adam.curry.com</span>
+        </a>
+      {% endif %}
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-content">
+      <h2>Propagate the Formula</h2>
+    </div>
+    <div class="section-buttons-full">
+      <button class="btn btn-accent" data-clipboard-text="{{ page_url }}">
+        <span class="btn-icon fa-solid fa-link fa-fw" aria-hidden="true"></span>
+        <span>Copy Episode Link</span>
+      </button>
+      <a href="https://sharetomastodon.github.io/?title={{ page_title }}&url={{ page_url }}" class="btn btn-accent">
+        <span class="btn-icon fa-brands fa-mastodon fa-fw" aria-hidden="true"></span>
+        <span>Share on the Fediverse</span>
+      </a>
+      <a href="https://twitter.com/intent/tweet?text={{ page_title }} {{ page_url }}" class="btn btn-accent">
+        <span class="btn-icon fa-brands fa-twitter fa-fw" aria-hidden="true"></span>
+        <span>Share on Twitter</span>
+      </a>
+      <a href="https://www.facebook.com/sharer/sharer.php?u={{ page_url }}" class="btn btn-accent">
+        <span class="btn-icon fa-brands fa-facebook fa-fw" aria-hidden="true"></span>
+        <span>Share on Facebook</span>
+      </a>
+    </div>
+  </section>
+{% endblock %}

@@ -1,0 +1,81 @@
+@import "../mixins";
+@import "../variables";
+
+.transcript-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  font-size: 18px;
+
+  .transcript-active {
+    background: var(--accent-2);
+  }
+
+  .transcript-text {
+    grid-column-start: 2;
+  }
+
+  .transcript-timestamp {
+    grid-column-start: 1;
+    text-align: right;
+
+    &.clipboard-animate {
+      transition: background-color 1s;
+    }
+
+    &.clipboard-error {
+      background-color: var(--warning);
+    }
+
+    &.clipboard-success {
+      background-color: var(--success);
+    }
+  }
+
+  .transcript-text,
+  .transcript-timestamp {
+    padding: 4px $gap-tiny;
+
+    &:active, &:hover {
+      background: var(--accent-1);
+    }
+  }
+}
+
+.transcript-buttons {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+}
+
+@include breakpoint-medium-down {
+  body.body-player {
+    .transcript-buttons {
+      padding-bottom: calc($gap + $player-height-small + $gap);
+    }
+  }
+}
+
+@include breakpoint-medium-only {
+  body.body-player {
+    .transcript-buttons {
+      padding-bottom: calc($gap + ($gap-small * 2) + 128px + $gap);
+    }
+  }
+}
+
+@include breakpoint-large-up {
+  body.body-player {
+    .transcript-buttons {
+      padding-bottom: calc($gap + ($gap-small * 2) + 160px + $gap);
+    }
+  }
+
+  body.body-player-cover-expanded {
+    .transcript-buttons {
+      padding-bottom: calc($gap + ($gap-small * 2) + 320px + $gap);
+    }
+  }
+}

@@ -8,21 +8,24 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Contracts\Service\ServiceSubscriberInterface;
-use Symfony\Contracts\Service\ServiceSubscriberTrait;
 
-class RecordCommand extends Command implements ServiceSubscriberInterface
+class RecordCommand extends Command
 {
-    use ServiceSubscriberTrait;
-
     protected static $defaultName = 'record';
     protected static $defaultDescription = 'The type of data to record: livestream, chat';
 
+    public function __construct(
+        private readonly ChatRecorder $chatRecorder,
+        private readonly LivestreamRecorder $livestreamRecorder,
+    ) {
+        parent::__construct();
+    }
+
     protected function configure(): void
     {
-        $this
-            ->addArgument('data', InputArgument::REQUIRED, 'The type of data to record: livestream, chat')
-        ;
+        $this->setDefinition([
+           new InputArgument('data', InputArgument::REQUIRED, 'The type of data to record: livestream, chat'),
+        ]);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -30,19 +33,11 @@ class RecordCommand extends Command implements ServiceSubscriberInterface
         $data = $input->getArgument('data');
 
         $actions = [
-            'chat' => function () use ($output) {
-                $recorder = $this->chatRecorder();
-
-                $recorder->record();
-            },
-            'livestream' => function () use ($output) {
-                $recorder = $this->livestreamRecorder();
-
-                $recorder->record();
-            },
+            'chat' => fn () => $this->chatRecorder->record(),
+            'livestream' => fn () => $this->livestreamRecorder->record(),
         ];
 
-        if (isset($actions[$data])) {
+        if (array_key_exists($data, $actions)) {
             $actions[$data]();
 
             return Command::SUCCESS;
@@ -51,15 +46,5 @@ class RecordCommand extends Command implements ServiceSubscriberInterface
         $output->writeln("Invalid data type: $data");
 
         return Command::INVALID;
-    }
-
-    private function chatRecorder(): ChatRecorder
-    {
-        return $this->container->get(__METHOD__);
-    }
-
-    private function livestreamRecorder(): LivestreamRecorder
-    {
-        return $this->container->get(__METHOD__);
     }
 }
