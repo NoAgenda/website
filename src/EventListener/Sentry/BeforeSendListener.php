@@ -23,7 +23,7 @@ class BeforeSendListener
         AccessDeniedException::class,
     ];
 
-    public function __invoke(Event $event, EventHint $hint): ?Event
+    public function __invoke(Event $event, ?EventHint $hint): ?Event
     {
         foreach ($this->ignoredExceptions as $ignoredException) {
             if ($hint->exception instanceof $ignoredException) {
