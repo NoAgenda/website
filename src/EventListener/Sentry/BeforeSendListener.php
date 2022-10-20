@@ -12,7 +12,7 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class BeforeSendListener
 {
-    private $ignoredExceptions = [
+    private static array $ignoredExceptions = [
         // http
         AccessDeniedHttpException::class,
         BadRequestHttpException::class,
@@ -25,7 +25,7 @@ class BeforeSendListener
 
     public function __invoke(Event $event, ?EventHint $hint): ?Event
     {
-        foreach ($this->ignoredExceptions as $ignoredException) {
+        foreach (self::$ignoredExceptions as $ignoredException) {
             if ($hint?->exception instanceof $ignoredException) {
                 return null;
             }

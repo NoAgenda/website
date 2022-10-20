@@ -1,0 +1,62 @@
+{% extends 'base.html.twig' %}
+
+{% set page_title = "No Agenda #{episode.code} Transcript" %}
+
+{% block metatags %}
+  {{ parent() }}
+  <meta property="og:title" content="No Agenda Show {{ episode.code }} Transcript"/>
+  <meta property="og:description" content="Browse the transcript for No Agenda Show {{ episode }}."/>
+  <meta property="og:url" content="{{ url('podcast_episode_transcript', {code: episode.code}) }}"/>
+  <meta property="og:image" content="{{ episode|episode_cover('small') }}"/>
+{% endblock %}
+
+{% block content %}
+  {% include 'podcast/episode/header.html.twig' with {current_page: 'transcript'} %}
+
+  <div class="section-row section-promo-row">
+    <section class="section">
+      <div class="section-content">
+        <div class="section-content">
+          <h2>Transcript</h2>
+          <p>The transcripts of No Agenda are automatically generated and therefore, not fully accurate. Discretion is advised.</p>
+
+          <p class="js">
+            Click the text to start playing from that position in the show. Click the timestamp to copy a direct link to
+            that position to your clipboard in order to propagate the formula.
+          </p>
+        </div>
+        <div class="section-buttons-full">
+          <a href="{{ episode.transcriptUri }}" class="btn btn-accent" download>Download Transcript</a>
+        </div>
+      </div>
+    </section>
+    <div class="section-promo section-promo-filler">
+      <span class="fa-solid fa-file-alt fa-5x" aria-hidden="true"></span>
+    </div>
+  </div>
+
+  <section class="section" data-controller="transcript" data-transcript-metadata-value="{{ episode|player_metadata|json_encode|e('html') }}">
+    <div class="section-content">
+      <div class="transcript-grid" data-transcript-target="grid">
+        {% for line in transcript_lines %}
+          <div
+            class="transcript-timestamp"
+            data-clipboard-text="{{ url('podcast_episode_transcript', {code: episode.code, t: line.startTime|prettyTimestamp}) }}"
+          >
+            {{ line.startTime|prettyTimestamp }}
+          </div>
+
+          <div
+            class="transcript-text"
+            data-start-position="{{ line.startTime }}"
+            data-end-position="{{ line.endTime }}">
+            {{ line.text }}
+          </div>
+        {% endfor %}
+      </div>
+      <div class="transcript-buttons">
+        <button class="btn hide" data-action="transcript#toggleAutoScroll" data-transcript-target="autoScrollButton">Auto Scroll</button>
+      </div>
+    </div>
+  </section>
+{% endblock %}

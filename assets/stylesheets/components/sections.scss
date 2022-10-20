@@ -1,0 +1,206 @@
+@import "../mixins";
+@import "../variables";
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: $gap-small;
+  margin: $gap-huge 0;
+
+  .section-buttons,
+  .section-buttons-full,
+  .section-content {
+    max-width: $container-max-width;
+    width: $container-width;
+    margin: 0 auto;
+  }
+
+  .section-buttons {
+    display: flex;
+    flex-direction: row;
+    gap: $gap;
+
+    @include breakpoint-medium-down {
+      .btn {
+        width: calc(50% - ($gap / 2));
+        padding: $gap-small $gap-tiny;
+      }
+
+      .btn.btn-small {
+        width: calc(35% - ($gap / 2));
+      }
+
+      .btn.btn-wide {
+        width: calc(65% - ($gap / 2));
+      }
+    }
+
+    @include breakpoint-medium-up {
+      .btn {
+        padding: $gap-small $gap-large;
+      }
+    }
+
+    @include breakpoint-full {
+      .btn.btn-wide {
+        padding: $gap-small $gap-huge;
+      }
+    }
+  }
+
+  .section-buttons-full {
+    @include breakpoint-medium-down {
+      display: flex;
+      flex-direction: column;
+      gap: $gap;
+
+      .btn {
+        padding: $gap-small $gap;
+      }
+    }
+
+    @include breakpoint-medium-only {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: $gap;
+
+      .btn {
+        padding: $gap-small $gap;
+      }
+    }
+
+    @include breakpoint-large-up {
+      display: flex;
+      flex-wrap: wrap;
+      flex-direction: row;
+      gap: $gap;
+
+      .btn {
+        padding: $gap-small $gap-large;
+      }
+    }
+
+    @include breakpoint-full {
+      .btn {
+        padding: $gap-small $gap-huge;
+      }
+    }
+  }
+
+
+  .section-content {
+    display: flex;
+    flex-direction: column;
+    gap: $gap-small;
+    height: 100%;
+
+    > * {
+      margin: 0;
+    }
+  }
+}
+
+.section-row {
+  @include breakpoint-medium-up {
+    display: flex;
+    align-items: stretch;
+    gap: $gap;
+    max-width: $container-max-width;
+    width: $container-width;
+    margin: $gap-huge auto;
+
+    .section {
+      justify-content: space-between;
+      width: 100%;
+      margin: 0;
+
+      .section-buttons,
+      .section-buttons-full,
+      .section-content {
+        width: 100%;
+      }
+    }
+  }
+}
+
+.section-wide-row {
+  @include breakpoint-large-up {
+    display: flex;
+    align-items: stretch;
+    gap: $gap;
+    max-width: $container-max-width;
+    width: $container-width;
+    margin: $gap-huge auto;
+
+    .section {
+      justify-content: space-between;
+      width: 100%;
+      margin: 0;
+
+      .section-buttons,
+      .section-buttons-full,
+      .section-content {
+        width: 100%;
+      }
+    }
+  }
+}
+
+.section-row.section-promo-row {
+  @include breakpoint-medium-up {
+    display: flex;
+    align-items: center;
+    gap: $gap;
+    max-width: $container-max-width;
+    width: $container-width;
+    margin: $gap-huge auto;
+
+    .section {
+      justify-content: start;
+      width: 100%;
+      margin: 0;
+
+      .section-buttons,
+      .section-buttons-full,
+      .section-content {
+        width: 100%;
+      }
+    }
+  }
+
+  @include breakpoint-medium-only {
+    .section-promo {
+      width: 50%;
+    }
+  }
+
+  @include breakpoint-large-up {
+    .section-promo {
+      width: 60%;
+    }
+  }
+}
+
+.section-gutter {
+  height: 32px;
+}
+
+.section-promo {
+  max-width: $container-max-width;
+  width: $container-width;
+  margin: 0 auto;
+  padding: 0 $gap-huge;
+  text-align: center;
+
+  img {
+    max-width: 310px;
+    width: 70%;
+  }
+
+  &.section-promo-filler {
+    @include breakpoint-medium-down {
+      display: none;
+    }
+  }
+}

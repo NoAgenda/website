@@ -3,8 +3,8 @@
 {# @var entity \EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto #}
 {% trans_default_domain 'EasyAdminBundle' %}
 
-{% set crawl_url = path('api_crawl', {'data': 'shownotes', 'episode': entity.instance.code, 'token': security_token}) %}
-{% set queue_url = path('api_queue', {'data': 'shownotes', 'episode': entity.instance.code, 'token': security_token}) %}
+{% set crawl_url = path('admin_api_crawl', {'data': 'shownotes', 'episode': entity.instance.code, 'token': security_token}) %}
+{% set queue_url = path('admin_api_queue', {'data': 'shownotes', 'episode': entity.instance.code, 'token': security_token}) %}
 
 <div class="d-flex align-items-center" style="gap: 1em; padding: .2em 0;">
   {% include field.value is not null ? '@EasyAdmin/crud/field/url.html.twig' : '@EasyAdmin/label/null.html.twig' %}

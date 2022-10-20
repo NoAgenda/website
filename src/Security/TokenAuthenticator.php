@@ -5,6 +5,7 @@ namespace App\Security;
 use App\Entity\User;
 use App\Entity\UserToken;
 use App\Repository\UserTokenRepository;
+use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -53,5 +54,22 @@ class TokenAuthenticator extends AbstractAuthenticator
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
         return null;
+    }
+
+    public function generateToken(Request $request, Response $response): void
+    {
+        $publicToken = $request->cookies->get('auth_token') ?? $request->cookies->get('guest_token');
+
+        if (null !== $this->userTokenRepository->findOneBy(['publicToken' => $publicToken])) {
+            return;
+        }
+
+        $token = (new UserToken())
+            ->setUser(new User())
+            ->addIpAddress($request->getClientIp());
+
+        $this->userTokenRepository->persist($token, true);
+
+        $response->headers->setCookie(new Cookie('auth_token', $token->getPublicToken(), strtotime('+33 months')));
     }
 }

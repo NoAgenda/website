@@ -1,0 +1,75 @@
+{% extends 'base.html.twig' %}
+
+{% import 'call2action.html.twig' as call2action %}
+
+{% set page_title = 'Adam Curry' %}
+{% set page_description = 'Adam Curry, host of The No Agenda Show' %}
+
+{% block content %}
+  <div class="section-row section-promo-row">
+    <section class="section">
+      <div class="section-content">
+        <h1>Adam Curry</h1>
+        <p>Crackpot – Host of The No Agenda Show</p>
+        <p>
+          Adam’s nickname for the show is the Crackpot. That’s not just because he occasionally smokes some weed, it’s
+          because Adam believes in his ideas and follows through on them, no matter how crazy they sound. With the radio
+          skills that he developed during his younger years working as a Dutch radio host and an MTV VJ in the USA, all
+          of his podcasts are professional produced while being live recorded on the internet.
+        </p>
+        <p>
+          Many people know Adam as
+          the Podfather because he was the first one to publish a podcast, The Daily Source Code, on the internet
+          after he worked with Dave Winer to create the podcast specification, which later became known as the
+          <a href="https://podcasters.apple.com/support/823-podcast-requirements">iTunes Podcast Specification</a>, based on RSS.
+          The interpretation of what a podcast is has changed dramatically over the years. Back then the term podcast
+          was only used to refer to feed-based podcasts that implemented the podcast specification,
+          but that’s generally not the case anymore. These days a podcast is just a series of video or audio shows published
+          anywhere on the internet. You’d think that would make Adam happy, but he actually isn’t happy with it at all.
+          You’re holding your podcast wrong, so he started the <a href="https://podcastindex.org/">PodcastIndex</a>
+          initiative to change that. Making sure people can listen to podcasts published through the open podcasting
+          ecosystem ensures free speech can thrive on the internet, and he’s teaching people more about it in his
+          <a href="{{ podcasting20_podcast_url }}">Podcasting 2.0 podcast</a>.
+        </p>
+        <p>
+          Together with <a href="https://noagendasocial.com/@TheKeeper">Tina the Keeper</a>, Adam lives in the beautiful
+          Texas Hill Country, an area that reflects his beliefs in free speech and gun rights. His pronouns are him/his.
+          Because the content Adam and his co-host <a href="{{ path('john') }}">John</a> produce isn’t welcome at
+          advertising-supported media platforms run by big corporations, they have taken a vow to poverty by running No
+          Agenda under the value for value model. This has paid off as the show has been running for 15 years and counting.
+        </p>
+        <p>
+          If you ever have the feeling of craving more Adam Curry after listening to the latest No Agenda episode, check
+          out his other podcasts:
+          <a href="http://www.moefactz.com">Moe Factz</a>,
+          <a href="{{ podcasting20_podcast_url }}">Podcasting 2.0</a> and
+          <a href="https://web.podfriend.com/podcast/curry-and-the-keeper2">Curry and The Keeper</a>.
+        </p>
+      </div>
+    </section>
+    <div class="section-promo">
+      <img src="{{ asset('build/images/adam-curry.jpeg', 'app') }}" alt="Adam Curry" class="rounded">
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="section-content">
+      <h2>Where to find Adam</h2>
+    </div>
+    <div class="section-buttons-full">
+      <a href="{{ adam_social }}" class="btn btn-accent">No Agenda Social</a>
+      <a href="https://podcastindex.social/@adam" class="btn btn-accent">PodcastIndex Social</a>
+      <a href="https://twitter.com/adamcurry" class="btn btn-accent">Twitter</a>
+      <a href="mailto:{{ adam_email|raw }}" class="btn btn-accent">Email (adam@curry.com)</a>
+      <a href="https://curry.com" class="btn btn-accent">Website (curry.com)</a>
+      <a href="http://adam.curry.com/html/POBox-1430021868.html" class="btn btn-accent">PO Box</a>
+    </div>
+  </section>
+
+  <div class="section-gutter"></div>
+
+  <div class="section-row">
+    {{ call2action.podcasting20() }}
+    {{ call2action.shownotes() }}
+  </div>
+{% endblock %}

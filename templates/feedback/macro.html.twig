@@ -1,0 +1,115 @@
+{% macro chapter(chapter, referral = null, expanded = false) %}
+  {% set episode = chapter.episode %}
+
+  <div
+    class="chapter {% if chapter.draft %}chapter-draft{% endif %}"
+    data-controller="chapter"
+    data-chapter-metadata-value="{{ episode|player_metadata|json_encode|e('html') }}"
+    data-chapter-timestamp-value="{{ chapter.startsAt }}"
+  >
+    <div class="chapter-header">
+      <div
+        role="button"
+        title="Copy Link for this Chapter to the Clipboard"
+        class="chapter-timestamp"
+        data-clipboard-text="{{ url('podcast_episode_chapters', {code: episode.code, t: chapter.startsAt|prettyTimestamp}) }}"
+      >
+        {{ chapter.startsAt|prettyTimestamp }}
+      </div>
+      <div
+        role="button"
+        title="Start Playing Chapter"
+        class="chapter-title"
+        data-action="click->chapter#play"
+      >
+        {{ chapter.name ? chapter.name : ('<em>Untitled</em>'|raw) }}
+      </div>
+      <div role="button" title="{{ chapter.draft ? 'Show Suggestion Details' : 'Show Chapter Details' }}" class="chapter-resize js" data-action="click->chapter#toggle">
+        {% if chapter.draft %}
+          <span class="fa-solid fa-lightbulb fa-fw" aria-hidden="true"></span>
+        {% else %}
+          <span class="fa-solid fa-ellipsis-h fa-fw" aria-hidden="true"></span>
+        {% endif %}
+      </div>
+    </div>
+    <div class="chapter-info hide" data-chapter-target="info">
+      <div class="chapter-info-text">
+        {% if not chapter.creator.reviewed %}
+          {% if app.user.mod|default(false) %}
+            <em><span class="fas fa-exclamation-triangle" aria-hidden="true"></span> User is unreviewed</em><br><br>
+          {% else %}
+            <em><span class="fas fa-exclamation-triangle" aria-hidden="true"></span> Suggestion is waiting for review</em><br><br>
+          {% endif %}
+        {% elseif chapter.draft and chapter.chapter %}
+          <em><span class="fas fa-lightbulb" aria-hidden="true"></span> This is a suggested improvement for: {{ chapter.chapter.name }}</em><br><br>
+        {% elseif chapter.draft %}
+          <em><span class="fas fa-lightbulb" aria-hidden="true"></span> This is a suggested chapter</em><br><br>
+        {% endif %}
+        Created by {{ feedback_creators(chapter) }}
+
+        {% if expanded %}
+          <br><br>
+          <a href="{{ path('podcast_episode_chapters', {code: episode.code}) }}">Episode {{ episode.code }}</a>
+        {% endif %}
+      </div>
+      <div class="chapter-buttons">
+        {% if app.user.mod|default(false) %}
+          {% set edit_url = not chapter.draft
+            ? path('podcast_episode_chapters_edit', {code: episode.code, chapter: chapter.id})
+            : path('podcast_episode_chapters_edit_draft', {code: episode.code, draft: chapter.id})
+          %}
+          <a href="{{ edit_url }}" title="Edit Chapter">
+            <span class="btn-icon fa-solid fa-pencil fa-fw" aria-hidden="true"></span>
+            <span>Edit</span>
+          </a>
+          {% if not chapter.draft %}
+            <a href="{{ path('podcast_episode_chapters_delete', {code: episode.code, chapter: chapter.id, referral: referral}) }}" title="Delete Chapter">
+              <span class="btn-icon fa-solid fa-trash fa-fw" aria-hidden="true"></span>
+              <span>Delete</span>
+            </a>
+          {% else %}
+            {% set chapter_votes = feedback_vote_count(chapter.feedbackItem.votes) %}
+
+            <a href="{{ path('podcast_episode_chapters_accept_draft', {code: episode.code, draft: chapter.id, referral: referral}) }}" title="Accept Suggestion">
+              <span class="btn-icon fa-solid fa-check fa-fw" aria-hidden="true"></span>
+              <span>Accept {{ chapter_votes.supported }}</span>
+            </a>
+            <a href="{{ path('podcast_episode_chapters_reject_draft', {code: episode.code, draft: chapter.id, referral: referral}) }}" title="Reject Suggestion">
+              <span class="btn-icon fa-solid fa-times fa-fw" aria-hidden="true"></span>
+              <span>Reject {{ chapter_votes.rejected }}</span>
+            </a>
+          {% endif %}
+        {% else %}
+          {% if not chapter.draft %}
+            <a href="{{ path('podcast_episode_chapters_improve', {code: episode.code, chapter: chapter.id, referral: referral}) }}" title="Suggest Improvement to Chapter">
+              <span class="btn-icon fa-solid fa-plus fa-fw" aria-hidden="true"></span>
+              <span>Improve Chapter</span>
+            </a>
+          {% else %}
+            {% set chapter_votes = feedback_vote_count(chapter.feedbackItem.votes) %}
+
+            {% if feedback_can_vote(chapter) %}
+              <a href="{{ path('podcast_episode_chapters_vote', {code: episode.code, draft: chapter.id, vote: 'support', referral: referral}) }}" title="Boost Chapter Suggestion">
+                <span class="btn-icon fa-solid fa-check fa-fw" aria-hidden="true"></span>
+                <span>Boost Suggestion ({{ chapter_votes.supported }})</span>
+              </a>
+              <a href="{{ path('podcast_episode_chapters_vote', {code: episode.code, draft: chapter.id, vote: 'reject', referral: referral}) }}" title="Hinder Chapter Suggestion">
+                <span class="btn-icon fa-solid fa-times fa-fw" aria-hidden="true"></span>
+                <span>Hinder Suggestion ({{ chapter_votes.rejected }})</span>
+              </a>
+            {% else %}
+              <div>
+                <span class="btn-icon fa-solid fa-check fa-fw" aria-hidden="true"></span>
+                <span>Boosted by {{ chapter_votes.supported }} producers</span>
+              </div>
+              <div>
+                <span class="btn-icon fa-solid fa-times fa-fw" aria-hidden="true"></span>
+                <span>Hindered by {{ chapter_votes.rejected }} producers</span>
+              </div>
+            {% endif %}
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% endmacro %}

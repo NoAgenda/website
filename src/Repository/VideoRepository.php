@@ -24,6 +24,6 @@ class VideoRepository extends ServiceEntityRepository
      */
     public function findLatest(): array
     {
-        return $this->findBy([], ['publishedAt' => 'desc'], 3);
+        return $this->findBy([], ['publishedAt' => 'desc'], 4);
     }
 }

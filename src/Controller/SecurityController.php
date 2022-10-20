@@ -5,13 +5,17 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Entity\UserAccount;
 use App\Entity\UserToken;
+use App\Form\UserEmailType;
+use App\Form\UserPasswordType;
 use App\Form\UserRegistrationType;
 use App\Repository\UserAccountRepository;
+use App\Repository\UserRepository;
 use App\Repository\UserTokenRepository;
+use App\Security\TokenAuthenticator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,8 +23,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 #[Route('', name: 'security_')]
@@ -28,31 +34,28 @@ class SecurityController extends AbstractController
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
+        private readonly UserRepository $userRepository,
         private readonly UserAccountRepository $userAccountRepository,
         private readonly UserTokenRepository $userTokenRepository,
         private readonly AuthenticationUtils $authenticationUtils,
         private readonly MailerInterface $mailer,
+        private readonly UserPasswordHasherInterface $passwordHasher,
+        private readonly TokenAuthenticator $tokenAuthenticator,
     ) {}
 
     #[Route('/login', name: 'login', methods: ['GET', 'POST'])]
     public function login(): Response
     {
         if ($this->getUser()?->isRegistered()) {
-            return $this->redirectToRoute('account_index');
+            return $this->redirectToRoute('security_account');
         }
 
-        // get the login error if there is one
         $error = $this->authenticationUtils->getLastAuthenticationError();
-
-        // last username entered by the user
         $lastUsername = $this->authenticationUtils->getLastUsername();
 
         return $this->render('security/login.html.twig', [
             'lastUsername' => $lastUsername,
             'authenticationError' => $error,
-
-            'registrationForm' => $this->createRegistrationForm()->createView(),
-            'registrationMessages' => [],
         ]);
     }
 
@@ -66,21 +69,11 @@ class SecurityController extends AbstractController
     public function registration(Request $request): Response
     {
         if ($this->getUser()?->isRegistered()) {
-            return $this->redirectToRoute('account_index');
+            return $this->redirectToRoute('security_account');
         }
 
-        // get the login error if there is one
-        $error = $this->authenticationUtils->getLastAuthenticationError();
-
-        // last username entered by the user
-        $lastUsername = $this->authenticationUtils->getLastUsername();
-
-        // handle registration form
-        $form = $this->createRegistrationForm();
-
+        $form = $this->createForm(UserRegistrationType::class);
         $form->handleRequest($request);
-
-        $messages = [];
 
         if ($form->isSubmitted() && $form->isValid()) {
             $userAccount = (new UserAccount())
@@ -92,75 +85,118 @@ class SecurityController extends AbstractController
             $this->entityManager->persist($userAccount);
             $this->entityManager->flush();
 
-            $messages = ['success' => ['Your account has been created.']];
+            $this->addFlash('authentication', 'Your account has been created.');
 
-            // reset form values
-            $form = $this->createRegistrationForm();
+            return $this->redirectToRoute('security_login');
         }
 
-        return $this->render('security/registration.html.twig', [
-            'lastUsername' => $lastUsername,
-            'authenticationError' => $error,
-
-            'registrationForm' => $form->createView(),
-            'registrationMessages' => $messages,
+        return $this->renderForm('security/registration.html.twig', [
+            'form' => $form,
         ]);
+    }
+
+    #[Route('/account', name: 'account', methods: ['GET', 'POST'])]
+    public function account(Request $request, ?UserInterface $user): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_REGISTERED_USER');
+
+        $account = $user->getAccount();
+
+        $emailForm = $this->createForm(UserEmailType::class, $account);
+        $emailForm->handleRequest($request);
+
+        if ($emailForm->isSubmitted() && $emailForm->isValid()) {
+            $this->userAccountRepository->persist($account, true);
+
+            $this->addFlash('email_form', 'Your email address has been updated.');
+
+            return $this->redirectToRoute('security_account');
+        }
+
+        $passwordForm = $this->createForm(UserPasswordType::class);
+        $passwordForm->handleRequest($request);
+
+        if ($passwordForm->isSubmitted() && $passwordForm->isValid()) {
+            $oldPassword = $passwordForm->get('oldPassword')->getData();
+
+            if (!$this->passwordHasher->isPasswordValid($account, $oldPassword)) {
+                $passwordForm->get('oldPassword')->addError(new FormError('Incorrect password.'));
+            }
+
+            if ($passwordForm->isValid()) {
+                $password = $passwordForm->get('password')->getData();
+                $account->setPlainPassword($password);
+
+                $this->userAccountRepository->persist($account, true);
+
+                $this->addFlash('password_form', 'Your password has been updated.');
+
+                return $this->redirectToRoute('security_account');
+            }
+        }
+
+        return $this->renderForm('security/account.html.twig', [
+            'email_form' => $emailForm,
+            'password_form' => $passwordForm,
+        ]);
+    }
+
+    #[Route('/account/status', name: 'status', methods: ['POST'])]
+    public function status(Request $request, ?UserInterface $user): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        if ($this->isCsrfTokenValid('update-status', $request->request->get('_csrf_token'))) {
+            $action = $request->request->get('action');
+
+            $user->setHidden('hide' === $action);
+
+            $this->userRepository->persist($user, true);
+        }
+
+        return $this->redirectToRoute('security_account');
     }
 
     #[Route('/forgot-password', name: 'forgot_password', methods: ['GET', 'POST'])]
     public function forgotPassword(Request $request): Response
     {
         if ($this->getUser()?->isRegistered()) {
-            return $this->redirectToRoute('account_index');
+            return $this->redirectToRoute('security_account');
         }
-
-        // last username entered by the user
-        $lastUsername = $this->authenticationUtils->getLastUsername();
 
         $submittedToken = $request->request->get('_token');
 
-        $messages = [];
-
         if ($this->isCsrfTokenValid('forgot-password', $submittedToken)) {
             $username = $request->request->get('_username');
-
-            $user = $this->userAccountRepository->findOneBy(['username' => $username]);
+            $user = $this->userAccountRepository->findByUserInput($username);
 
             if (!$user) {
-                $messages = ['danger' => ['That username is not known.']];
+                $this->addFlash('forgot_password', 'We couldn\'t find an account matching that username/email address.');
+            } elseif (!$user->getEmail()) {
+                $this->addFlash('forgot_password', 'There is no email address associated with this account.');
             } else {
-                $messages = ['success' => ['An email was sent to the registered email address.']];
+                $user->generateResetPasswordToken();
 
-                if ($user->getEmail()) {
-                    $user->generateResetPasswordToken();
+                $this->entityManager->persist($user);
+                $this->entityManager->flush();
 
-                    $this->entityManager->persist($user);
-                    $this->entityManager->flush();
+                $this->sendResetPasswordEmail($user);
 
-                    $this->sendResetPasswordEmail($user);
-                }
+                $this->addFlash('forgot_password', 'An email was sent to the registered email address.');
             }
+
+            return $this->redirectToRoute('security_forgot_password');
         }
 
-        return $this->render('security/forgot_password.html.twig', [
-            'lastUsername' => $lastUsername,
-            'authenticationError' => false,
-
-            'forgotPasswordMessages' => $messages,
-
-            'registrationForm' => $this->createRegistrationForm()->createView(),
-            'registrationMessages' => [],
-        ]);
+        return $this->render('security/forgot_password.html.twig');
     }
 
     #[Route('/reset-password/{token}', name: 'reset_password', methods: ['GET', 'POST'])]
     public function resetPassword(Request $request, string $token): Response
     {
         if ($this->getUser()?->isRegistered()) {
-            return $this->redirectToRoute('account_index');
+            return $this->redirectToRoute('security_account');
         }
-
-        $messages = [];
 
         if ($this->isCsrfTokenValid('reset_password', $request->request->get('_csrf_token'))) {
             $password = $request->request->get('_password');
@@ -169,33 +205,26 @@ class SecurityController extends AbstractController
             $user = $this->userAccountRepository->findOneBy(['resetPasswordToken' => $token]);
 
             if (!$user || !$user->isResetPasswordTokenValid()) {
-                $messages = ['danger' => ['Invalid token.']];
+                $this->addFlash('reset_password', 'Invalid token.');
+            } elseif ($password != $passwordConfirmation) {
+                $this->addFlash('reset_password', 'The passwords did not match.');
             } else {
-                if ($password != $passwordConfirmation) {
-                    $messages = ['danger' => ['The passwords did not match.']];
-                } else {
-                    $user->setPlainPassword($password);
-                    $user->clearResetPasswordToken();
+                $user->setPlainPassword($password);
+                $user->clearResetPasswordToken();
 
-                    $this->entityManager->persist($user);
-                    $this->entityManager->flush();
+                $this->entityManager->persist($user);
+                $this->entityManager->flush();
 
-                    $this->addFlash('success', 'Your password was updated.');
+                $this->addFlash('authentication', 'Your password was updated.');
 
-                    return $this->redirectToRoute('security_login');
-                }
+                return $this->redirectToRoute('security_login');
             }
+
+            return $this->redirectToRoute('security_reset_password');
         }
 
         return $this->render('security/reset_password.html.twig', [
-            'lastUsername' => null,
-            'authenticationError' => false,
-
-            'resetPasswordMessages' => $messages,
-            'resetPasswordToken' => $token,
-
-            'registrationForm' => $this->createRegistrationForm()->createView(),
-            'registrationMessages' => [],
+            'reset_password_token' => $token,
         ]);
     }
 
@@ -208,28 +237,9 @@ class SecurityController extends AbstractController
             return $response;
         }
 
-        $publicToken = $request->cookies->get('auth_token') ?? $request->cookies->get('guest_token');
-
-        if (null !== $this->userTokenRepository->findOneBy(['publicToken' => $publicToken])) {
-            return $response;
-        }
-
-        $token = (new UserToken())
-            ->setUser(new User())
-            ->addIpAddress($request->getClientIp());
-
-        $this->userTokenRepository->persist($token, true);
-
-        $response->headers->setCookie(new Cookie('auth_token', $token->getPublicToken(), strtotime('+33 months')));
+        $this->tokenAuthenticator->generateToken($request, $response);
 
         return $response;
-    }
-
-    private function createRegistrationForm(): FormInterface
-    {
-        return $this->createForm(UserRegistrationType::class, null, [
-            'action' => $this->generateUrl('security_registration'),
-        ]);
     }
 
     private function sendResetPasswordEmail(UserAccount $account): void

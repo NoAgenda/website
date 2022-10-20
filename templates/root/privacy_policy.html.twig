@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% import 'call2action.html.twig' as call2action %}
+
+{% set page_title = 'Privacy Policy - No Agenda Website' %}
+
+{% block content %}
+  <section class="section">
+    <div class="section-content">
+      <h1>Privacy Policy</h1>
+      <p>
+        This privacy policy only applies to the No Agenda website and does not include affiliate No Agenda properties
+        like the podcast, livestream, chat room or other websites in the No Agenda network.
+      </p>
+      <p>
+        When visiting the No Agenda website, by default, no identifiable information about you is saved on our servers.
+        A tracking cookie might be used for analytical purposes, but is not used for any nefarious purposes like
+        identifying you or showing you advertisements.
+      </p>
+      <p>
+        For certain actions on the website, we do ask for permission to save your IP address, like creating chapters or
+        voting on suggestions from other producers. This can be prevented by creating a
+        <a href="{{ path('security_login') }}">website account</a>. IP addresses are simply used to discourage spam
+        and troll submissions. Users from a suspect IP might get banned from interacting with the website.
+      </p>
+    </div>
+  </section>
+
+  <div class="section-gutter"></div>
+
+  <div class="section-row">
+    {{ call2action.podcast() }}
+    {{ call2action.livestream() }}
+  </div>
+{% endblock %}

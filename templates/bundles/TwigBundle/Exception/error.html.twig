@@ -1,21 +1,16 @@
-{% extends 'layout.html.twig' %}
+{% extends 'base.html.twig' %}
+
+{% set page_title = 'Glitch - No Agenda Website' %}
 
 {% block content %}
-  <div class="container">
-    <div class="my-5">
-      <h3>Oops, we weren't able to load this page.</h3>
+  <section class="section">
+    <div class="section-content">
+      <h2>Oops, we weren't able to load this page.</h2>
       <p>
-        Information about your request was automatically logged for review if the problem was
-        caused by a server issue.<br>
-        If the problem persists, feel free to contact our resident Dude Named Ben on
-        <a href="https://noagendasocial.com/@woodstock" title="Woodstock on NA Social (Mastodon)">NA Social (@woodstock)</a>
-        for help.
-      </p>
-      <p>
-        <a href="/" class="btn-link">Go to the homepage</a>
+        Information about this glitch was automatically logged for review if the problem was caused by a server issue.<br>
+        If the problem persists, feel free to contact our resident Dude Named Ben on No Agenda Social
+        (<a href="https://noagendasocial.com/@woodstock">@woodstock@noagendasocial.com</a>) for help.
       </p>
     </div>
-
-    <na-audio-toolbar-spacer></na-audio-toolbar-spacer>
-  </div>
+  </section>
 {% endblock %}

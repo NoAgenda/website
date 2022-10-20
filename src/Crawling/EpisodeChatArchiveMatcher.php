@@ -172,23 +172,12 @@ class EpisodeChatArchiveMatcher implements EpisodeCrawlerInterface
                 continue;
             }
 
-            if (strpos($rawMessage, 'PRIVMSG #NoAgenda') === false) {
+            if (!$message = ChatRecorder::parseMessage($rawMessage)) {
                 continue;
             }
 
-            preg_match('/:([^!]+)!([^@]+)@(\S+) PRIVMSG #NoAgenda :(.+)/', $rawMessage, $matches);
-
-            if (!isset($matches[0])) {
-                continue;
-            }
-
-            list(, $username, $client, $ip, $contents) = $matches;
-
-            $messages[] = [
-                'username' => $username,
-                'contents' => nl2br($contents),
-                'timestamp' => $interval,
-            ];
+            $message['timestamp'] = $interval;
+            $messages[] = $message;
         }
 
         return $messages;

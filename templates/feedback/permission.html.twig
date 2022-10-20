@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% set page_title = 'We Need Your Permission - No Agenda Website' %}
+
+{% block content %}
+  <nav class="link-group link-group-full">
+    <a href="{{ path('podcast_episode_chapters', {code: episode.code}) }}" class="link">
+      <span>Back to Episode</span>
+      <span class="fa-solid fa-headphones fa-fw" aria-hidden="true"></span>
+    </a>
+  </nav>
+
+  <section class="section">
+    <div class="section-content">
+      <h1>Hold On, Citizen!</h1>
+
+      <p>
+        We use cookies to keep track of contributions from anonymous producers. For more information, please read the
+        <a href="{{ path('privacy_policy') }}">privacy policy</a>.
+      </p>
+
+      <p>
+        If you don't to be tracked with cookies, consider
+        <a class="text-underline" href="{{ path('security_login') }}">creating an account</a>.
+      </p>
+    </div>
+    <div class="section-buttons">
+      <form action="{{ app.request.uri }}" method="post" data-login-form>
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('generate-token') }}"/>
+        <button type="submit" class="btn">Accept Cookies</button>
+      </form>
+      <a href="{{ path('podcast_episode_chapters', {code: episode.code}) }}" class="btn btn-accent">
+        No Thanks
+      </a>
+    </div>
+  </section>
+{% endblock %}

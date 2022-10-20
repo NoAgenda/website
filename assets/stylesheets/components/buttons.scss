@@ -1,0 +1,61 @@
+@import "../mixins";
+@import "../variables";
+
+.btn {
+  display: inline-block;
+  padding: $gap-tiny $gap-small;
+  border: 1px solid var(--primary);
+  border-radius: $border-radius;
+  background-color: var(--primary);
+  color: var(--primary-contrast);
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  user-select: none;
+  vertical-align: middle;
+
+  .btn-icon:not(:only-child) {
+    &:first-child {
+      margin-right: $gap-tiny;
+    }
+
+    &:last-child {
+      margin-left: $gap-tiny;
+    }
+  }
+
+  &:hover, &:active {
+    border-color: var(--primary-accent);
+    background-color: var(--primary-accent);
+  }
+
+  &.clipboard-animate {
+    transition: background-color 1s;
+  }
+
+  &.clipboard-error {
+    background-color: var(--warning);
+  }
+
+  &.clipboard-success {
+    background-color: var(--success);
+  }
+}
+
+.btn-accent {
+  @include button-colors(var(--accent-1), var(--accent-2), var(--text-color));
+}
+
+.btn-donate {
+  @include button-colors(var(--donate), var(--donate-accent), var(--donate-contrast));
+}
+
+.btn-link {
+  @include button-colors(var(--bg-color), var(--accent-1), var(--text-color));
+}
+
+.btn[disabled] {
+  @include button-colors(var(--accent-3), var(--accent-3), var(--text-color));
+
+  cursor: initial;
+}

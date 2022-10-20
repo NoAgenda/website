@@ -1,0 +1,134 @@
+{% extends 'base.html.twig' %}
+
+{% import 'call2action.html.twig' as call2action %}
+
+{% set page_title = 'Podcasting 2.0' %}
+
+{% block content %}
+  <div class="section-row section-promo-row">
+    <section class="section">
+      <div class="section-content">
+        <h1>Podcasting 2.0</h1>
+        <p>
+          The podcasting ecosystem was built on open standard to make it easy for anyone to share their
+          podcast with the world without intervention. Throughout the years, apps and services from big tech corporations
+          have added podcasts to their portfolio, but use those podcasts to further increase their hold on the podcasting
+          ecosystem. This is especially dangerous in a time when people get deplatformed for not conforming to the
+          mainstream narrative. To combat these trends, <a href="{{ path('adam') }}">Adam</a> and his buddy
+          <a href="{{ davejones_url }}">Dave Jones</a> bootstrapped the Podcasting 2.0 movement by creating
+          <a href="{{ podcastindex_url }}">PodcastIndex</a>, a searchable directory of podcasts published on the internet,
+          supported by the value for value model.
+        </p>
+        <p>
+          If you want to know more about what's happening in the Podcasting 2.0 space, consider listening to the weekly
+          board meeting in the <a href="{{ podcasting20_podcast_url }}">Podcasting 2.0 podcast</a>.
+        </p>
+      </div>
+      <div class="section-buttons-full">
+        <a href="{{ podcastindex_url }}" class="btn">Visit PodcastIndex</a>
+        <a href="{{ podcasting20_podcast_url }}" class="btn btn-accent">Podcasting 2.0 podcast</a>
+      </div>
+    </section>
+    <div class="section-promo">
+      <a href="{{ podcastindex_url }}" title="PodcastIndex">
+        <img src="{{ asset('build/images/podcastindex.svg', 'app') }}" alt="PodcastIndex">
+      </a>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="section-content">
+      <h2>New Podcast Features</h2>
+      <p>
+        Taking back control from big tech isn't our only goal. Podcasts are here to stay, but even though the
+        popularity of podcasts has skyrocketed, there has been little innovation in the open podcasting ecosystem
+        in the years since Adam <a href="https://www.youtube.com/watch?v=VFOQk5pz2fo">helped develop the original
+        podcast specification</a>. So he's taken it upon himself to do it again by bringing new features to podcasts
+        through a new <a href="{{ podcast_namespace_url }}">podcast specification</a>, detailing features that
+        podcasters and developers can implement in their projects. Some of these features are listed below.
+      </p>
+      <p>
+        Not all podcast apps support these features, that's why we've curated <a href="{{ newpodcastapps_url }}">a list of apps</a>
+        you can try to experience the future of podcasting right now!
+      </p>
+      <div class="section-buttons-full">
+        <a href="{{ newpodcastapps_url }}" class="btn">
+          <span class="btn-icon fa-solid fa-podcast" aria-hidden="true"></span>
+          <span>Try a New Podcast App</span>
+        </a>
+        <a href="{{ podcast_namespace_url }}" class="btn btn-accent">Podcasting 2.0 RSS Namespace</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-wide-row">
+    <section class="section">
+      <div class="section-content">
+        <h3>Live Items</h3>
+        <p>
+          Podcasts that are recorded live on the internet used to resort to social media to let their listeners know
+          when they are going live. With live items integrated right into the podcast feed, podcast apps can notify
+          their users when their favorite show is going live, so you never miss a live show again.
+        </p>
+      </div>
+    </section>
+    <section class="section">
+      <div class="section-content">
+        <h3>Chapters</h3>
+        <p>
+          Podcasts can create a chapter list for their episodes with custom art associated to each chapter. Don't just
+          tell your listeners, show them what you're talking about.
+        </p>
+      </div>
+    </section>
+    <section class="section">
+      <div class="section-content">
+        <h3>Transcripts</h3>
+        <p>
+          Transcripts offer many advantages to listeners. They might be non-native speakers or simply experiencing
+          hearing problems. Being able to read along with a podcast helps your listeners understand and focus
+          on the content.
+        </p>
+      </div>
+    </section>
+  </div>
+
+  <div class="section-gutter"></div>
+
+  <div class="section-row">
+    <section class="section">
+      <div class="section-content">
+        <h2><a href="{{ podcastindex_social_url }}">Let's Get Social</a></h2>
+        <p>
+          To change the future of podcasting we need input from podcasters, developers and listeners to come up with
+          the right solutions. That's why we've created our own social network on the <a href="{{ path('social') }}">Fediverse</a>
+          to collaborate with each other. Join us to help us make podcasting better for everyone.
+        </p>
+      </div>
+      <div class="section-buttons">
+        <a href="{{ podcastindex_social_url }}" class="btn btn-wide">Join the Conversation</a>
+        <a href="{{ path('social') }}" class="btn btn-link btn-small">Learn more</a>
+      </div>
+    </section>
+    <section class="section">
+      <div class="section-content">
+        <h2><a href="{{ path('website') }}">No Agenda Website</a></h2>
+        <p>
+          The No Agenda website supports and even pioneered many of the features provided by Podcasting 2.0. This is
+          possible thanks to support of our producers under the value for value model.
+        </p>
+      </div>
+      <div class="section-buttons">
+        <a href="{{ dudenamedben_donate_url }}" class="btn btn-donate btn-wide">Support the Website</a>
+        <a href="{{ path('website') }}" class="btn btn-link btn-small">Learn more</a>
+      </div>
+    </section>
+  </div>
+
+  <div class="section-gutter"></div>
+
+  <div class="section-row">
+    {{ call2action.podcast() }}
+    {{ call2action.shownotes() }}
+  </div>
+{% endblock %}

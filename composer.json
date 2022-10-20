@@ -24,6 +24,7 @@
         "easycorp/easyadmin-bundle": "4.2.*",
         "laminas/laminas-feed": "^2.10",
         "liip/imagine-bundle": "^2.1",
+        "minishlink/web-push": "^7.0",
         "pagerfanta/doctrine-orm-adapter": "^3.6",
         "pagerfanta/twig": "^3.6",
         "phergie/phergie-irc-client-react": "^3.5",
@@ -31,42 +32,43 @@
         "phpdocumentor/reflection-docblock": "^5.2",
         "sensio/framework-extra-bundle": "^6.2",
         "sentry/sentry-symfony": "^4.2",
-        "symfony/asset": "^5.4",
-        "symfony/console": "^5.4",
-        "symfony/dotenv": "^5.4",
-        "symfony/expression-language": "^5.4",
+        "symfony/asset": "^6.0",
+        "symfony/console": "^6.0",
+        "symfony/doctrine-messenger": "^6.0",
+        "symfony/dotenv": "^6.0",
+        "symfony/expression-language": "^6.0",
         "symfony/flex": "^1.0",
-        "symfony/form": "^5.4",
-        "symfony/framework-bundle": "^5.4",
-        "symfony/http-client": "^5.4",
-        "symfony/mailer": "^5.4",
+        "symfony/form": "^6.0",
+        "symfony/framework-bundle": "^6.0",
+        "symfony/http-client": "^6.0",
+        "symfony/mailer": "^6.0",
         "symfony/maker-bundle": "^1.14",
-        "symfony/messenger": "^5.4",
+        "symfony/messenger": "^6.0",
         "symfony/monolog-bundle": "^3.1",
-        "symfony/notifier": "^5.4",
-        "symfony/process": "^5.4",
-        "symfony/property-access": "^5.4",
-        "symfony/property-info": "^5.4",
-        "symfony/runtime": "^5.4",
-        "symfony/security-bundle": "^5.4",
-        "symfony/serializer": "^5.4",
-        "symfony/telegram-notifier": "^5.4",
-        "symfony/twig-bundle": "^5.4",
-        "symfony/validator": "^5.4",
-        "symfony/web-link": "^5.4",
+        "symfony/notifier": "^6.0",
+        "symfony/process": "^6.0",
+        "symfony/property-access": "^6.0",
+        "symfony/property-info": "^6.0",
+        "symfony/runtime": "^6.0",
+        "symfony/security-bundle": "^6.0",
+        "symfony/serializer": "^6.0",
+        "symfony/telegram-notifier": "^6.0",
+        "symfony/twig-bundle": "^6.0",
+        "symfony/validator": "^6.0",
+        "symfony/web-link": "^6.0",
         "symfony/webpack-encore-bundle": "^1.7",
-        "symfony/yaml": "^5.4",
+        "symfony/yaml": "^6.0",
         "vipnytt/opmlparser": "dev-master"
     },
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^3.0",
         "phpunit/phpunit": "^9.5",
-        "symfony/browser-kit": "^5.4",
-        "symfony/css-selector": "^5.4",
-        "symfony/debug-bundle": "^5.4",
-        "symfony/phpunit-bridge": "^5.4",
-        "symfony/stopwatch": "^5.4",
-        "symfony/web-profiler-bundle": "^5.4"
+        "symfony/browser-kit": "^6.0",
+        "symfony/css-selector": "^6.0",
+        "symfony/debug-bundle": "^6.0",
+        "symfony/phpunit-bridge": "^6.0",
+        "symfony/stopwatch": "^6.0",
+        "symfony/web-profiler-bundle": "^6.0"
     },
     "config": {
         "allow-plugins": {
@@ -92,6 +94,7 @@
     "replace": {
         "symfony/polyfill-ctype": "*",
         "symfony/polyfill-iconv": "*",
+        "symfony/polyfill-php81": "*",
         "symfony/polyfill-php80": "*",
         "symfony/polyfill-php74": "*",
         "symfony/polyfill-php73": "*",
@@ -102,7 +105,8 @@
     },
     "scripts": {
         "auto-scripts": {
-            "assets:install %PUBLIC_DIR%": "symfony-cmd"
+            "assets:install %PUBLIC_DIR%": "symfony-cmd",
+            "assets:build": "symfony-cmd"
         },
         "post-install-cmd": [
             "@auto-scripts"
@@ -117,7 +121,7 @@
     "extra": {
         "symfony": {
             "allow-contrib": false,
-            "require": "^5.4",
+            "require": "^6.0",
             "docker": false
         }
     }

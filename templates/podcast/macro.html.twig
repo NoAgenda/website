@@ -1,0 +1,71 @@
+{% macro archive(episodes, pager = null) %}
+  <nav class="link-group link-group-full">
+    <a href="{{ path('podcast_specials') }}" class="link">
+      <span>Special Episodes</span>
+    </a>
+    <a href="{{ path('podcast_all') }}" class="link">
+      <span>Full List of Episodes</span>
+    </a>
+  </nav>
+
+  <section class="section archive">
+    <div class="section-content">
+      <div class="archive-grid">
+        {% for episode in episodes %}
+          <a href="{{ path('podcast_episode', {code: episode.code}) }}" title="Listen to No Agenda Show {{ episode }}" class="episode">
+            <img src="{{ episode|episode_cover('small') }}" alt="Cover for No Agenda Show {{ episode.code }}">
+            <div>{{ episode.publishedAt|date('F jS, Y') }}</div>
+            <h3>{{ episode }}</h3>
+          </a>
+        {% endfor %}
+      </div>
+
+      {% if pager %}
+        {{ pagerfanta(pager, null, {
+          'routeName': 'podcast_archive',
+          'omitFirstPage': true,
+          'proximity': 1,
+          'css_container_class': 'archive-pager archive-pager-small',
+          'css_item_class': 'btn',
+          'next_message': '<span>Older</span> <span class="btn-icon fa-solid fa-chevron-right" aria-hidden="true"></span>',
+          'prev_message': '<span class="btn-icon fa-solid fa-chevron-left" aria-hidden="true"></span> <span>Newer</span>',
+        }) }}
+
+        {{ pagerfanta(pager, null, {
+          'routeName': 'podcast_archive',
+          'omitFirstPage': true,
+          'proximity': 2,
+          'css_container_class': 'archive-pager archive-pager-large',
+          'css_item_class': 'btn',
+          'next_message': '<span>Older</span> <span class="btn-icon fa-solid fa-chevron-right" aria-hidden="true"></span>',
+          'prev_message': '<span class="btn-icon fa-solid fa-chevron-left" aria-hidden="true"></span> <span>Newer</span>',
+        }) }}
+      {% endif %}
+    </div>
+  </section>
+{% endmacro archive %}
+
+{% macro subscribe() %}
+  <section class="section" data-controller="notifications" data-notifications-type-value="episode">
+    <div class="section-content">
+      <h2><a href="{{ path('podcast_subscribe') }}">Subscribe to the Show</a></h2>
+      <p>
+        Never miss an episode of the podcast by subscribing! Subscribing is easy and can be done directly from this
+        website or by using your favorite podcast app.
+      </p>
+      <p class="emphasis hide" data-notifications-target="help"></p>
+    </div>
+    <div class="section-buttons">
+      <button
+        class="btn btn-wide"
+        title="Receive a notification when a new episode is available"
+        data-notifications-target="button"
+        data-action="notifications#toggle"
+      >
+        <span class="btn-icon fa-solid fa-bell" aria-hidden="true"></span>
+        <span>Notify Me</span>
+      </button>
+      <a href="{{ path('podcast_subscribe') }}" class="btn btn-link btn-small">Learn More</a>
+    </div>
+  </section>
+{% endmacro %}

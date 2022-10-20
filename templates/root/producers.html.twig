@@ -1,0 +1,205 @@
+{% extends 'base.html.twig' %}
+
+{% set page_title = 'Producers of No Agenda' %}
+{% set page_description = 'The contributions of producers of The No Agenda Show' %}
+
+{% block content %}
+  <section class="section">
+    <div class="section-content">
+      <h1>Producers of No Agenda</h1>
+      <p>
+        No Agenda is more than just a podcast, it's a community, and that wouldn't be possible without the work of our
+        producers. There are tons of ways producers help us create the show and it's not because they're getting paid
+        to do it. Producers of our show turn the value they receive from the show into value for the community
+        through <a href="{{ artgenerator_artworks_url }}">custom art</a>, <a href="{{ meetups_events_url }}">meetups</a>,
+        <a href="{{ donate_url }}">monetary contributions</a> and much, much more. This isn't by coincidence, it's our mission.
+      </p>
+    </div>
+    <div class="section-buttons-full">
+      <a href="{{ path('mission_statement') }}" class="btn btn-accent">Mission Statement</a>
+      <a href="{{ donate_url }}" class="btn btn-donate">Donate to the Show</a>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-content">
+      <h2>Value 4 Value</h2>
+      <p>
+        Unlike any other broadcasts, No Agenda has decided to be a solely listener-supported production. This means the
+        listeners contribute to the show both financially and through volunteerism, something we call the value for value
+        model. If you feel you are getting value from our show, please help us by providing your time, talent or treasure.
+      </p>
+    </div>
+  </section>
+
+  <div class="section-wide-row">
+    <section class="section">
+      <div class="section-content">
+        <h3>Time</h3>
+        <p>
+          Listening to the show and passing the word that No Agenda is The Best Podcast In The Universe is a simple and
+          easy way to help out. Participating in <a href="{{ path('livestream') }}">the troll room</a>, on
+          <a href="{{ path('social') }}">No Agenda Social</a> or in <a href="{{ meetups_url }}">meetups</a> is also
+          appreciated.
+        </p>
+        <p>
+          If you're an expert on one of the topics discussed on the show, or if you found
+          something you think should be discussed on the show, send it to <a href="{{ path('adam') }}">Adam</a> or
+          <a href="{{ path('john') }}">John</a> (but definitely not both).
+        </p>
+      </div>
+    </section>
+    <section class="section">
+      <div class="section-content">
+        <h3>Talent</h3>
+        <p>
+          Our show is full of producer-created content like <a href="{{ artgenerator_url }}">show art</a>, jingles,
+          end-of-show mixes, meetup reports, boots-on-the-ground reporting and much more. Simply let your creativity flow
+          and never feel like a douchebag again.
+        </p>
+        <p>
+          Some producers have created <a href="#projects">unique experiences</a> to propagate the formula. Did you
+          create something for the show you'd like to show off? <a href="{{ social_profile_url }}">Let us know</a>
+          on No Agenda Social.
+        </p>
+      </div>
+    </section>
+    <section class="section">
+      <div class="section-content">
+        <h3>Treasure</h3>
+        <p>
+          Donors contributing $50 and above will get a special mention on the show. Donors of $200 or more will become
+          executive producer of the show while donors of $300 or more will automatically become associate executive producers.
+        </p>
+        <p>
+          Anyone donating $49.99 or less will automatically remain anonymous. Any donation requesting anonymity will also
+          be respected.
+        </p>
+      </div>
+    </section>
+  </div>
+
+  <section class="section">
+    <div class="section-content">
+      <h2>Donations</h2>
+      <p>
+        Donations to the No Agenda Show can only be sent through PayPal or as a check to
+        <em>No Agenda Show, Box 339, El Cerrito, CA 94530</em>. To donate with PayPal, visit <a href="{{ donate_url }}">dvorak.org/na</a>
+        and click the donate button.
+      </p>
+      <p>
+        We ask anybody who donates to the show to send a donation note via email to either
+        <a href="mailto:{{ adam_email|raw }}?subject=No Agenda Donation" title="Email Adam">Adam</a> or
+        <a href="mailto:{{ john_email|raw }}?subject=No Agenda Donation" title="Email John">John</a> titled <em>No Agenda Donation</em>.
+        While generally only notes from executive producers are read on the show because of time constraints, we
+        read all of them.
+      </p>
+      {# <p>Donors matching the show number as a donation will become member of the ... Club.</p> #}
+      <h2>Knighthoods</h2>
+      <p>
+        Producers who donate $1,000 or help us produce the show in other valuable ways are granted an
+        exclusive title as Knight of the No Agenda Roundtable. Men are given the moniker "Sir" and women are granted
+        the title of "Dame". In addition to knighthood, producers can receive several title changes:
+      </p>
+      <ul>
+        <li>
+          <strong>Baronet/Baronetess ($2,000)</strong>
+        </li>
+        <li>
+          <strong>Baron/Baroness ($3,000)</strong>
+          <div>You may request a territory to rule.</div>
+        </li>
+        <li>
+          <strong>Viscount/Viscountess ($5,000)</strong>
+          <div>Additional lands within reason are granted as part of an expanded Barony.</div>
+        </li>
+        <li>
+          <strong>Earl or Count/Countess ($7,000)</strong>
+        </li>
+        <li>
+          <strong>Duke/Duchess ($10,000)</strong>
+          <div>Additional lands within reason are granted as part of your Dukedom.</div>
+        </li>
+        <li>
+          <strong>Arch Duke/Duchess ($20,000)</strong>
+        </li>
+        <li>
+          <strong>Grand Duke/Duchess ($33,000)</strong>
+          <div>Entire nations will be assigned to Grand Dukes until all territories of the world are accounted for.</div>
+        </li>
+      </ul>
+      <p>
+        Note that we do not keep track of which territories have been claimed. When time comes, the Dukes will
+        have to resolve this on their own.
+      </p>
+      <p>
+        Producers who've achieved knighthood are awarded an exclusive signet ring they can use to hit people in the mouth.
+      </p>
+    </div>
+    <div class="section-buttons-full">
+      <a href="{{ knightring_url }}" class="btn btn-wide">Order your Knight Ring</a>
+      <a href="{{ donate_url }}" class="btn btn-donate">Donate to the Show</a>
+    </div>
+  </section>
+
+  <div class="section-row">
+    <section class="section">
+      <div class="section-content">
+        <h2><a href="{{ valueforvalue_url }}">Value for Value Lifestyle</a></h2>
+        <p>
+          Producers use their time, talent and treasure to keep our show running. We call this the value
+          for value model, and it was pioneered by this very show. Using value to support your interests is a lifestyle
+          everybody can enjoy, so don't be a douchebag and start living.
+        </p>
+      </div>
+      <div class="section-buttons">
+        <a href="{{ valueforvalue_url }}" class="btn btn-accent btn-wide">About the Lifestyle</a>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-content">
+        <h2><a href="{{ path('website') }}">The Website</a></h2>
+        <p>
+          One of the projects created under the value for value model is this website. Maintaining a independent project
+          takes time, talent and treasure, and we can't do it without your help.
+        </p>
+      </div>
+      <div class="section-buttons">
+        <a href="{{ dudenamedben_url }}" class="btn btn-accent btn-wide">Visit Ben's Blog</a>
+        <a href="{{ path('website') }}" class="btn btn-link btn-small">Learn More</a>
+      </div>
+    </section>
+  </div>
+
+  <div class="section-gutter"></div>
+
+  <section class="section">
+    <div class="section-content">
+      <h2 id="projects">Producer Projects</h2>
+      <p>
+        Some producers have gone extra lengths to provide their time and talent by creating projects expanding the
+        No Agenda community into unknown territories. These projects are not associated with No Agenda. We have no
+        control over their content.
+      </p>
+      <div class="sites">
+        {% for site in network_sites %}
+          <a href="{{ site.uri }}" class="site">
+            <div class="site-content">
+              <h3>
+                {{ site.name|raw }}
+              </h3>
+              <div class="emphasis">{{ site.displayUri }}</div>
+              <div>{{ site.description }}</div>
+            </div>
+            {% if site.icon %}
+              <div class="site-icon">
+                <span class="{{ site.icon }} fa-fw" aria-hidden="true"></span>
+              </div>
+            {% endif %}
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+{% endblock %}

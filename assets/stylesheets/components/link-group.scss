@@ -1,0 +1,83 @@
+@import "../variables";
+
+@mixin link-group-collapsed {
+  display: grid;
+  border-bottom: 1px solid var(--accent-2);
+
+  .link {
+    display: flex;
+    justify-content: space-between;
+    padding: $gap $container-spacer;
+    border-top: 1px solid var(--accent-2);
+    text-decoration: none;
+
+    &:hover, &:active {
+      background: var(--accent-1);
+    }
+
+    &.collapse-hide {
+      display: none;
+    }
+  }
+}
+
+.navbar-links {
+  @include link-group-collapsed;
+}
+
+@include breakpoint-medium-down {
+  .link-group {
+    @include link-group-collapsed;
+  }
+}
+
+@include breakpoint-medium-up {
+  .link-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $gap;
+    max-width: $container-max-width;
+    width: $container-width;
+    margin: $gap auto;
+
+    .link {
+      display: flex;
+      flex-direction: row-reverse;
+      justify-content: center;
+      align-items: center;
+      gap: $gap-tiny;
+      padding: $gap-tiny $gap-small;
+      border: 1px solid var(--accent-1);
+      border-radius: $border-radius;
+      background-color: var(--accent-1);
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      user-select: none;
+
+      &:hover, &:active, &.active {
+        border-color: var(--accent-2);
+        background-color: var(--accent-2);
+      }
+
+      &.collapse-show {
+        display: none;
+      }
+    }
+  }
+
+  .link-group-full {
+    .link {
+      flex: 1;
+      max-width: 256px;
+      width: 100%;
+      padding: $gap-small $gap;
+
+      &, & > * {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+  }
+}

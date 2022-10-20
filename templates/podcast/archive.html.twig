@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% import 'podcast/macro.html.twig' as podcast %}
+
+{% set page_title = 'No Agenda Archive' %}
+
+{% block content %}
+  <nav class="link-group link-group-full">
+    <a href="{{ path('podcast') }}" class="link">
+      <span>Back to Podcast</span>
+      <span class="fa-solid fa-podcast fa-fw" aria-hidden="true"></span>
+    </a>
+  </nav>
+
+  <section class="section">
+    <div class="section-content">
+      <h1>Archive</h1>
+      <p>
+        More than 1500 episodes have been recorded over the 15 years that the show is running, and they're all
+        available in this archive for you to enjoy! Throughout the years, we've added more elements to the show's
+        formula including unique artwork for every show, shownotes with reference material and auto-generated
+        transcripts.
+      </p>
+    </div>
+  </section>
+
+  {{ podcast.archive(pager.currentPageResults, pager) }}
+{% endblock %}

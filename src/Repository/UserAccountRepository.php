@@ -6,6 +6,7 @@ use App\Entity\UserAccount;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
+use function Symfony\Component\String\u;
 
 /**
  * @method UserAccount|null find($id, $lockMode = null, $lockVersion = null)
@@ -18,6 +19,22 @@ class UserAccountRepository extends ServiceEntityRepository implements UserLoade
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, UserAccount::class);
+    }
+
+    public function findByUserInput(string $input): ?UserAccount
+    {
+        $builder = $this->createQueryBuilder('user_account');
+
+        $query = $builder
+            ->orWhere(
+                $builder->expr()->eq('user_account.usernameCanonical', ':username'),
+                $builder->expr()->eq('user_account.emailCanonical', ':email'),
+            )
+            ->setParameter('username', UserAccount::canonicalize($input))
+            ->setParameter('email', u($input)->lower())
+            ->getQuery();
+
+        return $query->getOneOrNullResult();
     }
 
     public function persist(UserAccount $entity, bool $flush = false): void

@@ -86,5 +86,5 @@ volumes:
 networks:
   assets:
   database:
-  web:
   php:
+  web:

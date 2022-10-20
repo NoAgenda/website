@@ -16,11 +16,12 @@ class BatSignalCrawler implements CrawlerInterface
     use LoggerAwareTrait;
 
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        private BatSignalRepository $batSignalRepository,
-        private HttpClientInterface $mastodonClient,
-        private ?string $mastodonAccessToken,
-        private int $mastodonAccountId,
+        private readonly EntityManagerInterface $entityManager,
+        private readonly NotificationPublisher $notificationPublisher,
+        private readonly BatSignalRepository $batSignalRepository,
+        private readonly HttpClientInterface $mastodonClient,
+        private readonly ?string $mastodonAccessToken,
+        private readonly int $mastodonAccountId,
     ) {
         $this->logger = new NullLogger();
     }
@@ -51,27 +52,16 @@ class BatSignalCrawler implements CrawlerInterface
             $signal->getDeployedAt()->format('Y-m-d H:i:s'),
         ));
 
-        $this->boostBatSignal($signal);
+        $recent = (new \DateTime())->sub(new \DateInterval('PT1H'));
+
+        if ($signal->getDeployedAt()->getTimestamp() >= $recent->getTimestamp()) {
+            $this->notificationPublisher->boostMastodonPost($signal->postId);
+            $this->notificationPublisher->sendUserLiveNotifications();
+        } else {
+            $this->logger->info('Bat signal was published more than an hour ago. Skipping live notifications.');
+        }
 
         $this->entityManager->persist($signal);
-    }
-
-    private function boostBatSignal(BatSignal $signal): void
-    {
-        try {
-            $response = $this->mastodonClient->request('POST', sprintf('statuses/%s/reblog', $signal->postId));
-
-            if (200 !== $statusCode = $response->getStatusCode()) {
-                $message = sprintf('Failed to boost bat signal on Mastodon: Response code %s', $statusCode);
-                $this->logger->warning($message);
-
-                captureMessage($message);
-            }
-        } catch (\Throwable $exception) {
-            $this->logger->critical(sprintf('An exception occurred while boosting the bat signal on Mastodon: %s', $exception->getMessage()), ['exception' => $exception]);
-
-            captureException($exception);
-        }
     }
 
     private function crawlBatSignal(): ?BatSignal

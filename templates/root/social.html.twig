@@ -1,0 +1,104 @@
+{% extends 'base.html.twig' %}
+
+{% import 'call2action.html.twig' as call2action %}
+
+{% set page_title = 'No Agenda Social' %}
+
+{% block content %}
+  <div class="section-row section-promo-row">
+    <section class="section">
+      <div class="section-content">
+        <h1>No Agenda Social</h1>
+        <p>
+          You might've heard Adam promoting No Agenda Social while listening to the show. Sometimes described as The Best
+          Social Network In The Universe, No Agenda Social is a social network targeted at producers of the show. You
+          don't have to be a member to connect with our producers because No Agenda Social is part of the
+          <a href="#fediverse">Fediverse</a>, a network of decentralized apps and websites built to keep the future of
+          social media out of the hands of big tech corporations. That means it's possible to join other networks
+          (or even create your own) and still interact with producers on No Agenda Social.
+        </p>
+      </div>
+      <div class="section-buttons-full">
+        <a href="{{ social_url }}" class="btn">No Agenda Social</a>
+        <a href="{{ social_timeline_url }}" class="btn btn-accent">
+          <span class="btn-icon fa-solid fa-message" aria-hidden="true"></span>
+          <span>What's Happening</span>
+        </a>
+      </div>
+    </section>
+
+    <div class="section-promo">
+      <span class="fa-brands fa-mastodon fa-5x"></span>
+    </div>
+  </div>
+
+  <div class="section-row">
+    <section class="section">
+      <div class="section-content">
+        <h2>Built on Mastodon</h2>
+        <p>
+          No Agenda Social is based on an open-source application called <a href="https://joinmastodon.org/">Mastodon</a>.
+          There are <a href="https://joinmastodon.org/apps">tons of apps</a> available online that make it easier to use
+          No Agenda Social. Privileged members can always go to <a href="{{ social_url }}">noagendasocial.com</a>
+          directly to use the built-in web interface.
+        </p>
+      </div>
+    </section>
+    <section class="section">
+      <div class="section-content">
+        <h2 id="fediverse">Connected to the Fediverse</h2>
+        <p>
+          No Agenda Social communicates with other social networks across the web through
+          <a href="https://activitypub.rocks/">ActivityPub</a>. These social networks, also called nodes, are all part
+          of the Fediverse. Users from one node can connect with users of other nodes through special username handle
+          starting with <em>@</em>, like <a href="{{ adam_social }}">@adam@noagendasocial.com</a> &amp;
+          <a href="{{ john_social }}">@johncdvorak@noagendasocial.com</a>. Create an account
+          on any website in the Fediverse to get your own handle.
+        </p>
+      </div>
+    </section>
+  </div>
+
+  <div class="section-gutter"></div>
+
+  <div class="section-row">
+    <section class="section">
+      <div class="section-content">
+        <h2>Producer-Created Networks</h2>
+        <p>
+          No Agenda Social intentionally has a maximum capacity of users to keep activity and costs manageable. Luckily,
+          other producers have jumped in and created unofficial No Agenda-centric nodes for the Fediverse.
+        </p>
+        <ul>
+          <li><a href="{{ podcastindex_social_url }}">PodcastIndex Social</a></li>
+          <li><a href="https://noagendasocial.nl">No Agenda Social Lowlands</a> (Dutch only)</li>
+        </ul>
+        <p>Did we miss any? <a href="{{ social_profile_url }}">Let us know</a>.</p>
+      </div>
+    </section>
+    <section class="section">
+      <div class="section-content">
+        <h2>Producers to Follow</h2>
+        <p>
+          Already part of the Fediverse but not sure who to follow? Here's a small list of producers and accounts
+          that'll help you get your No Agenda fix.
+        </p>
+        <ul>
+          <li><a href="{{ adam_social }}">Adam Curry @adam@noagendasocial.com</a></li>
+          <li><a href="{{ john_social }}">John C. Dvorak @johncdvorak@noagendasocial.com</a></li>
+          <li><a href="https://noagendasocial.com/@darrenoneill">Darren O'Neill @darrenoneill@noagendasocial.com</a></li>
+          <li><a href="https://noagendasocial.com/@jennifer">Dame Jennifer @jennifer@noagendasocial.com</a></li>
+          <li><a href="https://noagendasocial.com/@SirBemrose">Sir Bemrose @SirBemrose@noagendasocial.com</a></li>
+          <li><a href="{{ social_profile_url }}">Ben from the No Agenda website @woodstock@noagendasocial.com</a></li>
+        </ul>
+      </div>
+    </section>
+  </div>
+
+  <div class="section-gutter"></div>
+
+  <div class="section-row">
+    {{ call2action.producers() }}
+    {{ call2action.website() }}
+  </div>
+{% endblock %}

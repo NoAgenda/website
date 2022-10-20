@@ -1,21 +1,30 @@
-{% extends 'layout.html.twig' %}
+{% extends 'base.html.twig' %}
 
-{% set page_title = 'Sign Up - No Agenda Show' %}
+{% import 'call2action.html.twig' as call2action %}
+{% import 'security/macro.html.twig' as security %}
+
+{% set page_title = 'Create Account - No Agenda Website' %}
 
 {% block content %}
-<div class="container my-md-5">
-  {% include 'security/parts/notice.html.twig' %}
+  <div class="section-row">
+    <section class="section">
+      <div class="section-content">
+        <h2>Create Account</h2>
+        <p>Create an account to help out building a catalog of the best podcast in the universe.</p>
 
-  <div class="row">
-    <div class="col-md-6 border-right">
-      {% include 'security/parts/registration_form.html.twig' %}
-    </div>
+        {{ form(form) }}
+      </div>
+    </section>
 
-    <div class="col-md-6">
-      {% include 'security/parts/login_form.html.twig' %}
-    </div>
+    {{ security.explanation(true) }}
   </div>
 
-  {% include 'security/parts/rules.html.twig' %}
-</div>
+  {{ security.rules() }}
+
+  <div class="section-gutter"></div>
+
+  <div class="section-row">
+    {{ call2action.website() }}
+    {{ call2action.valueForValue() }}
+  </div>
 {% endblock %}

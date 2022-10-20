@@ -1,6 +1,4 @@
 security:
-    enable_authenticator_manager: true
-
     role_hierarchy:
         ROLE_MOD: ROLE_USER, ROLE_REGISTERED_USER
         ROLE_ADMIN: ROLE_MOD
@@ -25,7 +23,7 @@ security:
                 enable_csrf: true
             logout:
                 path: security_logout
-                target: homepage
+                target: root
             remember_me:
                 secret: '%kernel.secret%'
                 lifetime: 2419200 # 4 weeks in seconds

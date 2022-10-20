@@ -1,0 +1,12 @@
+@import "../mixins";
+@import "../variables";
+
+.alert {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: $gap;
+  padding: $gap-small;
+  border: 1px solid var(--accent-2);
+  border-radius: $border-radius;
+}

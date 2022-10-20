@@ -1,0 +1,70 @@
+{% extends 'base.html.twig' %}
+
+{% import 'call2action.html.twig' as call2action %}
+
+{% set page_title = 'John C. Dvorak' %}
+{% set page_description = 'John C. Dvorak, host of The No Agenda Show' %}
+
+{% block content %}
+  <div class="section-row section-promo-row">
+    <section class="section">
+      <div class="section-content">
+        <h1>John C. Dvorak</h1>
+        <p>Buzzkill - Host of The No Agenda Show</p>
+        <p>
+          Excuse the show's pessimistic nature, because as far as news goes, Dvorak has seen it all. With 40 years of
+          media experience under his belt he has taken his nickname Buzzkill to heart by telling his comrades everything
+          that's wrong with their ideas. There's a reason he hasn't found an exit strategy yet, so he happily keeps
+          chugging along with the show until he does. Throughout his career, John C. Dvorak has worked for many media
+          outlets, including PC Magazine, InfoWorld, TWiT and many more.
+        </p>
+        <p>
+          John lives in the amazing weather-free San Francisco Bay Area, where his office window overlooks the flat bays, making
+          climate change a real and serious danger to his housing situation. His pronouns are him/his and he's married
+          to his partner Mimi. Now that Dvorak isn't allowed to appear on any corporation-supported media channels
+          anymore thanks to the vow of poverty he and his co-host <a href="{{ path('adam') }}">Adam</a> have taken by continuing with the show
+          for over 15 years, he lives on being a humble podcaster thanks to the contributions from our producers.
+          Besides No Agenda, you can hear him in the <a href="https://www.dhunplugged.com">DH Unplugged</a> podcast
+          together with his friend Andrew Horowitz.
+        </p>
+        <p>
+          One of the oft-repeated quotes from John as a tech journalist is his opinion on the reveal of the first
+          consumer mouse by Apple in 1984, saying “There is no evidence that people want to use these things.” This was
+          obviously wrong in a time when computers were used exclusively by nerds. Those who disagreed with him
+          back then still use a mouse to control their smartphone, just to prove him wrong. It's true.
+        </p>
+        <p>
+          Podcasting isn't the only thing keeping John busy, he's also in the process of writing multiple books, like
+          the one about vinegar. Maybe he'll publish one of them someday. Until then, you can use one of the links
+          below to pester him about it.
+        </p>
+        <h3>PO Box</h3>
+        <p>
+          Box 339, El Cerrito, CA 94530
+        </p>
+      </div>
+    </section>
+    <div class="section-promo">
+      <img src="{{ asset('build/images/john-c-dvorak.jpeg', 'app') }}" alt="John C. Dvorak" class="rounded">
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="section-content">
+      <h2>Where to find John</h2>
+    </div>
+    <div class="section-buttons-full">
+      <a href="{{ john_social }}" class="btn btn-accent">No Agenda Social</a>
+      <a href="https://twitter.com/therealdvorak" class="btn btn-accent">Twitter</a>
+      <a href="mailto:{{ john_email|raw }}" class="btn btn-accent">Email (john@dvorak.org)</a>
+      <a href="http://www.dvorak.org/blog/" class="btn btn-accent">Website (dvorak.org)</a>
+    </div>
+  </section>
+
+  <div class="section-gutter"></div>
+
+  <div class="section-row">
+    {{ call2action.podcast() }}
+    {{ call2action.valueForValue() }}
+  </div>
+{% endblock %}

@@ -1,32 +1,24 @@
 import Clipboard from 'clipboard';
-import jQuery from 'jquery';
 
 const clipboard = new Clipboard('[data-clipboard-text]');
 
 clipboard.on('success', event => {
-  showTooltip(event.trigger, 'Copied to clipboard');
+  animateClipboardTrigger(event.trigger, 'clipboard-success');
 });
 
 clipboard.on('error', event => {
-  showTooltip(event.trigger, 'Failed to copy');
+  animateClipboardTrigger(event.trigger, 'clipboard-error');
 });
 
-function showTooltip(button, message) {
-  button = jQuery(button);
-
-  button.data('original-title', button.attr('title'));
-  button.attr('title', message);
-
-  button.tooltip({animation: true, trigger: 'manual'});
-  button.tooltip('show');
+function animateClipboardTrigger(element, className) {
+  element.classList.add(className);
+  element.classList.add('clipboard-animate');
 
   setTimeout(() => {
-    button.tooltip('hide');
-
-    button.attr('title', button.data('original-title'));
-
-    setTimeout(() => {
-      button.tooltip('dispose');
-    }, 1000);
+    element.classList.remove(className);
   }, 1000);
+
+  setTimeout(() => {
+    element.classList.remove('clipboard-animate');
+  }, 2000);
 }

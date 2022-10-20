@@ -57,8 +57,8 @@ class SecurityListener implements EventSubscriberInterface
         if ($user->isBanned() || $user->isHidden()) {
             $route = $event->getRequest()->attributes->get('_route');
 
-            if (!str_starts_with($route, 'security_') && !str_starts_with($route, 'account_')) {
-                $event->setResponse(new RedirectResponse($this->router->generate('account_status')));
+            if ($route && !str_starts_with($route, 'security_')) {
+                $event->setResponse(new RedirectResponse($this->router->generate('security_account')));
             }
         }
     }

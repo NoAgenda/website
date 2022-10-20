@@ -12,26 +12,23 @@ use Twig\TwigFilter;
 class CoverExtension extends AbstractExtension
 {
     public function __construct(
-        private FilterService $filterService,
+        private readonly AssetExtension $assetExtension,
+        private readonly FilterService $filterService,
     ) {}
-
 
     public function getFilters(): array
     {
         return [
-            new TwigFilter('episodeCover', [$this, 'episodeCover'], ['needs_environment' => true]),
+            new TwigFilter('episode_cover', [$this, 'episodeCover']),
         ];
     }
 
-    public function episodeCover(Environment $environment, Episode $episode, string $size = 'small'): string
+    public function episodeCover(Episode $episode, string $size = 'small'): string
     {
         if ($episode->hasCover()) {
             return $this->filterService->getUrlOfFilteredImage(sprintf('%s.png', $episode->getCode()), sprintf('cover_%s', $size));
         }
 
-        /** @var AssetExtension $assetExtension */
-        $assetExtension = $environment->getExtension(AssetExtension::class);
-
-        return $assetExtension->getAssetUrl(sprintf('build/images/placeholder_%s.jpg', $size));
+        return $this->assetExtension->getAssetUrl(sprintf('build/images/placeholder_%s.jpg', $size), 'app');
     }
 }

@@ -1,0 +1,142 @@
+{#
+  This service worker is currently setup to:
+  - Cache /offline
+  - Cache assets in /build directory
+  - Receive push notifications
+#}
+
+const addResourcesToCache = async (resources) => {
+  const cache = await caches.open('static-{{ timestamp }}');
+  await cache.addAll(resources);
+};
+
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    addResourcesToCache([
+      '/offline',
+      {{ assets|map(asset => "'#{asset}'")|join(',')|raw }}
+    ])
+  );
+});
+
+const putInCache = async (request, response) => {
+  const cache = await caches.open('static-{{ timestamp }}');
+  await cache.put(request, response);
+};
+
+const fetchFromCache = async (request, preloadResponsePromise, cacheResponse) => {
+  {% if not app.environment == 'dev' %}
+  const response = await caches.match(request);
+  if (response) {
+    return response;
+  }
+
+  const preloadResponse = await preloadResponsePromise;
+  if (preloadResponse) {
+    if (cacheResponse) {
+      putInCache(request, preloadResponse.clone());
+    }
+    return preloadResponse;
+  }
+  {% endif %}
+
+  return null;
+};
+
+const fetchFromNetwork = async (request, cacheResponse = true) => {
+  try {
+    const response = await fetch(request);
+
+    if (cacheResponse && request.method === 'GET') {
+      putInCache(request, response.clone());
+    }
+
+    return response;
+  } catch (error) {}
+
+  return null;
+};
+
+const fetchFallback = async () => {
+  const fallbackResponse = await caches.match('/offline');
+  if (fallbackResponse) {
+    return fallbackResponse;
+  }
+
+  return new Response(null, {
+    status: 408,
+  });
+};
+
+const fetchRequest = async (request, preloadResponsePromise) => {
+  const requestUrl = new URL(request.url);
+
+  const mediaResource = requestUrl.pathname.startsWith('/media');
+  const staticResource = requestUrl.pathname.startsWith('/build');
+
+  const cacheResponse = await fetchFromCache(request, preloadResponsePromise, staticResource);
+  if (cacheResponse) {
+    return cacheResponse;
+  }
+
+  const networkResponse = await fetchFromNetwork(request, staticResource);
+  if (networkResponse) {
+    return networkResponse;
+  }
+
+  return fetchFallback();
+};
+
+self.addEventListener('fetch', (event) => {
+  event.respondWith(
+    fetchRequest(event.request, event.preloadResponse)
+  );
+});
+
+const enableNavigationPreload = async () => {
+  if (self.registration.navigationPreload) {
+    await self.registration.navigationPreload.enable();
+  }
+};
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil(enableNavigationPreload());
+});
+
+const deleteCache = async (key) => {
+  await caches.delete(key);
+};
+
+const deleteOldCaches = async () => {
+  const cacheKeepList = ['static-{{ timestamp }}'];
+  const keyList = await caches.keys();
+  const cachesToDelete = keyList.filter((key) => !cacheKeepList.includes(key));
+  await Promise.all(cachesToDelete.map(deleteCache));
+};
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil(deleteOldCaches());
+});
+
+self.addEventListener('push', (event) => {
+  if (event.data) {
+    const notification = event.data.json();
+
+    event.waitUntil(
+      self.registration.showNotification(notification.title, {
+        data: {
+          uri: notification.uri,
+        },
+        icon: notification.icon ?? '{{ logo_asset|raw }}',
+      })
+    );
+  }
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+
+  if (event.notification.data.uri) {
+    event.waitUntil(self.clients.openWindow(event.notification.data.uri));
+  }
+});

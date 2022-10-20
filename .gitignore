@@ -1,5 +1,8 @@
-composer.phar
-docker-compose.override.yaml
+/composer.phar
+/docker-compose.override.yaml
+
+/public/app-manifest.json
+/public/service-worker.js
 
 ###> symfony/framework-bundle ###
 /.env.local
@@ -23,6 +26,7 @@ docker-compose.override.yaml
 ###> symfony/webpack-encore-bundle ###
 /node_modules/
 /public/build/
+/public/console/build/
 npm-debug.log
 yarn-error.log
 ###< symfony/webpack-encore-bundle ###

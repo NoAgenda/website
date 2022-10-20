@@ -59,9 +59,10 @@ class EpisodeProcessor
                 $this->entityManager->getConnection()->beginTransaction();
             }
 
-            $this->publisher->publish($episode);
+            $this->publisher->publishMastodonEpisodeAnnouncement($episode);
+            $this->publisher->sendUserEpisodeNotifications($episode);
 
-            $episodeUri = $this->router->generate('player', ['episode' => $episode->getCode()], UrlGeneratorInterface::ABSOLUTE_URL);
+            $episodeUri = $this->router->generate('podcast_episode', ['code' => $episode->getCode()], UrlGeneratorInterface::ABSOLUTE_URL);
             $this->notifier->send(new Notification(sprintf("Episode %s has been published.\n\n%s", $episode->getCode(), $episodeUri)));
         }
 

@@ -1,0 +1,115 @@
+{% extends 'base.html.twig' %}
+
+{% import 'call2action.html.twig' as call2action %}
+
+{% set page_title = 'No Agenda Website' %}
+{% set page_description = 'The No Agenda Website is part of the value for value model' %}
+
+{% block content %}
+  <section class="section">
+    <div class="section-content">
+      <h1>No Agenda Website</h1>
+      <p>
+        The website of The No Agenda Show was created by one of our dudes named Ben under the value for value model.
+        <a href="#">Originally designed as an archive of the show</a>, the website is now a full custom-built podcast
+        app for our show, complete with <a href="{{ path('podcasting20') }}">Podcasting 2.0</a> integration.
+      </p>
+      <p>
+        Maintaining a website that's pushing the boundaries of podcasting isn't easy, so I've created the
+        <a href="{{ dudenamedben_url }}">Dude Named Ben Blog</a> to tell your more about it. If you like this website
+        and would like it to keep improving in the future, consider helping Ben out with a donation.
+      </p>
+    </div>
+    <div class="section-buttons-full">
+      <a href="#credits" class="btn">Executive Producers</a>
+      <a href="{{ dudenamedben_donate_url }}" class="btn btn-donate">Support Ben with a Donation</a>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-content">
+      <h2 id="new">New Features</h2>
+      <p>
+        The No Agenda website has recently been rebuilt from the ground up to create a more inclusive listening
+        experience. We've listed a few of the features you might enjoy!
+      </p>
+
+      <h3>Redesign</h3>
+      <p>
+        The Best Podcast In The Universe deserves the best website in the universe, so we've redesigned it with the
+        future in mind. It's faster, smarter, more accessible and ready for the web 2.0 revolution.
+      </p>
+      <p>
+        In addition to the existing light design there's now a dark variant available, making it easier to use the
+        website in dark places. By default, the website will use the preferred color scheme of your device, but
+        this can be changed from the controls in the top menu.
+      </p>
+      <p>
+        The website player has been redesigned to be more accessible on small devices. Aside from the existing
+        integration of <a href="{{ path('podcasting20') }}">Podcasting 2.0</a> chapters, it's now also possible
+        to view the live transcript while listening to the show.
+      </p>
+
+      <h3>Save Playback Position</h3>
+      <p>
+        Nobody has the time to listen to an entire show at once, so we've finally added the ability to continue listening
+        to the episode from where you left off last time. This can be disabled from the controls in the top menu.
+      </p>
+
+      <h3>Push Notifications</h3>
+      <p>
+        Being notified about new shows used to be perk exclusive to podcast app users. This is no longer the case. You
+        can now <a href="{{ path('podcast_subscribe') }}">subscribe to the show</a> to get notified when a new show is
+        available, or if you want to know when the show is being recorded, <a href="{{ path('livestream') }}">subscribe
+        to the bat signal</a>.
+      </p>
+      <p>
+        Push notifications are not supported on all platforms, like iPhones, iPads, or the Safari browser on Mac. How do you
+        feel about your $1,000+ phone now?
+      </p>
+    </div>
+  </section>
+
+  <div class="section-gutter"></div>
+
+  <section class="section">
+    <div class="section-content">
+      <h2>Help Us Improve</h2>
+      <p>
+        The code of this website is <a href="{{ github_url }}">available for free</a> under an open-source license. That
+        means anybody is free to make improvements, or to use the code for their own projects. Did you find
+        something that's not working as expected, or do you have any feedback or questions on how the website works,
+        <a href="{{ github_url }}/issues">create an issue</a> on GitHub or contact us on <a href="{{ social_profile_url }}">No Agenda Social</a>.
+      </p>
+    </div>
+    <div class="section-buttons-full">
+      <a href="{{ github_url }}" class="btn btn-accent">View Code on GitHub</a>
+    </div>
+  </section>
+
+  <div class="section-gutter"></div>
+
+  <section class="section">
+    <div class="section-content">
+      <h2 id="credits">Executive Producers</h2>
+      <p>
+        The following people are executive producers of the website by providing their <a href="{{ github_url }}">time and talent</a>
+        or <a href="{{ dudenamedben_donate_url }}">treasure</a>.
+      </p>
+      <ul>
+        <li><a href="https://noagendasocial.nl/@tim">Sir Tim</a>, Knight of the JIT Shenanigans</li>
+        <li><a href="https://noagendasocial.com/@clogwog">Clogwog</a></li>
+        <li><a href="https://noagendasocial.com/@sirpeet">Sir Peet</a></li>
+        <li><a href="https://noagendasocial.com/@damegerous">DameGerous</a></li>
+        <li><a href="https://noagendasocial.com/@voidzero">Void Zero</a></li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="section-gutter"></div>
+
+  <div class="section-row">
+    {{ call2action.producers() }}
+    {{ call2action.podcasting20() }}
+  </div>
+{% endblock %}

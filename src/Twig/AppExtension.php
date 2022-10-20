@@ -3,24 +3,18 @@
 namespace App\Twig;
 
 use App\Utilities;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Twig\Extension\AbstractExtension;
-use Twig\Extension\GlobalsInterface;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
 
-class AppExtension extends AbstractExtension implements GlobalsInterface
+class AppExtension extends AbstractExtension
 {
-    public function __construct(
-        private TokenStorageInterface $tokenStorage,
-        private string $securityToken,
-    ) {}
-
     public function getFilters(): array
     {
         return [
             new TwigFilter('desimplifyDate', [$this, 'desimplifyDate']),
             new TwigFilter('desimplifyTime', [$this, 'desimplifyTime']),
+            new TwigFilter('prettyDate', [$this, 'prettyDate']),
             new TwigFilter('prettyTimestamp', [$this, 'prettyTimestamp']),
             new TwigFilter('visualTimestamp', [$this, 'visualTimestamp']),
         ];
@@ -36,16 +30,6 @@ class AppExtension extends AbstractExtension implements GlobalsInterface
         ];
     }
 
-    public function getGlobals(): array
-    {
-        return [
-            'authenticated' => null !== $this->tokenStorage->getToken()?->getUser(),
-            'security_token' => $this->securityToken,
-            'analytics_domain' => $_SERVER['ANALYTICS_DOMAIN'] ?? null,
-            'analytics_id' => $_SERVER['ANALYTICS_ID'] ?? null,
-        ];
-    }
-
     public function desimplifyDate($date): string
     {
         return implode('-', [substr($date, 0, 4), substr($date, 4, 2), substr($date, 6, 2)]);
@@ -54,6 +38,17 @@ class AppExtension extends AbstractExtension implements GlobalsInterface
     public function desimplifyTime($time): string
     {
         return implode(':', [substr($time, 0, 2), substr($time, 2, 2), substr($time, 2, 2)]);
+    }
+
+    public function prettyDate(\DateTime $value): string
+    {
+        $now = new \DateTime();
+
+        if ($value->format('Y') == $now->format('Y')) {
+            return $value->format('F jS');
+        }
+
+        return $value->format('F jS, Y');
     }
 
     public function prettyTimestamp($value): string

@@ -1,95 +1,97 @@
-{% extends 'layout.html.twig' %}
+{% extends 'base.html.twig' %}
 
-{% set page_title = "User Contributions" %}
+{% import 'components.html.twig' as components %}
+{% import 'feedback/macro.html.twig' as feedback %}
+
+{% set page_title = 'Manage User - No Agenda Website' %}
 
 {% block content %}
-  <div class="container">
-    {% include 'blocks/alerts.html.twig' with {alerts: app.flashes} %}
+  <nav class="link-group link-group-full">
+    <a href="{{ path('feedback_manage') }}" class="link">
+      <span>Back to Contributions</span>
+    </a>
+  </nav>
 
-    <h1 class="mt-3 mb-1">
-      {{ page_title }}
-      <a href="{{ path('feedback_manage') }}"><span class="fas fa-arrow-circle-left ml-3" aria-hidden="true"></span></a>
-    </h1>
-    <h3 class="mb-3 mt-1">{{ creator.username }}</h3>
+  <section class="section">
+    <div class="section-content">
+      <h1>Manage User</h1>
+      <h2>{{ creator.username }}</h2>
 
+    </div>
     {% if not creator.mod %}
-      <div class="btn-toolbar mb-3">
+      <div class="section-buttons">
         {% if not creator.reviewed %}
-          <a class="btn btn-outline-success mr-2" href="{{ path('feedback_review', {user: creator.id}) }}">Authorise</a>
+          <a href="{{ path('feedback_review', {user: creator.id}) }}" class="btn">Authorise</a>
         {% endif %}
         {% if not creator.banned %}
-          <a class="btn btn-outline-danger mr-2" href="{{ path('feedback_ban', {user: creator.id}) }}">Ban</a>
+          <a href="{{ path('feedback_ban', {user: creator.id}) }}" class="btn btn-accent">Ban</a>
         {% else %}
-          <a class="btn btn-outline-warning mr-2" href="{{ path('feedback_unban', {user: creator.id}) }}">Unban</a>
+          <a href="{{ path('feedback_unban', {user: creator.id}) }}" class="btn btn-accent">Unban</a>
         {% endif %}
       </div>
     {% endif %}
+  </section>
 
-    <div class="row my-3">
-      <div class="col-md">
-        <div>Status</div>
-        {% if creator.admin %}
-          <div class="h2 text-success">Administrator</div>
-        {% elseif creator.mod %}
-          <div class="h2 text-success">Moderator</div>
-        {% elseif creator.banned %}
-          <div class="h2 text-danger">Banned</div>
-        {% elseif creator.hidden %}
-          <div class="h2 text-warning">Hidden</div>
-        {% elseif creator.reviewed %}
-          <div class="h2 text-success">Authorized</div>
-        {% else %}
-          <div class="h2 text-warning">Unauthorized</div>
-        {% endif %}
-      </div>
+  <section class="section">
+    <div class="section-content">
       {% if creator.master %}
-        <div class="col-md">
-          <div>Master</div>
-          <a class="h2" href="{{ path('feedback_user', {user: creator.master.id}) }}">{{ creator.master.username }}</a>
+        {{ components.alert('This user has a master, it\'s scheduled to be deleted and merged into its master account.') }}
+      {% elseif creator.banned %}
+        {{ components.alert('This user has been banned, suggestions of this user will not be shown to other visitors.') }}
+      {% elseif creator.hidden %}
+        {{ components.alert('This user was hidden by the user themself, suggestions of this user will not be shown to other visitors.') }}
+      {% elseif creator.needsReview %}
+        {{ components.alert('This user hasn\'t been reviewed, suggestions of this user will not be shown to other visitors until the user is reviewed.') }}
+      {% endif %}
+
+      <h3>Status</h3>
+      {% if creator.admin %}
+        <div>Administrator</div>
+      {% elseif creator.mod %}
+        <div>Moderator</div>
+      {% elseif creator.banned %}
+        <div>Banned</div>
+      {% elseif creator.hidden %}
+        <div>Hidden</div>
+      {% elseif creator.reviewed %}
+        <div>Authorized</div>
+      {% else %}
+        <div>Unauthorized</div>
+      {% endif %}
+
+      {% if creator.master %}
+        <h3>Master</h3>
+        <div>
+          <a href="{{ path('feedback_user', {user: creator.master.id}) }}">{{ creator.master.username }}</a>
         </div>
       {% endif %}
-      <div class="col-md">
-        <div>Submissions</div>
-        <div class="h2">{{ items|length }}</div>
-      </div>
-      <div class="col-md">
-        <div>Approval Ratio</div>
-        <div class="h2">{{ acceptance_ratio }}%</div>
-      </div>
+
+      <h3>Submissions</h3>
+      <div>{{ items|length }}</div>
+
+      <h3>Approval Ratio</h3>
+      <div>{{ acceptance_ratio }}%</div>
+
+      {% if creator.ipAddresses|length %}
+        <h3>IP Addresses</h3>
+        {{ creator.ipAddresses|join('<br>')|raw }}
+      {% endif %}
     </div>
+  </section>
 
-    {% if creator.master %}
-      <div class="alert alert-warning my-3">This user has a master, it's scheduled to be deleted and merged into its master account.</div>
-    {% elseif creator.banned %}
-      <div class="alert alert-danger my-3">This user has been banned, suggestions of this user will not be shown to other visitors.</div>
-    {% elseif creator.hidden %}
-      <div class="alert alert-warning my-3">This user was hidden by the user themself, suggestions of this user will not be shown to other visitors.</div>
-    {% elseif creator.needsReview %}
-      <div class="alert alert-warning my-3">This user hasn't been reviewed, suggestions of this user will not be shown to other visitors until the user is reviewed.</div>
-    {% endif %}
+  <section class="section">
+    <div class="section-content">
+      <h1>Contributions</h1>
 
-    {% if creator.ipAddresses|length %}
-      <div class="my-3">
-        <div class="h4">IP Addresses</div>
-        {{ creator.ipAddresses|join(', ') }}
-      </div>
-    {% endif %}
-
-    <div class="mt-3">
-      <div class="h4">Contributions</div>
-      <div class="list-group list-group-flush">
+      <div class="chapters">
         {% for item in items %}
-          <div class="list-group-item">
-            {% include 'feedback/parts/item.html.twig' with {referral: 'user'} %}
-          </div>
+          {{ feedback.chapter(item.entity, 'user', true) }}
         {% else %}
-          <div class="list-group-item">
+          <div>
             This user hasn't made any contributions.
           </div>
         {% endfor %}
       </div>
     </div>
-
-    <na-audio-toolbar-spacer></na-audio-toolbar-spacer>
-  </div>
+  </section>
 {% endblock %}

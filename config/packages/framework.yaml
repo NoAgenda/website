@@ -2,6 +2,7 @@
 framework:
     secret: '%env(APP_SECRET)%'
     #csrf_protection: true
+    http_cache: true
     http_method_override: false
 
     trusted_proxies: '%env(string:default::TRUSTED_PROXIES)%'

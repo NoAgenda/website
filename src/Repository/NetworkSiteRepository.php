@@ -22,9 +22,4 @@ class NetworkSiteRepository extends AbstractRepository
     {
         parent::__construct($registry, NetworkSite::class);
     }
-
-    public function getHomepageSites()
-    {
-        return $this->findBy(null, null, 12);
-    }
 }

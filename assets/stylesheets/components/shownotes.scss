@@ -1,0 +1,44 @@
+.shownotes {
+  display: flex;
+  flex-direction: column;
+  gap: $gap;
+
+  details {
+    display: flex;
+    flex-direction: column;
+    gap: $gap;
+    padding-left: $gap-small;
+    border-left: 4px solid var(--accent-3);
+
+    summary {
+      padding: $gap-tiny 0;
+      cursor: pointer;
+      //list-style: none;
+    }
+
+    summary::marker {
+      margin-right: 4px;
+    }
+
+    &[open] {
+      padding-bottom: $gap-tiny;
+
+      > summary {
+        padding-bottom: $gap;
+      }
+
+      > :last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  .permalink {
+    margin-bottom: $gap-small;
+  }
+
+  audio, img {
+    max-width: 800px;
+    width: 100%;
+  }
+}

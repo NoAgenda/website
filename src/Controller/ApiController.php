@@ -2,152 +2,87 @@
 
 namespace App\Controller;
 
-use App\Crawling\CrawlingProcessor;
-use App\Crawling\EpisodeCrawlerInterface;
-use App\Crawling\EpisodeFileCrawlerInterface;
-use App\Entity\Episode;
-use App\Entity\FeedbackItem;
-use App\Entity\User;
-use Doctrine\ORM\EntityManagerInterface;
-use Monolog\Handler\StreamHandler;
-use Psr\Log\LoggerInterface;
+use App\Entity\NotificationSubscription;
+use App\Repository\NotificationSubscriptionRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\StreamedResponse;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
-use function Symfony\Component\String\u;
+use Symfony\Component\Security\Core\User\UserInterface;
 
-#[Route('/api', name: 'api_')]
+#[Route('/api')]
 class ApiController extends AbstractController
 {
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        private CrawlingProcessor $crawlingProcessor,
-        private LoggerInterface $crawlerLogger,
-        private string $securityToken,
+        private readonly NotificationSubscriptionRepository $notificationSubscriptionRepository,
     ) {}
 
-    #[Route('/crawl/{data}', name: 'crawl')]
-    public function crawl(Request $request, string $data): Response
+    #[Route('/auth')]
+    public function authenticationInfo(?UserInterface $user): Response
     {
-        $this->denyAccessUnlessAuthenticated();
-
-        $episode = $this->validateCrawlRequest($request, $data);
-
-        $this->crawlerLogger->pushHandler(new StreamHandler('php://output'));
-
-        $response = new StreamedResponse();
-        $response->setCallback(function () use ($data, $episode) {
-            $title = u('Executing ')->append(CrawlingProcessor::$crawlerClasses[$data]);
-            $separator = u('=')->repeat(16);
-
-            if ($episode) {
-                $title = $title->append(' for episode ')->append($episode);
-            }
-
-            echo implode(PHP_EOL, [
-                '<pre>',
-                'Crawler',
-                $separator,
-                $title,
-                $separator,
-                '',
-                '',
-            ]);
-
-            $this->entityManager->beginTransaction();
-
-            try {
-                $this->crawlingProcessor->crawl($data, $episode);
-                $this->entityManager->flush();
-
-                $this->entityManager->commit();
-            } catch (\Throwable $exception) {
-                $this->crawlerLogger->error(sprintf('An exception occurred: %s', $exception->getMessage()));
-
-                $this->entityManager->rollback();
-            }
-
-            echo implode(PHP_EOL, [
-                '',
-                $separator,
-                'Finished',
-            ]);
-        });
-
-        return $response;
-    }
-
-    #[Route('/queue/{data}', name: 'queue')]
-    public function queue(Request $request, string $data): Response
-    {
-        $this->denyAccessUnlessAuthenticated();
-
-        $episode = $this->validateCrawlRequest($request, $data);
-
-        $this->crawlingProcessor->enqueue($data, $episode);
-
-        $title = u('Queueing ')->append(CrawlingProcessor::$crawlerClasses[$data]);
-        $separator = u('=')->repeat(16);
-
-        if ($episode) {
-            $title = $title->append(' for episode ')->append($episode);
+        if (!$user) {
+            return new JsonResponse(null);
         }
 
-        return new Response(implode(PHP_EOL, [
-            '<pre>',
-            'Crawler',
-            $separator,
-            $title,
-            $separator,
-            'Done',
-        ]));
+        return new JsonResponse([
+            'authenticated' => true,
+            'registered' => $user->isRegistered(),
+            'username' => $user->getUsername(),
+            'admin' => $user->isAdmin(),
+            'mod' => $user->isMod(),
+        ]);
     }
 
-    #[Route('/stats', name: 'stats')]
-    public function stats(): Response
+    #[Route('/livestream')]
+    public function livestreamInfo(): Response
     {
-        $this->denyAccessUnlessAuthenticated();
+        $livestreamInfoPath = sprintf('%s/livestream_info.json', $_SERVER['APP_STORAGE_PATH']);
 
-        $stats = [
-            'unresolved_feedback_items' => $this->entityManager->getRepository(FeedbackItem::class)->countUnresolvedItems(),
-            'unreviewed_users' => $this->entityManager->getRepository(User::class)->countUnreviewedUsers(),
-        ];
+        if (!file_exists($livestreamInfoPath)) {
+            return new Response(null, Response::HTTP_NO_CONTENT);
+        }
 
-        return new JsonResponse($stats);
+        $info = json_decode(file_get_contents($livestreamInfoPath));
+
+        return new JsonResponse($info);
     }
 
-    private function denyAccessUnlessAuthenticated(): void
+    #[Route('/notifications/subscribe/{type}')]
+    public function registerNotificationSubscription(Request $request, string $type): Response
     {
-        $request = $this->container->get('request_stack')->getCurrentRequest();
+        $rawSubscription = $request->getContent();
 
-        if ($this->securityToken !== $request->query->get('token')) {
-            throw new AccessDeniedHttpException();
+        $subscriptionData = json_decode($rawSubscription, true);
+        if (!isset($subscriptionData['endpoint'])) {
+            return new Response(null, Response::HTTP_BAD_REQUEST);
         }
+
+        if (!$this->notificationSubscriptionRepository->match($rawSubscription, $type)) {
+            $notificationSubscription = (new NotificationSubscription())
+                ->setRawSubscription($rawSubscription)
+                ->setType($type);
+
+            $this->notificationSubscriptionRepository->persist($notificationSubscription, true);
+        }
+
+        return new Response();
     }
 
-    private function validateCrawlRequest(Request $request, string $data): ?Episode
+    #[Route('/notifications/unsubscribe/{type}')]
+    public function removeNotificationSubscription(Request $request, string $type): Response
     {
-        if (!$crawlerName = CrawlingProcessor::$crawlerClasses[$data] ?? false) {
-            throw new BadRequestHttpException();
+        $rawSubscription = $request->getContent();
+
+        $subscriptionData = json_decode($rawSubscription, true);
+        if (!isset($subscriptionData['endpoint'])) {
+            return new Response(null, Response::HTTP_BAD_REQUEST);
         }
 
-        $episode = null;
-
-        if (is_subclass_of($crawlerName, EpisodeCrawlerInterface::class) || is_subclass_of($crawlerName, EpisodeFileCrawlerInterface::class)) {
-            if (!$episodeCode = $request->query->get('episode')) {
-                throw new BadRequestHttpException();
-            }
-
-            if (!$episode = $this->entityManager->getRepository(Episode::class)->findOneByCode($episodeCode)) {
-                throw new BadRequestHttpException();
-            }
+        if ($notificationSubscription = $this->notificationSubscriptionRepository->match($rawSubscription, $type)) {
+            $this->notificationSubscriptionRepository->remove($notificationSubscription, true);
         }
 
-        return $episode;
+        return new Response();
     }
 }

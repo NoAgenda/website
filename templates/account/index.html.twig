@@ -1,9 +1,0 @@
-{% extends 'account/layout.html.twig' %}
-
-{% block account_content %}
-  <p>Welcome <em>{{ app.user.username }}</em>!</p>
-
-  {% if app.user.hidden %}
-    <p>Your account is currently disabled. You can enable your account by changing your account status.</p>
-  {% endif %}
-{% endblock %}

@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% import 'podcast/macro.html.twig' as podcast %}
+
+{% set page_description = 'Full No Agenda Archive' %}
+
+{% block content %}
+  <nav class="link-group link-group-full">
+    <a href="{{ path('podcast') }}" class="link">
+      <span>Back to Podcast</span>
+      <span class="fa-solid fa-podcast fa-fw" aria-hidden="true"></span>
+    </a>
+  </nav>
+
+  <section class="section">
+    <div class="section-content">
+      <h1>Archive</h1>
+    </div>
+  </section>
+
+  <section class="section archive">
+    <div class="section-content">
+      <div class="archive-list">
+        {% for episode in episodes %}
+          <a href="{{ path('podcast_episode', {code: episode.code}) }}" class="episode">
+            <span>{{ episode }}</span>
+            <span>{{ episode.publishedAt|prettyDate }}</span>
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  {% for episode in episodes %}
+
+  {% endfor %}
+{% endblock %}

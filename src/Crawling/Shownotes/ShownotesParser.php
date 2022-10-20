@@ -8,7 +8,6 @@ use vipnytt\OPMLParser;
 
 class ShownotesParser
 {
-    private array $contents;
     private ?array $tabs;
 
     public function __construct(
@@ -37,6 +36,12 @@ class ShownotesParser
                     }
                 }
             }
+        }
+
+        foreach ($clips as $category => $categoryClips) {
+            usort($categoryClips, fn ($a, $b) => $a['sort_title'] <=> $b['sort_title']);
+
+            $clips[$category] = $categoryClips;
         }
 
         return $clips;
@@ -203,6 +208,7 @@ class ShownotesParser
         return [
             'type' => $type,
             'title' => $title,
+            'sort_title' => strtolower($title),
             'uri' => $uri,
         ];
     }

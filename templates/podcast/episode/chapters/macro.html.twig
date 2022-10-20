@@ -1,0 +1,41 @@
+{% macro form(form, submit_label = 'Submit Suggestion') %}
+  {{ form_start(form, {attr: {class: 'form'}}) }}
+    {{ form_row(form.name) }}
+    {{ form_row(form.startsAt) }}
+
+    <p>Make sure your suggestion meets to the requirements detailed on this page.</p>
+
+    {{ form_rest(form) }}
+
+    <div>
+      <button type="submit" class="btn">{{ submit_label }}</button>
+    </div>
+  {{ form_end(form) }}
+{% endmacro %}
+
+{% macro guidelines() %}
+  <section class="section">
+    <div class="section-content">
+      <h1>Website Chapters</h1>
+
+      <p>
+        Chapters on the No Agenda website are created and maintained by the community in an effort to make the show
+        accessible education and research. A number of rules apply for chapters to be accepted into
+        the archive, suggestions that don't follow the rules will be removed without notice.
+      </p>
+      <ul>
+        <li>
+          Chapter titles must contain a topic. This can be a piece of media (like a news article or a
+          television broadcast), a piece of legislation, a person, etc. or an overarching description of the discussion.
+          In rare cases a quote is allowed, if it is attributed properly.
+          <br>
+          If you're not sure what the right name for a chapter is, leave it empty so other producers can suggest one.
+        </li>
+        <li>
+          Chapters must start before the topic is being discussed. Chapters that start in the middle of a discussion
+          are only allowed if the topic is not related to the topic at the start of the discussion.
+        </li>
+      </ul>
+    </div>
+  </section>
+{% endmacro %}

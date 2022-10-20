@@ -1,73 +1,63 @@
-{% import 'player/parts/macro.html.twig' as player %}
-
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, user-scalable=no">
 
     {% set page_description = page_description ?? null %}
 
     <title>{{ page_title ?? 'No Agenda Show' }}</title>
     {% if page_description %}<meta name="description" content="{{ page_description }}">{% endif %}
-    <link rel="icon" href="{{ asset('/favicon.ico') }}">
+
+    <link rel="manifest" href="{{ asset('app-manifest.json') }}">
+    <link rel="icon" href="{{ asset('build/images/website-icon-192.png', 'app') }}" sizes="192x192">
+    <link rel="icon" href="{{ asset('build/images/website-icon-180.png', 'app') }}" sizes="180x180">
+    <link rel="icon" href="{{ asset('build/images/website-icon-128.png', 'app') }}" sizes="128x128">
+    <link rel="icon" href="{{ asset('build/images/website-icon-32.png', 'app') }}" sizes="32x32">
 
     {% block metatags %}
+      <meta property="og:site_name" content="No Agenda Show"/>
+      <meta property="og:type" content="website"/>
     {% endblock %}
 
     {% block stylesheets %}
-      {{ encore_entry_link_tags('app') }}
+      {{ encore_entry_link_tags('app', null, 'app') }}
+
+      <noscript>
+        <style>
+          .js { display: none !important; }
+          .noscript-flex { display: flex !important; }
+        </style>
+      </noscript>
     {% endblock %}
-  </head>
-  <body data-authenticated="{{ authenticated ? 'true' : 'false' }}" {% block body_attributes '' %}>
-    <div id="routerLoader" class="loading-bar">
-      <span style="width: 90%;"><span class="progress"></span></span>
-    </div>
-
-    <na-router>
-      {% block body '' %}
-    </na-router>
-
-    <na-audio-toolbar id="stickyPlayer" style="display: none;">
-      <div class="position-fixed" style="bottom: 0; left: 0; right: 0; z-index: 1002;">
-        <div class="container">
-          <div class="bottom-holder d-md-flex p-2">
-            <div class="btn-toolbar d-flex align-items-center justify-content-center mb-2 mb-md-0">
-              {{ player.seek_button('backward', 15, 'ml-3 mr-2', 'btn-sm btn-light') }}
-              {{ player.play_button(2, 'text-tertiary mx-2') }}
-              {{ player.seek_button('forward', 15, 'mx-2', 'btn-sm btn-light') }}
-              {{ player.speed_button('ml-2 mr-3', 'btn-sm btn-light') }}
-            </div>
-            {{ player.progress_bar('small') }}
-          </div>
-        </div>
-      </div>
-    </na-audio-toolbar>
-
-    <na-audio id="audioPlayer"></na-audio>
-
-    {% include 'blocks/token_modal.html.twig' %}
-    {% include 'blocks/mastodon_modal.html.twig' %}
 
     {% block scripts %}
-      {{ encore_entry_script_tags('app') }}
-      {% if analytics_domain and analytics_id %}
-        <!-- Matomo -->
-        <script>
-          var _paq = window._paq = window._paq || [];
-          /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
-          _paq.push(['trackPageView']);
-          _paq.push(['enableLinkTracking']);
-          (function() {
-            var u="//{{ analytics_domain }}/";
-            _paq.push(['setTrackerUrl', u+'matomo.php']);
-            _paq.push(['setSiteId', '{{ analytics_id }}']);
-            var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-            g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
-          })();
-        </script>
-        <!-- End Matomo Code -->
-      {% endif %}
+      <script>
+        {% if app.environment == 'dev' %}
+          window.naDebug = true;
+        {% endif %}
+        {% if vapid_key %}
+          window.vapidPublicKey = '{{ vapid_key }}';
+        {% endif %}
+        window.recordingTimes = {{ recording_times|json_encode|raw }};
+      </script>
+
+      {{ encore_entry_script_tags('app', null, 'app') }}
+    {% endblock %}
+  </head>
+  <body>
+    {% block body %}
+      {% include 'navbar.html.twig' %}
+
+      <main id="swup" class="swup-transition">
+        {% block content '' %}
+      </main>
+
+      {% include 'players.html.twig' %}
+    {% endblock %}
+
+    {% block body_scripts %}
+      {% include 'analytics_script.html.twig' %}
     {% endblock %}
   </body>
 </html>

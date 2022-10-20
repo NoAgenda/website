@@ -1,4 +1,30 @@
-FROM php:8.1-fpm AS base
+FROM node:18.12-alpine AS assets
+
+WORKDIR /srv/app
+
+ENV FPM_HOST=app
+ENV FPM_PORT=9000
+
+# Install dependencies
+COPY package.json package-lock.json ./
+RUN set -eux; \
+    npm install; \
+	npm cache clean --force
+
+# Compile assets
+COPY .babelrc .eslintrc.json jest.config.js webpack.config.js ./
+COPY assets assets/
+RUN set -eux; \
+    npm run production
+
+# Set up entrypoint
+COPY docker/assets-entrypoint.sh /usr/local/bin/docker-entrypoint
+RUN chmod +x /usr/local/bin/docker-entrypoint
+
+ENTRYPOINT ["docker-entrypoint"]
+CMD ["npm", "run", "watch"]
+
+FROM php:8.1-fpm AS app
 
 ARG UID=3302
 ARG GID=3302
@@ -56,34 +82,6 @@ RUN set -eux; \
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-FROM node:16.14-alpine AS assets
-
-WORKDIR /srv/app
-
-ENV FPM_HOST=app
-ENV FPM_PORT=9000
-
-# Install dependencies
-COPY package.json package-lock.json ./
-RUN set -eux; \
-    npm install; \
-	npm cache clean --force
-
-# Compile assets
-COPY .babelrc .eslintrc.json jest.config.js webpack.config.js ./
-COPY assets assets/
-RUN set -eux; \
-    npm run production
-
-# Set up entrypoint
-COPY docker/assets-entrypoint.sh /usr/local/bin/docker-entrypoint
-RUN chmod +x /usr/local/bin/docker-entrypoint
-
-ENTRYPOINT ["docker-entrypoint"]
-CMD ["npm", "run", "watch"]
-
-FROM base AS app
-
 ARG UID=3302
 ARG GID=3302
 ARG GITHUB_TOKEN
@@ -116,6 +114,8 @@ COPY --chown=ben:ben templates templates/
 COPY --chown=ben:ben tests tests/
 COPY --chown=ben:ben translations translations/
 
+COPY --from=assets --chown=ben:ben /srv/app/public public/
+
 RUN mkdir -p \
         docker/storage/chat_archives \
         docker/storage/chat_logs \
@@ -128,8 +128,6 @@ RUN mkdir -p \
         public/media \
         var/cache \
         var/log
-
-COPY --from=assets --chown=ben:ben /srv/app/public public/
 
 # Run Composer commands
 RUN set -eux; \
