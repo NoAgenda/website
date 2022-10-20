@@ -59,7 +59,7 @@ class BatSignalCrawler implements CrawlerInterface
     private function boostBatSignal(BatSignal $signal): void
     {
         try {
-            $response = $this->mastodonClient->request('POST', sprintf('status/%s/reblog', $signal->postId));
+            $response = $this->mastodonClient->request('POST', sprintf('statuses/%s/reblog', $signal->postId));
 
             if (200 !== $statusCode = $response->getStatusCode()) {
                 $message = sprintf('Failed to boost bat signal on Mastodon: Response code %s', $statusCode);
