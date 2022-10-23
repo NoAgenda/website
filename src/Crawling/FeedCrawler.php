@@ -106,9 +106,10 @@ class FeedCrawler implements CrawlerInterface
                 'code' => trim($code, ' :'),
                 'name' => trim($name, ' "-'),
                 'author' => $feedItem->getCastAuthor(),
+                'publishedAt' => $feedItem->getDateCreated(),
+                'chaptersUri' => $xpath->evaluate('string(' . $feedItem->getXpathPrefix() . '/podcast:chapters/@url)'), // todo podcasting 2.0 support in library
                 'coverUri' => $feedItem->getItunesImage(),
                 'recordingUri' => $feedItem->getEnclosure()->url,
-                'publishedAt' => $feedItem->getDateCreated(),
                 'transcriptUri' => $xpath->evaluate('string(' . $feedItem->getXpathPrefix() . '/podcast:transcript/@url)'), // todo podcasting 2.0 support in library
             ];
         }
@@ -133,6 +134,7 @@ class FeedCrawler implements CrawlerInterface
             ->setName($entry['name'])
             ->setAuthor($entry['author'])
             ->setPublishedAt($entry['publishedAt'])
+            ->setChaptersUri($entry['chaptersUri'])
             ->setCoverUri($entry['coverUri'])
             ->setRecordingUri($entry['recordingUri'])
             ->setTranscriptUri($entry['transcriptUri'])

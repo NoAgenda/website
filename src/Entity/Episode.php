@@ -52,6 +52,9 @@ class Episode
     private ?string $recordingUri;
 
     #[Column(type: 'text', nullable: true)]
+    private ?string $chaptersUri = null;
+
+    #[Column(type: 'text', nullable: true)]
     private ?string $coverUri = null;
 
     #[Column(type: 'text', nullable: true)]
@@ -240,6 +243,18 @@ class Episode
     public function setRecordingUri(string $uri): self
     {
         $this->recordingUri = $uri;
+
+        return $this;
+    }
+
+    public function getChaptersUri(): ?string
+    {
+        return $this->chaptersUri;
+    }
+
+    public function setChaptersUri(?string $uri): self
+    {
+        $this->chaptersUri = $uri;
 
         return $this;
     }
