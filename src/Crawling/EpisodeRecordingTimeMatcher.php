@@ -109,8 +109,14 @@ class EpisodeRecordingTimeMatcher implements EpisodeCrawlerInterface
                     continue;
                 }
 
-                $recordingOffset = $offset + $matchedOffset;
-                $episodeRecordedAt = (new \DateTime($timestamp))->sub(new \DateInterval("PT${recordingOffset}S"));
+                $recordingOffset = (int) $offset + $matchedOffset;
+                if ($recordingOffset > 0) {
+                    $episodeRecordedAt = (new \DateTime($timestamp))->sub(new \DateInterval("PT${recordingOffset}S"));
+                } else {
+                    $recordingOffset = abs($recordingOffset);
+
+                    $episodeRecordedAt = (new \DateTime($timestamp))->add(new \DateInterval("PT${recordingOffset}S"));
+                }
 
                 $episodeRecordedAtKey = $episodeRecordedAt->format('YmdHis');
 
