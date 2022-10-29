@@ -99,18 +99,23 @@ class FeedCrawler implements CrawlerInterface
             }
 
             list($code, $name) = $titleParts;
+            $code = trim($code, ' :"-');
+            $name = trim($name, ' :"-');
 
             $xpath = $feedItem->getXpath();
 
+            // $chaptersUri = $xpath->evaluate('string(' . $feedItem->getXpathPrefix() . '/podcast:chapters/@url)');
+            $chaptersUri = sprintf('https://studio.hypercatcher.com/chapters/podcast/http:feed.nashownotes.comrss.xml/episode/http:%s.noagendanotes.com', $code);
+
             $entries[] = [
-                'code' => trim($code, ' :'),
-                'name' => trim($name, ' "-'),
+                'code' => $code,
+                'name' => $name,
                 'author' => $feedItem->getCastAuthor(),
                 'publishedAt' => $feedItem->getDateCreated(),
-                'chaptersUri' => $xpath->evaluate('string(' . $feedItem->getXpathPrefix() . '/podcast:chapters/@url)'), // todo podcasting 2.0 support in library
+                'chaptersUri' => $chaptersUri,
                 'coverUri' => $feedItem->getItunesImage(),
                 'recordingUri' => $feedItem->getEnclosure()->url,
-                'transcriptUri' => $xpath->evaluate('string(' . $feedItem->getXpathPrefix() . '/podcast:transcript/@url)'), // todo podcasting 2.0 support in library
+                'transcriptUri' => $xpath->evaluate('string(' . $feedItem->getXpathPrefix() . '/podcast:transcript/@url)'),
             ];
         }
 
