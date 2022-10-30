@@ -26,7 +26,7 @@ class BeforeSendListener
     public function __invoke(Event $event, ?EventHint $hint): ?Event
     {
         foreach ($this->ignoredExceptions as $ignoredException) {
-            if ($hint->exception instanceof $ignoredException) {
+            if ($hint?->exception instanceof $ignoredException) {
                 return null;
             }
         }
