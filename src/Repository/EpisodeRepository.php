@@ -37,11 +37,17 @@ class EpisodeRepository extends AbstractRepository
 
         $episodes = [];
 
+        /** @var Episode $episode */
         foreach ($query->getResult() as $episode) {
-            $episodes[$episode->getCode()] = $episode;
+            $episodes[$episode->getPublishedAt()->format('Y-m-d')] = $episode;
         }
 
         return $episodes;
+    }
+
+    public function findLastEpisode(): Episode
+    {
+        return $this->findOneBy([]);
     }
 
     public function findLastPublishedEpisode(): Episode

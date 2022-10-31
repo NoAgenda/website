@@ -14,8 +14,6 @@ use Psr\Log\NullLogger;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-// todo migration
-
 class FeedCrawler implements CrawlerInterface
 {
     use LoggerAwareTrait;
@@ -40,7 +38,9 @@ class FeedCrawler implements CrawlerInterface
         $episodes = $episodeRepository->findEpisodesSince($earliestPublishDate);
 
         foreach ($entries as $entry) {
-            $this->handleEntry($entry, $episodes[$entry['code']] ?? null);
+            $publishedAt = $entry['publishedAt']->format('Y-m-d');
+
+            $this->handleEntry($entry, $episodes[$publishedAt] ?? null);
         }
     }
 
@@ -125,9 +125,21 @@ class FeedCrawler implements CrawlerInterface
     private function handleEntry(array $entry, ?Episode $episode): void
     {
         if (!$episode) {
-            $this->logger->info(sprintf('New episode: %s', $entry['code']));
+            $episodeRepository = $this->entityManager->getRepository(Episode::class);
+            $code = $entry['code'];
 
-            $episode = new Episode();
+            if ($episodeRepository->findOneByCode($code)) {
+                $lastEpisode = $episodeRepository->findLastEpisode();
+
+                $code = (int) $lastEpisode->getCode() + 1;
+
+                $this->logger->warning(sprintf('New episode found with duplicate code %s, it has been been given code %s', $entry['code'], $code));
+            } else {
+                $this->logger->info(sprintf('New episode: %s', $entry['code']));
+            }
+
+            $episode = (new Episode())
+                ->setCode($code);
         } else if (json_encode($episode->getCrawlerOutput()) !== json_encode($entry)) {
             $this->logger->info(sprintf('Episode updated: %s', $episode->getCode()));
         } else {
@@ -135,7 +147,6 @@ class FeedCrawler implements CrawlerInterface
         }
 
         $episode
-            ->setCode($entry['code'])
             ->setName($entry['name'])
             ->setAuthor($entry['author'])
             ->setPublishedAt($entry['publishedAt'])
