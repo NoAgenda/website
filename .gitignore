@@ -1,7 +1,7 @@
 /composer.phar
 /docker-compose.override.yaml
 
-/public/app-manifest.json
+/public/site.webmanifest
 /public/service-worker.js
 
 ###> symfony/framework-bundle ###

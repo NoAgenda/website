@@ -41,21 +41,20 @@ class BuildAssetsCommand extends Command
 
         $contents = [
             'name' => 'No Agenda Show',
-            'short_name' => 'NoAgenda',
+            'short_name' => 'No Agenda',
             'description' => 'The official No Agenda player',
             'display' => 'minimal-ui',
             'start_url' => '.',
-            'background_color' => '#eeeeee',
             'icons' => [
                 [
-                    'src' => $assets['build/images/website-icon-192.png'],
-                    'size' => '192x192',
+                    'src' => $assets['build/images/website-icon-512.png'],
+                    'size' => '512x512',
                     'type' => 'image/png',
                     'purpose' => 'any',
                 ],
                 [
-                    'src' => $assets['build/images/website-icon-180.png'],
-                    'size' => '180x180',
+                    'src' => $assets['build/images/website-icon-192.png'],
+                    'size' => '192x192',
                     'type' => 'image/png',
                     'purpose' => 'any',
                 ],
@@ -65,16 +64,10 @@ class BuildAssetsCommand extends Command
                     'type' => 'image/png',
                     'purpose' => 'any',
                 ],
-                [
-                    'src' => $assets['build/images/website-icon-32.png'],
-                    'size' => '32x32',
-                    'type' => 'image/png',
-                    'purpose' => 'any',
-                ],
             ],
         ];
 
-        file_put_contents($publicDirectory . '/app-manifest.json', json_encode($contents));
+        file_put_contents($publicDirectory . '/site.webmanifest', json_encode($contents));
     }
 
     private function buildServiceWorker(string $timestamp): void
@@ -82,7 +75,7 @@ class BuildAssetsCommand extends Command
         $publicDirectory = dirname(__FILE__, 3) . '/public';
 
         $assets = json_decode(file_get_contents($publicDirectory . '/build/manifest.json'), true);
-        $logoAsset = array_values(array_filter($assets, fn ($asset) => str_contains($asset, 'website-icon-128')))[0];
+        $logoAsset = array_values(array_filter($assets, fn ($asset) => str_contains($asset, 'website-icon-192')))[0];
 
         $contents = $this->twig->render('service_worker.js.twig', [
             'timestamp' => $timestamp,

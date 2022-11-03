@@ -17,15 +17,16 @@ import './app.scss';
 
 // Include images
 import './images/adam-curry.jpeg';
-import './images/apple-touch-icon.png';
+import './images/app-icon.png';
+import './images/favicon-32.png';
 import './images/john-c-dvorak.jpeg';
 import './images/placeholder_large.jpg';
 import './images/placeholder_small.jpg';
 import './images/podcastindex.svg';
-import './images/website-icon-32.png';
+import './images/tab-icon.svg';
 import './images/website-icon-128.png';
-import './images/website-icon-180.png';
 import './images/website-icon-192.png';
+import './images/website-icon-512.png';
 import './images/website-logo.svg';
 
 // Bootstrap application
