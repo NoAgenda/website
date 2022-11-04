@@ -12,7 +12,7 @@ class PlayerStorage {
   initialize() {
     this.loadSubscription = naPlayer.subscribe('load', this.load);
     this.updateSubscription = null;
-    this.savePlaybackSubscription = naSettings.subscribe('savePlaybackPosition', value => this.enabled = value);
+    this.savePlaybackSubscription = naSettings.subscribe('savePlaybackPosition', value => this.enabled = value !== false);
   }
 
   load = event => {
