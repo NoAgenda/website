@@ -39,6 +39,8 @@ services:
                 subject: '%env(VAPID_SUBJECT)%'
                 privateKey: '%env(VAPID_PRIVATE_KEY)%'
                 publicKey: '%env(VAPID_PUBLIC_KEY)%'
+        calls:
+            - setAutomaticPadding: [false] # https://github.com/web-push-libs/web-push-php#payload-length-security-and-performance
 
     crawler_locator:
         class: Symfony\Component\DependencyInjection\ServiceLocator

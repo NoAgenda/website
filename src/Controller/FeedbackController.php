@@ -18,7 +18,7 @@ class FeedbackController extends AbstractController
         private readonly UserRepository $userRepository,
     ) {}
 
-    #[Route('', name: 'open')]
+    //#[Route('', name: 'open')]
     public function open(): Response
     {
         $unresolvedItems = $this->feedbackItemRepository->findPublicUnresolvedItems(50);
