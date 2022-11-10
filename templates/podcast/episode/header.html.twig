@@ -29,7 +29,7 @@
           data-controller="play"
           data-action="play#clicked"
           data-play-metadata-value="{{ episode|player_metadata|json_encode|e('html') }}"
-          {% if autoplay_timestamp %}data-play-timestamp-value="{{ autoplay_timestamp }}"{% endif %}
+          {% if autoplay_timestamp|default(null) %}data-play-timestamp-value="{{ autoplay_timestamp }}"{% endif %}
         >
           <span class="btn-icon fa-solid fa-fw fa-play" aria-hidden="true" data-play-target="icon"></span>
           <span data-play-target="text">Play</span>
