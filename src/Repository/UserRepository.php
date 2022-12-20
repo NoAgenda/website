@@ -101,6 +101,11 @@ class UserRepository extends ServiceEntityRepository implements UserLoaderInterf
         }
     }
 
+    public function flush(): void
+    {
+        $this->getEntityManager()->flush();
+    }
+
     public function loadUserByIdentifier(string $identifier): ?User
     {
         if (Uuid::isValid($identifier)) {
