@@ -15,6 +15,7 @@ twig:
         adam_social: 'https://noagendasocial.com/@adam'
         john_email: 'john@dvorak.org'
         john_social: 'https://noagendasocial.com/@johncdvorak'
+        donate_email: 'notes@noagendashow.net'
 
         artgenerator_url: 'https://noagendaartgenerator.com'
         artgenerator_artworks_url: 'https://noagendaartgenerator.com/artworks'
