@@ -55,6 +55,8 @@ class PodcastEpisodeController extends AbstractController
     #[ParamConverter('episode', class: Episode::class, options: ['mapping' => ['code' => 'code']])]
     public function episodeChapters(Request $request, Episode $episode): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_MOD');
+
         $timestamp = Utilities::parsePrettyTimestamp($request->query->get('t', 0));
 
         $chapters = array_merge(

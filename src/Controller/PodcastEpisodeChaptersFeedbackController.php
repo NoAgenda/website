@@ -33,6 +33,8 @@ class PodcastEpisodeChaptersFeedbackController extends AbstractController
     #[Route('/suggest', name: 'suggest')]
     public function suggest(Request $request, Episode $episode, ?UserInterface $user): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_MOD');
+
         if (!$user) {
             return $this->requestPermission($request, $episode);
         }
@@ -77,6 +79,8 @@ class PodcastEpisodeChaptersFeedbackController extends AbstractController
     #[Route('/improve/{chapter}', name: 'improve')]
     public function improve(Request $request, ?UserInterface $user, Episode $episode, EpisodeChapter $chapter): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_MOD');
+
         if (!$user) {
             return $this->requestPermission($request, $episode);
         }
@@ -125,6 +129,8 @@ class PodcastEpisodeChaptersFeedbackController extends AbstractController
     #[Route('/vote/{draft}/{vote?support|reject}', name: 'vote')]
     public function vote(Request $request, ?UserInterface $user, Episode $episode, EpisodeChapterDraft $draft, string $vote): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_MOD');
+
         if (!$user) {
             return $this->requestPermission($request, $episode);
         }

@@ -68,6 +68,8 @@ class SecurityController extends AbstractController
     #[Route('/register', name: 'registration', methods: ['GET', 'POST'])]
     public function registration(Request $request): Response
     {
+        return $this->redirectToRoute('security_login');
+
         if ($this->getUser()?->isRegistered()) {
             return $this->redirectToRoute('security_account');
         }

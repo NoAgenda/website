@@ -62,7 +62,7 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToRoute('Chat Logs', 'fas fa-comments', 'admin_chat_logs', ['date' => 'today']);
 
         yield MenuItem::section('Site');
-        yield MenuItem::linkToRoute('Back to Site', 'fas fa-door-open', 'homepage');
+        yield MenuItem::linkToRoute('Back to Site', 'fas fa-door-open', 'root');
     }
 
     public function configureUserMenu(UserInterface $user): UserMenu

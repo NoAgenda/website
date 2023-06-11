@@ -49,7 +49,7 @@ export default class extends Controller {
       },
       callback: (value) => naSettings.set('websiteTheme', value),
       currentValue: () => naSettings.get('websiteTheme') ?? 'system',
-    }, {
+    }/* , {
       name: 'account',
       type: 'button',
       label: 'Website Account',
@@ -59,7 +59,7 @@ export default class extends Controller {
           url: naSecurity.metadata.registered ? '/account' : '/login',
         });
       },
-    }];
+    }*/];
 
     this.render();
   }
@@ -124,124 +124,3 @@ export default class extends Controller {
     this.element.append(controlContainer);
   }
 }
-
-/*
-    <div class="control-group">
-      <div class="control">
-        <label for="savePlaybackPosition">
-          <strong>Remember Playback Position</strong>
-          Keep track of how far you've made it into an episode. For signed in users this is synchronized across
-          devices and browsers.
-        </label>
-        <div class="input">
-          <input id="savePlaybackPosition" type="checkbox">
-        </div>
-      </div>
-      <div class="control-header">Notifications</div>
-      <div class="control">
-        <label for="receiveEpisodeNotification">
-          <strong>Notify Me About New Episodes</strong>
-          Receive a notification when a new episode of the show is released.
-        </label>
-        <div class="input">
-          <input id="receiveEpisodeNotification" type="checkbox">
-        </div>
-      </div>
-      <div class="control">
-        <label for="receiveLiveNotification">
-          <strong>Notify Me When The Livestream Starts</strong>
-          Receive a notification when Adam sends out the bat signal.
-        </label>
-        <div class="input">
-          <input id="receiveLiveNotification" type="checkbox">
-        </div>
-      </div>
-      <div class="control-header">Offline Playback</div>
-      {#
-      <div class="control">
-        <label for="useStorage">
-          <strong>Store Data for Offline Access</strong>
-          Information about episodes will be stored in your browser for easier access later.
-        </label>
-        <div class="input">
-          <input id="useStorage" type="checkbox">
-        </div>
-      </div>
-      <div class="control">
-        <label for="saveEpisodes">
-          <strong>Download Episodes</strong>
-          Save the episodes you've been listening to so you can listen when you're on-the-go without wasting your data
-          plan.
-        </label>
-        <div class="input">
-          <input id="saveEpisodes" type="checkbox">
-        </div>
-      </div>
-      #}
-      <div class="control">
-        <label for="saveEpisodes">
-          <strong>Download Episodes</strong>
-          Save the episodes you're listening to so you can listen when you're on-the-go without wasting your data
-          plan.
-        </label>
-        <div class="input">
-          <input id="saveEpisodes" type="checkbox">
-        </div>
-      </div>
-      <div class="control">
-        <label for="saveNewEpisodes">
-          <strong>Always Download the Latest Episode</strong>
-          Save new episodes after they're released.
-        </label>
-        <div class="input">
-          <input id="saveNewEpisodes" type="checkbox">
-        </div>
-      </div>
-      {#
-      <div class="control">
-        <label for="saveShownotes">
-          <strong>Download Shownotes</strong>
-          Save the shownotes of episodes you've been listening to.
-        </label>
-        <div class="input">
-          <input id="saveShownotes" type="checkbox">
-        </div>
-      </div>
-      <div class="control">
-        <label for="saveTranscripts">
-          <strong>Download Transcripts</strong>
-          Save the transcript of episodes you've been listening to.
-        </label>
-        <div class="input">
-          <input id="saveTranscripts" type="checkbox">
-        </div>
-      </div>
-      #}
-      <div class="control">
-        <div>
-          <strong>Storage Limit</strong>
-          Specify how many episodes you want to save.
-        </div>
-        <div class="input">
-          <select>
-            <option value="3">3 episodes</option>
-            <option value="5">5 episodes</option>
-            <option value="10">10 episodes</option>
-            <option value="33">33 episodes</option>
-            <option value="all">All</option>
-          </select>
-        </div>
-      </div>
-      <div class="control-header">Experimental Zone</div>
-      <div class="control">
-        <div class="btn">Lightning Payments</div>
-      </div>
-      <div class="control-header">Danger Zone</div>
-      <div class="control">
-        <div class="btn">Clear Offline Data</div>
-      </div>
-      <div class="control">
-        <div class="btn">Clear Playback Data</div>
-      </div>
-    </div>
- */
