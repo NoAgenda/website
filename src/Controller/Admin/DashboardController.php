@@ -38,7 +38,8 @@ class DashboardController extends AbstractDashboardController
     public function configureAssets(): Assets
     {
         return Assets::new()
-            ->addWebpackEncoreEntry(Asset::new('admin'));
+            ->addWebpackEncoreEntry(Asset::new('console')
+                ->webpackEntrypointName('console'));
     }
 
     public function configureCrud(): Crud

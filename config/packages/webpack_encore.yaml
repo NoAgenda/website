@@ -26,15 +26,15 @@ webpack_encore:
     # If you have multiple builds:
     builds:
         app: '%kernel.project_dir%/public/build'
-        admin: '%kernel.project_dir%/public/console/build'
+        console: '%kernel.project_dir%/public/console-build'
 
 framework:
     assets:
         packages:
             app:
                 json_manifest_path: '%kernel.project_dir%/public/build/manifest.json'
-            admin:
-                json_manifest_path: '%kernel.project_dir%/public/console/build/manifest.json'
+            console:
+                json_manifest_path: '%kernel.project_dir%/public/console-build/manifest.json'
 
 #when@prod:
 #    webpack_encore:

@@ -25,8 +25,8 @@ appConfig.name = 'app';
 Encore.reset();
 
 Encore
-  .setOutputPath('public/console/build/')
-  .setPublicPath('/console/build')
+  .setOutputPath('public/console-build/')
+  .setPublicPath('/console-build')
 
   .addEntry('console', './assets/admin/admin.js')
   .disableSingleRuntimeChunk()
@@ -36,7 +36,7 @@ Encore
   .enableVersioning(Encore.isProduction())
   .enableSassLoader();
 
-const adminConfig = Encore.getWebpackConfig();
-adminConfig.name = 'admin';
+const consoleConfig = Encore.getWebpackConfig();
+consoleConfig.name = 'console';
 
-module.exports = [appConfig, adminConfig];
+module.exports = [appConfig, consoleConfig];
