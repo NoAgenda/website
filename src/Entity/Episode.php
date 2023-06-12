@@ -55,6 +55,9 @@ class Episode
     private ?string $chaptersUri = null;
 
     #[Column(type: 'text', nullable: true)]
+    private ?string $chaptersPath = null;
+
+    #[Column(type: 'text', nullable: true)]
     private ?string $coverUri = null;
 
     #[Column(type: 'text', nullable: true)]
@@ -255,6 +258,23 @@ class Episode
     public function setChaptersUri(?string $uri): self
     {
         $this->chaptersUri = $uri;
+
+        return $this;
+    }
+
+    public function hasChapters(): bool
+    {
+        return $this->chaptersPath && file_exists($this->chaptersPath);
+    }
+
+    public function getChaptersPath(): ?string
+    {
+        return $this->chaptersPath;
+    }
+
+    public function setChaptersPath(?string $path): self
+    {
+        $this->chaptersPath = $path;
 
         return $this;
     }

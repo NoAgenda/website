@@ -117,6 +117,7 @@ COPY --chown=ben:ben translations translations/
 COPY --from=assets --chown=ben:ben /srv/app/public public/
 
 RUN mkdir -p \
+        docker/storage/chapters \
         docker/storage/chat_archives \
         docker/storage/chat_logs \
         docker/storage/covers \

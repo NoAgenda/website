@@ -9,13 +9,15 @@
 <div class="d-flex align-items-center" style="gap: 1em; padding: .2em 0;">
   {% include field.value is not null ? '@EasyAdmin/crud/field/url.html.twig' : '@EasyAdmin/label/null.html.twig' %}
 
-  <a class="btn btn-secondary" href="{{ crawl_url }}" target="_blank" title="Crawl Shownotes" data-bs-toggle="tooltip">
-    <span class="fas fa-sync fa-fw" aria-hidden="true"></span>
-  </a>
+  {% if field.value is not null %}
+    <a class="btn btn-secondary" href="{{ crawl_url }}" target="_blank" title="Crawl Shownotes" data-bs-toggle="tooltip">
+      <span class="fas fa-sync fa-fw" aria-hidden="true"></span>
+    </a>
 
-  <a class="btn btn-secondary" href="{{ queue_url }}" target="_blank" title="Add To Queue" data-bs-toggle="tooltip">
-    <span class="fas fa-plus fa-fw" aria-hidden="true"></span>
-  </a>
+    <a class="btn btn-secondary" href="{{ queue_url }}" target="_blank" title="Add To Queue" data-bs-toggle="tooltip">
+      <span class="fas fa-plus fa-fw" aria-hidden="true"></span>
+    </a>
 
-  {{ adminFileDownload('shownotes', entity.instance) }}
+    {{ admin_file_download('shownotes', entity.instance) }}
+  {% endif %}
 </div>

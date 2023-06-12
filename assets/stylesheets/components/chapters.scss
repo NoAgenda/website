@@ -24,11 +24,12 @@
     .chapter-header {
       display: flex;
 
-      .chapter-resize {
+      .chapter-link {
         display: flex;
         justify-content: center;
         padding: $gap-small $gap;
         line-height: 32px;
+        text-decoration: none;
       }
 
       .chapter-timestamp {
@@ -55,7 +56,7 @@
       }
 
       .chapter-title,
-      .chapter-resize,
+      .chapter-link,
       .chapter-timestamp {
         &:active, &:hover {
           background: var(--accent-1);

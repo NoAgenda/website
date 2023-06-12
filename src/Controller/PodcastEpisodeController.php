@@ -4,21 +4,18 @@ namespace App\Controller;
 
 use App\Crawling\Shownotes\ShownotesParserFactory;
 use App\Entity\Episode;
-use App\Entity\EpisodeChapter;
-use App\Entity\EpisodeChapterDraft;
 use App\Repository\EpisodeChapterDraftRepository;
 use App\Repository\EpisodeChapterRepository;
-use App\Repository\EpisodeRepository;
 use App\Utilities;
 use Benlipp\SrtParser\Parser as SrtParser;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class PodcastEpisodeController extends AbstractController
 {
@@ -43,21 +40,29 @@ class PodcastEpisodeController extends AbstractController
             $shownotes = $this->shownotesParserFactory->create($episode);
         }
 
+        if ($episode->hasChapters()) {
+            $chapters = json_decode(file_get_contents($episode->getChaptersPath()), true);
+            $chapters = $chapters['chapters'] ?? null;
+        }
+
         return $this->render('podcast/episode/episode.html.twig', [
             'autoplay_timestamp' => $timestamp,
 
             'episode' => $episode,
+            'chapters' => $chapters ?? null,
             'shownotes' => $shownotes ?? null,
         ]);
     }
 
     #[Route('/listen/{code}/chapters', name: 'podcast_episode_chapters')]
     #[ParamConverter('episode', class: Episode::class, options: ['mapping' => ['code' => 'code']])]
-    public function episodeChapters(Request $request, Episode $episode): Response
+    public function episodeChapters(Request $request, ?UserInterface $user, Episode $episode): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_MOD');
-
         $timestamp = Utilities::parsePrettyTimestamp($request->query->get('t', 0));
+
+        if (!$user?->isMod()) {
+            return $this->redirectToRoute('podcast_episode', ['t' => $timestamp]);
+        }
 
         $chapters = array_merge(
             $this->episodeChapterRepository->findByEpisode($episode),

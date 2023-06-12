@@ -9,7 +9,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
@@ -90,6 +89,14 @@ class EpisodeCrudController extends AbstractCrudController
             yield UrlField::new('shownotesUri')
                 ->setTemplatePath('admin/field/shownotes_uri.html.twig');
             yield TextField::new('shownotesPath');
+
+            yield FormField::addPanel('Chapters')
+                ->setIcon('fas fa-book')
+                ->setHelp('Data used for crawling and processing metadata related to the chapters.');
+
+            yield UrlField::new('chaptersUri')
+                ->setTemplatePath('admin/field/chapters_uri.html.twig');
+            yield TextField::new('chaptersPath');
 
             yield FormField::addPanel('Transcript')
                 ->setIcon('fas fa-bars')

@@ -3,14 +3,14 @@
 {# @var entity \EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto #}
 {% trans_default_domain 'EasyAdminBundle' %}
 
-{% set crawl_url = path('admin_api_crawl', {'data': 'cover', 'episode': entity.instance.code, 'token': security_token}) %}
-{% set queue_url = path('admin_api_queue', {'data': 'cover', 'episode': entity.instance.code, 'token': security_token}) %}
+{% set crawl_url = path('admin_api_crawl', {'data': 'chapters', 'episode': entity.instance.code, 'token': security_token}) %}
+{% set queue_url = path('admin_api_queue', {'data': 'chapters', 'episode': entity.instance.code, 'token': security_token}) %}
 
 <div class="d-flex align-items-center" style="gap: 1em; padding: .2em 0;">
   {% include field.value is not null ? '@EasyAdmin/crud/field/url.html.twig' : '@EasyAdmin/label/null.html.twig' %}
 
   {% if field.value is not null %}
-    <a class="btn btn-secondary" href="{{ crawl_url }}" target="_blank" title="Crawl Cover" data-bs-toggle="tooltip">
+    <a class="btn btn-secondary" href="{{ crawl_url }}" target="_blank" title="Crawl Transcript" data-bs-toggle="tooltip">
       <span class="fas fa-sync fa-fw" aria-hidden="true"></span>
     </a>
 
@@ -18,6 +18,6 @@
       <span class="fas fa-plus fa-fw" aria-hidden="true"></span>
     </a>
 
-    {{ admin_file_download('cover', entity.instance) }}
+    {{ admin_file_download('chapters', entity.instance) }}
   {% endif %}
 </div>

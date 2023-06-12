@@ -18,6 +18,7 @@ class CrawlingProcessor
 
     public static array $crawlerClasses = [
         'bat_signal' => BatSignalCrawler::class,
+        'chapters' => EpisodeChaptersCrawler::class,
         'chat_archive' => EpisodeChatArchiveMatcher::class,
         'cover' => EpisodeCoverCrawler::class,
         'duration' => EpisodeDurationCrawler::class,

@@ -16,7 +16,7 @@ class AdminExtension extends AbstractExtension
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('adminFileDownload', [$this, 'adminFileDownload'], ['is_safe' => ['html' => true]]),
+            new TwigFunction('admin_file_download', [$this, 'adminFileDownload'], ['is_safe' => ['html' => true]]),
         ];
     }
 

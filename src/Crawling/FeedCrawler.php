@@ -105,7 +105,7 @@ class FeedCrawler implements CrawlerInterface
             $xpath = $feedItem->getXpath();
 
             // $chaptersUri = $xpath->evaluate('string(' . $feedItem->getXpathPrefix() . '/podcast:chapters/@url)');
-            $chaptersUri = sprintf('https://studio.hypercatcher.com/chapters/podcast/http:feed.nashownotes.comrss.xml/episode/http:%s.noagendanotes.com', $code);
+            $chaptersUri = sprintf('https://chapters.hypercatcher.com/http:feed.nashownotes.comrss.xml/http:%s.noagendanotes.com', $code);
 
             $entries[] = [
                 'code' => $code,

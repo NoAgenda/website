@@ -45,7 +45,6 @@ class EpisodeProcessor
 
         $this->crawl($episode, 'cover');
         $this->crawl($episode, 'shownotes');
-        $this->crawl($episode, 'transcript');
         $this->crawl($episode, 'duration');
 
         if (!$episode->isPublished()) {
@@ -65,6 +64,9 @@ class EpisodeProcessor
             $episodeUri = $this->router->generate('podcast_episode', ['code' => $episode->getCode()], UrlGeneratorInterface::ABSOLUTE_URL);
             $this->notifier->send(new Notification(sprintf("Episode %s has been published.\n\n%s", $episode->getCode(), $episodeUri)));
         }
+
+        $this->crawl($episode, 'chapters');
+        $this->crawl($episode, 'transcript');
 
         $this->crawl($episode, 'recording_time');
         $this->crawl($episode, 'chat_archive');
