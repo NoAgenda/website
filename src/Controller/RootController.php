@@ -96,6 +96,15 @@ class RootController extends AbstractController
         ]);
     }
 
+    #[Route('/donations', name: 'donations')]
+    #[Cache(maxage: '1 day')]
+    public function donations(): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+        return $this->render('root/donations.html.twig');
+    }
+
     #[Route('/privacy', name: 'privacy_policy')]
     #[Cache(maxage: '1 day')]
     public function privacyPolicy(): Response
