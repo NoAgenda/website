@@ -45,7 +45,7 @@ RUN groupdel dialout; \
 # Install persistent & runtime dependencies
 RUN set -eux; \
     apt-get update; \
-    apt-get install --no-install-recommends -y git netcat procps; \
+    apt-get install --no-install-recommends -y git netcat-traditional procps; \
     rm -rf /var/lib/apt/lists/*
 
 # Install media utilities
@@ -53,7 +53,7 @@ RUN set -eux; \
     apt-get update; \
     apt-get install --no-install-recommends -y ffmpeg mplayer; \
     apt-get install -y python3-pip; \
-    pip install git+https://github.com/flutterfromscratch/audio-offset-finder.git; \
+    pip install git+https://github.com/flutterfromscratch/audio-offset-finder.git --break-system-packages; \
     rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions
