@@ -69,7 +69,13 @@ class PodcastEpisodeController extends AbstractController
         $timestamp = Utilities::parsePrettyTimestamp($request->query->get('t', 0));
 
         if (!$user?->isMod()) {
-            return $this->redirectToRoute('podcast_episode', ['t' => $timestamp]);
+            $redirectParameters = ['code' => $episode->getCode()];
+
+            if ($timestamp) {
+                $redirectParameters['t'] = $timestamp;
+            }
+
+            return $this->redirectToRoute('podcast_episode', $redirectParameters);
         }
 
         $chapters = array_merge(
