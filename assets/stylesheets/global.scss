@@ -12,6 +12,9 @@ body {
   font-size: 17px;
   line-height: 1.4em;
   overflow-x: hidden;
+
+  // https://dev.to/jasperreddin/disabling-viewport-zoom-on-ios-14-web-browsers-l13
+  touch-action: pan-y;
 }
 
 h1, h2, h3, h4, h5, h6 {
