@@ -76,6 +76,34 @@ class EpisodeRepository extends AbstractRepository
         ]);
     }
 
+    public function findNextEpisode(Episode $episode): ?Episode
+    {
+        $builder = $this->createQueryBuilder('episode');
+
+        $query = $builder
+            ->andWhere($builder->expr()->gt('episode.publishedAt', ':date'))
+            ->setParameter('date', $episode->getPublishedAt()->format('Y-m-d'))
+            ->orderBy('episode.publishedAt', 'asc')
+            ->setMaxResults(1)
+            ->getQuery();
+
+        return $query->getOneOrNullResult();
+    }
+
+    public function findPreviousEpisode(Episode $episode): ?Episode
+    {
+        $builder = $this->createQueryBuilder('episode');
+
+        $query = $builder
+            ->andWhere($builder->expr()->lt('episode.publishedAt', ':date'))
+            ->setParameter('date', $episode->getPublishedAt()->format('Y-m-d'))
+            ->orderBy('episode.publishedAt', 'desc')
+            ->setMaxResults(1)
+            ->getQuery();
+
+        return $query->getOneOrNullResult();
+    }
+
     public function paginateEpisodes($page = 1): Pagerfanta
     {
         $builder = $this->createQueryBuilder('episode');

@@ -6,6 +6,7 @@ use App\Crawling\Shownotes\ShownotesParserFactory;
 use App\Entity\Episode;
 use App\Repository\EpisodeChapterDraftRepository;
 use App\Repository\EpisodeChapterRepository;
+use App\Repository\EpisodeRepository;
 use App\Utilities;
 use Benlipp\SrtParser\Parser as SrtParser;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -20,6 +21,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 class PodcastEpisodeController extends AbstractController
 {
     public function __construct(
+        private readonly EpisodeRepository $episodeRepository,
         private readonly EpisodeChapterRepository $episodeChapterRepository,
         private readonly EpisodeChapterDraftRepository $episodeChapterDraftRepository,
         private readonly ShownotesParserFactory $shownotesParserFactory,
@@ -45,12 +47,18 @@ class PodcastEpisodeController extends AbstractController
             $chapters = $chapters['chapters'] ?? null;
         }
 
+        $nextEpisode = $this->episodeRepository->findNextEpisode($episode);
+        $previousEpisode = $this->episodeRepository->findPreviousEpisode($episode);
+
         return $this->render('podcast/episode/episode.html.twig', [
             'autoplay_timestamp' => $timestamp,
 
             'episode' => $episode,
             'chapters' => $chapters ?? null,
             'shownotes' => $shownotes ?? null,
+
+            'next_episode' => $nextEpisode,
+            'previous_episode' => $previousEpisode,
         ]);
     }
 

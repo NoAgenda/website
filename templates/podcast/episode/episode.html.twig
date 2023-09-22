@@ -15,6 +15,27 @@
   {% include 'podcast/episode/header.html.twig' with {current_page: 'overview'} %}
 
   <section class="section">
+    <div class="section-buttons-separated">
+      {% if next_episode %}
+        <a href="{{ path('podcast_episode', {code: next_episode.code}) }}" class="btn btn-link" title="Go To Next Episode">
+          <span class="btn-icon fa-solid fa-chevron-left fa-fw" aria-hidden="true"></span>
+          {{ next_episode }}
+        </a>
+      {% else %}
+        <span></span>
+      {% endif %}
+      {% if previous_episode %}
+        <a href="{{ path('podcast_episode', {code: previous_episode.code}) }}" class="btn btn-link" title="Go To Previous Episode">
+          {{ previous_episode }}
+          <span class="btn-icon fa-solid fa-chevron-right fa-fw" aria-hidden="true"></span>
+        </a>
+      {% else %}
+        <span></span>
+      {% endif %}
+    </div>
+  </section>
+
+  <section class="section">
     <div class="section-content">
       <h2>Credits</h2>
       <h3>Hosts</h3>
@@ -113,6 +134,4 @@
       </a>
     </div>
   </section>
-
-  {% dump chapters %}
 {% endblock %}

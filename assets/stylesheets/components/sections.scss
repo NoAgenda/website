@@ -9,6 +9,7 @@
 
   .section-buttons,
   .section-buttons-full,
+  .section-buttons-separated,
   .section-content {
     max-width: $container-max-width;
     width: $container-width;
@@ -88,6 +89,39 @@
     }
   }
 
+  .section-buttons-separated {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: $gap;
+
+    @include breakpoint-medium-down {
+      .btn {
+        width: calc(50% - ($gap / 2));
+        padding: $gap-small $gap-tiny;
+      }
+
+      .btn.btn-small {
+        width: calc(35% - ($gap / 2));
+      }
+
+      .btn.btn-wide {
+        width: calc(65% - ($gap / 2));
+      }
+    }
+
+    @include breakpoint-medium-up {
+      .btn {
+        padding: $gap-small $gap-large;
+      }
+    }
+
+    @include breakpoint-full {
+      .btn.btn-wide {
+        padding: $gap-small $gap-huge;
+      }
+    }
+  }
 
   .section-content {
     display: flex;
@@ -140,6 +174,7 @@
 
       .section-buttons,
       .section-buttons-full,
+      .section-buttons-separated,
       .section-content {
         width: 100%;
       }
@@ -163,6 +198,7 @@
 
       .section-buttons,
       .section-buttons-full,
+      .section-buttons-separated,
       .section-content {
         width: 100%;
       }
