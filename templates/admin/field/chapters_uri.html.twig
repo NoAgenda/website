@@ -10,7 +10,7 @@
   {% include field.value is not null ? '@EasyAdmin/crud/field/url.html.twig' : '@EasyAdmin/label/null.html.twig' %}
 
   {% if field.value is not null %}
-    <a class="btn btn-secondary" href="{{ crawl_url }}" target="_blank" title="Crawl Transcript" data-bs-toggle="tooltip">
+    <a class="btn btn-secondary" href="{{ crawl_url }}" target="_blank" title="Crawl Chapters" data-bs-toggle="tooltip">
       <span class="fas fa-sync fa-fw" aria-hidden="true"></span>
     </a>
 
