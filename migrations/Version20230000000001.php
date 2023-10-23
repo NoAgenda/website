@@ -11,7 +11,7 @@ final class Version20230000000001 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return '';
+        return 'Add Podcasting 2.0 chapters metadata';
     }
 
     public function up(Schema $schema): void
