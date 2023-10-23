@@ -20,3 +20,25 @@
 .rounded {
   border-radius: $border-radius;
 }
+
+.fullwidth {
+  width: 100vw;
+}
+
+.light-only {
+  display: block;
+}
+
+.dark-only {
+  display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  .light-only {
+    display: none;
+  }
+
+  .dark-only {
+    display: block;
+  }
+}

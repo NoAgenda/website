@@ -42,6 +42,11 @@
   }
 }
 
+.btn-large {
+  padding: $gap-large $gap-huge;
+  font-size: 1.3em
+}
+
 .btn-accent {
   @include button-colors(var(--accent-1), var(--accent-2), var(--text-color));
 }

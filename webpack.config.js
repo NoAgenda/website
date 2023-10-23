@@ -14,7 +14,6 @@ Encore
   .enableSingleRuntimeChunk()
 
   .cleanupOutputBeforeBuild()
-  .enableBuildNotifications()
   .enableSourceMaps(!Encore.isProduction())
   .enableVersioning(Encore.isProduction())
   .enableSassLoader();
@@ -39,4 +38,21 @@ Encore
 const consoleConfig = Encore.getWebpackConfig();
 consoleConfig.name = 'console';
 
-module.exports = [appConfig, consoleConfig];
+Encore.reset();
+
+Encore
+  .setOutputPath('public/slim-build/')
+  .setPublicPath('/slim-build')
+
+  .addStyleEntry('slim', './assets/slim.scss')
+  .disableSingleRuntimeChunk()
+
+  .cleanupOutputBeforeBuild()
+  .enableSourceMaps(!Encore.isProduction())
+  .enableVersioning(Encore.isProduction())
+  .enableSassLoader();
+
+const slimConfig = Encore.getWebpackConfig();
+slimConfig.name = 'slim';
+
+module.exports = [appConfig, consoleConfig, slimConfig];

@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Repository\EpisodeRepository;
-use App\Repository\FeedbackItemRepository;
 use App\Repository\NetworkSiteRepository;
 use App\Repository\VideoRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
@@ -94,15 +93,6 @@ class RootController extends AbstractController
         return $this->render('root/producers.html.twig', [
             'network_sites' => $this->networkSiteRepository->findAll(),
         ]);
-    }
-
-    #[Route('/donations', name: 'donations')]
-    #[Cache(maxage: '1 day')]
-    public function donations(): Response
-    {
-        $this->denyAccessUnlessGranted('ROLE_ADMIN');
-
-        return $this->render('root/donations.html.twig');
     }
 
     #[Route('/privacy', name: 'privacy_policy')]

@@ -29,8 +29,7 @@
         "sass": "^1.38.2",
         "sass-loader": "^12.0.0",
         "srt-parser-2": "^1.1.8",
-        "swup": "^2.0.19",
-        "webpack-notifier": "^1.6.0"
+        "swup": "^2.0.19"
     },
     "scripts": {
         "build": "encore dev",
