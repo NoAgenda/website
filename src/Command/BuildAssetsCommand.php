@@ -4,12 +4,8 @@ namespace App\Command;
 
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\HttpFoundation\Response;
 use Twig\Environment;
 
 #[AsCommand(
@@ -18,13 +14,23 @@ use Twig\Environment;
 )]
 class BuildAssetsCommand extends Command
 {
+    private readonly string $publicDirectory;
+    private readonly string $webpackManifest;
+
     public function __construct(private readonly Environment $twig)
     {
         parent::__construct();
+
+        $this->publicDirectory = dirname(__FILE__, 3) . '/public';
+        $this->webpackManifest = $this->publicDirectory . '/build/manifest.json';
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        if (!file_exists($this->webpackManifest)) {
+            return Command::SUCCESS;
+        }
+
         $timestamp = (new \DateTime())->format('YmdHi');
 
         $this->buildManifest();
@@ -35,9 +41,7 @@ class BuildAssetsCommand extends Command
 
     private function buildManifest(): void
     {
-        $publicDirectory = dirname(__FILE__, 3) . '/public';
-
-        $assets = json_decode(file_get_contents($publicDirectory . '/build/manifest.json'), true);
+        $assets = json_decode(file_get_contents($this->webpackManifest), true);
 
         $contents = [
             'name' => 'No Agenda Show',
@@ -67,14 +71,12 @@ class BuildAssetsCommand extends Command
             ],
         ];
 
-        file_put_contents($publicDirectory . '/site.webmanifest', json_encode($contents));
+        file_put_contents($this->publicDirectory . '/site.webmanifest', json_encode($contents));
     }
 
     private function buildServiceWorker(string $timestamp): void
     {
-        $publicDirectory = dirname(__FILE__, 3) . '/public';
-
-        $assets = json_decode(file_get_contents($publicDirectory . '/build/manifest.json'), true);
+        $assets = json_decode(file_get_contents($this->webpackManifest), true);
         $logoAsset = array_values(array_filter($assets, fn ($asset) => str_contains($asset, 'website-icon-192')))[0];
 
         $contents = $this->twig->render('service_worker.js.twig', [
@@ -83,6 +85,6 @@ class BuildAssetsCommand extends Command
             'logo_asset' => $logoAsset,
         ]);
 
-        file_put_contents($publicDirectory . '/service-worker.js', $contents);
+        file_put_contents($this->publicDirectory . '/service-worker.js', $contents);
     }
 }
