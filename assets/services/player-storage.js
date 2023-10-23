@@ -62,7 +62,7 @@ class PlayerStorage {
 
     this.currentEpisode.playbackSavedAt = this.lastUpdatedAt = Date.now();
 
-    if (!event.duration || event.timestamp < (event.duration - 60)) {
+    if (!event.duration || event.timestamp < (event.duration - 300)) {
       this.currentEpisode.playbackPosition = event.timestamp - 5; // Rewind 5 seconds
     } else {
       this.currentEpisode.playbackPosition = 0;
