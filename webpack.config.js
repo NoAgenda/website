@@ -48,8 +48,6 @@ Encore
   .disableSingleRuntimeChunk()
 
   .cleanupOutputBeforeBuild()
-  .enableSourceMaps(!Encore.isProduction())
-  .enableVersioning(Encore.isProduction())
   .enableSassLoader();
 
 const slimConfig = Encore.getWebpackConfig();
