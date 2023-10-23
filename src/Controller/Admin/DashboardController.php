@@ -25,8 +25,6 @@ class DashboardController extends AbstractDashboardController
 {
     public function __construct(
         private readonly EpisodeRepository $episodeRepository,
-        private readonly FeedbackItemRepository $feedbackItemRepository,
-        private readonly UserRepository $userRepository,
     ) {}
 
     public function configureDashboard(): Dashboard
@@ -40,11 +38,6 @@ class DashboardController extends AbstractDashboardController
         return Assets::new()
             ->addWebpackEncoreEntry(Asset::new('console')
                 ->webpackEntrypointName('console'));
-    }
-
-    public function configureCrud(): Crud
-    {
-        return Crud::new();
     }
 
     public function configureMenuItems(): iterable
@@ -78,8 +71,6 @@ class DashboardController extends AbstractDashboardController
 
         return $this->render('admin/dashboard.html.twig', [
             'latest_episodes' => $this->episodeRepository->findLatestEpisodes(8, false),
-            'unresolved_feedback_count' => $this->feedbackItemRepository->countUnresolvedItems(),
-            'unreviewed_user_count' => $this->userRepository->countUnreviewedUsers(),
         ]);
     }
 }

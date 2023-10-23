@@ -1,47 +1,20 @@
 {% extends '@EasyAdmin/page/content.html.twig' %}
 
-{% set utilities = {
-  'GitHub': 'https://github.com/NoAgenda/website',
-  'Blog': 'https://www.dudenamedben.blog',
-} %}
-
 {% block content_title ea.dashboardTitle|raw %}
+
 {% block main %}
   <div class="d-md-flex justify-content-between">
     <div class="mb-3">
-      <a class="btn btn-primary {# mb-1 #}" href="#">Crawl Feed</a>
+      {# <a class="btn btn-primary" href="#">Crawl Feed</a> #}
     </div>
 
     <div class="mb-3">
-      {% apply spaceless %}
-        {% for name, uri in utilities %}
-          <a class="btn btn-secondary {# mb-1 #} {{ not loop.last ? 'me-1' }}" href="{{ uri }}" target="_blank">{{ name }}</a>
-        {% endfor %}
-      {% endapply %}
+      <a class="btn btn-secondary" href="https://github.com/NoAgenda/website">View code on GitHub</a>
+      <a class="btn btn-secondary" href="https://www.dudenamedben.blog">Visit Dude Named Ben Blog</a>
     </div>
   </div>
 
   <div class="row">
-    <div class="col-md-6">
-      <div class="row">
-        <div class="col-6 col-xl-4">
-          <div class="card">
-            <div class="card-body">
-              <div class="h1">{{ unresolved_feedback_count }}</div>
-              <span>Open Contributions</span>
-            </div>
-          </div>
-        </div>
-        <div class="col-6 col-xl-4">
-          <div class="card">
-            <div class="card-body">
-              <div class="h1">{{ unreviewed_user_count }}</div>
-              <span>Users Waiting for Review</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
     <div class="col-md-6">
       <div class="card rounded-0">
         <div class="card-header">Latest Episodes</div>
@@ -72,36 +45,35 @@
                 {% endif %}
                 <a class="text-body" href="{{ episode_url }}">{{ episode }}</a>
               </div>
-              <div class="d-flex">
+              <div class="d-flex gap-1">
                 <div
-                  class="text-{{ episode.published ? 'success' : 'danger' }} px-1 me-1"
-                  title="{{ episode.published ? 'Published' : 'Not Published' }}"
+                  class="text-{{ episode.published ? 'success' : 'danger' }}"
+                  title="{{ episode.published ? 'Is Published' : 'Not Published' }}"
                   data-bs-toggle="tooltip"
                 >
                   <span class="fas fa-circle fa-fw" aria-hidden="true"></span>
                 </div>
                 <div
-                  class="text-{{ episode.shownotes ? 'success' : 'danger' }} px-1 me-1"
-                  title="{{ episode.shownotes ? 'Shownotes' : 'No Shownotes' }}"
+                  class="text-{{ episode.shownotes ? 'success' : 'danger' }}"
+                  title="{{ episode.shownotes ? 'Has Shownotes' : 'No Shownotes' }}"
                   data-bs-toggle="tooltip"
                 >
                   <span class="fas fa-file fa-fw" aria-hidden="true"></span>
                 </div>
-                <a
-                  class="text-{{ episode.transcript ? 'success' : 'danger' }} px-1 me-1"
-                  href="{{ episode_transcript_url }}"
-                  title="{{ episode.transcript ? 'Transcript' : 'No Transcript' }}"
+                <div
+                  class="text-{{ episode.hasChapters() ? 'success' : 'danger' }}"
+                  title="{{ episode.hasChapters() ? 'Has Chapters' : 'No Chapters' }}"
                   data-bs-toggle="tooltip"
                 >
                   <span class="fas fa-list fa-fw" aria-hidden="true"></span>
-                </a>
+                </div>
                 <a
-                  class="text-{{ episode.chatArchive ? 'success' : 'danger' }} px-1"
-                  href="{{ episode_chat_archive_url }}"
-                  title="{{ episode.chatArchive ? 'Chat Archive' : 'No Chat Archive' }}"
+                  class="text-{{ episode.transcript ? 'success' : 'danger' }}"
+                  href="{{ episode_transcript_url }}"
+                  title="{{ episode.transcript ? 'Has Transcript' : 'No Transcript' }}"
                   data-bs-toggle="tooltip"
                 >
-                  <span class="fas fa-comment fa-fw" aria-hidden="true"></span>
+                  <span class="fas fa-bars fa-fw" aria-hidden="true"></span>
                 </a>
               </div>
             </div>
