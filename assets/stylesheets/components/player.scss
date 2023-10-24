@@ -60,6 +60,7 @@
     flex-wrap: wrap;
     gap: $gap;
     justify-content: center;
+    min-width: 0;
     text-align: center;
 
     .player-title {
