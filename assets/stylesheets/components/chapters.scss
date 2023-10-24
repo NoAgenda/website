@@ -105,6 +105,10 @@
       }
     }
 
+    &.chapter-active .chapter-title {
+      background: var(--accent-1);
+    }
+
     &.chapter-draft .chapter-header {
       opacity: 0.6;
     }
@@ -112,24 +116,14 @@
 }
 
 @include breakpoint-small-up {
-  .chapters {
-    .chapter {
-      .chapter-info {
-        .chapter-buttons {
-          flex-direction: row;
-        }
-      }
-    }
+  .chapters .chapter .chapter-info .chapter-buttons {
+    flex-direction: row;
   }
 }
 
 @include breakpoint-large-up {
-  .chapters {
-    .chapter {
-      .chapter-info {
-        flex-direction: row;
-        justify-content: space-between;
-      }
-    }
+  .chapters .chapter .chapter-info {
+    flex-direction: row;
+    justify-content: space-between;
   }
 }

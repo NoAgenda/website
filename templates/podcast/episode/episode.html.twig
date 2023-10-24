@@ -73,29 +73,24 @@
       <div class="section-content">
         <h2>Chapters</h2>
 
-        <div class="chapters">
+        <div
+          class="chapters"
+          data-controller="chapterlist"
+          data-chapterlist-metadata-value="{{ episode|player_metadata|json_encode|e('html') }}"
+        >
           {% for chapter in chapters %}
             <div
               class="chapter"
-              data-controller="chapter"
-              data-chapter-metadata-value="{{ episode|player_metadata|json_encode|e('html') }}"
-              data-chapter-timestamp-value="{{ chapter.startTime }}"
+              data-start-position="{{ chapter.startTime }}"
             >
               <div class="chapter-header">
                 <div
-                  role="button"
-                  title="Copy Link for this Chapter to the Clipboard"
                   class="chapter-timestamp"
-                  data-clipboard-text="{{ url('podcast_episode_chapters', {code: episode.code, t: chapter.startTime|prettyTimestamp}) }}"
+                  data-clipboard-text="{{ url('podcast_episode', {code: episode.code, t: chapter.startTime|prettyTimestamp}) }}"
                 >
                   {{ chapter.startTime|prettyTimestamp }}
                 </div>
-                <div
-                  role="button"
-                  title="Start Playing Chapter"
-                  class="chapter-title"
-                  data-action="click->chapter#play"
-                >
+                <div class="chapter-title">
                   {{ chapter.title }}
                 </div>
                 {% if chapter.url|default(null) %}
