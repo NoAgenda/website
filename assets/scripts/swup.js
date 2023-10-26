@@ -55,7 +55,7 @@ if (window._paq) {
 const swup = new Swup({
   animationSelector: '[class*="swup-transition"]',
   cache: false,
-  linkSelector: 'a[href]:not([data-controller])',
+  linkSelector: 'a[href^="' + window.location.origin + '"]:not([data-no-swup]):not([data-controller]), a[href^="/"]:not([data-no-swup]):not([data-controller]), a[href^="#"]:not([data-no-swup]):not([data-controller])',
   plugins,
 });
 
