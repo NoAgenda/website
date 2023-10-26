@@ -7,8 +7,9 @@ use App\Repository\BatSignalRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
+use Symfony\Component\Notifier\Notification\Notification;
+use Symfony\Component\Notifier\NotifierInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
-use function Sentry\captureException;
 use function Sentry\captureMessage;
 
 class BatSignalCrawler implements CrawlerInterface
@@ -20,6 +21,7 @@ class BatSignalCrawler implements CrawlerInterface
         private readonly NotificationPublisher $notificationPublisher,
         private readonly BatSignalRepository $batSignalRepository,
         private readonly HttpClientInterface $mastodonClient,
+        private readonly NotifierInterface $notifier,
         private readonly ?string $mastodonAccessToken,
         private readonly int $mastodonAccountId,
     ) {
@@ -62,6 +64,8 @@ class BatSignalCrawler implements CrawlerInterface
         }
 
         $this->entityManager->persist($signal);
+
+        $this->notifier->send(new Notification('Bat signal has been published.'));
     }
 
     private function crawlBatSignal(): ?BatSignal
