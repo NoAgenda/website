@@ -53,6 +53,11 @@ class ApiController extends AbstractController
     {
         $rawSubscription = $request->getContent();
 
+        if (str_contains($rawSubscription, 'web.push.apple.com')) {
+            // Prevent Apple browsers from subscribing. All requests to Apple servers get a timeout
+            return new Response(null, Response::HTTP_BAD_REQUEST);
+        }
+
         $subscriptionData = json_decode($rawSubscription, true);
         if (!isset($subscriptionData['endpoint'])) {
             return new Response(null, Response::HTTP_BAD_REQUEST);
