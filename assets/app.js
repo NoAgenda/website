@@ -23,7 +23,6 @@ import './images/john-c-dvorak.jpeg';
 import './images/placeholder_large.jpg';
 import './images/placeholder_small.jpg';
 import './images/podcastindex.svg';
-import './images/tab-icon.svg';
 import './images/website-icon-128.png';
 import './images/website-icon-192.png';
 import './images/website-icon-512.png';
