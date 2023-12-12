@@ -24,7 +24,7 @@ RUN chmod +x /usr/local/bin/docker-entrypoint
 ENTRYPOINT ["docker-entrypoint"]
 CMD ["npm", "run", "watch"]
 
-FROM ghcr.io/noagenda/website/app:base AS app
+FROM php:8.2-fpm-bookworm AS app
 
 ARG UID=3302
 ARG GID=3302
@@ -38,52 +38,52 @@ RUN rm -rf /srv/app
 RUN mkdir -p /srv/app; chown $UID:$GID /srv/app
 WORKDIR /srv/app
 
-## Configure app user
-#RUN groupdel dialout; \
-#    groupadd --gid $GID ben; \
-#    useradd --uid $UID --gid $GID --create-home ben; \
-#    sed -i "s/user = www-data/user = ben/g" /usr/local/etc/php-fpm.d/www.conf; \
-#    sed -i "s/group = www-data/group = ben/g" /usr/local/etc/php-fpm.d/www.conf
-#
-## Install persistent & runtime dependencies
-#RUN set -eux; \
-#    apt-get update; \
-#    apt-get install --no-install-recommends -y git netcat-traditional procps; \
-#    rm -rf /var/lib/apt/lists/*
-#
-## Install media utilities
-#RUN set -eux; \
-#    apt-get update; \
-#    apt-get install --no-install-recommends -y ffmpeg mplayer; \
-#    apt-get install -y python3-pip; \
-#    pip install git+https://github.com/flutterfromscratch/audio-offset-finder.git --break-system-packages; \
-#    rm -rf /var/lib/apt/lists/*
-#
-## Install PHP extensions
-#RUN set -eux; \
-#    apt-get update; \
-#    apt-get install --no-install-recommends -y libmagickwand-dev; \
-#    pecl install imagick; \
-#	docker-php-ext-enable imagick; \
-#    rm -rf /var/lib/apt/lists/*
-#
-#RUN set -eux; \
-#    apt-get update; \
-#    apt-get install --no-install-recommends -y libicu-dev; \
-#    docker-php-ext-install intl; \
-#    rm -rf /var/lib/apt/lists/*
-#
-#RUN set -eux; \
-#    docker-php-ext-install pdo_mysql
-#
-#RUN set -eux; \
-#    apt-get update; \
-#    apt-get install --no-install-recommends -y libzip-dev unzip; \
-#	docker-php-ext-install zip; \
-#    rm -rf /var/lib/apt/lists/*
-#
-## Install Composer
-#COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+# Configure app user
+RUN groupdel dialout; \
+    groupadd --gid $GID ben; \
+    useradd --uid $UID --gid $GID --create-home ben; \
+    sed -i "s/user = www-data/user = ben/g" /usr/local/etc/php-fpm.d/www.conf; \
+    sed -i "s/group = www-data/group = ben/g" /usr/local/etc/php-fpm.d/www.conf
+
+# Install persistent & runtime dependencies
+RUN set -eux; \
+    apt-get update; \
+    apt-get install --no-install-recommends -y git netcat-traditional procps; \
+    rm -rf /var/lib/apt/lists/*
+
+# Install media utilities
+RUN set -eux; \
+    apt-get update; \
+    apt-get install --no-install-recommends -y ffmpeg mplayer; \
+    apt-get install -y python3-pip; \
+    pip install git+https://github.com/flutterfromscratch/audio-offset-finder.git --break-system-packages; \
+    rm -rf /var/lib/apt/lists/*
+
+# Install PHP extensions
+RUN set -eux; \
+    apt-get update; \
+    apt-get install --no-install-recommends -y libmagickwand-dev; \
+    pecl install imagick; \
+	docker-php-ext-enable imagick; \
+    rm -rf /var/lib/apt/lists/*
+
+RUN set -eux; \
+    apt-get update; \
+    apt-get install --no-install-recommends -y libicu-dev; \
+    docker-php-ext-install intl; \
+    rm -rf /var/lib/apt/lists/*
+
+RUN set -eux; \
+    docker-php-ext-install pdo_mysql
+
+RUN set -eux; \
+    apt-get update; \
+    apt-get install --no-install-recommends -y libzip-dev unzip; \
+	docker-php-ext-install zip; \
+    rm -rf /var/lib/apt/lists/*
+
+# Install Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 ARG UID=3302
 ARG GID=3302
