@@ -39,9 +39,6 @@ class Episode
     #[Column(type: 'integer', nullable: true)]
     private ?int $duration = null;
 
-    #[Column(type: 'datetime', nullable: true)]
-    private ?\DateTimeInterface $recordedAt = null;
-
     #[Column(type: 'text')]
     private ?string $recordingUri;
 
@@ -72,17 +69,8 @@ class Episode
     #[Column(type: 'text', nullable: true)]
     private ?string $transcriptPath = null;
 
-    #[Column(type: 'text', nullable: true)]
-    private ?string $chatArchivePath = null;
-
-    #[Column(type: 'text', nullable: true)]
-    private ?string $chatNotice = null;
-
-    #[Column(type: 'array', nullable: true)]
+    #[Column(nullable: true)]
     private ?array $crawlerOutput = null;
-
-    #[Column(type: 'json', nullable: true)]
-    private ?array $recordingTimeMatrix = null;
 
     #[Column]
     private \DateTimeImmutable $lastModifiedAt;
@@ -182,18 +170,6 @@ class Episode
     public function setDuration(?int $duration): self
     {
         $this->duration = $duration;
-
-        return $this;
-    }
-
-    public function getRecordedAt(): ?\DateTimeInterface
-    {
-        return $this->recordedAt;
-    }
-
-    public function setRecordedAt(?\DateTimeInterface $recordedAt): self
-    {
-        $this->recordedAt = $recordedAt;
 
         return $this;
     }
@@ -338,35 +314,6 @@ class Episode
         return $this->transcriptPath && file_exists($this->transcriptPath);
     }
 
-    public function getChatArchivePath(): ?string
-    {
-        return $this->chatArchivePath;
-    }
-
-    public function setChatArchivePath(?string $path): self
-    {
-        $this->chatArchivePath = $path;
-
-        return $this;
-    }
-
-    public function hasChatArchive(): bool
-    {
-        return $this->chatArchivePath && file_exists($this->chatArchivePath);
-    }
-
-    public function getChatNotice(): ?string
-    {
-        return $this->chatNotice;
-    }
-
-    public function setChatNotice(?string $notice): self
-    {
-        $this->chatNotice = $notice;
-
-        return $this;
-    }
-
     public function getCrawlerOutput(): ?array
     {
         return $this->crawlerOutput;
@@ -375,18 +322,6 @@ class Episode
     public function setCrawlerOutput(?array $crawlerOutput): self
     {
         $this->crawlerOutput = $crawlerOutput;
-
-        return $this;
-    }
-
-    public function getRecordingTimeMatrix(): ?array
-    {
-        return $this->recordingTimeMatrix;
-    }
-
-    public function setRecordingTimeMatrix(?array $recordingTimeMatrix): self
-    {
-        $this->recordingTimeMatrix = $recordingTimeMatrix;
 
         return $this;
     }

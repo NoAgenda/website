@@ -48,6 +48,9 @@ class EpisodeCrudController extends AbstractCrudController
     {
         $isIndex = $pageName === Crud::PAGE_INDEX;
 
+        yield FormField::addPanel('Info')
+            ->setIcon('fas fa-info-circle');
+
         yield TextField::new('code', $isIndex ? 'No.' : 'Episode No.');
 
         if ($isIndex) {
@@ -76,12 +79,6 @@ class EpisodeCrudController extends AbstractCrudController
                 ->setHelp('Data used for crawling and processing metadata related to the show.');
 
             yield UrlField::new('recordingUri');
-            yield DateTimeField::new('recordedAt')
-                ->renderAsText()
-                ->setFormTypeOptions([
-                    'format' => 'yyyy-MM-dd HH:mm:ss',
-                ])
-                ->setTemplatePath('admin/field/recorded_at.html.twig');
             yield UrlField::new('coverUri')
                 ->setTemplatePath('admin/field/cover_uri.html.twig');
             yield TextField::new('coverPath');
@@ -106,34 +103,7 @@ class EpisodeCrudController extends AbstractCrudController
                 ->setTemplatePath('admin/field/transcript_uri.html.twig');
             yield TextField::new('transcriptPath')
                 ->setTemplatePath('admin/field/transcript_path.html.twig');
-
-            yield FormField::addPanel('Live Chat')
-                ->setIcon('fas fa-comments')
-                ->setHelp('Data used for crawling and processing metadata related to live chat logs.');
-
-            yield TextField::new('chatArchivePath')
-                ->setTemplatePath('admin/field/chat_archive_path.html.twig');
-            yield TextField::new('chatNotice')
-                ->setHelp('Message displayed above the chat archive in case of a problem, like being out of sync for a few minutes.');
         }
-    }
-
-    public function chatArchive(AdminContext $context): Response
-    {
-        $episode = $context->getEntity()->getInstance();
-
-        if (!$episode->hasChatArchive()) {
-            return $this->render('admin/error.html.twig', [
-                'error' => sprintf('The chat archive for episode "%s" could not be found.', $episode),
-            ]);
-        }
-
-        $chatArchive = json_decode(file_get_contents($episode->getChatArchivePath()));
-
-        return $this->render('admin/episode/chat_archive.html.twig', [
-            'episode' => $episode,
-            'chat_archive' => $chatArchive,
-        ]);
     }
 
     public function transcript(AdminContext $context): Response

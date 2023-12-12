@@ -68,9 +68,6 @@ class EpisodeProcessor
         $this->crawl($episode, 'chapters');
         $this->crawl($episode, 'transcript');
 
-        $this->crawl($episode, 'recording_time');
-        $this->crawl($episode, 'chat_archive');
-
         $logs = $this->logger->retrieve();
 
         if (!$adminEmail = $_SERVER['APP_ADMIN_EMAIL'] ?? null) {

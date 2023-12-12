@@ -45,7 +45,6 @@ class AppFixtures extends Fixture
                 ->setShownotesPath($storagePath . '/' . $data['shownotesPath'])
                 ->setTranscriptUri($data['transcriptUri'])
                 ->setTranscriptPath($storagePath . '/' . $data['transcriptPath'])
-                ->setChatArchivePath($data['chatArchivePath']??null ? $storagePath . '/' . $data['chatArchivePath'] : null)
                 ->setChaptersUri($data['chaptersUri'] ?? null)
                 ->setChaptersPath($data['chaptersPath']??null ? $storagePath . '/' . $data['chaptersPath'] : null);
 
@@ -91,7 +90,6 @@ class AppFixtures extends Fixture
             'shownotesPath' => 'shownotes/1240.xml',
             'transcriptUri' => 'https://www.noagendashow.net/media/transcripts/NA-1240-2020-05-07-Final.srt',
             'transcriptPath' => 'transcripts/1240.srt',
-            'chatArchivePath' => 'chat_archives/1240.json',
         ];
 
         yield [
@@ -108,7 +106,6 @@ class AppFixtures extends Fixture
             'shownotesPath' => 'shownotes/1241.xml',
             'transcriptUri' => 'https://www.noagendashow.net/media/transcripts/NA-1241-2020-05-10-Final.srt',
             'transcriptPath' => 'transcripts/1241.srt',
-            'chatArchivePath' => 'chat_archives/1241.json',
         ];
 
         yield [
@@ -125,7 +122,6 @@ class AppFixtures extends Fixture
             'shownotesPath' => 'shownotes/1242.xml',
             'transcriptUri' => 'https://www.noagendashow.net/media/transcripts/NA-1242-2020-05-14-Final.srt',
             'transcriptPath' => 'transcripts/1242.srt',
-            'chatArchivePath' => 'chat_archives/1242.json',
         ];
 
         yield [
@@ -142,7 +138,6 @@ class AppFixtures extends Fixture
             'shownotesPath' => 'shownotes/1243.xml',
             'transcriptUri' => 'https://www.noagendashow.net/media/transcripts/NA-1243-2020-05-17-Final.srt',
             'transcriptPath' => 'transcripts/1243.srt',
-            'chatArchivePath' => 'chat_archives/1243.json',
         ];
 
         yield [

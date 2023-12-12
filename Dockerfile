@@ -51,14 +51,6 @@ RUN set -eux; \
     apt-get install --no-install-recommends -y git netcat-traditional procps; \
     rm -rf /var/lib/apt/lists/*
 
-# Install media utilities
-RUN set -eux; \
-    apt-get update; \
-    apt-get install --no-install-recommends -y ffmpeg mplayer; \
-    apt-get install -y python3-pip; \
-    pip install git+https://github.com/flutterfromscratch/audio-offset-finder.git --break-system-packages; \
-    rm -rf /var/lib/apt/lists/*
-
 # Install PHP extensions
 RUN set -eux; \
     apt-get update; \
@@ -121,12 +113,8 @@ COPY --from=assets --chown=ben:ben /srv/app/public public/
 
 RUN mkdir -p \
         docker/storage/chapters \
-        docker/storage/chat_archives \
-        docker/storage/chat_logs \
         docker/storage/covers \
-        docker/storage/episode_parts \
         docker/storage/episodes \
-        docker/storage/livestream_recordings \
         docker/storage/shownotes \
         docker/storage/transcripts \
         public/media \

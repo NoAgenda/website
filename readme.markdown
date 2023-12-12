@@ -60,11 +60,9 @@ Messenger queue.
 
 Types of data to crawl:
 * bat_signal
-* chat_archive (requires episode code)
 * cover (requires episode code)
 * duration (requires episode code)
 * feed
-* recording_time (requires episode code)
 * shownotes (requires episode code)
 * transcript (requires episode code)
 * youtube
@@ -79,19 +77,6 @@ docker compose exec app bin/console enqueue <data>
 docker compose exec app bin/console enqueue <data> --episode <code>
 ```
 
-### Recording
-
-While there are separate services defined for recording tasks in the `docker-compose.services.yaml`
-file, it's still possible to manually run these commands.
-
-```bash
-# Manually record the IRC chat room
-docker compose exec app bin/console record chat
-
-# Manually record chuncks of the livestream to determine episode recording times
-docker compose exec app bin/console record livestream
-```
-
 ### Messenger Queue
 
 While the messenger queue is currently only used for crawling jobs, it's
@@ -99,7 +84,7 @@ important to always have the queue running in a live environment because
 crawling jobs can schedule new jobs, like re-downloading a resource or
 crawling the resources for a new episode.
 
-Like with recording services, there is a separate service defined for the
+There is a separate service defined for the
 messenger in the `docker-compose.services.yaml` file, but it's still possible
 to manually run the messenger queue. Note that the messenger needs the ability
 to handle large files so there's a separate image with an increased memory
