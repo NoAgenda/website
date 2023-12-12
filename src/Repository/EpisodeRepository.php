@@ -15,10 +15,10 @@ use Pagerfanta\Pagerfanta;
  */
 class EpisodeRepository extends AbstractRepository
 {
-    protected $defaultOrderBy = [
+    protected ?array $defaultOrderBy = [
         'publishedAt' => 'desc',
     ];
-    protected $itemsPerPage = 16;
+    protected int $itemsPerPage = 16;
 
     public function __construct(ManagerRegistry $registry)
     {

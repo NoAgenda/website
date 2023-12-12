@@ -5,7 +5,6 @@ namespace App\Twig;
 use App\Entity\Episode;
 use Liip\ImagineBundle\Service\FilterService;
 use Symfony\Bridge\Twig\Extension\AssetExtension;
-use Twig\Environment;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 

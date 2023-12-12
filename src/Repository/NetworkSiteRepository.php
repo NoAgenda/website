@@ -13,7 +13,7 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class NetworkSiteRepository extends AbstractRepository
 {
-    protected $defaultOrderBy = [
+    protected ?array $defaultOrderBy = [
         'priority' => 'asc',
         'name' => 'asc',
     ];

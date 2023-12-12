@@ -3,7 +3,6 @@
 namespace App\Repository;
 
 use App\Entity\BatSignal;
-use App\Entity\Episode;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -28,24 +27,5 @@ class BatSignalRepository extends ServiceEntityRepository
         ]);
 
         return null !== $existing;
-    }
-
-    public function findOneByEpisode(Episode $episode): ?BatSignal
-    {
-        $builder = $this->createQueryBuilder('signal');
-
-        $timespanEnd = new \DateTime();
-        $timespanEnd->setTimestamp($episode->getPublishedAt()->getTimestamp());
-        $timespanEnd->add(new \DateInterval('P1D'));
-
-        $builder
-            ->where($builder->expr()->between('signal.deployedAt', ':timespanStart', ':timespanEnd'))
-            ->setParameter('timespanStart', $episode->getPublishedAt()->format('Y-m-d H:i:s'))
-            ->setParameter('timespanEnd', $timespanEnd->format('Y-m-d H:i:s'))
-        ;
-
-        $query = $builder->getQuery();
-
-        return $query->getOneOrNullResult();
     }
 }
