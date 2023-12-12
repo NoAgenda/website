@@ -51,9 +51,9 @@ class AppFixtures extends Fixture
                 ->setShownotesPath($storagePath . '/' . $data['shownotesPath'])
                 ->setTranscriptUri($data['transcriptUri'])
                 ->setTranscriptPath($storagePath . '/' . $data['transcriptPath'])
-                ->setChatArchivePath($data['chatArchivePath'] ? $storagePath . '/' . $data['chatArchivePath'] : null)
+                ->setChatArchivePath($data['chatArchivePath']??null ? $storagePath . '/' . $data['chatArchivePath'] : null)
                 ->setChaptersUri($data['chaptersUri'] ?? null)
-                ->setChaptersPath($data['chaptersPath'] ? $storagePath . '/' . $data['chaptersPath'] : null);
+                ->setChaptersPath($data['chaptersPath']??null ? $storagePath . '/' . $data['chaptersPath'] : null);
 
             $manager->persist($episode);
         }
