@@ -35,6 +35,7 @@ class CrawlCommand extends Command
         $this
             ->addArgument('data', InputArgument::OPTIONAL, 'The type of data to crawl (help for more information)', 'help')
             ->addOption('episode', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'The episode code to crawl')
+            ->addOption('all', null, InputOption::VALUE_NONE, 'Crawl all episodes in the database')
         ;
     }
 
@@ -58,10 +59,12 @@ class CrawlCommand extends Command
         $jobs = [];
 
         if (is_subclass_of($crawlerName, EpisodeCrawlerInterface::class) || is_subclass_of($crawlerName, EpisodeFileCrawlerInterface::class)) {
-            $episodeCodes = $input->getOption('episode');
+            $episodeCodes = $input->getOption('all')
+                ? $this->entityManager->createQuery('select na.code from ' . Episode::class . ' na')->getSingleColumnResult()
+                : $input->getOption('episode');
 
             if (!count($episodeCodes)) {
-                $style->warning('To crawl this type of data you need to specify an episode with --episode [code].');
+                $style->warning('To crawl this type of data you need to specify an episode with --episode [code] or --all.');
 
                 return Command::INVALID;
             }
