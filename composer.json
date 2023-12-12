@@ -38,7 +38,7 @@
         "symfony/doctrine-messenger": "^6.0",
         "symfony/dotenv": "^6.0",
         "symfony/expression-language": "^6.0",
-        "symfony/flex": "^1.0",
+        "symfony/flex": "^2.4",
         "symfony/form": "^6.0",
         "symfony/framework-bundle": "^6.0",
         "symfony/http-client": "^6.0",
@@ -124,7 +124,7 @@
         "symfony": {
             "allow-contrib": false,
             "docker": false,
-            "require": "6.3.*"
+            "require": "6.4.*"
         }
     }
 }
