@@ -32,6 +32,8 @@ ARG GID=3302
 ENV FPM_HOST=app
 ENV FPM_PORT=9000
 
+ARG GITHUB_TOKEN
+
 USER root
 RUN rm -rf /srv/app
 
@@ -76,10 +78,6 @@ RUN set -eux; \
 
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-
-ARG UID=3302
-ARG GID=3302
-ARG GITHUB_TOKEN
 
 RUN if [ ! -z "$GITHUB_TOKEN" ]; then composer config --global github-oauth.github.com $GITHUB_TOKEN; fi
 
