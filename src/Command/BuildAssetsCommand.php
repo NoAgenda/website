@@ -71,7 +71,7 @@ class BuildAssetsCommand extends Command
             ],
         ];
 
-        file_put_contents($this->publicDirectory . '/site.webmanifest', json_encode($contents));
+        file_put_contents($this->publicDirectory . '/site.webmanifest', json_encode($contents, JSON_UNESCAPED_SLASHES));
     }
 
     private function buildServiceWorker(string $timestamp): void
