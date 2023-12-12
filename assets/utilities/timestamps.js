@@ -13,15 +13,3 @@ export function formatTimestamp(value) {
 
   return minutes + ':' + (seconds < 10 ? '0' : '') + Math.trunc(seconds);
 }
-
-export function parseTimestamp(value) {
-  let values = value.split(':');
-
-  if (values.length > 2) {
-    return (+values[0]) * 60 * 60 + (+values[1]) * 60 + (+values[2]);
-  } else if (values.length === 2) {
-    return (+values[0]) * 60 + (+values[1]);
-  }
-
-  return +values[0];
-}

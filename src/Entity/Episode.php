@@ -3,13 +3,10 @@
 namespace App\Entity;
 
 use App\Repository\EpisodeRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
-use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 
 #[Entity(repositoryClass: EpisodeRepository::class)]
@@ -20,9 +17,6 @@ class Episode
     #[GeneratedValue]
     #[Column(type: 'integer')]
     private ?int $id = null;
-
-    #[OneToMany(mappedBy: 'episode', targetEntity: EpisodeChapter::class)]
-    private Collection $chapters;
 
     #[Column(type: 'string', length: 16)]
     private ?string $code;
@@ -95,7 +89,6 @@ class Episode
 
     public function __construct()
     {
-        $this->chapters = new ArrayCollection();
         $this->lastModifiedAt = new \DateTimeImmutable();
     }
 
@@ -107,39 +100,6 @@ class Episode
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    /**
-     * @return Collection|FeedbackVote[]
-     */
-    public function getChapters(): Collection
-    {
-        return $this->chapters;
-    }
-
-    public function addChapter(EpisodeChapter $chapter): self
-    {
-        if (!$this->chapters->contains($chapter)) {
-            $this->chapters[] = $chapter;
-
-            $chapter->setEpisode($this);
-        }
-
-        return $this;
-    }
-
-    public function removeChapter(EpisodeChapter $chapter): self
-    {
-        if ($this->chapters->contains($chapter)) {
-            $this->chapters->removeElement($chapter);
-
-            // set the owning side to null (unless already changed)
-            if ($chapter->getEpisode() === $this) {
-                $chapter->setEpisode(null);
-            }
-        }
-
-        return $this;
     }
 
     public function getCode(): ?string

@@ -7,7 +7,6 @@
         "@hotwired/stimulus": "^3.0.0",
         "@octopodcasting/player": "octopodcasting/player#new-dist",
         "@swup/debug-plugin": "^2.0.0",
-        "@swup/forms-plugin": "^1.2.0",
         "@swup/head-plugin": "^1.2.1",
         "@swup/matomo-plugin": "^1.0.0",
         "@swup/progress-plugin": "^1.2.1",

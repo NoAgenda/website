@@ -1,8 +1,6 @@
 import { Controller } from '@hotwired/stimulus';
 
-import swup from '../scripts/swup';
 import naSettings from '../services/settings';
-import naSecurity from '../services/security';
 
 export default class extends Controller {
   connect() {
@@ -49,17 +47,7 @@ export default class extends Controller {
       },
       callback: (value) => naSettings.set('websiteTheme', value),
       currentValue: () => naSettings.get('websiteTheme') ?? 'system',
-    }/* , {
-      name: 'account',
-      type: 'button',
-      label: 'Website Account',
-      if: () => true,
-      callback: () => {
-        swup.loadPage({
-          url: naSecurity.metadata.registered ? '/account' : '/login',
-        });
-      },
-    }*/];
+    }];
 
     this.render();
   }

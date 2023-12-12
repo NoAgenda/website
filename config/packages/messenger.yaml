@@ -23,7 +23,6 @@ framework:
 
         routing:
             'App\Message\Crawl': crawler
-            'App\Message\MergeUser': async
             'App\Message\PrepareEpisode': crawler
 
         default_bus: command.bus

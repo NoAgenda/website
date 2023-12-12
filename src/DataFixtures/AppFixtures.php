@@ -5,7 +5,6 @@ namespace App\DataFixtures;
 use App\Entity\Episode;
 use App\Entity\NetworkSite;
 use App\Entity\User;
-use App\Entity\UserAccount;
 use App\Entity\Video;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -16,21 +15,16 @@ class AppFixtures extends Fixture
     {
         $storagePath = $_SERVER['APP_STORAGE_PATH'];
 
-        foreach ($this->loadUsers() as list($username, $email, $plainPassword, $roles)) {
+        foreach ($this->loadUsers() as list($userIdentifier, $plainPassword, $roles)) {
             $user = (new User())
-                ->setReviewed(true);
-
-            $account = (new UserAccount())
-                ->setUsername($username)
-                ->setUser($user)
-                ->setEmail($email)
+                ->setUserIdentifier($userIdentifier)
                 ->setPlainPassword($plainPassword);
 
             foreach ($roles as $role) {
-                $account->addRole($role);
+                $user->addRole($role);
             }
 
-            $manager->persist($account);
+            $manager->persist($user);
         }
 
         $manager->flush();
@@ -256,7 +250,7 @@ class AppFixtures extends Fixture
 
     public function loadUsers(): iterable
     {
-        yield [$_SERVER['APP_ADMIN_USER'], $_SERVER['APP_ADMIN_EMAIL'] ?? 'admin@noagendaexperience.com', 'test', ['ROLE_SUPER_ADMIN']];
+        yield [$_SERVER['APP_ADMIN_USER'], 'test', ['ROLE_SUPER_ADMIN']];
     }
 
     public function loadVideos(): iterable

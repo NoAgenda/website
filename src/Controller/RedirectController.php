@@ -3,9 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\Episode;
+use App\Utilities;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
@@ -51,5 +53,19 @@ class RedirectController extends AbstractController
         }
 
         return new RedirectResponse($recordingUri, Response::HTTP_MOVED_PERMANENTLY);
+    }
+
+    #[Route('/listen/{code}/chapters', name: 'podcast_episode_chapters_redirect')]
+    #[ParamConverter('episode', class: Episode::class, options: ['mapping' => ['code' => 'code']])]
+    public function episodeChapters(Request $request, Episode $episode): Response
+    {
+        $redirectParameters = ['code' => $episode->getCode()];
+
+        $timestamp = Utilities::parsePrettyTimestamp($request->query->get('t', 0));
+        if ($timestamp) {
+            $redirectParameters['t'] = $timestamp;
+        }
+
+        return $this->redirectToRoute('podcast_episode', $redirectParameters);
     }
 }

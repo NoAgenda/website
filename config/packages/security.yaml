@@ -11,6 +11,7 @@ security:
         users:
             entity:
                 class: App\Entity\User
+                property: userIdentifier
 
     firewalls:
         dev:
@@ -21,15 +22,11 @@ security:
                 login_path: security_login
                 check_path: security_login
                 enable_csrf: true
+                default_target_path: admin
+                always_use_default_target_path: true
             logout:
                 path: security_logout
                 target: root
-            remember_me:
-                secret: '%kernel.secret%'
-                lifetime: 2419200 # 4 weeks in seconds
-                path: /
-            custom_authenticators:
-                - App\Security\TokenAuthenticator
             entry_point: form_login
 
     access_control:

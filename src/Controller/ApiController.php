@@ -9,7 +9,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 #[Route('/api')]
 class ApiController extends AbstractController
@@ -17,22 +16,6 @@ class ApiController extends AbstractController
     public function __construct(
         private readonly NotificationSubscriptionRepository $notificationSubscriptionRepository,
     ) {}
-
-    #[Route('/auth')]
-    public function authenticationInfo(?UserInterface $user): Response
-    {
-        if (!$user) {
-            return new JsonResponse(null);
-        }
-
-        return new JsonResponse([
-            'authenticated' => true,
-            'registered' => $user->isRegistered(),
-            'username' => $user->getUsername(),
-            'admin' => $user->isAdmin(),
-            'mod' => $user->isMod(),
-        ]);
-    }
 
     #[Route('/livestream')]
     public function livestreamInfo(): Response

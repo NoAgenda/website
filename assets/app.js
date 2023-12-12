@@ -1,6 +1,5 @@
 import naPlayer from './services/player';
 import naPlayerStorage from './services/player-storage';
-import naSecurity from './services/security';
 import naSettings from './services/settings';
 import naStorage from './services/storage';
 
@@ -32,7 +31,6 @@ import './images/website-logo.svg';
 naStorage.initialize();
 naPlayer.initialize();
 naPlayerStorage.initialize();
-naSecurity.initialize();
 
 naSettings.subscribe('websiteTheme', (value) => {
   if (value === 'dark') {

@@ -20,21 +20,3 @@
   {%- set attr = attr|merge({class: 'btn'}) %}
   {{- parent() -}}
 {%- endblock button_widget -%}
-
-{%- block timestamp_widget -%}
-  <div class="form-timestamp" data-controller="timestamp-input" data-timestamp-input-metadata-value="{{ episode|player_metadata|json_encode|e('html') }}">
-    <div class="input">
-      {%- set attr = attr|merge({'data-timestamp-input-target': 'input'}) -%}
-      {{ block('form_widget') }}
-
-      <button type="button" class="btn btn-accent" data-action="timestamp-input#play">Play From Position</button>
-    </div>
-    <div class="buttons">
-      <button type="button" class="btn" data-action="timestamp-input#minusFive">-5</button>
-      <button type="button" class="btn" data-action="timestamp-input#minusOne">-1</button>
-      <button type="button" class="btn" data-action="timestamp-input#plusOne">+1</button>
-      <button type="button" class="btn" data-action="timestamp-input#plusFive">+5</button>
-      <button type="button" class="btn" data-action="timestamp-input#paste">Paste Current Position</button>
-    </div>
-  </div>
-{%- endblock timestamp_widget -%}

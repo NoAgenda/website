@@ -6,13 +6,9 @@ use App\Entity\BatSignal;
 use App\Entity\Episode;
 use App\Entity\NetworkSite;
 use App\Entity\User;
-use App\Entity\UserAccount;
 use App\Repository\EpisodeRepository;
-use App\Repository\FeedbackItemRepository;
-use App\Repository\UserRepository;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Asset;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Config\UserMenu;
@@ -46,7 +42,6 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('Episodes', 'fas fa-podcast', Episode::class);
         yield MenuItem::linkToCrud('Network Sites', 'fas fa-globe', NetworkSite::class);
         yield MenuItem::linkToCrud('Users', 'fas fa-user', User::class);
-        yield MenuItem::linkToCrud('User Accounts', 'fas fa-user-circle', UserAccount::class);
 
         yield MenuItem::section('Processing');
         yield MenuItem::linkToRoute('Crawler', 'fas fa-bug', 'admin_crawler');
@@ -61,7 +56,7 @@ class DashboardController extends AbstractDashboardController
     public function configureUserMenu(UserInterface $user): UserMenu
     {
         return parent::configureUserMenu($user)
-            ->setName($user->getUsername());
+            ->setName($user->getUserIdentifier());
     }
 
     #[Route('/console', name: 'admin')]
