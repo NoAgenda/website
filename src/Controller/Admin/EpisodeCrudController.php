@@ -3,6 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Episode;
+use App\Form\TimestampType;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -10,7 +11,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
@@ -62,6 +62,7 @@ class EpisodeCrudController extends AbstractCrudController
         if (!$isIndex) {
             yield TextField::new('author');
             yield IntegerField::new('duration')
+                ->setFormType(TimestampType::class)
                 ->setTemplatePath('admin/field/duration.html.twig');
         }
 
