@@ -1,4 +1,4 @@
-FROM node:18.12-alpine AS assets
+FROM node:20.10-alpine AS assets
 
 WORKDIR /srv/app
 

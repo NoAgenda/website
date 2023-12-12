@@ -17,7 +17,8 @@ export function nextRecording(date, recordingTimes) {
     const nextRecording = localTime.set({day: localTime.day - localTime.weekday + recordingDay, hour: recordingHour, minute: 0, second: 0});
 
     if (date >= nextRecording) {
-      return nextRecording.plus({days: 7});
+      const interval = {days: 7};
+      return nextRecording.plus(interval);
     }
 
     return nextRecording;

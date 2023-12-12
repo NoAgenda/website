@@ -24,7 +24,9 @@ if (window._paq) {
 const swup = new Swup({
   animationSelector: '[class*="swup-transition"]',
   cache: false,
-  linkSelector: 'a[href^="' + window.location.origin + '"]:not([data-no-swup]):not([data-controller]), a[href^="/"]:not([data-no-swup]):not([data-controller]), a[href^="#"]:not([data-no-swup]):not([data-controller])',
+  ignoreVisit: (url, { el } = {}) => (
+    el?.matches('[data-no-swup], [data-controller]')
+  ),
   plugins,
 });
 
@@ -40,7 +42,7 @@ function fixLink(element) {
   }
 }
 
-swup.on('pageView', () => {
+swup.hooks.on('page:view', () => {
   fixDocument();
 });
 

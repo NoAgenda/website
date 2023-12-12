@@ -14,7 +14,7 @@ export default class extends Controller {
     this.controlsOpened = false;
     this.menuOpened = false;
 
-    swup.on('transitionStart', () => {
+    swup.hooks.on('visit:start', () => {
       this.hide();
     });
 
