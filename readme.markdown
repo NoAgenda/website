@@ -16,7 +16,7 @@ wich requires to be run separately from the main application.
 ## Installation
 
 You need [Docker](https://www.docker.com/) to run this application. For more
-information on managing the application, see the [Symfony 5.4 documentation](https://symfony.com/doc/5.4/index.html).
+information on managing the application, see the [Symfony 6.4 documentation](https://symfony.com/doc/6.4/index.html).
 
 See `.env` for configuration options (create `.env.local` to override options).
 
