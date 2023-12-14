@@ -48,13 +48,13 @@
           event.preventDefault();
 
           const episodeCode = form.querySelector('[name="code"]')?.value;
-          window.open(`/api/crawl/${form.dataset.crawlerForm}?token={{ security_token }}` + (episodeCode ? `&episode=${episodeCode}` : ''));
+          window.open(`/console/api/crawl/${form.dataset.crawlerForm}?token={{ security_token }}` + (episodeCode ? `&episode=${episodeCode}` : ''));
         });
         form.querySelector('[data-queue]').addEventListener('click', event => {
           event.preventDefault();
 
           const episodeCode = form.querySelector('[name="code"]')?.value;
-          window.open(`/api/queue/${form.dataset.crawlerForm}?token={{ security_token }}` + (episodeCode ? `&episode=${episodeCode}` : ''));
+          window.open(`/console/api/queue/${form.dataset.crawlerForm}?token={{ security_token }}` + (episodeCode ? `&episode=${episodeCode}` : ''));
         });
       });
     });

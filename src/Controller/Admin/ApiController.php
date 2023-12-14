@@ -19,7 +19,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use function Symfony\Component\String\u;
 
-#[Route('/admin/api', name: 'admin_api_')]
+#[Route('/console/api', name: 'admin_api_')]
 class ApiController extends AbstractController
 {
     public function __construct(
