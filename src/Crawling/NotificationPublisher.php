@@ -25,7 +25,7 @@ class NotificationPublisher
         private readonly NotificationSubscriptionRepository $notificationSubscriptionRepository,
         private readonly HttpClientInterface $mastodonClient,
         private readonly RouterInterface $router,
-        private readonly WebPush $pushNotificationProcessor,
+        private readonly ?WebPush $pushNotificationProcessor,
         private readonly CoverExtension $coverExtension,
         private readonly ?string $mastodonAccessToken,
         private readonly bool $mastodonPublish,
@@ -35,6 +35,12 @@ class NotificationPublisher
 
     public function sendUserEpisodeNotifications(Episode $episode): void
     {
+        if (!$this->pushNotificationProcessor) {
+            $this->logger->info('Push notifications were not enabled');
+
+            return;
+        }
+
         $notificationPayload = json_encode([
             'title' => sprintf('No Agenda %s', $episode),
             'body' => 'A new episode is available',
@@ -53,6 +59,12 @@ class NotificationPublisher
 
     public function sendUserLiveNotifications(): void
     {
+        if (!$this->pushNotificationProcessor) {
+            $this->logger->notice('Push notifications were not enabled');
+
+            return;
+        }
+
         // todo grab image and episode number from bat signal post
 
         $notificationPayload = json_encode([
