@@ -19,7 +19,7 @@ security:
             security: false
         main:
             form_login:
-                login_path: security_login
+                login_path: /console?routeName=security_login
                 check_path: security_login
                 enable_csrf: true
                 default_target_path: admin
