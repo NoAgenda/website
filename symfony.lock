@@ -116,9 +116,6 @@
     "egulias/email-validator": {
         "version": "3.1.2"
     },
-    "evenement/evenement": {
-        "version": "v3.0.1"
-    },
     "friendsofphp/proxy-manager-lts": {
         "version": "v1.0.7"
     },
@@ -185,18 +182,6 @@
     },
     "phar-io/version": {
         "version": "3.2.1"
-    },
-    "phergie/phergie-irc-client-react": {
-        "version": "3.5.1"
-    },
-    "phergie/phergie-irc-connection": {
-        "version": "2.0.0"
-    },
-    "phergie/phergie-irc-generator": {
-        "version": "1.7.0"
-    },
-    "phergie/phergie-irc-parser": {
-        "version": "9999999-dev"
     },
     "php-http/client-common": {
         "version": "2.5.0"
@@ -283,27 +268,6 @@
     },
     "ralouphie/getallheaders": {
         "version": "3.0.3"
-    },
-    "react/cache": {
-        "version": "v1.1.1"
-    },
-    "react/dns": {
-        "version": "v0.4.19"
-    },
-    "react/event-loop": {
-        "version": "v1.3.0"
-    },
-    "react/promise": {
-        "version": "v2.9.0"
-    },
-    "react/promise-timer": {
-        "version": "v1.8.0"
-    },
-    "react/socket": {
-        "version": "v1.3.0"
-    },
-    "react/stream": {
-        "version": "v1.2.0"
     },
     "sebastian/cli-parser": {
         "version": "1.0.1"

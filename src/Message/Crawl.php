@@ -14,4 +14,13 @@ class Crawl
     ) {
         $this->initializedAt = $initializedAt ?? new \DateTime();
     }
+
+    public function __toString(): string
+    {
+        if ($this->episodeCode) {
+            return "Crawl $this->data for episode $this->episodeCode";
+        }
+
+        return "Crawl $this->data";
+    }
 }
