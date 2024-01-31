@@ -109,9 +109,8 @@ class EpisodeRepository extends AbstractRepository
         $builder = $this->createQueryBuilder('episode');
 
         $builder
-            ->select('episode', 'chapter')
+            ->select('episode')
             ->where($builder->expr()->eq('episode.published', true))
-            ->leftJoin('episode.chapters', 'chapter')
             ->orderBy('episode.publishedAt', 'desc');
 
         return $this->createPaginator($builder->getQuery(), $page);
