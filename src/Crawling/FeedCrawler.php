@@ -55,7 +55,7 @@ class FeedCrawler implements CrawlerInterface
             $headers['If-Modified-Since'] = $lastModifiedAt;
         }
 
-        $response = $this->httpClient->request('GET', 'http://feed.nashownotes.com/rss.xml', [
+        $response = $this->httpClient->request('GET', 'https://feeds.noagendaassets.com/noagenda.xml', [
             'headers' => $headers,
         ]);
 

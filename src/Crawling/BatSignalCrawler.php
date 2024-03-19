@@ -85,7 +85,7 @@ class BatSignalCrawler implements CrawlerInterface
         $entries = json_decode($response->getContent(), true);
 
         foreach ($entries as $entry) {
-            if (str_contains($entry['content'] ?? '', '#@pocketnoagenda')) {
+            if (str_contains($entry['content'] ?? '', 'We’re live') && str_contains($entry['content'] ?? '', 'No Agenda')) {
                 preg_match('/episode (\d+)/', $entry['content'],$matches);
                 list(, $code) = $matches;
 

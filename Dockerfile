@@ -53,6 +53,12 @@ RUN set -eux; \
     apt-get install --no-install-recommends -y git netcat-traditional procps; \
     rm -rf /var/lib/apt/lists/*
 
+# Install media utilities
+RUN set -eux; \
+    apt-get update; \
+    apt-get install --no-install-recommends -y ffmpeg; \
+    rm -rf /var/lib/apt/lists/*
+
 # Install PHP extensions
 RUN set -eux; \
     apt-get update; \
