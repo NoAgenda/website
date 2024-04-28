@@ -232,15 +232,6 @@ class AppFixtures extends Fixture
             'displayUri' => 'noagendastream.com',
             'priority' => 2,
         ];
-
-        yield [
-            'name' => 'NA Social',
-            'icon' => 'fab fa-mastodon',
-            'description' => 'The official No Agenda social network.',
-            'uri' => 'https://noagendasocial.com',
-            'displayUri' => 'noagendasocial.com',
-            'priority' => 3,
-        ];
     }
 
     public function loadUsers(): iterable

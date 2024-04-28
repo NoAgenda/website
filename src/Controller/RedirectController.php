@@ -44,6 +44,12 @@ class RedirectController extends AbstractController
         return $this->redirectToRoute('podcast_subscribe', status: Response::HTTP_MOVED_PERMANENTLY);
     }
 
+    #[Route('/social', name: 'social_redirect')]
+    public function social(): Response
+    {
+        return $this->redirectToRoute('livestream', status: Response::HTTP_MOVED_PERMANENTLY);
+    }
+
     #[Route('/listen/{code}/audio', name: 'podcast_recording_redirect')]
     #[ParamConverter('episode', class: Episode::class, options: ['mapping' => ['code' => 'code']])]
     public function podcastRecordingRedirect(Episode $episode): Response

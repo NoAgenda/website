@@ -72,13 +72,6 @@ class RootController extends AbstractController
         return $this->render('root/website.html.twig');
     }
 
-    #[Route('/social', name: 'social')]
-    #[Cache(maxage: '1 day')]
-    public function social(): Response
-    {
-        return $this->render('root/social.html.twig');
-    }
-
     #[Route('/podcasting20', name: 'podcasting20')]
     #[Cache(maxage: '1 day')]
     public function podcasting20(): Response

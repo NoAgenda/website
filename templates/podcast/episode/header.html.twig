@@ -74,22 +74,12 @@
       <span class="fa-solid fa-closed-captioning fa-fw" aria-hidden="true"></span>
     </a>
   {% endif %}
-  {#
-  <a
-    href="{{ path('podcast_episode_chapters', {code: episode.code}) }}"
-    title="Website Chapters"
-    class="link {% if not is_overview %}collapse-hide{% endif %} {% if current_page == 'website_chapters' %}active{% endif %}"
-  >
-    <span>Website Chapters</span>
-    <span class="fa-solid fa-book fa-fw" aria-hidden="true"></span>
-  </a>
-  #}
 </nav>
 
 <noscript>
   <section class="section">
     <div class="section-content">
-      <audio src="{{ episode.recordingUri }}" controls></audio>
+      <audio src="{{ episode.recordingUri }}" controls class="w-100"></audio>
     </div>
   </section>
 </noscript>
