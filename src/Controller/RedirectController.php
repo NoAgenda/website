@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Episode;
 use App\Utilities;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -51,8 +51,7 @@ class RedirectController extends AbstractController
     }
 
     #[Route('/listen/{code}/audio', name: 'podcast_recording_redirect')]
-    #[ParamConverter('episode', class: Episode::class, options: ['mapping' => ['code' => 'code']])]
-    public function podcastRecordingRedirect(Episode $episode): Response
+    public function podcastRecordingRedirect(#[MapEntity(mapping: ['code' => 'code'])] Episode $episode): Response
     {
         if (!$recordingUri = $episode->getRecordingUri()) {
             throw new NotFoundHttpException();
@@ -62,8 +61,7 @@ class RedirectController extends AbstractController
     }
 
     #[Route('/listen/{code}/chapters', name: 'podcast_episode_chapters_redirect')]
-    #[ParamConverter('episode', class: Episode::class, options: ['mapping' => ['code' => 'code']])]
-    public function episodeChapters(Request $request, Episode $episode): Response
+    public function episodeChapters(Request $request, #[MapEntity(mapping: ['code' => 'code'])] Episode $episode): Response
     {
         $redirectParameters = ['code' => $episode->getCode()];
 

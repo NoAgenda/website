@@ -7,7 +7,7 @@ use App\Entity\Episode;
 use App\Repository\EpisodeRepository;
 use App\Utilities;
 use Benlipp\SrtParser\Parser as SrtParser;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,8 +22,7 @@ class PodcastEpisodeController extends AbstractController
     ) {}
 
     #[Route('/listen/{code}', name: 'podcast_episode')]
-    #[ParamConverter('episode', class: Episode::class, options: ['mapping' => ['code' => 'code']])]
-    public function episode(Request $request, Episode $episode): Response
+    public function episode(Request $request, #[MapEntity(mapping: ['code' => 'code'])] Episode $episode): Response
     {
         $timestamp = Utilities::parsePrettyTimestamp($request->query->get('t', 0));
         $transcriptTimestamp = Utilities::parsePrettyTimestamp($request->query->get('transcript', 0));
@@ -57,8 +56,7 @@ class PodcastEpisodeController extends AbstractController
     }
 
     #[Route('/listen/{code}/shownotes', name: 'podcast_episode_shownotes')]
-    #[ParamConverter('episode', class: Episode::class, options: ['mapping' => ['code' => 'code']])]
-    public function episodeShownotes(Episode $episode): Response
+    public function episodeShownotes(#[MapEntity(mapping: ['code' => 'code'])] Episode $episode): Response
     {
         if (!$episode->hasShownotes()) {
             throw new NotFoundHttpException();
@@ -73,8 +71,7 @@ class PodcastEpisodeController extends AbstractController
     }
 
     #[Route('/listen/{code}/transcript', name: 'podcast_episode_transcript')]
-    #[ParamConverter('episode', class: Episode::class, options: ['mapping' => ['code' => 'code']])]
-    public function episodeTranscript(Request $request, Episode $episode): Response
+    public function episodeTranscript(Request $request, #[MapEntity(mapping: ['code' => 'code'])] Episode $episode): Response
     {
         if (!$episode->hasTranscript()) {
             throw new NotFoundHttpException();

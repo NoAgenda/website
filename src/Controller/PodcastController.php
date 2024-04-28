@@ -2,22 +2,9 @@
 
 namespace App\Controller;
 
-use App\Crawling\Shownotes\ShownotesParserFactory;
-use App\Entity\Episode;
-use App\Entity\EpisodeChapter;
-use App\Entity\EpisodeChapterDraft;
-use App\Repository\EpisodeChapterDraftRepository;
-use App\Repository\EpisodeChapterRepository;
 use App\Repository\EpisodeRepository;
-use App\Utilities;
-use Benlipp\SrtParser\Parser as SrtParser;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 class PodcastController extends AbstractController
