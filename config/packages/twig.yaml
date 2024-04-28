@@ -21,7 +21,7 @@ twig:
         artgenerator_artworks_url: 'https://noagendaartgenerator.com/artworks'
         chat_embed_url: 'http://webchat.zeronode.net?channels=%23NoAgenda&uio=d4'
         davejones_url: 'https://podcastindex.social/@dave'
-        donate_url: 'http://dvorak.org/na/'
+        donate_url: 'https://www.noagendadonations.com'
         drebscott_url: 'https://noagendasocial.com/@drebscott'
         dudenamedben_url: 'https://www.dudenamedben.blog'
         dudenamedben_donate_url: 'https://www.dudenamedben.blog/donate'
