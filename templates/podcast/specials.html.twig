@@ -19,10 +19,18 @@
       <p>
         More than 1500 episodes have been recorded over the 15 years that the show is running, and they all have a
         special place in our heart. Some of them are extra special though, ranging from episodes explaining the origin
-        of the show to compilations of the show.
+        of the show to compilations of clips about specific topics.
       </p>
     </div>
   </section>
 
   {{ podcast.archive(episodes) }}
+
+  <div class="section-gutter"></div>
+
+  {{ podcast.promo() }}
+{% endblock %}
+
+{% block footer %}
+  {% include 'footer.html.twig' %}
 {% endblock %}

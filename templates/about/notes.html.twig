@@ -1,0 +1,20 @@
+{% extends 'about/base.html.twig' %}
+
+{% set page_title = 'Donation Notes' %}
+
+{% block about_content %}
+  <h1>Donation Notes</h1>
+  <p>
+    We ask anybody who donates to the show to send a donation note via email to
+    <a href="mailto:{{ donate_email|raw }}?subject=No Agenda Donation" title="Email the Show">{{ donate_email }}</a>
+    with the <em>donation amount and name of your payment account in the subject title</em>.
+    While generally only notes from executive producers ($200 and up) are read on the show because of time constraints,
+    we read all of them. Long notes may be subject to editing.
+  </p>
+  <h2>Birthday shoutouts</h2>
+  <p>
+    Birthday shout outs can also be sent via email to
+    <a href="mailto:{{ donate_email|raw }}?subject=No Agenda Birthday" title="Email the Show">{{ donate_email }}</a>.
+    Please specify the name of the birthday boy/girl, age, and birthday date!
+  </p>
+{% endblock %}

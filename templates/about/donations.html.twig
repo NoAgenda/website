@@ -1,0 +1,64 @@
+{% extends 'about/base.html.twig' %}
+
+{% set page_title = 'Donate to No Agenda' %}
+
+{% block about_content %}
+  <h1>Donate to the Show</h1>
+  <p>
+    Unlike any other broadcasts, No Agenda has decided to be a solely listener-supported production through the
+    <a href="{{ path('about_value4value') }}">value-for-value model</a>.
+  </p>
+  <p>
+    Donations to the No Agenda Show can only be sent through PayPal, Stripe or as a check to
+    <em>No Agenda Show, Box 339, El Cerrito, CA 94530</em>. To donate with PayPal or Stripe, visit
+    <a href="{{ donate_url }}">noagendadonations.com</a> and click the donate button.
+  </p>
+  <p>Recurring donations are also possible and really keep the show going when numbers are low.</p>
+  <p>
+    <a href="{{ donate_url }}" class="btn btn-donate">Donate Now</a>
+  </p>
+  <h2>Donation Notes (Please Read)</h2>
+  <p>
+    We ask anybody who donates to the show to send a donation note via email to
+    <a href="mailto:{{ donate_email|raw }}?subject=No Agenda Donation" title="Email the Show">{{ donate_email }}</a>
+    with the <em>donation amount and name of your payment account in the subject title</em>.
+    While generally only notes from executive producers ($200 and up) are read on the show because of time constraints,
+    we read all of them. Long notes may be subject to editing.
+  </p>
+  <h2>Mentions & Producer Titles</h2>
+  <p>
+    Donors of $200 or more will become
+    associate executive producer of the show while donors of $333 or more will automatically become executive producers.
+  </p>
+  <p>
+    This title will be listed in the shownotes and is a genuine credit that we will vouch for. Executive producers are
+    generally responsible for the financing of a project and this is a legitimate and real credit for your bio.
+  </p>
+  <p>
+    Donors contributing $50 and above will get a special mention on the show. Anyone donating $49.99 or less will
+    automatically remain anonymous. Any donation requesting anonymity will also
+    be respected (<em>Please mention it at the top of your message</em>).
+  </p>
+  <h2>Peerage & Knighthood</h2>
+  <p>
+    In addition to a producer title, donations go towards your peerage status. Once you've reached $1,000 in donations
+    you become <em>Knight of the No Agenda Roundtable</em> and receive a special knight ring.
+  </p>
+  <p>
+    <a href="{{ path('about_peerage') }}" class="btn btn-accent">About Peerage</a>
+  </p>
+  <h2>Episode Club donations</h2>
+  <p>
+    Donors matching the show number as a donation (in American dollars) will become member of that episode's Club and
+    will be credited as such.
+  </p>
+  <h2>Insta-Knighthoods</h2>
+  <p>
+    Producers donating for the first time with an amount of $1,000 or more get the title of Insta-Knight of the No
+    Agenda Roundtable.
+  </p>
+  <h2>Knighthood Layaway Plan</h2>
+  <p>
+    Our original 20-month program whereby you can obtain your Knighthood with a monthly $50 donation for 20 months.
+  </p>
+{% endblock %}

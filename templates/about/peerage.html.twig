@@ -1,0 +1,63 @@
+{% extends 'about/base.html.twig' %}
+
+{% set page_title = 'No Agenda Peerage' %}
+
+{% block about_content %}
+  <h1>No Agenda Peerage</h1>
+  <h2>Knighthoods</h2>
+  <p>
+    Producers who donate $1,000 or help us produce the show in other valuable ways are granted an
+    exclusive title as Knight of the No Agenda Roundtable. Men are given the moniker "Sir" and women are granted
+    the title of "Dame". In addition to knighthood, producers can receive several title changes:
+  </p>
+  <ul>
+    <li>
+      <strong>Sir/Dame ($1,000)</strong>
+      <div>
+        You become member of the No Agenda Roundtable with special consideration by the show hosts.
+        This entails a special ceremony. All upgrades to this title receive mention when requested.
+      </div>
+    </li>
+    <li>
+      <strong>Baronet/Baronetess ($2,000)</strong>
+    </li>
+    <li>
+      <strong>Baron/Baroness ($3,000)</strong>
+      <div>
+        You may request a territory to rule.Once you achieve this level and the territory is approved, the Baron(ess)
+        may assign the honorary titles such as Sheriff and Magistrate.
+      </div>
+    </li>
+    <li>
+      <strong>Viscount/Viscountess ($5,000)</strong>
+      <div>Additional lands within reason are granted as part of an expanded Barony.</div>
+    </li>
+    <li>
+      <strong>Earl or Count/Countess ($7,000)</strong>
+    </li>
+    <li>
+      <strong>Duke/Duchess ($10,000)</strong>
+      <div>Additional lands within reason are granted as part of your Dukedom. Dukedoms will overlap Baronies.</div>
+    </li>
+    <li>
+      <strong>Arch Duke/Duchess ($20,000)</strong>
+    </li>
+    <li>
+      <strong>Grand Duke/Duchess ($33,000)</strong>
+      <div>Entire nations will be assigned to Grand Dukes until all territories of the world are accounted for.</div>
+    </li>
+  </ul>
+  <p>All the above titles are granted upon request and accounting done by the individual.</p>
+  <!--
+    Note that we do not keep track of which territories have been claimed. When time comes, the Dukes will
+    have to resolve this on their own.
+  -->
+  <h2>Knight rings</h2>
+  <p>
+    Producers who've achieved knighthood are awarded an exclusive signet ring they can use to hit people in the mouth.
+    Go to <a href="{{ knightring_url }}">noagendarings.com</a> to order your knight ring.
+  </p>
+  <p>
+    <a href="{{ knightring_url }}" class="btn">noagendarings.com</a>
+  </p>
+{% endblock %}

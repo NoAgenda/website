@@ -6,156 +6,49 @@
 {% set page_description = 'Listen to the No Agenda Stream' %}
 
 {% block content %}
-  <div class="section-row section-promo-row">
-    <section class="section">
-      <div class="section-content">
-        <h1>No Agenda Stream</h1>
-        <p>
-          The No Agenda Stream is an online audio broadcast that's live 24 hours a day, 7 days a week, filled with quality
-          podcasts curated for listeners of our show. In addition to running pre-recorded podcasts, some shows are
-          recorded live on the air (like No Agenda), in which case you can help produce the show by trolling the hosts
-          in our Troll Room. The stream is run by <a href="{{ sirbemrose_url }}">Sir Bemrose</a>.
-        </p>
-      </div>
-      <div class="section-buttons-full">
-        {% set player_metadata = player_livestream_metadata() %}
-        <a
-          href="{{ player_metadata.src }}"
-          class="btn btn-wide"
-          data-controller="play"
-          data-action="play#clicked"
-          data-play-metadata-value="{{ player_metadata|json_encode|e('html') }}"
-        >
-          <span class="btn-icon fa-solid fa-play" aria-hidden="true" data-play-target="icon"></span>
-          <span data-play-target="text">Listen Now</span>
-        </a>
-        <a href="http://noagendastream.com" class="btn btn-link">noagendastream.com</a>
-      </div>
-    </section>
-
-    <div class="section-promo">
-      <span class="fa-solid fa-radio fa-5x"></span>
-    </div>
-  </div>
-
-  <div class="section-row">
-    <section class="section">
-      <div class="section-content">
-        <h2>Troll Room</h2>
-        <p>
-          The Troll Room is an <a href="https://en.wikipedia.org/wiki/IRC">IRC</a>-based chat room. IRC is a precursor of
-          chat apps like Slack, Discord and Twitch, but differs in a very important
-          way, it's free from corporate control. Our chat is hosted by our very own
-          <a href="{{ voidzero_url }}">voidzero</a>. You can join the troll
-          room from any IRC chat application using the following server/channel information:
-        </p>
-        <p>
-          Hostname: irc.zeronode.net<br>
-          Port: 6697 (TLS/SSL) or 6667 (without TLS/SSL)<br>
-          Channel: #NoAgenda
-        </p>
-      </div>
-      <div class="section-buttons">
-        <a href="{{ trollroom_url }}" class="btn">Open the Troll Room</a>
-      </div>
-    </section>
-    <section class="section" data-controller="notifications" data-notifications-type-value="live">
-      <div class="section-content">
-        <h2>Live Recordings</h2>
-        <p>
-          The <a href="{{ path('podcast') }}">No Agenda Show</a> is recorded live on the No Agenda Stream every
-          thursday and sunday at 6PM UTC. The show is always preceded by
-          <a href="{{ darreno_url }}">Darren O'Neill</a>'s Rock 'N' Roll PreShow, so make sure to
-          get there early.
-        </p>
-        <p class="js" data-controller="recording-time"></p>
-        <p class="emphasis hide" data-notifications-target="help"></p>
-      </div>
-      <div class="section-buttons">
-        <button
-          class="btn js"
-          title="Receive a notification when No Agenda goes live"
-          data-notifications-target="button"
-          data-action="notifications#toggle"
-        >
-          <span class="btn-icon fa-solid fa-bell" aria-hidden="true"></span>
-          <span>Notify Me</span>
-        </button>
-      </div>
-    </section>
-  </div>
-
-  <section class="section">
+  <section class="section intro intro-accent">
     <div class="section-content">
-      <h2 id="register">How to Register for the Troll Room</h2>
-      <p>
-        While everybody is free to troll around in our Troll Room, because we're on the internet, we do require our
-        trolls to register a nickname to verify they're not spam bots. This section will explain how to register a
-        nickname, which needs to happen only once, and how to identify when you connect to the chat server.
-      </p>
-      <p>
-        For nickname registration and identification we use a special
-        system called 'NickServ'. You interact with it by talking
-        to it in a private query.
-      </p>
-      <h3>Registering your Nickname</h3>
-      <p>
-        By registering your nickname, you become the owner of it.
-        To register it, which needs to happen only once, issue the
-        following command:
-      </p>
-      <p class="emphasis">/ns register &lt;password&gt; &lt;emailaddress&gt;</p>
-      <p>
-        Of course, &lt;password&gt; needs to be replaced by the password
-        you prefer, and &lt;emailaddress&gt; needs to be your valid email
-        address. <strong>Please do not actually write the &lt; and &gt; charachters.</strong>
-      </p>
-      <p>
-        The email address is only used to send a confirmation
-        email with further instructions, and for nickname recovery
-        in case you lose your password. It's not used for
-        anything else.
-      </p>
-      <h3>Identifying to your Nickname</h3>
-      <p>
-        Every time you connect to the chat, you need to identify
-        as the owner of the nickname. This is really easy. After
-        connecting, just type the following:
-      </p>
-      <p class="emphasis">/id &lt;password&gt;</p>
-      <p>
-        Advanced users can also use their password as the server
-        password (this is used with IRC clients), or even better,
-        use SASL.
-      </p>
-      <h3>Being Allowed to Chat after Having Identified</h3>
-      <p>
-        To become unmuted ("being voiced"), all you need to do
-        after identifying, is to supply the following command:
-      </p>
-      <p class="emphasis">/cs voice #NoAgenda</p>
-      <p>
-        If it worked, your nickname will become prefixed in
-        #NoAgenda with a '+'-sign. If this doesn't work, something
-        went wrong with either the registration part or the
-        identifying part.
-      </p>
-      <h3>Getting Help</h3>
-      <p>If you need more help with this stuff, no problem. Type:</p>
-      <p>
-        <em>/query SirBemrose</em> (to talk with Sir Bemrose)<br>
-        <em>/query DarrenO</em><br>
-        <em>/query SpookyR</em><br>
-        <em>/query progo</em><br>
-      </p>
-      <p>and <strong>ask for help</strong>.</p>
+      <h1>No Agenda Stream</h1>
+      <p>The stream that's all talk, no commercials. No Agenda.</p>
+    </div>
+    <div class="section-buttons-full">
+      <a href="{{ trollroom_url }}" class="btn btn">Listen Now</a>
     </div>
   </section>
 
   <div class="section-gutter"></div>
 
-  <div class="section-row">
-    {{ call2action.podcast() }}
-    {{ call2action.website() }}
-  </div>
+  <section class="section section-narrow">
+    <div class="section-content">
+      <h2>Live 24/7</h2>
+      <p>
+        The No Agenda Stream is an online audio broadcast that's live 24 hours a day, 7 days a week, filled with quality
+        podcasts curated for listeners of our show.
+      </p>
+    </div>
+    <div class="section-buttons">
+      <a href="https://playlist.noagendastream.com" class="btn btn-accent">Stream Playlist</a>
+      <a href="https://listen.noagendastream.com" class="btn btn-accent">Direct Link</a>
+    </div>
+  </section>
+
+  <section class="section section-narrow">
+    <div class="section-content">
+      <h2>Troll Room</h2>
+      <p>
+        The Troll Room is an <a href="https://en.wikipedia.org/wiki/IRC">IRC</a>-based chat room. It's free to use
+        for anyonebut you need to register your nickname before you can send messages. Join us from
+        <a href="{{ trollroom_url }}">trollroom.io</a>
+        or with your favorite IRC application at <em>#NoAgenda</em> on <em>irc.zeronode.net</em>.
+      </p>
+    </div>
+    <div class="section-buttons">
+      <a href="{{ trollroom_url }}" class="btn">trollroom.io</a>
+      <a href="{{ path('about_trollroom') }}" class="btn btn-accent">How to become a troll</a>
+    </div>
+  </section>
+{% endblock %}
+
+{% block footer %}
+  {% include 'footer.html.twig' %}
 {% endblock %}

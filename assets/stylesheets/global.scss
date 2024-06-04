@@ -45,6 +45,14 @@ a {
   opacity: 1;
 }
 
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: calc(100vh - 64px);
+  gap: $gap-huge;
+}
+
 html.is-animating {
   .swup-transition, .navbar {
     opacity: 0.6;

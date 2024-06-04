@@ -1,0 +1,39 @@
+<footer class="footer">
+  <div class="section-wide-row">
+    <section class="section">
+      <div class="section-content">
+        <h2>No Agenda</h2>
+        <ul>
+          <li><a href="{{ path('podcast') }}">No Agenda Show</a></li>
+          <li><a href="{{ path('livestream') }}">No Agenda Stream</a></li>
+          <li><a href="{{ path('about_newsletter') }}">No Agenda Newsletter</a></li>
+          <li><a href="{{ path('about_mission_statement') }}">No Agenda Mission Statement</a></li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-content">
+        <h2>Value 4 Value</h2>
+        <ul>
+          <li><a href="{{ path('producers') }}">Producers</a></li>
+          <li><a href="{{ path('about_podcasting20') }}">Podcasting 2.0</a></li>
+          <li><a href="{{ path('about_value4value') }}">Value 4 Value</a></li>
+          <li><a href="{{ donate_url }}" class="btn btn-small btn-donate">Donate to the Show</a></li>
+        </ul>
+      </div>
+    </section>
+    <section class="section">
+      <div class="section-content">
+        <h3>About</h3>
+        <ul>
+          <li><a href="{{ path('about_root') }}">About No Agenda</a></li>
+        </ul>
+        <p>
+          This website was created by <a href="https://www.codedmonkey.com">Tim</a>.
+          Made possible by <a href="{{ path('about_website', {'_fragment': 'credits'}) }}">producers</a> of The No Agenda Show.
+        </p>
+      </div>
+    </section>
+  </div>
+</footer>

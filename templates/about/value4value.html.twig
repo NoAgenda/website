@@ -1,0 +1,55 @@
+{% extends 'about/base.html.twig' %}
+
+{% set page_title = 'Value 4 Value' %}
+
+{% block about_content %}
+  <h1>Value 4 Value</h1>
+  <p>
+    Unlike any other broadcasts, No Agenda has decided to be a solely listener-supported production. This means the
+    listeners contribute to the show both financially and through volunteerism, something we call the value-for-value
+    model. If you feel you are getting value from our show, please help us by providing your time, talent or treasure.
+  </p>
+  <h3>Time</h3>
+  <p>
+    Listening to the show and passing the word that No Agenda is The Best Podcast In The Universe is a simple and
+    easy way to help out. Spreading the knowledge of No Agenda is also referred to as <em>propogating the formula</em>
+    or <em>hitting people in the mouth</em> (No Agenda is not liable in case you actually got hit in the mouth).
+  </p>
+  <p>
+    Participating in <a href="{{ path('livestream') }}">the troll room</a> or joining one of our
+    <a href="{{ meetups_url }}">meetups</a> is also appreciated.
+  </p>
+  <h3>Talent</h3>
+  <p>
+    If you're an expert on one of the topics discussed on the show, or if you found
+    something you think should be discussed on the show, send it to <a href="{{ path('adam') }}">Adam</a> or
+    <a href="{{ path('john') }}">John</a> (but definitely not both).
+  </p>
+  <p>
+    Our show is full of producer-created content like <a href="{{ artgenerator_url }}">show art</a>, jingles,
+    end-of-show mixes, meetup reports, boots-on-the-ground reporting and much more. Simply let your creativity flow
+    and never feel like a douchebag again. Additionally, some producers have created
+    <a href="{{ path('producers', {'_fragment': 'projects'}) }}">unique experiences</a> to propagate the formula.
+  </p>
+  <h3>Treasure</h3>
+  <p>
+    Donors contributing $50 and above will get a special mention on the show. Donors of $200 or more will become
+    associate executive producer of the show while donors of $300 or more will automatically become executive producers.
+  </p>
+  <p>
+    Anyone donating $49.99 or less will automatically remain anonymous. Any donation requesting anonymity will also
+    be respected (<em>please mention it at the top of your donation note</em>).
+  </p>
+  <p>
+    <a href="{{ path('about_donations') }}" class="btn btn-donate">Donate to the Show</a>
+  </p>
+  <h2>Value for Value Lifestyle</h2>
+  <p>
+    Producers use their time, talent and treasure to keep our show running. We call this the value-for-value model,
+    and it was pioneered by this very show. Using value to support your interests is a lifestyle
+    everybody can enjoy, so don't be a douchebag and start living.
+  </p>
+  <p>
+    <a href="{{ value4value_url }}" class="btn">value4value.info</a>
+  </p>
+{% endblock %}

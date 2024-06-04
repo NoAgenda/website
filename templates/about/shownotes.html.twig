@@ -1,0 +1,43 @@
+{% extends 'about/base.html.twig' %}
+
+{% set page_title = 'About No Agenda Shownotes' %}
+
+{% block about_content %}
+  <h1>No Agenda Shownotes</h1>
+  <p>
+    The shownotes of No Agenda offer a unique perspective into the current events of every episode, with articles,
+    videos, boots-on-the-ground reports and important documents collected by our producers and curated by Adam
+    before the show starts. They're used by teachers, students and researchers all around the world
+    as a source of information for their work. If you think a piece of media or report needs to be mentioned in
+    the shownotes, send it to <a href="{{ path('adam') }}">Adam</a>.
+  </p>
+  <p>
+    Throughout the show's lifetime, No Agenda has evolved from being a simple podcast with
+    no ads, no jingles and no agenda, into a community-supported platform for media deconstruction. No Agenda
+    doesn't rely on fancy creator tools like the millennials you see on social media, however, we do rely on
+    <a href="{{ path('about_dudesnamedben') }}">a team of tech experts</a> who've created unique tools to make our show
+    possible. One of these tools is the Freedom Controller.
+  </p>
+  <p>
+    The Freedom Controller was created by <a href="{{ davejones_url }}">Dave Jones</a> at Adam's
+    request as a way to collect and publish the shownotes alongside an episode as an OPML-file. This makes the
+    shownotes not only readable by human resources, but also by machines. Publishing the shownotes in a
+    machine-readable format is an important aspect of our formula as it allows apps to read and use our shownotes
+    for their own experiences, like this website and the search engines made specifically for our shownotes:
+    <a href="https://noagendaquery.com/">No Agenda Query</a>, <a href="https://noagendaquest.com/">No Agenda Quest</a>
+    and <a href="http://noagendle.com/">Noagendle</a>. These tools have replaced the Freedom Controller as the
+    primary way to access the shownotes, but have made it an even more important part of our technology stack.
+  </p>
+  <p>
+    The first episode with shownotes from the Freedom Controller,
+    <a href="{{ path('podcast_episode', {code: '577'}) }}">show 577</a>,
+    was published in December 2013. A full list of shownotes is available
+    at <a href="http://archive.noagendanotes.com/">archive.noagendanotes.com</a>.
+  </p>
+  <h2>Lost Shownotes</h2>
+  <p>
+    There were shownotes for older episodes of the show, but those have unfortunately been lost to time and Silicon
+    Valley shutdowns. That's why we stopped depending on big corporations to run our show and fully rely on the
+    <a href="{{ path('about_value4value') }}">value-for-value model</a>.
+  </p>
+{% endblock %}

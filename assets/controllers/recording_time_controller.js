@@ -9,7 +9,12 @@ export default class extends Controller {
     const timezoneText = date.zoneName.split('/').pop().replace('_', ' ');
 
     if (currentlyRecording(date, window.recordingTimes)) {
-      this.element.innerHTML = '<em>The show is currently live!</em>';
+      this.element.innerHTML = `
+        <div>
+          <span class="fa-solid fa-circle inline-icon color-donate" aria-hidden="true"></span>
+          <em>The show is currently live!</em>
+        </div>
+      `;
     } else {
       const nextRecordingText = nextRecording(date, window.recordingTimes).toLocaleString({weekday: 'long', hour: 'numeric', minute: 'numeric'});
       this.element.innerHTML = `Next recording at: ${nextRecordingText} (${timezoneText} Time)`;

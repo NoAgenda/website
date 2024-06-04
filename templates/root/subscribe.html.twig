@@ -1,0 +1,139 @@
+{% extends 'base.html.twig' %}
+
+{% set page_title = 'Subscribe to No Agenda' %}
+{% set page_description = 'Subscribe to The No Agenda Show' %}
+
+{% block content %}
+  <section class="section section-narrow" data-controller="notifications" data-notifications-type-value="episode">
+    <div class="section-content">
+      <h1>Subscribe to the Show</h1>
+      <p>
+        The No Agenda Show is a real podcast available in <a href="#apps">most</a> podcast apps available online.
+        Episodes are distributed from our own infrastructure for free to ensure anybody can listen and enjoy our show,
+        a staple of the <a href="{{ path('about_value4value') }}">value-for-value model</a>.
+      </p>
+      <p>
+        Never miss an episode of the podcast by subscribing! Subscribing is easy and can be done directly from this
+        website or by using your favorite podcast app.
+      </p>
+      <p class="emphasis hide" data-notifications-target="help"></p>
+    </div>
+    <div class="section-buttons">
+      <button
+        class="btn btn-wide"
+        title="Receive a notification when a new episode is available"
+        data-notifications-target="button"
+        data-action="notifications#toggle"
+      >
+        <span class="btn-icon fa-solid fa-bell" aria-hidden="true"></span>
+        <span>Notify Me</span>
+      </button>
+    </div>
+  </section>
+
+  <section class="section section-narrow" data-controller="notifications" data-notifications-type-value="live">
+    <div class="section-content">
+      <h2>Subscribe to the Bat Signal</h2>
+      <p>
+        If you'd rather listen to show while it's being recorded live on the air, enable notifications for direct
+        access to our patented bat signal! You can also subscribe to the bat signal by using a
+        <a href="{{ podcastindex_apps_url }}">new podcast app</a> supporting
+        <a href="{{ path('about_podcasting20') }}">Podcasting 2.0</a>-features.
+      </p>
+      <p class="emphasis hide" data-notifications-target="help"></p>
+    </div>
+    <div class="section-buttons">
+      <button
+        class="btn btn-wide"
+        title="Receive a notification when No Agenda goes live"
+        data-notifications-target="button"
+        data-action="notifications#toggle"
+      >
+        <span class="btn-icon fa-solid fa-bell" aria-hidden="true"></span>
+        <span>Notify Me</span>
+      </button>
+    </div>
+  </section>
+
+  <section class="section section-narrow">
+    <div class="section-content">
+      <h2>Sign up for to the Newsletter</h2>
+      <p>
+        Get No Agenda in your mailbox with information about upcoming shows, behind-the-scenes details and more! The
+        No Agenda Newsletter is the healthiest and most educative newsletter in the nation, according to the
+        Mueller Report.
+      </p>
+    </div>
+    <div class="section-buttons">
+      <a href="{{ newsletter_signup_url }}" class="btn">Sign up</a>
+    </div>
+  </section>
+
+  <div class="section-gutter"></div>
+
+  <section class="section section-narrow">
+    <div class="section-content">
+      <h2>Subscribe from an app</h2>
+      <p>
+        Just search for <em>No Agenda</em> in your favorite podcast app. If it's not there you should still be able to
+        add No Agenda directly by adding the feed below, or try a <a href="{{ podcastindex_apps_url }}">new podcast app</a>
+        with Podcasting 2.0 features.
+      </p>
+    </div>
+    <div class="section-buttons">
+      <a href="{{ podcastindex_apps_url }}" class="btn">New Podcast Apps</a>
+      <a href="{{ path('about_podcasting20') }}" class="btn btn-accent">About Podcasting 2.0</a>
+    </div>
+  </section>
+
+  <section class="section section-narrow">
+    <div class="section-content">
+      <h2 id="feed">Podcast Feed</h2>
+      <p>
+        Use the podcast feed URL to manually add the show to a podcast app or an app supporting RSS feeds. Our feed
+        is available at:
+      </p>
+      <p>
+        <a href="{{ podcast_feed_url }}" class="btn btn-accent">{{ podcast_feed_url }}</a>
+      </p>
+    </div>
+  </section>
+
+  <div class="section-gutter"></div>
+
+  <section class="section section-narrow">
+    <div class="section-content">
+      <h2 id="apps">Open Podcasting Ecosystem</h2>
+      <p>
+        Podcast apps supporting the open podcasting ecosystem make it easier for frequent podcast listeners to
+        find recent episodes of their favorite shows by aggregating podcasts they're subscribed to with
+        <a href="https://en.wikipedia.org/wiki/RSS">RSS</a> and a user interface optimized for podcast playback.
+        Subscribing to No Agenda through apps is easy, but <em>not every app is allowed to play episodes of our show</em>.
+      </p>
+      <h3>Apps Allowed to Play our Show</h3>
+      <p>
+        All podcast apps supporting the open podcasting ecosystem can play No Agenda. Either search for "No Agenda"
+        from within the app or add the <a href="#feed">podcast feed</a> shown above directly to your list of
+        podcasts. If you can't subscribe to a podcast feed from the app, it's likely not built with the open podcasting
+        ecosystem in mind.
+      </p>
+      <h3>Apps <em>Not</em> Allowed to Play our Show</h3>
+      <p>
+        Big media platforms like Spotify and YouTube have created podcast-like experiences in their apps but use their
+        infrastructure to republish existing podcasts while filling them with advertisements and trackers. Meanwhile,
+        they're getting stricter about which content is allowed on their platforms every day.
+      </p>
+      <p>
+        No Agenda does not
+        support this practice, as it goes against the nature of the open podcasting ecosystem, one of the few remaining
+        media platforms not controlled by big corporations. That's why we forbid these platforms from publishing our
+        show to their audience. Read more about who we are and what we do in our
+        <a href="{{ path('about_mission_statement') }}">mission statement</a>.
+      </p>
+    </div>
+  </section>
+{% endblock %}
+
+{% block footer %}
+  {% include 'footer.html.twig' %}
+{% endblock %}

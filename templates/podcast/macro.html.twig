@@ -1,10 +1,10 @@
 {% macro archive(episodes, pager = null) %}
   <nav class="link-group link-group-full">
     <a href="{{ path('podcast_specials') }}" class="link">
-      <span>Special Episodes</span>
+      <span>Specials</span>
     </a>
     <a href="{{ path('podcast_all') }}" class="link">
-      <span>Full List of Episodes</span>
+      <span>Full List</span>
     </a>
   </nav>
 
@@ -45,27 +45,41 @@
   </section>
 {% endmacro archive %}
 
-{% macro subscribe() %}
-  <section class="section" data-controller="notifications" data-notifications-type-value="episode">
+{% macro promo() %}
+  <section class="section section-narrow">
     <div class="section-content">
-      <h2><a href="{{ path('podcast_subscribe') }}">Subscribe to the Show</a></h2>
+      <h2>Listening is Free</h2>
       <p>
-        Never miss an episode of the podcast by subscribing! Subscribing is easy and can be done directly from this
-        website or by using your favorite podcast app.
+        Listening to the show is (and forever will be) free thanks to the time, talent and treasure provided by our
+        producers. You can subscribe to the show directly from this website and any podcast app supporting the
+        <a href="{{ path('subscribe', {'_fragment': 'apps'}) }}">open podcasting system</a>.
       </p>
-      <p class="emphasis hide" data-notifications-target="help"></p>
+      <p>
+        Try a <a href="{{ podcastindex_apps_url }}">new podcast app</a> supporting Podcasting 2.0-features to get the most
+        out of the No Agenda experience.
+      </p>
     </div>
     <div class="section-buttons">
-      <button
-        class="btn btn-wide"
-        title="Receive a notification when a new episode is available"
-        data-notifications-target="button"
-        data-action="notifications#toggle"
-      >
-        <span class="btn-icon fa-solid fa-bell" aria-hidden="true"></span>
-        <span>Notify Me</span>
-      </button>
-      <a href="{{ path('podcast_subscribe') }}" class="btn btn-link btn-small">Learn More</a>
+      <a href="{{ path('subscribe') }}" class="btn">Subscribe to the Show</a>
+      <a href="{{ path('about_podcasting20') }}" class="btn btn-accent">About Podcasting 2.0</a>
+    </div>
+  </section>
+
+  <section class="section section-narrow">
+    <div class="section-content">
+      <h2>
+        <span>Recorded Live on the Air</span>
+        <span class="fa-solid fa-microphone inline-icon" aria-hidden="true"></span>
+      </h2>
+      <p>
+        The show is recorded live on the <a href="{{ path('livestream') }}">No Agenda Stream</a> every
+        thursday and sunday at 11AM PT / 2PM ET. Even when we're not recording, there's still plenty of quality content to
+        enjoy.
+      </p>
+      <p class="js" data-controller="recording-time"></p>
+    </div>
+    <div class="section-buttons">
+      <a href="{{ path('livestream') }}" class="btn">No Agenda Stream</a>
     </div>
   </section>
 {% endmacro %}

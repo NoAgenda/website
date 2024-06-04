@@ -12,21 +12,11 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class RootController extends AbstractController
 {
-    public function __construct(
-        private readonly EpisodeRepository $episodeRepository,
-        private readonly NetworkSiteRepository $networkSiteRepository,
-        private readonly VideoRepository $videoRepository,
-    ) {}
-
     #[Route('/', name: 'root')]
-    public function root(): Response
+    public function root(EpisodeRepository $episodeRepository): Response
     {
-        $episodes = $this->episodeRepository->findLatestEpisodes();
-        $videos = $this->videoRepository->findLatest();
-
         return $this->render('root/root.html.twig', [
-            'latest_episodes' => $episodes,
-            'videos' => $videos,
+            'latest_episodes' => $episodeRepository->findLatestEpisodes(),
         ]);
     }
 
@@ -51,40 +41,20 @@ class RootController extends AbstractController
         return $this->render('root/livestream.html.twig');
     }
 
-    #[Route('/trollroom', name: 'chat')]
+    #[Route('/subscribe', name: 'subscribe')]
     #[Cache(maxage: '1 day')]
-    public function chat(): Response
+    public function subscribe(): Response
     {
-        return $this->render('root/chat.html.twig');
-    }
-
-    #[Route('/mission-statement', name: 'mission_statement')]
-    #[Cache(maxage: '1 day')]
-    public function missionStatement(): Response
-    {
-        return $this->render('root/mission_statement.html.twig');
-    }
-
-    #[Route('/website', name: 'website')]
-    #[Cache(maxage: '1 day')]
-    public function website(): Response
-    {
-        return $this->render('root/website.html.twig');
-    }
-
-    #[Route('/podcasting20', name: 'podcasting20')]
-    #[Cache(maxage: '1 day')]
-    public function podcasting20(): Response
-    {
-        return $this->render('root/podcasting20.html.twig');
+        return $this->render('root/subscribe.html.twig');
     }
 
     #[Route('/producers', name: 'producers')]
     #[Cache(maxage: '1 day')]
-    public function producers(): Response
+    public function producers(NetworkSiteRepository $networkSiteRepository, VideoRepository $videoRepository): Response
     {
         return $this->render('root/producers.html.twig', [
-            'network_sites' => $this->networkSiteRepository->findAll(),
+            'network_sites' => $networkSiteRepository->findAll(),
+            'videos' => $videoRepository->findLatest(),
         ]);
     }
 

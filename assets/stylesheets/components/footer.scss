@@ -1,0 +1,20 @@
+@import "../mixins";
+@import "../variables";
+
+.footer {
+  border-top: 1px solid var(--accent-2);
+  margin-bottom: $gap-giga !important;
+
+  ul {
+    padding-left: 0;
+
+    li {
+      font-size: 1.1em;
+      list-style-type: none;
+
+      + li {
+        margin-top: $gap-small;
+      }
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{% extends 'about/base.html.twig' %}
+
+{% set page_title = 'About No Agenda' %}
+
+{% block about_content %}
+  <h1>About No Agenda</h1>
+  <p>
+    Most people know us from our podcast, <a href="{{ path('about_podcast') }}">The No Agenda Show</a>, but we are more
+    than just podcasters. No Agenda is a community of people working together to provide completely independent
+    deconstruction of the mainstream media, governments and political campaigns in the United States and around the
+    world. We explain what we do in <a href="{{ path('about_mission_statement') }}">our mission statement</a>.
+  </p>
+  <p>
+    Listening to the show is, and forever will be, free thanks to the time, talent and treasure provided by our
+    producers who support and interact with our show.
+    The question is simple; how much value do you get out of the show? If it's a lot, consider giving some value back
+    with a <a href="{{ path('about_donations') }}">donation</a>. Even if you can't donate to the show, there are tons
+    of other ways to contribute to the show through our <a href="{{ path('about_value4value') }}">value-for-value model</a>.
+  </p>
+  <p>
+    In addition to our podcast, you can also listen to the <a href="{{ path('about_livestream') }}">No Agenda Stream</a>,
+    a 24/7 audio broadcast filled with quality content for listeners from the No Agenda community, or subscribe to our
+    <a href="{{ path('about_newsletter') }}">newsletter</a>.
+  </p>
+{% endblock %}

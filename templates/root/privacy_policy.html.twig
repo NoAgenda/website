@@ -19,11 +19,8 @@
       </p>
     </div>
   </section>
+{% endblock %}
 
-  <div class="section-gutter"></div>
-
-  <div class="section-row">
-    {{ call2action.podcast() }}
-    {{ call2action.livestream() }}
-  </div>
+{% block footer %}
+  {% include 'footer.html.twig' %}
 {% endblock %}

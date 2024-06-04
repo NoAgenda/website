@@ -1,0 +1,104 @@
+{% extends 'about/base.html.twig' %}
+
+{% set page_title = 'No Agenda Website' %}
+
+{% block about_content %}
+  <h1>No Agenda Website</h1>
+  <p>
+    The website of The No Agenda Show was created by <a href="https://www.codedmonkey.com">Tim</a> under the
+    value-for-value model (completely voluntarily). Originally designed as an archive of the show, the website
+    is now a full custom-built podcast app for our show, complete with
+    <a href="{{ path('about_podcasting20') }}">Podcasting 2.0</a> integration.
+  </p>
+  <p>
+    <a href="{{ codedmonkey_donate_url }}" class="btn btn-donate">Support the website with a donation</a>
+  </p>
+  <h2>Features</h2>
+  <p>
+    The No Agenda website is custom-built for listeners of No Agenda. While most podcast websites are just a list
+    of episodes, our website integrates transcripts, chapters and shownotes with an integrated player that remembers
+    where you stopped listening. You can also subscribe to notifications for new episodes and the bat signal (when we
+    go live).
+  </p>
+  <h2 id="glitches">Experiencing a Glitch?</h2>
+  <h3>Not Receiving Push Notifications</h3>
+  <p>
+    In case you've subscribed to push notifications but haven't received any, your browser might not support push notifications.
+    Try enabling push notifications in a different browser, like <a href="https://www.mozilla.org/">Firefox</a>.
+    If you have an iPhone or iPad, push notifications can't be enabled until Apple adds support to Safari (this is also the
+    case for Safari users on Mac).
+  </p>
+  <h2>Help Us Improve</h2>
+  <p>
+    The code of this website is <a href="{{ github_url }}">available for free</a> under an open-source license. That
+    means anybody is free to make improvements, or to use the code for their own projects. Did you find
+    something that's not working as expected, or do you have any feedback or questions on how the website works,
+    <a href="{{ github_url }}/issues">create an issue</a> on GitHub or contact the website developer
+    <a href="{{ codedmonkey_url }}">Coded Monkey</a> or our system admin <a href="{{ voidzero_url }}">voidzero</a>.
+  </p>
+  <p>
+    <a href="{{ github_url }}" class="btn btn-accent">
+      <span class="btn-icon fa-brands fa-github" aria-hidden="true"></span>
+      <span>View Code on GitHub</span>
+    </a>
+  </p>
+  <h2 id="credits">Executive Website Producers</h2>
+  <p>
+    The following people are executive producers of the website by providing their <a href="{{ github_url }}">time and talent</a>
+    or <a href="{{ codedmonkey_donate_url }}">treasure</a>.
+  </p>
+  <ul>
+    <li><a href="https://www.codedmonkey.com">Coded Monkey</a> (Sir Tim, Knight of the JIT Shenanigans)</li>
+    <li>Clogwog</li>
+    <li><a href="https://noauthority.social/@professortom">Professor Tom</a></li>
+    <li><a href="http://curtgrimes.com/">Curt Grimes</a></li>
+    <li><a href="{{ voidzero_url }}">voidzero</a></li>
+    <li>DameGerous</li>
+  </ul>
+  <p>
+    And special thanks to <a href="{{ path('adam') }}">Adam</a>, <a href="{{ path('john') }}">John</a> and the
+    other <a href="{{ path('about_dudesnamedben') }}">dudes named Ben</a> keeping No Agenda running by making this all
+    possible.
+  </p>
+  <h2>History</h2>
+  <p>
+    When I started listening to No Agenda in 2014, the No Agenda website <a href="http://web.archive.org/web/20150214010631/http://www.noagendashow.com/">wasn't anything to write home about</a>.
+    Like many other podcast websites, it simply republished the podcast feed as a website. It didn't include
+    all past episodes (the archive was hosted separately), it also didn't include shownotes since those are hosted directly
+    on Adam's website. But Adam publishes everything for free, and has gone the extra length to make the data from his projects
+    machine-readable so websites and apps can use the data from No Agenda. He actively encourages producers
+    to use this data for themselves, and <a href="{{ path('producers', {'_fragment': 'projects'}) }}">lots of producers do</a>.
+  </p>
+  <p>
+    As a <a href="{{ path('about_dudesnamedben') }}">dude named Ben</a>, I immediately wanted to build an archive for
+    No Agenda. Another producer built noagendaplayer.com, which allowed you to play No Agenda from the browser, and
+    even started hinting at support for transcripts, when producer Clogwog started publishing transcripts of the show
+    he generated online on noagendatranscripts.tr and linking the transcripts to a YouTube-video. Adam heavily started
+    promoting these websites, but unfortunately noagendaplayer.com often didn't update correctly.
+  </p>
+  <h3>No Agenda Experience</h3>
+  <p>
+    My dream to create a full archive of No Agenda started by building a website that combined the shownotes, the
+    automatically generated transcripts and an archive of the troll room during recordings into a single page. Additionaly,
+    I created a system for producers to create their own chapters, so producers could help divide the show into topics
+    for a potential archive.
+  </p>
+  <p>
+    The name of my project became <a href="http://web.archive.org/web/20200521082046/https://www.noagendaexperience.com/">No Agenda Experience</a>.
+    A parody on <em>The Joe Rogan Experience</em>, which in turn is a reference to <em>The Jimi Hendrix Experience</em>.
+    No Agenda Social just launched, so I started publishing links to new episodes under the pseudonym <em>Woodstock</em>,
+    allowing the project to spread in the community.
+  </p>
+  <p>
+    One day, Adam was talking in the show about new projects and how he saw potential for a renaissance in the podcasting
+    community (a precursor to <a href="{{ path('about_podcasting20') }}">Podcasting 2.0</a>). I've emailed him about my
+    project, and he immediately asked me if I wanted it to become the official No Agenda website, and we never had a fight.
+  </p>
+  <p>
+    Multiple rewrites of the website later, my plans to turn this website into a No Agenda archive have turned into making
+    a general purpose podcasting player on the web. Maintaining an archive of the troll room during recordings and a
+    database of producer-contributed chapters proved difficult for many reasons and Podcasting 2.0 increased the bar
+    for how a podcasting website should work. I still want to build a full No Agenda archive, but I don't have the time or treasure
+    to do both (yet) so <a href="{{ codedmonkey_donate_url }}">please donate</a> if you want to see this come to life.
+  </p>
+{% endblock %}

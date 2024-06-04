@@ -25,6 +25,7 @@
         <style>
           .js { display: none !important; }
           .noscript-flex { display: flex !important; }
+          .menu-hidden { max-height: none !important; }
         </style>
       </noscript>
     {% endblock %}
@@ -47,9 +48,12 @@
     {% block body %}
       {% include 'navbar.html.twig' %}
 
-      <main id="swup" class="swup-transition">
-        {% block content '' %}
-      </main>
+      <div id="swup" class="container swup-transition">
+        <main>
+          {% block content '' %}
+        </main>
+        {% block footer '' %}
+      </div>
 
       {% include 'players.html.twig' %}
     {% endblock %}

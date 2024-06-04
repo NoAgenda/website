@@ -17,11 +17,14 @@
           skills that he developed during his younger years working as a Dutch radio host and an MTV VJ in the USA, all
           of his podcasts are professional produced while being live recorded on the internet.
         </p>
+        <h2>The Podfather</h2>
         <p>
           Many people know Adam as
           the Podfather because he was the first one to publish a podcast, The Daily Source Code, on the internet
-          after he worked with Dave Winer to create the podcast specification, which later became known as the
-          <a href="https://podcasters.apple.com/support/823-podcast-requirements">iTunes Podcast Specification</a>, based on RSS.
+          after he worked with Dave Winer to create the podcast specification, based on RSS. This later became known as the
+          <a href="https://podcasters.apple.com/support/823-podcast-requirements">iTunes Podcast Specification</a>.
+        </p>
+        <p>
           The interpretation of what a podcast is has changed dramatically over the years. Back then the term podcast
           was only used to refer to feed-based podcasts that implemented the podcast specification,
           but that’s generally not the case anymore. These days a podcast is just a series of video or audio shows published
@@ -31,12 +34,13 @@
           ecosystem ensures free speech can thrive on the internet, and he’s teaching people more about it in his
           <a href="{{ podcasting20_podcast_url }}">Podcasting 2.0 podcast</a>.
         </p>
+        <h2>Personal Life</h2>
         <p>
           Together with Tina the Keeper, Adam lives in the beautiful
           Texas Hill Country, an area that reflects his beliefs in free speech and gun rights. His pronouns are him/his.
           Because the content Adam and his co-host <a href="{{ path('john') }}">John</a> produce isn’t welcome at
           advertising-supported media platforms run by big corporations, they have taken a vow to poverty by running No
-          Agenda under the value for value model. This has paid off as the show has been running for 16 years and counting.
+          Agenda under the value-for-value model. This has paid off as the show has been running for 16 years and counting.
         </p>
         <p>
           If you ever have the feeling of craving more Adam Curry after listening to the latest No Agenda episode, check
@@ -65,11 +69,8 @@
       <a href="http://adam.curry.com/html/POBox-1430021868.html" class="btn btn-accent">PO Box</a>
     </div>
   </section>
+{% endblock %}
 
-  <div class="section-gutter"></div>
-
-  <div class="section-row">
-    {{ call2action.podcasting20() }}
-    {{ call2action.shownotes() }}
-  </div>
+{% block footer %}
+  {% include 'footer.html.twig' %}
 {% endblock %}

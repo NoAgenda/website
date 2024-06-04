@@ -5,121 +5,33 @@
 {% set page_description = 'The Best Podcast In The Universe' %}
 
 {% block content %}
-  <section class="section">
+  <section class="section intro intro-accent">
     <div class="section-content">
       <h1>No Agenda Show</h1>
       <p>
-        The No Agenda Show is an award-winning podcast created by <a href="{{ path('adam') }}">Adam Curry</a>
-        and <a href="{{ path('john') }}">John C. Dvorak</a> in 2007. Every episode of the show is jam-packed with
-        clips, analyses, funny bits and boots-on-the-ground reporting of current events provided by producers of the
-        show all around the world. Every episode is a unique experience worthy of the title The Best Podcast In The
-        Universe.
-      </p>
-      <p>
-        Listening to the show is, and forever will be, free thanks to the time, talent and treasure provided by our
-        producers who support and interact with our show, something we like to call the <a href="{{ path('producers') }}">value for value model</a>.
-        The question is simple; how much value do you get out of the show? If it's a lot, consider giving some value back
-        with a donation. Even if you can't donate to the show, there are tons of other ways to contribute to the show.
+        Twice weekly media deconstruction by Adam Curry and John C. Dvorak.
       </p>
     </div>
     <div class="section-buttons-full">
-      <a href="{{ donate_url }}" class="btn btn-donate">Support the Show with a Donation</a>
-      <a href="{{ path('producers') }}" class="btn btn-link">Become a Producer</a>
+      <a href="{{ path('about_podcast') }}" class="btn btn-accent-2">About the Formula</a>
     </div>
   </section>
-
-  <div class="section-gutter"></div>
-
-  <div class="section-row">
-    {{ podcast.subscribe() }}
-
-    <section class="section">
-      <div class="section-content">
-        <h2>Meet our Hosts</h2>
-        <p>
-          Learn more about the guys behind the mic and how they ended up with their hopeless podcasting careers.
-        </p>
-      </div>
-      <div class="section-buttons">
-        <a href="{{ path('adam') }}" class="btn btn-accent">Adam Curry</a>
-        <a href="{{ path('john') }}" class="btn btn-accent">John C. Dvorak</a>
-      </div>
-    </section>
-  </div>
-
-  <div class="section-row section-promo-row">
-    <div class="section-promo">
-      <a href="{{ path('livestream') }}" title="No Agenda Stream" aria-hidden="true">
-        <span class="fa-solid fa-microphone fa-5x"></span>
-      </a>
-    </div>
-    <section class="section" data-controller="notifications" data-notifications-type-value="live">
-      <div class="section-content">
-        <h2>Recorded Live</h2>
-        <p>
-          The No Agenda Show is recorded live on the <a href="{{ path('livestream') }}">No Agenda Stream</a> every
-          thursday and sunday at 11AM PT / 2PM ET. Even when we're not recording, there's still plenty of quality content to
-          enjoy.
-        </p>
-        <p class="js" data-controller="recording-time"></p>
-        <p class="emphasis hide" data-notifications-target="help"></p>
-      </div>
-      <div class="section-buttons">
-        <button
-          class="btn js"
-          title="Receive a notification when No Agenda goes live"
-          data-notifications-target="button"
-          data-action="notifications#toggle"
-        >
-          <span class="btn-icon fa-solid fa-bell" aria-hidden="true"></span>
-          <span>Notify Me</span>
-        </button>
-        <a href="{{ path('livestream') }}" class="btn btn-accent">No Agenda Stream</a>
-      </div>
-    </section>
-  </div>
-
-  <div class="section-row">
-    <section class="section">
-      <div class="section-content">
-        <h2><a href="{{ path('podcast_shownotes') }}">Shownotes</a></h2>
-        <p>
-          Don't just believe what you hear on the show, learn about the facts by reading our shownotes.
-        </p>
-      </div>
-      <div class="section-buttons">
-        <a href="{{ path('podcast_shownotes') }}" class="btn btn-accent btn-wide">About the Shownotes</a>
-      </div>
-    </section>
-
-    <section class="section">
-      <div class="section-content">
-        <h2><a href="{{ path('podcasting20') }}">Podcasting 2.0</a></h2>
-        <p>
-          The podcast experience has become stale under the leadership of big corporations. The Podcasting 2.0 movement
-          is taking podcasts to the next level with built-in support for chapters, transcripts, extra metadata and
-          much more.
-        </p>
-      </div>
-      <div class="section-buttons">
-        <a href="{{ path('podcasting20') }}" class="btn btn-accent btn-wide">About Podcasting 2.0</a>
-      </div>
-    </section>
-  </div>
 
   <div class="section-gutter"></div>
 
   <section class="section">
     <div id="archive" class="section-content">
       <h2>Archive</h2>
-      <p>
-        More than 1500 episodes have been recorded over the 15 years that the show is running, and they're all
-        available in this archive for you to enjoy! Throughout the years, we've added more elements to the show's
-        formula including unique artwork for every show, shownotes with reference material and auto-generated
-        transcripts.
-      </p>
     </div>
   </section>
 
   {{ podcast.archive(pager.currentPageResults, pager) }}
+
+  <div class="section-gutter"></div>
+
+  {{ podcast.promo() }}
+{% endblock %}
+
+{% block footer %}
+  {% include 'footer.html.twig' %}
 {% endblock %}

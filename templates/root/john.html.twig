@@ -18,15 +18,20 @@
           chugging along with the show until he does. Throughout his career, John C. Dvorak has worked for many media
           outlets, including PC Magazine, InfoWorld, TWiT and many more.
         </p>
+        <h2>Personal Life</h2>
         <p>
           John lives in the amazing weather-free San Francisco Bay Area, where his office window overlooks the flat bays, making
           climate change a real and serious danger to his housing situation. His pronouns are him/his and he's married
-          to his partner Mimi. Now that Dvorak isn't allowed to appear on any corporation-supported media channels
+          to his partner Mimi.
+        </p>
+        <p>
+          Now that John isn't allowed to appear on any corporation-supported media channels
           anymore thanks to the vow of poverty he and his co-host <a href="{{ path('adam') }}">Adam</a> have taken by continuing with the show
-          for over 15 years, he lives on being a humble podcaster thanks to the contributions from our producers.
+          for over 16 years, he lives on being a humble podcaster thanks to the contributions from our producers.
           Besides No Agenda, you can hear him in the <a href="https://www.dhunplugged.com">DH Unplugged</a> podcast
           together with his friend Andrew Horowitz.
         </p>
+        <h2>No Evidence</h2>
         <p>
           One of the oft-repeated quotes from John as a tech journalist is his opinion on the reveal of the first
           consumer mouse by Apple in 1984, saying “There is no evidence that people want to use these things.” This was
@@ -36,9 +41,10 @@
         <p>
           Podcasting isn't the only thing keeping John busy, he's also in the process of writing multiple books, like
           the one about vinegar. Maybe he'll publish one of them someday. Until then, you can use one of the links
-          below to pester him about it.
+          below to pester him about it, or try some tasty recipes from his wife Mimi's book
+          <a href="https://www.toomanyeggs.com/">Too Many Eggs</a>.
         </p>
-        <h3>PO Box</h3>
+        <h2>PO Box</h2>
         <p>
           Box 339, El Cerrito, CA 94530
         </p>
@@ -55,16 +61,14 @@
     </div>
     <div class="section-buttons-full">
       <a href="{{ john_social }}" class="btn btn-accent">ActivityPub</a>
+      <a href="https://dvorak.substack.com" class="btn btn-accent">Substack</a>
       <a href="https://twitter.com/therealdvorak" class="btn btn-accent">Twitter</a>
       <a href="mailto:{{ john_email|raw }}" class="btn btn-accent">Email (john@dvorak.org)</a>
       <a href="http://www.dvorak.org/blog/" class="btn btn-accent">Website (dvorak.org)</a>
     </div>
   </section>
+{% endblock %}
 
-  <div class="section-gutter"></div>
-
-  <div class="section-row">
-    {{ call2action.podcast() }}
-    {{ call2action.valueForValue() }}
-  </div>
+{% block footer %}
+  {% include 'footer.html.twig' %}
 {% endblock %}

@@ -56,18 +56,6 @@ class PodcastController extends AbstractController
         ]);
     }
 
-    #[Route('/podcast/shownotes', name: 'podcast_shownotes')]
-    public function shownotes(): Response
-    {
-        return $this->render('podcast/shownotes.html.twig');
-    }
-
-    #[Route('/podcast/subscribe', name: 'podcast_subscribe')]
-    public function subscribe(): Response
-    {
-        return $this->render('podcast/subscribe.html.twig');
-    }
-
     #[Route('/listen', name: 'podcast_latest_episode')]
     public function latestEpisode(): Response
     {

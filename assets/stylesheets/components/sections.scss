@@ -10,7 +10,8 @@
   .section-buttons,
   .section-buttons-full,
   .section-buttons-separated,
-  .section-content {
+  .section-content,
+  .section-header {
     max-width: $container-max-width;
     width: $container-width;
     margin: 0 auto;
@@ -133,6 +134,26 @@
       margin: 0;
     }
   }
+
+  .section-header {
+    display: flex;
+    flex-direction: column;
+    gap: $gap-small;
+
+    .grow {
+      flex-grow: 1;
+    }
+
+    @include breakpoint-tiny-up {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    > * {
+      margin: 0;
+    }
+  }
 }
 
 .section-row {
@@ -238,5 +259,62 @@
     @include breakpoint-medium-down {
       display: none;
     }
+  }
+}
+
+.section-narrow {
+  .section-content,
+  .section-buttons,
+  .section-buttons-full {
+    @include breakpoint-medium-only {
+      width: calc($container-width * 0.8);
+    }
+
+    @include breakpoint-large-only {
+      width: calc($container-width * 0.7);
+    }
+
+    @include breakpoint-full {
+      width: calc($container-max-width * 0.7);
+    }
+  }
+}
+
+.intro {
+  gap: $gap-giga;
+  margin: 0;
+  padding: $gap-giga 0;
+  text-align: center;
+
+  &.intro-accent {
+    background-color: var(--accent-1);
+  }
+
+  .section-content,
+  .section-buttons-full {
+    @include breakpoint-medium-only {
+      width: calc($container-width * 0.7);
+    }
+
+    @include breakpoint-large-only {
+      width: calc($container-width * 0.6);
+    }
+
+    @include breakpoint-full {
+      width: calc($container-max-width * 0.6);
+    }
+  }
+
+  .section-content {
+    gap: $gap-huge;
+  }
+
+  .section-buttons-full {
+    justify-content: center;
+  }
+
+  p {
+    font-size: 1.2em;
+    line-height: 1.4em;
   }
 }

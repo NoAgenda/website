@@ -1,7 +1,5 @@
 {% extends 'base.html.twig' %}
 
-{% import 'podcast/macro.html.twig' as podcast %}
-
 {% set page_description = 'Full No Agenda Archive' %}
 
 {% block content %}
@@ -30,8 +28,8 @@
       </div>
     </div>
   </section>
+{% endblock %}
 
-  {% for episode in episodes %}
-
-  {% endfor %}
+{% block footer %}
+  {% include 'footer.html.twig' %}
 {% endblock %}

@@ -29,6 +29,10 @@
   width: 100%;
 }
 
+.color-donate {
+  color: var(--donate);
+}
+
 .light-only {
   display: block;
 }
@@ -44,5 +48,23 @@
 
   .dark-only {
     display: block;
+  }
+}
+
+.lead {
+  font-size: 3rem !important;
+}
+
+.lead-small {
+  font-size: 2.3rem !important;
+}
+
+.inline-icon:not(:only-child) {
+  &:first-child {
+    margin-right: $gap-tiny;
+  }
+
+  &:last-child {
+    margin-left: $gap-tiny;
   }
 }

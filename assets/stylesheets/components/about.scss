@@ -1,0 +1,87 @@
+@import "../mixins";
+@import "../variables";
+
+.about-row {
+  max-width: $container-max-width;
+  width: $container-width;
+  margin: 0 auto;
+
+  .about-menu {
+    display: flex;
+    flex-direction: column;
+    gap: $gap-tiny;
+
+    a {
+      padding: 6px $gap-tiny;
+      background-color: var(--accent-1);
+      border-radius: 4px;
+      text-decoration: none;
+
+      &:active,
+      &:hover {
+        background-color: var(--accent-2);
+      }
+
+      &.active {
+        background-color: var(--accent-2);
+
+        &:active,
+        &:hover {
+          background-color: var(--accent-3);
+        }
+      }
+    }
+
+    .title {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: $gap-small;
+      font-size: 1.3em;
+
+      @include breakpoint-large-up {
+        display: none;
+      }
+
+      &:hover {
+        color: var(--highlight-color);
+      }
+    }
+
+    .menu {
+      display: flex;
+      flex-direction: column;
+      gap: $gap-tiny;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height .5s;
+
+      @include breakpoint-large-up {
+        max-height: none !important;
+      }
+    }
+
+    .spacer {
+      height: $gap;
+    }
+  }
+
+  @include breakpoint-large-down {
+    margin-top: $gap-huge;
+  }
+
+  @include breakpoint-large-up {
+    display: flex;
+    align-items: stretch;
+    gap: $gap;
+    margin: $gap-huge auto;
+
+    .about-menu {
+      padding-top: 5em;
+      width: 25%;
+    }
+
+    .about-content {
+      width: 75%;
+    }
+  }
+}

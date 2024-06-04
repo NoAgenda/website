@@ -1,0 +1,39 @@
+{% extends 'about/base.html.twig' %}
+
+{% set page_title = 'About No Agenda Stream' %}
+
+{% block about_content %}
+  <h1>No Agenda Stream</h1>
+  <p>
+    The No Agenda Stream is an online audio broadcast that's live 24 hours a day, 7 days a week, filled with quality
+    podcasts curated for listeners of our show. In addition to running pre-recorded podcasts, some shows are
+    recorded live on the air (like No Agenda), in which case you can help produce the show by trolling the hosts
+    in our <a href="{{ path('about_trollroom') }}">Troll Room</a>. The stream is hosted by
+    <a href="{{ voidzero_url }}">voidzero</a> and run by <a href="{{ sirbemrose_url }}">Sir Bemrose</a>.
+  </p>
+  <p>
+    <a href="https://playlist.noagendastream.com" class="btn btn-accent">Stream Playlist</a>
+    <a href="https://listen.noagendastream.com" class="btn btn-accent">Direct Link</a>
+  </p>
+  <h2>Live Recordings of No Agenda</h2>
+  <p>
+    The <a href="{{ path('podcast') }}">No Agenda Show</a> is recorded live on the No Agenda Stream every
+    thursday and sunday at 6PM UTC. The show is always preceded by
+    <a href="{{ darreno_url }}">Darren O'Neill</a>'s Rock 'N' Roll PreShow, so make sure to
+    get there early.
+  </p>
+  <p class="js" data-controller="recording-time"></p>
+  <p>
+    <a href="{{ trollroom_url }}" class="btn">Listen Now</a>
+  </p>
+  <h2>Troll Room</h2>
+  <p>
+    While listening to the stream, feel free to troll in our <a href="{{ path('about_trollroom') }}">Troll Room</a>,
+    but remember to stay civil. Note that to participate in the Troll Room you need to
+    <a href="{{ path('about_trollroom_registration') }}">register a nickname</a>
+    however, following along is completely commitment-free.
+  </p>
+  <p>
+    <a href="{{ path('about_trollroom') }}" class="btn btn-accent">About the Troll Room</a>
+  </p>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends 'about/base.html.twig' %}
+
+{% set page_title = 'No Agenda Community' %}
+
+{% block about_content %}
+  <h1>No Agenda Community</h1>
+  <p>
+    No Agenda is more than just a podcast, it's a community, and that wouldn't be possible without the work of our
+    producers. There are tons of ways producers help us create the show and it's not because they're getting paid
+    to do it. Producers of our show turn the value they receive from the show into value for the community
+    through <a href="{{ artgenerator_artworks_url }}">custom art</a>, <a href="{{ meetups_events_url }}">meetups</a>,
+    <a href="{{ path('about_donations') }}">monetary contributions</a> and much, much more. This isn't by coincidence,
+    it's <a href="{{ path('about_mission_statement') }}">our mission</a>.
+  </p>
+  <h2>Art Generator</h2>
+  <p>
+    Every episode of The No Agenda Show has unique artwork created by producers like you. Visit the <a href="{{ artgenerator_url }}">art generator</a>
+    to browse the vast library of artwork created for past episodes or show your creativity by designing
+    your own!
+  </p>
+  <p>
+    <a href="{{ artgenerator_url }}" class="btn">No Agenda Art Generator</a>
+    <a href="{{ artgenerator_artworks_url }}" class="btn btn-accent">Browse Artwork</a>
+  </p>
+  <h2>Meetups</h2>
+  <p>
+    No Agenda is more than just a podcast, it's a community. Producers around the world organise meetups through
+    <a href="{{ meetups_url }}">No Agenda Meetups</a> to connect
+    with like-minded people. Find a meetup in your area or if there isn't any, organise one yourself, it's that easy!
+  </p>
+  <p>
+    <a href="{{ meetups_url }}" class="btn">No Agenda Meetups</a>
+    <a href="{{ meetups_events_url }}" class="btn btn-accent">
+      <span class="btn-icon fa-solid fa-map-marker-alt" aria-hidden="true"></span>
+      <span>Find a Meetup</span>
+    </a>
+  </p>
+  <h2>Producer Projects</h2>
+  <p>
+    Some producers have gone extra lengths to provide their time and talent by creating projects expanding the
+    No Agenda community into unknown territories. <em>These projects are not associated with No Agenda. We have no
+    control over their content.</em>
+  </p>
+  <p>
+    Did you create something for No Agenda you'd like to show off? <a href="{{ codedmonkey_url }}">Let us know</a>.
+  </p>
+  <p>
+    <a href="{{ path('producers', {'_fragment': 'projects'}) }}" class="btn btn-accent">Browse Producer Projects</a>
+  </p>
+  <h2>Dudes named Ben</h2>
+  <p>
+    Behind the scenes of No Agenda a group of IT professionals keeps No Agenda running.
+  </p>
+  <p>
+    <a href="{{ path('about_dudesnamedben') }}" class="btn">About Ben</a>
+    <a href="{{ path('about_website') }}" class="btn btn-accent">About this website</a>
+  </p>
+{% endblock %}

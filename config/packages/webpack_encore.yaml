@@ -27,7 +27,6 @@ webpack_encore:
     builds:
         app: '%kernel.project_dir%/public/build'
         console: '%kernel.project_dir%/public/console-build'
-        slim: '%kernel.project_dir%/public/slim-build'
 
 framework:
     assets:
@@ -36,8 +35,6 @@ framework:
                 json_manifest_path: '%kernel.project_dir%/public/build/manifest.json'
             console:
                 json_manifest_path: '%kernel.project_dir%/public/console-build/manifest.json'
-            slim:
-                json_manifest_path: '%kernel.project_dir%/public/slim-build/manifest.json'
 
 #when@prod:
 #    webpack_encore:

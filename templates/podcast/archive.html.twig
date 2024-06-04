@@ -25,4 +25,12 @@
   </section>
 
   {{ podcast.archive(pager.currentPageResults, pager) }}
+
+  <div class="section-gutter"></div>
+
+  {{ podcast.promo() }}
+{% endblock %}
+
+{% block footer %}
+  {% include 'footer.html.twig' %}
 {% endblock %}

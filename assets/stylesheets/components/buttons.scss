@@ -42,13 +42,23 @@
   }
 }
 
+.btn-small {
+  padding: $gap-tiny;
+  font-size: 0.9em;
+  line-height: 1.1em;
+}
+
 .btn-large {
   padding: $gap-large $gap-huge;
-  font-size: 1.3em
+  font-size: 1.3em;
 }
 
 .btn-accent {
   @include button-colors(var(--accent-1), var(--accent-2), var(--text-color));
+}
+
+.btn-accent-2 {
+  @include button-colors(var(--accent-2), var(--accent-3), var(--text-color));
 }
 
 .btn-donate {

@@ -1,0 +1,15 @@
+{% extends 'about/base.html.twig' %}
+
+{% set page_title = 'No Agenda Newsletter' %}
+
+{% block about_content %}
+  <h1>No Agenda Newsletter</h1>
+  <p>
+    Get No Agenda in your mailbox with information about upcoming shows, behind-the-scenes details and more! The
+    No Agenda Newsletter is the healthiest and most educative newsletter in the nation, according to the
+    Mueller Report.
+  </p>
+  <p>
+    <a href="{{ newsletter_signup_url }}" class="btn">Sign up</a>
+  </p>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends 'about/base.html.twig' %}
+
+{% set page_title = 'About The No Agenda Show' %}
+
+{% block about_content %}
+  <h1>The No Agenda Show</h1>
+  <p>
+    The No Agenda Show is an award-winning podcast by <a href="{{ path('adam') }}">Adam Curry</a>
+    and <a href="{{ path('john') }}">John C. Dvorak</a> running since 2007. Every episode of the show is jam-packed with
+    clips, analyses, funny bits and boots-on-the-ground reporting of current events provided by producers of the
+    show all around the world, each of them an unique experience worthy of the title "Best Podcast In The
+    Universe".
+  </p>
+  <p>
+    Episodes of the show are combined with <a href="{{ artgenerator_url }}">unique artwork</a> from our producers,
+    <a href="{{ path('about_shownotes') }}">shownotes</a> where you can find sources and additional information
+    about topics discussed on the show plus transcripts and chapters so you can easily follow along and find the
+    parts you like the most.
+  </p>
+  <p>
+    Chapters are maintained by <a href="{{ drebscott_url }}">Dreb Scott</a>.
+  </p>
+  <p>
+    <a href="{{ path('podcast') }}" class="btn">Browse the Archive</a>
+  </p>
+  <h2>Meet our Hosts</h2>
+  <p>
+    Learn more about the guys behind the mic and how they ended up with their hopeless podcasting careers.
+  </p>
+  <p>
+    <a href="{{ path('adam') }}" class="btn btn-accent">Adam Curry</a>
+    <a href="{{ path('john') }}" class="btn btn-accent">John C. Dvorak</a>
+  </p>
+  <h2>Recorded Live</h2>
+  <p>
+    The No Agenda Show is recorded live on the <a href="{{ path('livestream') }}">No Agenda Stream</a> every
+    thursday and sunday at 11AM PT / 2PM ET. Even when we're not recording, there's still plenty of quality content to
+    enjoy.
+  </p>
+  <p class="js" data-controller="recording-time"></p>
+  <p>
+    <a href="{{ path('about_livestream') }}" class="btn btn-accent">No Agenda Stream</a>
+  </p>
+{% endblock %}

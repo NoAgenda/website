@@ -1,0 +1,52 @@
+{% extends 'about/base.html.twig' %}
+
+{% set page_title = 'About the Troll Room' %}
+
+{% block about_content %}
+  <h1>Troll Room</h1>
+  <p>
+    The Troll Room is an <a href="https://en.wikipedia.org/wiki/IRC">IRC</a>-based chat room. IRC is a precursor of
+    chat apps like Slack, Discord and Twitch, but differs in a very important
+    way, it's free from corporate control. Our chat is hosted by our very own
+    <a href="{{ voidzero_url }}">voidzero</a>. You can join the troll
+    room from <a href="https://duckduckgo.com/?q=irc+apps">any IRC chat application</a>
+    using the following server/channel information:
+  </p>
+  <p>
+    Hostname: irc.zeronode.net<br>
+    Port: 6697 (TLS/SSL) or 6667 (without TLS/SSL)<br>
+    Channel: #NoAgenda
+  </p>
+  <p>
+    or use our web-based IRC client on <a href="{{ trollroom_url }}">trollroom.io</a>.
+  </p>
+  <p>
+    <a href="{{ trollroom_url }}" class="btn">trollroom.io</a>
+    <a href="https://duckduckgo.com/?q=irc+apps" class="btn btn-accent">Find an IRC application</a>
+  </p>
+  <h2>Channels</h2>
+  <p>
+    In addition to our main channel #NoAgenda, there are other channels available on the Troll Room based on other communities,
+    like other podcasts that also record live on the No Agenda Stream. You can get a full list of channels by typing
+    <em>/list</em> into your IRC application, here are some of them to get you started:
+  </p>
+  <ul>
+    <li>#NoAgenda (for The No Agenda Show and the stream)</li>
+    <li>#lotuseffect (for <a href="https://lotuseffect.show">The Lotus Effect</a>)</li>
+    <li>#HogStory (for the trendiest podcast in the universe, <a href="https://hogstory.net">Hog Story</a>)</li>
+    <li>#sewerchat (for the <a href="https://nicktherat.com/radio.html">Nick the Rat</a> podcast)</li>
+    <li>#BowlAfterBowl (for the <a href="https://bowlafterbowl.com">Bowl After Bowl</a> podcast)</li>
+    <li>#RareEncounter (for the <a href="https://rareencounter.net">Rare Encounter</a> podcast)</li>
+    <li>#greenroom (for the <a href="https://www.behindthesch3m3s.com">Behind the Sch3m3s</a> podcast)</li>
+    <li>#absna6pack (for the <a href="https://www.absna6pack.com">Abs ‘n a 6 Pack</a> podcast)</li>
+    <li>#OO (Ryno the Bearded’s <a href="http://rynothebearded.com">OO Show</a>)</li>
+  </ul>
+  <h2>Register your Nickname</h2>
+  <p>
+    Since the Troll Room is publicly available we get a lot of spam. To prevent spam bots from ruining our trolling
+    experience, you're required to register a nickname with an email address before you can speak in the Troll Room.
+  </p>
+  <p>
+    <a href="{{ path('about_trollroom_registration') }}" class="btn btn-accent">How to Register for the Troll Room</a>
+  </p>
+{% endblock %}

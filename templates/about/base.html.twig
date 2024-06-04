@@ -1,0 +1,90 @@
+{% extends 'base.html.twig' %}
+
+{% set pages = {
+  about_root: {label: 'No Agenda', parent: null},
+
+  about_mission_statement: {label: 'No Agenda Mission Statement', parent: 'about_root'},
+  about_podcast: {label: 'No Agenda Show', parent: 'about_root'},
+  about_livestream: {label: 'No Agenda Stream', parent: 'about_root'},
+  about_newsletter: {label: 'No Agenda Newsletter', parent: 'about_root'},
+  about_value4value: {label: 'Value 4 Value', parent: 'about_root'},
+  about_community: {label: 'Community', parent: 'about_root'},
+
+  about_shownotes: {label: 'Shownotes', parent: 'about_podcast'},
+  about_podcasting20: {label: 'Podcasting 2.0', parent: 'about_podcast'},
+
+  about_trollroom: {label: 'Troll Room', parent: 'about_livestream'},
+  about_trollroom_registration: {label: 'Register for the Troll Room', parent: 'about_livestream'},
+
+  about_donations: {label: 'Donate to the Show', parent: 'about_value4value'},
+  about_peerage: {label: 'Peerage', parent: 'about_value4value'},
+  about_notes: {label: 'Donation Notes', parent: 'about_value4value'},
+
+  about_dudesnamedben: {label: 'Dudes named Ben', parent: 'about_community'},
+  about_website: {label: 'Website', parent: 'about_community'},
+} %}
+
+{% set currentRoute = app.current_route %}
+{% set currentPage = pages[currentRoute] %}
+{% set parentRoute = currentPage.parent %}
+
+{% set childPages = pages|filter(page => page.parent == currentRoute) %}
+
+{% block content %}
+  <div class="about-row">
+    <div class="about-menu" data-controller="about-menu">
+      <div
+        class="title"
+        data-about-menu-target="button"
+        data-action="click->about-menu#toggle"
+      >
+        <div>About Menu</div>
+        <div class="js">
+          <span class="fa-solid fa-bars" aria-hidden="true"></span>
+        </div>
+      </div>
+      <div id="about-menu" class="menu menu-hidden" data-about-menu-target="menu">
+        {% if currentRoute == 'about_root' %}
+          <a href="{{ path('about_root') }}" class="active" aria-current="page">No Agenda</a>
+        {% else %}
+          <a href="{{ path('about_root') }}">No Agenda</a>
+          {% if currentRoute != 'about_root' %}
+            {% if parentRoute == 'about_root' and childPages|length %}
+              <a href="{{ path(currentRoute) }}" class="active">{{ currentPage.label }}</a>
+            {% elseif parentRoute != 'about_root' %}
+              <a href="{{ path(parentRoute) }}">{{ pages[parentRoute].label }}</a>
+            {% endif %}
+          {% endif %}
+        {% endif %}
+
+        <div class="spacer"></div>
+
+        {% if not childPages|length %}
+          {% for pageRoute, page in pages|filter(page => page.parent == parentRoute) %}
+            {% if currentRoute == pageRoute %}
+              <a href="{{ path(pageRoute) }}" class="active" aria-current="page">{{ page.label }}</a>
+            {% else %}
+              <a href="{{ path(pageRoute) }}">{{ page.label }}</a>
+            {% endif %}
+          {% endfor %}
+        {% else %}
+          {% for pageRoute, page in pages|filter(page => page.parent == currentRoute) %}
+            {% if currentRoute == pageRoute %}
+              <a href="{{ path(pageRoute) }}" class="active" aria-current="page">{{ page.label }}</a>
+            {% else %}
+              <a href="{{ path(pageRoute) }}">{{ page.label }}</a>
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+      </div>
+    </div>
+    <div class="about-content">
+      {% block about_content %}
+      {% endblock %}
+    </div>
+  </div>
+{% endblock %}
+
+{% block footer %}
+  {% include 'footer.html.twig' %}
+{% endblock %}

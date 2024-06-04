@@ -1,0 +1,67 @@
+{% extends 'about/base.html.twig' %}
+
+{% set page_title = 'How to Register for the Troll Room' %}
+
+{% block about_content %}
+  <h1>How to Register for the Troll Room</h1>
+  <p>
+    While everybody is free to troll around in our Troll Room, because we're on the internet, we do require our
+    trolls to register a nickname to verify they're not spam bots. This section will explain how to register a
+    nickname, which needs to happen only once, and how to identify when you connect to the chat server.
+  </p>
+  <p>
+    For nickname registration and identification we use a special
+    system called 'NickServ'. You interact with it by talking
+    to it in a private query.
+  </p>
+  <h2>Registering your Nickname</h2>
+  <p>
+    By registering your nickname, you become the owner of it.
+    To register it, which needs to happen only once, issue the
+    following command:
+  </p>
+  <p class="emphasis">/ns register &lt;password&gt; &lt;emailaddress&gt;</p>
+  <p>
+    Of course, &lt;password&gt; needs to be replaced by the password
+    you prefer, and &lt;emailaddress&gt; needs to be your valid email
+    address. <strong>Please do not actually write the &lt; and &gt; charachters.</strong>
+  </p>
+  <p>
+    The email address is only used to send a confirmation
+    email with further instructions, and for nickname recovery
+    in case you lose your password. It's not used for
+    anything else.
+  </p>
+  <h2>Identifying to your Nickname</h2>
+  <p>
+    Every time you connect to the chat, you need to identify
+    as the owner of the nickname. This is really easy. After
+    connecting, just type the following:
+  </p>
+  <p class="emphasis">/id &lt;password&gt;</p>
+  <p>
+    Advanced users can also use their password as the server
+    password (this is used with IRC clients), or even better,
+    use SASL.
+  </p>
+  <h2>Being Allowed to Chat after Having Identified</h2>
+  <p>
+    To become unmuted ("being voiced"), all you need to do
+    after identifying, is to supply the following command:
+  </p>
+  <p class="emphasis">/cs voice #NoAgenda</p>
+  <p>
+    If it worked, your nickname will become prefixed in
+    #NoAgenda with a '+'-sign. If this doesn't work, something
+    went wrong with either the registration part or the
+    identifying part.
+  </p>
+  <h2>Getting Help</h2>
+  <p>If you need more help with this stuff, no problem. Type:</p>
+  <p>
+    <em>/query SirBemrose</em> (to talk with Sir Bemrose)<br>
+    <em>/query DarrenO</em><br>
+    <em>/query cottongin</em><br>
+  </p>
+  <p>and <strong>ask for help</strong>.</p>
+{% endblock %}

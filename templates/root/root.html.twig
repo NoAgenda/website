@@ -6,8 +6,9 @@
 
 {% block content %}
   <section class="section">
-    <div class="section-content">
-      <h2>Latest Episodes</h2>
+    <div class="section-header">
+      <h2 class="grow">Start Listening</h2>
+      <a href="{{ path('podcast', {_fragment: 'archive'}) }}" class="btn btn-small btn-wide">Browse the Archive</a>
     </div>
     <div class="episodes">
       <div class="episode-spacer"></div>
@@ -21,11 +22,6 @@
       <div class="episode-spacer"></div>
     </div>
     <div class="section-buttons">
-      <a href="{{ path('podcast', {_fragment: 'archive'}) }}" class="btn btn-wide">Browse the Archive</a>
-      <a href="{{ path('podcast_specials') }}" class="btn btn-link btn-small">
-        <span class="btn-icon fa-solid fa-star" aria-hidden="true"></span>
-        <span>Specials</span>
-      </a>
     </div>
   </section>
 
@@ -43,250 +39,44 @@
     <div class="episodes" data-play-history-target="container"></div>
   </section>
 
-  <div class="section-row section-promo-row">
-    <section class="section">
-      <div class="section-content">
-        <h1 class="sr-text">No Agenda Show</h1>
-        <p>
-          Welcome to the home of The No Agenda Show, an award-winning podcast where <a href="{{ path('adam') }}">Adam Curry</a>
-          and <a href="{{ path('john') }}">John C. Dvorak</a>, two experts from the media industry, discuss news &
-          politics. Twice a week they deconstruct the news cycle and give insights into the narrative of the mainstream
-          media, governments and political campaigns.
-        </p>
-      </div>
-      <div class="section-buttons">
-        <a href="{{ path('podcast') }}" class="btn btn-accent btn-small">
-          <span class="btn-icon fa-solid fa-podcast" aria-hidden="true"></span>
-          <span>Podcast</span>
-        </a>
-        <a href="{{ path('mission_statement') }}" class="btn btn-link btn-wide">Mission Statement</a>
-      </div>
-    </section>
-    <div class="section-promo">
-      <a href="{{ path('podcast') }}" title="No Agenda Show">
-        <img src="{{ asset('build/images/website-logo.svg', 'app') }}" alt="No Agenda Logo">
-      </a>
-    </div>
-  </div>
-
-  <div class="section-row">
-    <section class="section">
-      <div class="section-content">
-        <h2><a href="{{ path('livestream') }}">Recorded with a Live Audience</a></h2>
-        <p>
-          The No Agenda Show is recorded live on the <a href="{{ path('livestream') }}">No Agenda Stream</a> every
-          thursday and sunday. Participate in the show and connect with other producers by joining the Troll Room.
-        </p>
-        <p class="js" data-controller="recording-time"></p>
-      </div>
-      <div class="section-buttons">
-        <a href="{{ trollroom_url }}" class="btn btn-wide">Open the Troll Room</a>
-        <a href="{{ path('livestream') }}" class="btn btn-accent btn-small">Livestream</a>
-      </div>
-    </section>
-
-    <section class="section">
-      <div class="section-content">
-        <h2><a href="{{ path('producers') }}">Supported by Producers</a></h2>
-        <p>
-          Our mission is simple, deconstruct the news in an understandable manner. This is only possible thanks to support
-          from <a href="{{ path('producers') }}">producers</a> like you.
-        </p>
-      </div>
-      <div class="section-buttons-full">
-        <a href="{{ donate_url }}" class="btn btn-donate">Support the Show with a Donation</a>
-      </div>
-    </section>
-  </div>
-
-  <div class="section-gutter notifications-hide"></div>
-
-  <div class="section-row notifications-hide">
-    {{ podcast.subscribe() }}
-
-    <section class="section" data-controller="notifications" data-notifications-type-value="live">
-      <div class="section-content">
-        <h2>Subscribe to the Bat Signal</h2>
-        <p>
-          If you'd rather listen to show while it's being recorded live on the air, enable notifications for direct
-          access to our patented bat signal!
-        </p>
-        <p class="emphasis hide" data-notifications-target="help"></p>
-      </div>
-      <div class="section-buttons">
-        <button
-          class="btn btn-wide"
-          title="Receive a notification when No Agenda goes live"
-          data-notifications-target="button"
-          data-action="notifications#toggle"
-        >
-          <span class="btn-icon fa-solid fa-bell" aria-hidden="true"></span>
-          <span>Notify Me</span>
-        </button>
-      </div>
-    </section>
-  </div>
-
-  <div class="section-gutter"></div>
-
-  <div class="section-wide-row">
-    <section class="section">
-      <div class="section-content">
-        <h2><a href="{{ path('livestream') }}">No Agenda Stream</a></h2>
-        <p>
-          Listen to the No Agenda Stream. 24/7 of unique content curated for the No Agenda audience accompanied by the
-          patented Troll Room.
-        </p>
-      </div>
-      <div class="section-buttons">
-        {% set player_metadata = player_livestream_metadata() %}
-        <a
-          href="{{ player_metadata.src }}"
-          class="btn btn-wide"
-          data-controller="play"
-          data-action="play#clicked"
-          data-play-metadata-value="{{ player_metadata|json_encode|e('html') }}"
-        >
-          <span class="btn-icon fa-solid fa-play" aria-hidden="true" data-play-target="icon"></span>
-          <span data-play-target="text">Listen Now</span>
-        </a>
-        <a href="{{ path('livestream') }}" class="btn btn-link btn-small">Learn More</a>
-      </div>
-    </section>
-
-    <section class="section">
-      <div class="section-content">
-        <h2>No Agenda Newsletter</h2>
-        <p>
-          Get No Agenda in your mailbox with information about upcoming shows, behind-the-scenes details and more! The
-          No Agenda Newsletter is the healthiest and most educative newsletter in the nation, according to the Mueller
-          Report.
-        </p>
-      </div>
-      <div class="section-buttons">
-        <a href="{{ newsletter_signup_url }}" class="btn btn-wide">
-          <span class="btn-icon fa-solid fa-envelope" aria-hidden="true"></span>
-          <span>Subscribe</span>
-        </a>
-      </div>
-    </section>
-    <section class="section">
-      <div class="section-content">
-        <h2><a href="{{ artgenerator_url }}">No Agenda Art Generator</a></h2>
-        <p>
-          Every episode of The No Agenda Show has unique artwork created by producers like you. Visit the art generator
-          to browse the vast library of artwork created for past episodes or show your creativity by designing
-          your own!
-        </p>
-      </div>
-      <div class="section-buttons">
-        <a href="{{ artgenerator_artworks_url }}" class="btn btn-accent btn-wide">Browse Artwork</a>
-      </div>
-    </section>
-  </div>
-
-  {% set animated_url = 'https://www.youtube.com/channel/UCihyXCKCTKZ0H6OQRpKN5qQ/videos' %}
-  <section class="section">
+  <section class="section intro intro-accent">
     <div class="section-content">
-      <h2><a href="{{ animated_url }}">Animated No Agenda</a></h2>
+      <h1 class="sr-text">No Agenda Show</h1>
+      <h2 class="lead">The Best Podcast in the Universe</h2>
       <p>
-        No Agenda makes people laugh and it's even funnier in cartoon form. Created by
-        <a href="{{ damejennifer_url }}">Dame Jennifer</a>, Animated No Agenda is the easiest way to hit
-        your comrades in the mouth.
+        Welcome to The No Agenda Show, an award-winning podcast where <a href="{{ path('adam') }}">Adam Curry</a>
+        and <a href="{{ path('john') }}">John C. Dvorak</a>, two experts from the media industry, discuss news &
+        politics.
+      </p>
+      <p>
+        Twice a week they deconstruct the news cycle and give insights into the narrative of the mainstream
+        media, governments and political campaigns around the world.
       </p>
     </div>
-    <div class="episodes">
-      <div class="episode-spacer"></div>
-      {% for video in videos %}
-        <a href="https://www.youtube.com/watch?v={{ video.youtubeId }}" class="episode">
-          <img src="https://i.ytimg.com/vi/{{ video.youtubeId }}/mqdefault.jpg" alt="{{ video.title }}">
-          <h3>{{ video.title|replace({'Animated No Agenda - ': ''}) }}</h3>
-        </a>
-      {% endfor %}
-      <div class="episode-spacer"></div>
-    </div>
-    <div class="section-buttons">
-      <a href="{{ animated_url }}" class="btn btn-accent btn-wide">
-        <span class="btn-icon fa-brands fa-youtube" aria-hidden="true"></span>
-        <span>More Videos</span>
-      </a>
+    <div class="section-buttons-full">
+      <a href="{{ path('subscribe') }}" class="btn btn-wide">Subscribe to the Show</a>
+      <a href="{{ path('about_root') }}" class="btn btn-accent-2 btn-wide">Hit Me in the Mouth</a>
     </div>
   </section>
 
-  <div class="section-row">
-    <section class="section">
-      <div class="section-content">
-        <h2><a href="{{ meetups_url }}">No Agenda Meetups</a></h2>
-        <p>
-          No Agenda is more than just a podcast, it's a community. Producers around the world organise meetups to connect
-          with like-minded people. Find a meetup in your area or if there isn't any, organise one yourself, it's that easy!
-        </p>
-      </div>
-      <div class="section-buttons">
-        <a href="{{ meetups_events_url }}" class="btn btn-wide">
-          <span class="btn-icon fa-solid fa-map-marker-alt" aria-hidden="true"></span>
-          <span>Find a Meetup</span>
-        </a>
-        <a href="{{ meetups_resources_url }}" class="btn btn-link btn-small">Learn More</a>
-      </div>
-    </section>
-    <section class="section">
-      <div class="section-content">
-        <h2>Producer Projects</h2>
-        <p>
-          No Agenda producers have created tons of experiences for you to check out. Don't be a douchebag and start
-          producing yourself.
-        </p>
-      </div>
-      <div class="section-buttons-full">
-        <a href="{{ path('producers', {_fragment: 'projects'}) }}" class="btn">
-          <span class="btn-icon fa-solid fa-earth-americas" aria-hidden="true"></span>
-          <span>Browse Producer Projects</span>
-        </a>
-        <a href="{{ path('producers') }}" class="btn btn-link">Become a Producer</a>
-      </div>
-    </section>
-  </div>
-
-  <div class="section-gutter"></div>
-
-  <div class="section-row section-promo-row">
-    <div class="section-promo">
-      <a href="{{ podcastindex_url }}" title="PodcastIndex">
-        <img src="{{ asset('build/images/podcastindex.svg', 'app') }}" alt="PodcastIndex">
-      </a>
-    </div>
-    <section class="section">
-      <div class="section-content">
-        <h2><a href="{{ path('podcasting20') }}">Podcasting 2.0</a></h2>
-        <p>
-          To preserve the feed-based podcasting ecosystem, Adam started the Podcasting 2.0 initiative with a new index and
-          a social platform where podcasters, listeners and developers can connect to create new standards for podcasts.
-        </p>
-      </div>
-      <div class="section-buttons-full">
-        <a href="{{ newpodcastapps_url }}" class="btn">
-          <span class="btn-icon fa-solid fa-podcast" aria-hidden="true"></span>
-          <span>Try a New Podcast App</span>
-        </a>
-        <a href="{{ path('podcasting20') }}" class="btn btn-link">Learn More</a>
-      </div>
-    </section>
-  </div>
-
-  <div class="section-gutter"></div>
-
-  <section class="section">
+  <section class="section intro">
     <div class="section-content">
+      <h2 class="lead-small">Value 4 Value</h2>
       <p>
-        <a href="{{ path('website') }}">Created by Ben</a>
-        &bull;
-        <a href="{{ path('website', {'_fragment': 'credits'}) }}">Made possible by producers</a>
-        &bull;
-        <a href="{{ path('privacy_policy') }}">Privacy Policy</a>
-        &bull;
-        <a href="{{ github_url }}">View Source Code</a>
+        Unlike any other broadcasts, No Agenda has decided to be a solely listener-supported production. This means the
+        listeners contribute to the show both financially and through volunteerism, something we call the
+        <a href="{{ path('producers') }}">value-for-value model</a>.
+      </p>
+      <p>
+        If you're getting value from our show, please help us by providing your time, talent or treasure.
       </p>
     </div>
+    <div class="section-buttons-full">
+      <a href="{{ donate_url }}" class="btn btn-donate btn-wide">Donate to the Show</a>
+    </div>
   </section>
+{% endblock %}
+
+{% block footer %}
+  {% include 'footer.html.twig' %}
 {% endblock %}

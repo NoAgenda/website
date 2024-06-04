@@ -38,19 +38,4 @@ Encore
 const consoleConfig = Encore.getWebpackConfig();
 consoleConfig.name = 'console';
 
-Encore.reset();
-
-Encore
-  .setOutputPath('public/slim-build/')
-  .setPublicPath('/slim-build')
-
-  .addStyleEntry('slim', './assets/slim.scss')
-  .disableSingleRuntimeChunk()
-
-  .cleanupOutputBeforeBuild()
-  .enableSassLoader();
-
-const slimConfig = Encore.getWebpackConfig();
-slimConfig.name = 'slim';
-
-module.exports = [appConfig, consoleConfig, slimConfig];
+module.exports = [appConfig, consoleConfig];
