@@ -31,19 +31,3 @@ const swup = new Swup({
 });
 
 export default swup;
-
-function fixDocument() {
-  document.querySelectorAll('a').forEach(element => fixLink(element));
-}
-
-function fixLink(element) {
-  if (window.location.host !== element.host) {
-    element.setAttribute('target', '_blank');
-  }
-}
-
-swup.hooks.on('page:view', () => {
-  fixDocument();
-});
-
-fixDocument();

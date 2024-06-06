@@ -1,3 +1,4 @@
+import swup from '../scripts/swup';
 import naSettings from './settings';
 
 class Player {
@@ -93,6 +94,10 @@ class Player {
   }
 
   load(src, options, play = true) {
+    if (null === this.mediaOptions) {
+      this.refactorExternalLinks();
+    }
+
     this.mediaPlayer.src = src;
     this.mediaOptions = options;
 
@@ -135,6 +140,22 @@ class Player {
 
   seekRelative(interval) {
     this.mediaPlayer.currentTime += interval;
+  }
+
+  refactorExternalLinks() {
+    const refactpr = () => {
+      document.querySelectorAll('a').forEach(element => {
+        if (window.location.host !== element.host) {
+          element.setAttribute('target', '_blank');
+        }
+      });
+    };
+
+    swup.hooks.on('page:view', () => {
+      refactpr();
+    });
+
+    refactpr();
   }
 }
 
