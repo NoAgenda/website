@@ -58,6 +58,8 @@ class AppFixtures extends Fixture
                 ->setDescription($data['description'])
                 ->setUri($data['uri'])
                 ->setDisplayUri($data['displayUri'])
+                ->setAuthor($data['author'] ?? null)
+                ->setAuthorUri($data['authorUri'] ?? null)
                 ->setPriority($data['priority']);
 
             $manager->persist($site);
@@ -231,6 +233,17 @@ class AppFixtures extends Fixture
             'uri' => 'http://noagendastream.com',
             'displayUri' => 'noagendastream.com',
             'priority' => 2,
+        ];
+
+        yield [
+            'name' => 'Tip of the Day',
+            'icon' => null,
+            'description' => 'A collection of all the Tips of the Day from John (and sometimes Adam).',
+            'uri' => 'https://tipoftheday.net/',
+            'displayUri' => 'tipoftheday.net',
+            'author' => 'Nykko Syme',
+            'authorUri' => 'https://noauthority.social/@nykkosyme',
+            'priority' => 5,
         ];
     }
 

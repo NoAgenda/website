@@ -74,20 +74,23 @@
       </p>
       <div class="sites">
         {% for site in network_sites %}
-          <a href="{{ site.uri }}" class="site">
+          <div class="site">
             <div class="site-content">
               <h3>
-                {{ site.name|raw }}
+                <a href="{{ site.uri }}">{{ site.name|raw }}</a>
               </h3>
-              <div class="emphasis">{{ site.displayUri }}</div>
+              <div class="emphasis"><a href="{{ site.uri }}">{{ site.displayUri }}</a></div>
               <div>{{ site.description }}</div>
+              {% if site.author is not null %}
+                <div class="emphasis">Made by {% if site.authorUri %}<a href="{{ site.authorUri }}" rel="nofollow" class="underline">{{ site.author }}</a>{% else %}{{ site.author }}{% endif %}</div>
+              {% endif %}
             </div>
             {% if site.icon %}
               <div class="site-icon">
                 <span class="{{ site.icon }} fa-fw" aria-hidden="true"></span>
               </div>
             {% endif %}
-          </a>
+          </div>
         {% endfor %}
       </div>
     </div>

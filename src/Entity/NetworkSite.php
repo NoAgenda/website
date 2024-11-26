@@ -33,6 +33,12 @@ class NetworkSite
     #[Column(type: 'string', length: 255)]
     private ?string $displayUri;
 
+    #[Column(type: 'string', length: 255, nullable: true)]
+    private ?string $author;
+
+    #[Column(type: 'string', nullable: true)]
+    private ?string $authorUri;
+
     #[Column(type: 'integer')]
     private ?int $priority = 1000;
 
@@ -105,6 +111,30 @@ class NetworkSite
     public function setDisplayUri(string $displayUri): self
     {
         $this->displayUri = $displayUri;
+
+        return $this;
+    }
+
+    public function getAuthor(): ?string
+    {
+        return $this->author;
+    }
+
+    public function setAuthor(?string $author): self
+    {
+        $this->author = $author;
+
+        return $this;
+    }
+
+    public function getAuthorUri(): ?string
+    {
+        return $this->authorUri;
+    }
+
+    public function setAuthorUri(?string $authorUri): self
+    {
+        $this->authorUri = $authorUri;
 
         return $this;
     }
