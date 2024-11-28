@@ -32,8 +32,10 @@ class NetworkSiteCrudController extends AbstractCrudController
             ->hideOnIndex();
         yield TextareaField::new('description')
             ->hideOnIndex();
-        yield TextField::new('displayUri');
         yield TextField::new('uri');
+        yield TextField::new('displayUri');
+        yield TextField::new('author');
+        yield TextField::new('authorUri');
         yield IntegerField::new('priority');
     }
 }
