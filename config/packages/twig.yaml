@@ -26,7 +26,7 @@ twig:
         meetups_url: 'https://noagendameetups.com'
         meetups_events_url: 'https://noagendameetups.com/events/list/'
         meetups_resources_url: 'https://noagendameetups.com/resources/'
-        newsletter_signup_url: 'http://www.gitmonation.com/signup.htm'
+        newsletter_signup_url: 'https://www.dvorak.org/blog/no-agenda-mailing-list-signup-here/'
         podcast_feed_url: 'https://feeds.noagendaassets.com/noagenda.xml'
         podcast_namespace_url: 'https://github.com/Podcastindex-org/podcast-namespace'
         podcastindex_url: 'https://podcastindex.org'
