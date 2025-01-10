@@ -27,6 +27,11 @@ webpack_encore:
     builds:
         app: '%kernel.project_dir%/public/build'
         console: '%kernel.project_dir%/public/console-build'
+    # builds:
+        # frontend: '%kernel.project_dir%/public/frontend/build'
+
+        # pass the build name as the 3rd argument to the Twig functions
+        # {{ encore_entry_script_tags('entry1', null, 'frontend') }}
 
 framework:
     assets:

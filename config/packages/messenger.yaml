@@ -21,6 +21,7 @@ framework:
                     queue_name: failed
                     auto_setup: false
 
+        # Route your messages to the transports
         routing:
             'App\Message\Crawl': crawler
             'App\Message\PrepareEpisode': crawler
@@ -45,3 +46,11 @@ framework:
                         doctrine_close_connection
                     -
                         doctrine_transaction
+
+# when@test:
+#    framework:
+#        messenger:
+#            transports:
+#                # replace with your transport name here (e.g., my_transport: 'in-memory://')
+#                # For more Messenger testing tools, see https://github.com/zenstruck/messenger-test
+#                async: 'in-memory://'

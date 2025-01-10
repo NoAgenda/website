@@ -12,7 +12,7 @@ RUN set -eux; \
 	npm cache clean --force
 
 # Compile assets
-COPY .babelrc .eslintrc.json jest.config.js webpack.config.js ./
+COPY .eslintrc.json jest.config.js webpack.config.js ./
 COPY assets assets/
 RUN set -eux; \
     npm run production

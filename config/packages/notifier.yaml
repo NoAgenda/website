@@ -3,4 +3,6 @@ framework:
         channel_policy:
             high: ['chat/notifications']
         chatter_transports:
+            telegram: '%env(TELEGRAM_DSN)%'
             notifications: '%env(APP_NOTIFICATIONS_DSN)%'
+        texter_transports:

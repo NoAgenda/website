@@ -99,8 +99,9 @@ when@staging:
             deprecation:
                 type: rotating_file
                 channels: [deprecation]
-                path: "%kernel.logs_dir%/deprecation.log"
-                max_files: 28
+                path: php://stderr
+                formatter: monolog.formatter.json
+
             crawler_console:
                 type: console
                 channels: [crawler]

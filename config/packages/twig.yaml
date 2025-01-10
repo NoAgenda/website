@@ -43,6 +43,7 @@ twig:
         drebscott_url: 'https://noauthority.social/@drebscott'
         sirbemrose_url: 'https://bemrose.social/ryan'
         voidzero_url: 'https://podcastindex.social/@voidzero'
+    file_name_pattern: '*.twig'
 
 when@test:
     twig:
