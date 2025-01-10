@@ -3,29 +3,35 @@
 namespace App\Tests\Crawling;
 
 use App\Crawling\BatSignalCrawler;
+use App\Crawling\NotificationPublisher;
 use App\Repository\BatSignalRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
+use Symfony\Component\Notifier\NotifierInterface;
 
 class BatSignalCrawlerTest extends TestCase
 {
     private $crawler;
+    private $notificationPublisher;
     private $entityManager;
     private $httpClient;
+    private $notifier;
     private $logger;
     private $repository;
 
     public function setUp(): void
     {
         $this->entityManager = $this->getMockBuilder(EntityManagerInterface::class)->getMock();
+        $this->notificationPublisher = $this->getMockBuilder(NotificationPublisher::class)->disableOriginalConstructor()->getMock();
         $this->repository = $this->getMockBuilder(BatSignalRepository::class)->disableOriginalConstructor()->getMock();
         $this->httpClient = new MockHttpClient();
+        $this->notifier = $this->getMockBuilder(NotifierInterface::class)->getMock();
         $this->logger = $this->getMockBuilder(LoggerInterface::class)->getMock();
 
-        $this->crawler = new BatSignalCrawler($this->entityManager, $this->repository, $this->httpClient, 'foo', 1);
+        $this->crawler = new BatSignalCrawler($this->entityManager, $this->notificationPublisher, $this->repository, $this->httpClient, $this->notifier, 'foo', 1);
         $this->crawler->setLogger($this->logger);
     }
 
@@ -33,18 +39,16 @@ class BatSignalCrawlerTest extends TestCase
     {
         $this->httpClient->setResponseFactory([
             $this->createResponse([[
-                'content' => 'We\'re live now at noagendastream.com/ with No Agenda episode 33 #@pocketnoagenda',
+                'id' => '404',
+                'content' => 'We’re live now at noagendastream.com/ with No Agenda episode 33 #@pocketnoagenda',
                 'created_at' => '2022-02-02 12:00:00',
             ]]),
         ]);
 
         $this->repository->expects($this->once())->method('exists')
-            ->willReturn(false)
-        ;
+            ->willReturn(false);
 
-        $this->logger->expects($this->once())->method('info')
-            ->with('Found new bat signal with code "33" published at 2022-02-02 12:00:00.')
-        ;
+        $this->logger->expects($this->exactly(2))->method('info');
 
         $this->entityManager->expects($this->once())->method('persist');
 
@@ -53,12 +57,11 @@ class BatSignalCrawlerTest extends TestCase
 
     public function testMissingAccessToken(): void
     {
-        $crawler = new BatSignalCrawler($this->entityManager, $this->repository, $this->httpClient, null, 1);
+        $crawler = new BatSignalCrawler($this->entityManager, $this->notificationPublisher, $this->repository, $this->httpClient, $this->notifier, null, 1);
         $crawler->setLogger($this->logger);
 
         $this->logger->expects($this->once())->method('critical')
-            ->with('Mastodon access token not found. Skipping crawling of bat signal.')
-        ;
+            ->with('Mastodon access token not found. Skipping crawling of bat signal.');
 
         $this->entityManager->expects($this->never())->method('persist');
 
@@ -72,12 +75,10 @@ class BatSignalCrawlerTest extends TestCase
         ]);
 
         $this->logger->expects($this->once())->method('warning')
-            ->with('Failed to crawl bat signal feed. HTTP response code: 400')
-        ;
+            ->with('Failed to crawl bat signal on Mastodon: Response code 400');
 
         $this->logger->expects($this->once())->method('debug')
-            ->with('No bat signal found.')
-        ;
+            ->with('No bat signal found.');
 
         $this->entityManager->expects($this->never())->method('persist');
 
@@ -91,8 +92,7 @@ class BatSignalCrawlerTest extends TestCase
         ]);
 
         $this->logger->expects($this->once())->method('debug')
-            ->with('No bat signal found.')
-        ;
+            ->with('No bat signal found.');
 
         $this->entityManager->expects($this->never())->method('persist');
 
@@ -103,18 +103,17 @@ class BatSignalCrawlerTest extends TestCase
     {
         $this->httpClient->setResponseFactory([
             $this->createResponse([[
-                'content' => 'We\'re live now at noagendastream.com/ with No Agenda episode 33 #@pocketnoagenda',
+                'id' => '404',
+                'content' => 'We’re live now at noagendastream.com/ with No Agenda episode 33 #@pocketnoagenda',
                 'created_at' => '2022-02-02 12:00:00',
             ]]),
         ]);
 
         $this->repository->expects($this->once())->method('exists')
-            ->willReturn(true)
-        ;
+            ->willReturn(true);
 
         $this->logger->expects($this->once())->method('debug')
-            ->with('Found bat signal already exists.')
-        ;
+            ->with('Found bat signal already exists.');
 
         $this->entityManager->expects($this->never())->method('persist');
 

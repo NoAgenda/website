@@ -17,10 +17,6 @@ Encore
   .enableSourceMaps(!Encore.isProduction())
   .enableVersioning(Encore.isProduction())
 
-  .configureBabelPresetEnv((config) => {
-    config.useBuiltIns = 'usage';
-    config.corejs = '3.23';
-  })
   .enableSassLoader();
 
 const appConfig = Encore.getWebpackConfig();
@@ -39,10 +35,6 @@ Encore
   .enableSourceMaps(!Encore.isProduction())
   .enableVersioning(Encore.isProduction())
 
-  .configureBabelPresetEnv((config) => {
-    config.useBuiltIns = 'usage';
-    config.corejs = '3.23';
-  })
   .enableSassLoader();
 
 const consoleConfig = Encore.getWebpackConfig();
