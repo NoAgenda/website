@@ -28,10 +28,10 @@ jobs:
     steps:
       -
         name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       -
         name: Set up PHP
-        uses: shivammathur/setup-php@2.18.1
+        uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-version }}
           extensions: imagick
@@ -42,7 +42,7 @@ jobs:
         run: echo "::set-output name=dir::$(composer config cache-files-dir)"
       -
         name: Cache Composer
-        uses: actions/cache@v2.1.2
+        uses: actions/cache@v4
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ matrix.php-version }}-composer-${{ hashFiles('composer.lock') }}
@@ -58,7 +58,7 @@ jobs:
           bin/console doctrine:fixtures:load --no-interaction
       -
         name: Set up Node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
       -
         name: Install NPM dependencies
         run: npm ci
