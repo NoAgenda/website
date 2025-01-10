@@ -1,5 +1,5 @@
 /composer.phar
-/docker-compose.override.yaml
+/compose.override.yaml
 
 /public/site.webmanifest
 /public/service-worker.js

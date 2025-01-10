@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   queue_worker:
     image: ghcr.io/noagenda/website/app:${APP_TAG:-local}
