@@ -10,7 +10,7 @@ class Crawl
         public readonly string $data,
         public readonly ?string $episodeCode,
         public readonly ?\DateTime $lastModifiedAt = null,
-        \DateTime $initializedAt = null,
+        ?\DateTime $initializedAt = null,
     ) {
         $this->initializedAt = $initializedAt ?? new \DateTime();
     }
