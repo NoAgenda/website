@@ -22,7 +22,7 @@ class EpisodeCoverCrawler implements EpisodeFileCrawlerInterface
         $this->logger = new NullLogger();
     }
 
-    public function crawl(Episode $episode, \DateTime $ifModifiedSince = null): ?\DateTime
+    public function crawl(Episode $episode, ?\DateTime $ifModifiedSince = null): ?\DateTime
     {
         if (!$episode->getCoverUri()) {
             $this->logger->warning(sprintf('Cover URI for episode %s is empty.', $episode->getCode()));

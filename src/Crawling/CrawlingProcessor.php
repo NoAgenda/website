@@ -36,7 +36,7 @@ class CrawlingProcessor
         $this->logger = new NullLogger();
     }
 
-    public function crawl(string $data, Episode $episode = null, \DateTimeInterface $lastModifiedAt = null, \DateTimeInterface $initializedAt = null): CrawlingResult
+    public function crawl(string $data, ?Episode $episode = null, ?\DateTimeInterface $lastModifiedAt = null, ?\DateTimeInterface $initializedAt = null): CrawlingResult
     {
         $crawlerName = $this->getCrawlerName($data, $episode);
         $crawler = $this->crawlers->get($crawlerName);
@@ -62,7 +62,7 @@ class CrawlingProcessor
         }
     }
 
-    public function enqueue(string $data, Episode $episode = null): void
+    public function enqueue(string $data, ?Episode $episode = null): void
     {
         $this->getCrawlerName($data, $episode);
 

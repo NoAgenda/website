@@ -18,7 +18,7 @@ class EpisodeTranscriptCrawler implements EpisodeFileCrawlerInterface
         $this->logger = new NullLogger();
     }
 
-    public function crawl(Episode $episode, \DateTime $ifModifiedSince = null): ?\DateTime
+    public function crawl(Episode $episode, ?\DateTime $ifModifiedSince = null): ?\DateTime
     {
         if (!$episode->getTranscriptUri()) {
             $this->logger->warning(sprintf('Transcript URI for episode %s is empty.', $episode->getCode()));

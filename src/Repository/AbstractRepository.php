@@ -12,14 +12,14 @@ abstract class AbstractRepository extends ServiceEntityRepository
     protected ?array $defaultOrderBy = null;
     protected int $itemsPerPage = 50;
 
-    public function findBy(array $criteria = null, array $orderBy = null, $limit = null, $offset = null): array
+    public function findBy(?array $criteria = null, ?array $orderBy = null, $limit = null, $offset = null): array
     {
         $orderBy = array_merge($orderBy ?? [], $this->defaultOrderBy ?? []);
 
         return parent::findBy($criteria ?? [], $orderBy, $limit, $offset);
     }
 
-    public function findOneBy(array $criteria = null, array $orderBy = null): ?object
+    public function findOneBy(?array $criteria = null, ?array $orderBy = null): ?object
     {
         $orderBy = array_merge($orderBy ?? [], $this->defaultOrderBy ?? []);
 

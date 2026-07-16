@@ -41,7 +41,7 @@ class FileDownloader
         }
     }
 
-    public function download(string $uri, string $path, \DateTime $ifModifiedSince = null): \DateTime
+    public function download(string $uri, string $path, ?\DateTime $ifModifiedSince = null): \DateTime
     {
         $filesystem = new Filesystem();
 

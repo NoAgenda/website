@@ -20,7 +20,7 @@ class EpisodeDurationCrawler implements EpisodeFileCrawlerInterface
         $this->logger = new NullLogger();
     }
 
-    public function crawl(Episode $episode, \DateTime $ifModifiedSince = null): ?\DateTime
+    public function crawl(Episode $episode, ?\DateTime $ifModifiedSince = null): ?\DateTime
     {
         if (!$episode->getRecordingUri()) {
             $this->logger->warning(sprintf('Recording URI for episode %s is empty.', $episode->getCode()));

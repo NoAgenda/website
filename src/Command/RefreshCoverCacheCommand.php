@@ -40,8 +40,8 @@ class RefreshCoverCacheCommand extends Command
         $filters = array_keys($this->filterManager->getFilterConfiguration()->all());
 
         foreach ($filters as $filter) {
-            $this->filterService->bustCache("${code}.png", $filter);
-            $this->filterService->getUrlOfFilteredImage("${code}.png", $filter);
+            $this->filterService->bustCache("{$code}.png", $filter);
+            $this->filterService->getUrlOfFilteredImage("{$code}.png", $filter);
         }
     }
 }

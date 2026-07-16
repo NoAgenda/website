@@ -21,7 +21,7 @@ class EpisodeShownotesCrawler implements EpisodeFileCrawlerInterface
         $this->logger = new NullLogger();
     }
 
-    public function crawl(Episode $episode, \DateTime $ifModifiedSince = null): ?\DateTime
+    public function crawl(Episode $episode, ?\DateTime $ifModifiedSince = null): ?\DateTime
     {
         $publicResponse = $this->httpClient->request('GET', sprintf('http://%s.noagendanotes.com', $episode->getCode()));
 
