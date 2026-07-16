@@ -24,7 +24,7 @@ RUN chmod +x /usr/local/bin/docker-entrypoint
 ENTRYPOINT ["docker-entrypoint"]
 CMD ["npm", "run", "watch"]
 
-FROM php:8.2-fpm-bookworm AS app
+FROM php:8.5-fpm-trixie AS app
 
 ARG UID=3302
 ARG GID=3302
