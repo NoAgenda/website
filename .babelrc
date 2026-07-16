@@ -1,10 +1,13 @@
 {
   "presets": [
+    "@babel/preset-env"
+  ],
+  "plugins": [
     [
-      "@babel/preset-env",
+      "polyfill-corejs3",
       {
-        "useBuiltIns": "usage",
-        "corejs": "3"
+        "method": "usage-global",
+        "version": "3"
       }
     ]
   ]

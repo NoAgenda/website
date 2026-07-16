@@ -1,4 +1,4 @@
-const Encore = require('@symfony/webpack-encore');
+const Encore = require('@symfony/webpack-encore').default;
 
 if (!Encore.isRuntimeEnvironmentConfigured()) {
   Encore.configureRuntimeEnvironment(process.env.NODE_ENV || 'dev');
