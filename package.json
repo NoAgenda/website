@@ -21,7 +21,7 @@
         "eslint": "^8.55.0",
         "eslint-plugin-jest": "^24.4.0",
         "idb": "^8.0.0",
-        "jest": "^27.1.0",
+        "jest": "^30.4.2",
         "luxon": "^3.1.0",
         "normalize.css": "^8.0.1",
         "regenerator-runtime": "^0.14.0",
