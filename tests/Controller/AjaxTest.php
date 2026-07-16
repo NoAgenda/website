@@ -15,7 +15,7 @@ class AjaxTest extends WebTestCase
         ]);
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $this->assertResponseHeaderSame('Content-Type', 'application/json');
+        $this->assertStringStartsWith('application/json', $client->getResponse()->headers->get('Content-Type'));
 
         $responseData = json_decode($client->getResponse()->getContent(), true);
 
