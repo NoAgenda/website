@@ -16,6 +16,9 @@ jobs:
         shell: bash
         run: |
           APP_TAG=${GITHUB_REF#refs/heads/}
+          # Docker tags cannot contain slashes. Keep branch names readable while
+          # making feature/update branches safe for GHCR tags.
+          APP_TAG=${APP_TAG//\//-}
           if [[ "$APP_TAG" == 'production' ]]; then
             echo 'APP_TAG=latest' >> "$GITHUB_OUTPUT"
           else
