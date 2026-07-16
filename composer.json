@@ -27,7 +27,7 @@
         "pagerfanta/doctrine-orm-adapter": "^3.6",
         "pagerfanta/twig": "^3.6",
         "phpdocumentor/reflection-docblock": "^5.2",
-        "sentry/sentry-symfony": "^4.2",
+        "sentry/sentry-symfony": "^5.11",
         "symfony/asset": "^6.0",
         "symfony/console": "^6.0",
         "symfony/doctrine-messenger": "^6.0",
