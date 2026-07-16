@@ -12,7 +12,7 @@
         "@swup/progress-plugin": "^3.1.2",
         "@swup/scroll-plugin": "^3.3.1",
         "@symfony/stimulus-bridge": "^3.0.0",
-        "@symfony/webpack-encore": "^4.5.0",
+        "@symfony/webpack-encore": "^7.1.0",
         "@types/jest": "^27.0.1",
         "babel-eslint": "^10.1.0",
         "babel-jest": "^27.1.0",
