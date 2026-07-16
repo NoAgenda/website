@@ -20,7 +20,7 @@
         "doctrine/doctrine-migrations-bundle": "^3.2",
         "doctrine/orm": "^2.9",
         "dragonmantank/cron-expression": "^3.3",
-        "easycorp/easyadmin-bundle": "4.2.*",
+        "easycorp/easyadmin-bundle": "^4.29",
         "laminas/laminas-feed": "^2.10",
         "liip/imagine-bundle": "^2.1",
         "minishlink/web-push": "^7.0",
@@ -114,7 +114,10 @@
         "preferred-install": {
             "*": "dist"
         },
-        "sort-packages": true
+        "sort-packages": true,
+        "platform": {
+            "php": "8.2.0"
+        }
     },
     "extra": {
         "symfony": {
