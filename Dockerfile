@@ -94,6 +94,10 @@ RUN chmod +x /usr/local/bin/app-entrypoint
 COPY docker/php-entrypoint.bash /usr/local/bin/app-php-entrypoint
 RUN chmod +x /usr/local/bin/app-php-entrypoint
 
+# The deployment runs nginx and PHP-FPM in the same pod. Trust nginx so
+# Symfony can use the X-Forwarded-* headers that originated at Traefik.
+ENV TRUSTED_PROXIES=127.0.0.1
+
 ENTRYPOINT ["app-entrypoint"]
 CMD ["php-fpm"]
 
