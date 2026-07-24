@@ -1,6 +1,7 @@
-name: Publish Docker Images
+name: Build and Publish Docker Images
 
 on:
+  pull_request:
   push:
     branches: [main]
 
@@ -38,6 +39,7 @@ jobs:
           docker compose -f compose.yaml -f compose.services.yaml build --build-arg GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
       -
         name: Login to GitHub Packages
+        if: github.event_name == 'push'
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -45,6 +47,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       -
         name: Push Images
+        if: github.event_name == 'push'
         run: |
           export APP_TAG=${{ steps.extract-branch.outputs.APP_TAG }}
           docker compose -f compose.yaml -f compose.services.yaml push
