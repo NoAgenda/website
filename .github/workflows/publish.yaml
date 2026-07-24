@@ -1,6 +1,12 @@
 name: Publish Docker Images
 
-on: push
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  packages: write
 
 jobs:
   publish-images:
