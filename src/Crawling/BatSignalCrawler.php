@@ -65,7 +65,8 @@ class BatSignalCrawler implements CrawlerInterface
 
         $this->entityManager->persist($signal);
 
-        $this->notifier->send(new Notification('Bat signal has been published.'));
+        $host = ucfirst($_SERVER['DEPLOYMENT_HOST'] ?? gethostname());
+        $this->notifier->send(new Notification(sprintf('%s: bat signal has been published.', $host)));
     }
 
     private function crawlBatSignal(): ?BatSignal

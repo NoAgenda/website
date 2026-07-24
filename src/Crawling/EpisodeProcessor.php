@@ -62,7 +62,8 @@ class EpisodeProcessor
             $this->publisher->sendUserEpisodeNotifications($episode);
 
             $episodeUri = $this->router->generate('podcast_episode', ['code' => $episode->getCode()], UrlGeneratorInterface::ABSOLUTE_URL);
-            $this->notifier->send(new Notification(sprintf("Episode %s has been published.\n\n%s", $episode->getCode(), $episodeUri)));
+            $host = ucfirst($_SERVER['DEPLOYMENT_HOST'] ?? gethostname());
+            $this->notifier->send(new Notification(sprintf("%s: episode %s has been published.\n\n%s", $host, $episode->getCode(), $episodeUri)));
         }
 
         $this->crawl($episode, 'chapters');
