@@ -45,7 +45,7 @@ class DashboardController extends AbstractDashboardController
 
         yield MenuItem::section('Processing');
         yield MenuItem::linkToRoute('Crawler', 'fas fa-bug', 'admin_crawler');
-        yield MenuItem::linkToCrud('Bat Signals', 'fas fa-signal', BatSignal::class);
+        yield MenuItem::linkToCrud('Live Items', 'fas fa-signal', BatSignal::class);
 
         yield MenuItem::section('Site');
         yield MenuItem::linkToRoute('Back to Site', 'fas fa-door-open', 'root');

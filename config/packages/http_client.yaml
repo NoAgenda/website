@@ -5,6 +5,10 @@ framework:
                 base_uri: '%env(MASTODON_DOMAIN)%/api/v1/'
                 headers:
                     'Authorization': 'Bearer %env(MASTODON_ACCESS_TOKEN)%'
+            secondary_mastodon.client:
+                base_uri: '%env(MASTODON_SECONDARY_DOMAIN)%/api/v1/'
+                headers:
+                    'Authorization': 'Bearer %env(MASTODON_SECONDARY_ACCESS_TOKEN)%'
             shownotes.client:
                 base_uri: 'http://noagendanotes.com'
                 max_redirects: 0

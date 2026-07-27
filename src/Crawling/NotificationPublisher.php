@@ -24,10 +24,12 @@ class NotificationPublisher
     public function __construct(
         private readonly NotificationSubscriptionRepository $notificationSubscriptionRepository,
         private readonly HttpClientInterface $mastodonClient,
+        private readonly HttpClientInterface $secondaryMastodonClient,
         private readonly RouterInterface $router,
         private readonly ?WebPush $pushNotificationProcessor,
         private readonly CoverExtension $coverExtension,
         private readonly ?string $mastodonAccessToken,
+        private readonly ?string $secondaryMastodonAccessToken,
         private readonly bool $mastodonPublish,
     ) {
         $this->logger = new NullLogger();
@@ -57,7 +59,7 @@ class NotificationPublisher
         $this->notificationSubscriptionRepository->flush();
     }
 
-    public function sendUserLiveNotifications(): void
+    public function sendUserLiveNotifications(string $title, string $uri): void
     {
         if (!$this->pushNotificationProcessor) {
             $this->logger->notice('Push notifications were not enabled');
@@ -65,12 +67,10 @@ class NotificationPublisher
             return;
         }
 
-        // todo grab image and episode number from bat signal post
-
         $notificationPayload = json_encode([
-            'title' => 'No Agenda is now live',
-            'body' => 'Listen on the No Agenda Stream',
-            'uri' => $this->router->generate('livestream', [], RouterInterface::ABSOLUTE_URL),
+            'title' => $title,
+            'body' => 'Listen live',
+            'uri' => $uri,
         ]);
 
         $this->logger->debug('Sending live notifications');
@@ -78,77 +78,65 @@ class NotificationPublisher
         foreach ($this->notificationSubscriptionRepository->findByType('live') as $notificationSubscription) {
             $this->sendNotification($notificationSubscription, $notificationPayload);
         }
+
+        $this->notificationSubscriptionRepository->flush();
     }
 
     public function publishMastodonEpisodeAnnouncement(Episode $episode): void
     {
-        if (!$this->mastodonAccessToken) {
-            $this->logger->info('Mastodon access token not found. Skipping publishing of episode notification.');
+        $code = $episode->getCode();
+        $title = sprintf('No Agenda Episode %s - %s', $code, $episode->getName());
+        $uri = $this->router->generate('podcast_episode', ['code' => $code], RouterInterface::ABSOLUTE_URL);
 
-            return;
-        }
-
-        if (!$this->mastodonPublish) {
-            $this->logger->info('Publishing to Mastodon has been disabled');
-
-            return;
-        }
-
-        $this->logger->debug(sprintf('Publishing Mastodon post for episode %s', $episode->getCode()));
-
-        try {
-            $code = $episode->getCode();
-            $title = sprintf('No Agenda Episode %s - %s', $code, $episode->getName());
-            $path = $this->router->generate('podcast_episode', ['code' => $code], RouterInterface::ABSOLUTE_URL);
-
-            $response = $this->mastodonClient->request('POST', 'statuses', [
-                'body' => http_build_query([
-                    'status' => "$title $path",
-                ]),
-            ]);
-
-            if (200 !== $statusCode = $response->getStatusCode()) {
-                $message = sprintf('Failed to publish episode notification to Mastodon: Response code %s', $statusCode);
-                $this->logger->warning($message);
-
-                captureMessage($message);
-            }
-        } catch (\Throwable $exception) {
-            $this->logger->critical(sprintf('An exception occurred while publishing an episode on Mastodon: %s', $exception->getMessage()), ['exception' => $exception]);
-
-            captureException($exception);
-        }
+        $this->publishMastodonStatus("$title $uri", sprintf('episode %s', $code));
     }
 
-    public function boostMastodonPost(string $postId): void
+    public function publishMastodonLiveAnnouncement(string $title, string $uri): void
     {
-        if (!$this->mastodonAccessToken) {
-            $this->logger->info('Mastodon access token not found. Skipping boost of post.');
+        $this->publishMastodonStatus("$title $uri", 'live item');
+    }
 
-            return;
-        }
-
+    private function publishMastodonStatus(string $status, string $description): void
+    {
         if (!$this->mastodonPublish) {
             $this->logger->info('Publishing to Mastodon has been disabled');
 
             return;
         }
 
-        $this->logger->debug('Boosting post on Mastodon');
+        $accounts = [
+            'primary' => [$this->mastodonClient, $this->mastodonAccessToken],
+            'secondary' => [$this->secondaryMastodonClient, $this->secondaryMastodonAccessToken],
+        ];
 
-        try {
-            $response = $this->mastodonClient->request('POST', sprintf('statuses/%s/reblog', $postId));
+        foreach ($accounts as $account => [$client, $accessToken]) {
+            if (!$accessToken) {
+                $this->logger->info(sprintf('%s Mastodon access token not found. Skipping %s notification.', ucfirst($account), $description));
 
-            if (200 !== $statusCode = $response->getStatusCode()) {
-                $message = sprintf('Failed to boost post on Mastodon: Response code %s', $statusCode);
-                $this->logger->warning($message);
-
-                captureMessage($message);
+                continue;
             }
-        } catch (\Throwable $exception) {
-            $this->logger->critical(sprintf('An exception occurred while boosting a post on Mastodon: %s', $exception->getMessage()), ['exception' => $exception]);
 
-            captureException($exception);
+            $this->logger->debug(sprintf('Publishing Mastodon post for %s to %s account', $description, $account));
+
+            try {
+                $response = $client->request('POST', 'statuses', [
+                    'body' => http_build_query(['status' => $status]),
+                ]);
+
+                if (200 !== $statusCode = $response->getStatusCode()) {
+                    $message = sprintf('Failed to publish %s notification to %s Mastodon account: Response code %s', $description, $account, $statusCode);
+                    $this->logger->warning($message);
+
+                    captureMessage($message);
+                }
+            } catch (\Throwable $exception) {
+                $this->logger->critical(
+                    sprintf('An exception occurred while publishing %s on the %s Mastodon account: %s', $description, $account, $exception->getMessage()),
+                    ['exception' => $exception],
+                );
+
+                captureException($exception);
+            }
         }
     }
 

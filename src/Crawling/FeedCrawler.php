@@ -24,6 +24,7 @@ class FeedCrawler implements CrawlerInterface
         private EntityManagerInterface $entityManager,
         private HttpClientInterface $httpClient,
         private CacheInterface $cache,
+        private LiveItemProcessor $liveItemProcessor,
     ) {
         $this->logger = new NullLogger();
     }
@@ -77,6 +78,8 @@ class FeedCrawler implements CrawlerInterface
         $this->cache->save($lastModifiedCache);
 
         $source = $response->getContent();
+
+        $this->liveItemProcessor->process($source);
 
         $entries = [];
 

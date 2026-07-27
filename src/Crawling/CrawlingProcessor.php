@@ -17,7 +17,6 @@ class CrawlingProcessor
     use LoggerAwareTrait;
 
     public static array $crawlerClasses = [
-        'bat_signal' => BatSignalCrawler::class,
         'chapters' => EpisodeChaptersCrawler::class,
         'cover' => EpisodeCoverCrawler::class,
         'duration' => EpisodeDurationCrawler::class,
