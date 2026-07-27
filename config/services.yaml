@@ -20,7 +20,7 @@ services:
             - ['setLogger', ['@App\Crawling\CrawlingLogger']]
         bind:
             $mastodonAccessToken: '%env(MASTODON_ACCESS_TOKEN)%'
-            $mastodonAccountId: '%env(MASTODON_ACCOUNT_ID)%'
+            $secondaryMastodonAccessToken: '%env(MASTODON_SECONDARY_ACCESS_TOKEN)%'
             $mastodonPublish: '%env(MASTODON_PUBLISH)%'
             $youtubeKey: '%env(YOUTUBE_KEY)%'
             $youtubePlaylistId: '%env(YOUTUBE_PLAYLIST_ID)%'

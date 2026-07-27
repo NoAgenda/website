@@ -59,7 +59,6 @@ Crawling can be done in one of two ways: by manual execution or through the
 Messenger queue.
 
 Types of data to crawl:
-* bat_signal
 * cover (requires episode code)
 * duration (requires episode code)
 * feed
