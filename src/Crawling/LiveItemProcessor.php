@@ -29,6 +29,7 @@ class LiveItemProcessor
         $document->loadXML($feed);
 
         $xpath = new \DOMXPath($document);
+        $xpath->registerNamespace('itunes', 'http://www.itunes.com/dtds/podcast-1.0.dtd');
         $xpath->registerNamespace('podcast', 'https://podcastindex.org/namespace/1.0');
 
         foreach ($xpath->query('/rss/channel/podcast:liveItem[@status="live"]') as $liveItem) {
@@ -36,6 +37,7 @@ class LiveItemProcessor
             $title = trim($xpath->evaluate('string(title)', $liveItem));
             $uri = trim($xpath->evaluate('string(link)', $liveItem))
                 ?: trim($xpath->evaluate('string(podcast:contentLink/@href)', $liveItem));
+            $imageUri = trim($xpath->evaluate('string(itunes:image/@href)', $liveItem));
             $start = $liveItem->getAttribute('start');
 
             if (!$guid || !$title || !$uri || !$start) {
@@ -58,7 +60,7 @@ class LiveItemProcessor
 
             $this->logger->info(sprintf('Found live item "%s".', $guid));
 
-            $this->notificationPublisher->publishMastodonLiveAnnouncement($title, $uri);
+            $this->notificationPublisher->publishMastodonLiveAnnouncement($title, $uri, $imageUri ?: null);
             $this->notificationPublisher->sendUserLiveNotifications($title, $uri);
             $this->entityManager->persist($signal);
 

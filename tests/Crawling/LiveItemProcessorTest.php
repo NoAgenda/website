@@ -22,7 +22,7 @@ class LiveItemProcessorTest extends TestCase
 
         $repository->expects($this->once())->method('exists')->willReturn(false);
         $publisher->expects($this->once())->method('publishMastodonLiveAnnouncement')
-            ->with('No Agenda Episode 1889 Live', 'https://example.com/live');
+            ->with('No Agenda Episode 1889 Live', 'https://example.com/live', 'https://example.com/1889.jpg');
         $publisher->expects($this->once())->method('sendUserLiveNotifications')
             ->with('No Agenda Episode 1889 Live', 'https://example.com/live');
         $entityManager->expects($this->once())->method('persist')
@@ -52,11 +52,13 @@ class LiveItemProcessorTest extends TestCase
     private function feed(string $status): string
     {
         return <<<XML
-            <rss xmlns:podcast="https://podcastindex.org/namespace/1.0">
+            <rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd"
+                 xmlns:podcast="https://podcastindex.org/namespace/1.0">
               <channel>
                 <podcast:liveItem status="$status" start="2026-07-26T17:55:00+00:00">
                   <title>No Agenda Episode 1889 Live</title>
                   <guid>show-1889</guid>
+                  <itunes:image href="https://example.com/1889.jpg" />
                   <podcast:contentLink href="https://example.com/live">Listen live</podcast:contentLink>
                 </podcast:liveItem>
               </channel>
