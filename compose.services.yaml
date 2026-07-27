@@ -4,7 +4,7 @@ services:
     restart: unless-stopped
     tty: true
     entrypoint: app-php-entrypoint
-    command: bin/console messenger:consume --sleep 30 --time-limit 3600 scheduler_crawler crawler async
+    command: bin/console messenger:consume --sleep 30 scheduler_crawler crawler async
     depends_on:
       - app
     volumes:
