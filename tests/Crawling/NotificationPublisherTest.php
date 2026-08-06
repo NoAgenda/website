@@ -25,9 +25,9 @@ class NotificationPublisherTest extends TestCase
 
         $this->assertSame([
             ['POST', 'https://primary.example/api/v1/media'],
-            ['POST', 'https://primary.example/api/v1/statuses', 'status=No+Agenda+1889+Live+https%3A%2F%2Fexample.com%2Flive&media_ids%5B0%5D=primary-media'],
+            ['POST', 'https://primary.example/api/v1/statuses', 'status=No+Agenda+1889+Live+https%3A%2F%2Fexample.com%2Flive&media_ids%5B%5D=primary-media'],
             ['POST', 'https://secondary.example/api/v1/media'],
-            ['POST', 'https://secondary.example/api/v1/statuses', 'status=No+Agenda+1889+Live+https%3A%2F%2Fexample.com%2Flive&media_ids%5B0%5D=secondary-media'],
+            ['POST', 'https://secondary.example/api/v1/statuses', 'status=No+Agenda+1889+Live+https%3A%2F%2Fexample.com%2Flive&media_ids%5B%5D=secondary-media'],
         ], $requests);
     }
 
