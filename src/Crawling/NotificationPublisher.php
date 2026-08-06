@@ -128,7 +128,7 @@ class NotificationPublisher
                 $body = ['status' => $status];
 
                 if ($mediaId) {
-                    $body['media_ids'] = [$mediaId];
+                    $body['media_ids[]'] = $mediaId;
                 }
 
                 $response = $client->request('POST', 'statuses', [
