@@ -2,6 +2,9 @@ name: Run Tests
 
 on: push
 
+permissions:
+  contents: read
+
 env:
   APP_ENV: test
   APP_STORAGE_PATH: "${{ github.workspace }}/tests/fixtures"
