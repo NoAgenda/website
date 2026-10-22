@@ -100,8 +100,8 @@ final class MastodonAnnouncementRepositoryIntegrationTest extends KernelTestCase
         foreach (['primary', 'secondary'] as $account) {
             $repository->withAccountLock($account, function () use ($account): void {
                 $this->entityManager->getConnection()->executeStatement(
-                    'UPDATE na_mastodon_announcement SET current_status_id = NULL, pending_deletion_ids = ?, updated_at = NOW() WHERE account = ?',
-                    ['[]', $account],
+                    'INSERT INTO na_mastodon_announcement (account, pending_deletion_ids, updated_at) VALUES (?, ?, NOW()) ON DUPLICATE KEY UPDATE current_status_id = NULL, pending_deletion_ids = VALUES(pending_deletion_ids), updated_at = NOW()',
+                    [$account, '[]'],
                 );
             });
         }
