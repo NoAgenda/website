@@ -4,6 +4,7 @@ namespace App\Crawling;
 
 use App\Entity\Episode;
 use App\Entity\NotificationSubscription;
+use App\Repository\MastodonAnnouncementRepository;
 use App\Repository\NotificationSubscriptionRepository;
 use App\Twig\CoverExtension;
 use Minishlink\WebPush\Subscription;
@@ -25,6 +26,7 @@ class NotificationPublisher
 
     public function __construct(
         private readonly NotificationSubscriptionRepository $notificationSubscriptionRepository,
+        private readonly MastodonAnnouncementRepository $mastodonAnnouncementRepository,
         private readonly HttpClientInterface $httpClient,
         private readonly HttpClientInterface $mastodonClient,
         private readonly HttpClientInterface $secondaryMastodonClient,
@@ -124,6 +126,7 @@ class NotificationPublisher
             $this->logger->debug(sprintf('Publishing Mastodon post for %s to %s account', $description, $account));
 
             try {
+                $this->mastodonAnnouncementRepository->withAccountLock($account, function () use ($client, $account, $description, $image, $imageDescription, $status): void {
                 $mediaId = $image ? $this->uploadMastodonImage($client, $image, $imageDescription, $account) : null;
                 $body = ['status' => $status];
 
@@ -135,18 +138,81 @@ class NotificationPublisher
                     'body' => http_build_query($body),
                 ]);
 
-                if (200 !== $statusCode = $response->getStatusCode()) {
+                if (($statusCode = $response->getStatusCode()) < 200 || $statusCode >= 300) {
                     $message = sprintf('Failed to publish %s notification to %s Mastodon account: Response code %s', $description, $account, $statusCode);
                     $this->logger->warning($message);
 
                     captureMessage($message);
+
+                    return;
                 }
+
+                $statusId = json_decode($response->getContent(), true)['id'] ?? null;
+                if (!is_string($statusId) || '' === $statusId) {
+                    $message = sprintf('Mastodon returned no status ID for %s on the %s account; retention was not updated.', $description, $account);
+                    $this->logger->warning($message);
+                    captureMessage($message);
+
+                    return;
+                }
+
+                $pendingStatusIds = $this->mastodonAnnouncementRepository->recordPublishedStatus($account, $statusId);
+                $this->deletePendingMastodonStatuses($client, $account, $pendingStatusIds);
+                });
             } catch (\Throwable $exception) {
                 $this->logger->critical(
                     sprintf('An exception occurred while publishing %s on the %s Mastodon account: %s', $description, $account, $exception->getMessage()),
                     ['exception' => $exception],
                 );
 
+                captureException($exception);
+            }
+        }
+    }
+
+    public function retryMastodonRetentionCleanup(): void
+    {
+        if (!$this->mastodonPublish) {
+            return;
+        }
+
+        $clients = [
+            'primary' => [$this->mastodonClient, $this->mastodonAccessToken],
+            'secondary' => [$this->secondaryMastodonClient, $this->secondaryMastodonAccessToken],
+        ];
+
+        foreach ($this->mastodonAnnouncementRepository->findWithPendingDeletions() as $announcement) {
+            if (!isset($clients[$announcement->getAccount()])) {
+                $this->logger->error(sprintf('Ignoring retention row for unknown Mastodon account "%s".', $announcement->getAccount()));
+                continue;
+            }
+
+            [$client, $accessToken] = $clients[$announcement->getAccount()];
+            if ($accessToken) {
+                $this->deletePendingMastodonStatuses($client, $announcement->getAccount(), $announcement->getPendingDeletionIds());
+            }
+        }
+    }
+
+    /** @param string[] $statusIds */
+    private function deletePendingMastodonStatuses(HttpClientInterface $client, string $account, array $statusIds): void
+    {
+        foreach ($statusIds as $statusId) {
+            if ('' === $statusId) {
+                continue;
+            }
+
+            try {
+                $response = $client->request('DELETE', 'statuses/' . rawurlencode($statusId));
+                $statusCode = $response->getStatusCode();
+
+                if (($statusCode >= 200 && $statusCode < 300) || 404 === $statusCode) {
+                    $this->mastodonAnnouncementRepository->clearPendingDeletion($account, $statusId);
+                } else {
+                    $this->logger->warning(sprintf('Failed to delete tracked Mastodon status %s from %s account: Response code %s', $statusId, $account, $statusCode));
+                }
+            } catch (\Throwable $exception) {
+                $this->logger->warning(sprintf('Failed to delete tracked Mastodon status %s from %s account: %s', $statusId, $account, $exception->getMessage()));
                 captureException($exception);
             }
         }
